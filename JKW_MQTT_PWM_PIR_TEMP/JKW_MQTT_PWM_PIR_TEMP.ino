@@ -23,6 +23,9 @@
 
 #define MQTT_VERSION MQTT_VERSION_3_1_1
 #define DEV "dev1"
+#define DIMM_DONE 	0
+#define DIMM_DIMMING 	1
+
 
 // Wifi: SSID and password
 const char*             WIFI_SSID         			= "[Redacted]";
@@ -39,15 +42,17 @@ const PROGMEM char*     MQTT_PASSWORD     			= "[Redacted]";
 const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= DEV "/PWM_light";			// publish state here
 const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC		= DEV "/PWM_light/switch"; 		// get command here
 
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= DEV "/simple_light";		// publish state here
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= DEV "/simple_light/switch"; 	// get command here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= DEV "/simple_light";			// publish state here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= DEV "/simple_light/switch"; 		// get command here
 
-const PROGMEM char* 	MQTT_MOTION_STATUS_TOPIC		= DEV "/motion/status";		// publish
+const PROGMEM char* 	MQTT_MOTION_STATUS_TOPIC		= DEV "/motion/status";			// publish
 const PROGMEM char* 	MQTT_TEMPARATURE_TOPIC			= DEV "/temperature";			// publish
 const PROGMEM char* 	MQTT_HUMIDITY_TOPIC			= DEV "/humidity";			// publish
 
-const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = DEV "/PWM_light/brightness";	// publish
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = DEV "/PWM_light/brightness";		// publish
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = DEV "/PWM_light/brightness/set";	// set value
+const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	= DEV "/PWM_dimm/delay/set";		// set value
+const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= DEV "/PWM_dimm/brightness/set";	// set value
 
 // payloads by default (on/off)
 const PROGMEM char*     STATE_ON          			= "ON";
@@ -57,6 +62,9 @@ const PROGMEM char*     STATE_OFF         			= "OFF";
 boolean 		m_pwm_light_state 			= false;
 boolean			m_simple_light_state 			= false;
 uint8_t 		m_light_brightness			= 255;
+uint16_t		m_pwm_dimm_time				= 100; // 100ms per Step, 255*0.1 = 25 sec
+uint8_t			m_pwm_dimm_state			= DIMM_DONE;
+uint8_t			m_pwm_dimm_target			= 0;
 
 // variables used to store the pir state
 uint8_t 		m_pir_state 				= LOW; // no motion detected
@@ -93,31 +101,8 @@ PubSubClient 		client(wifiClient);
 #endif
 
 #define UPDATE_TEMP 60000 // once per minute
-uint32_t 		timer	= 0;
-
-//////////////////////////////////// SETTER ///////////////////////////////////////
-// function called to adapt the brightness and the state of the led
-void setPWMLightState() {
-	if (m_pwm_light_state) {
-		analogWrite(PWM_LIGHT_PIN, m_light_brightness);
-		Serial.print("INFO: PWM Brightness: ");
-		Serial.println(m_light_brightness);
-	} else {
-		analogWrite(PWM_LIGHT_PIN, 0);
-		Serial.println("INFO: Turn PWM light off");
-	}
-}
-// function called to adapt the state of the led
-void setSimpleLightState() {
-	if (m_simple_light_state) {
-		digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
-		Serial.println("INFO: Simple pin on");
-	} else {
-		digitalWrite(SIMPLE_LIGHT_PIN, LOW);
-		Serial.println("INFO: Simple light off");
-	}
-}
-//////////////////////////////////// SETTER ///////////////////////////////////////
+uint32_t 		timer		= 0;
+uint32_t 		timer_dimmer	= 0;
 
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 // function called to publish the state of the led (on/off)
@@ -223,11 +208,64 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			publishPWMLightBrightness();
 		}
 	}
+	else if (String(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC).equals(p_topic)) {
+		uint8_t brightness = payload.toInt();
+		if (brightness < 0 || brightness > 255) {
+			// do nothing...
+			return;
+		} else {
+			pwmDimmTo(brightness);
+			//publishPWMLightBrightness();
+		}
+	}
+	else if (String(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC).equals(p_topic)) {
+		m_pwm_dimm_time = payload.toInt();
+	}
 	////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
 }
 ///////////////////// function called when a MQTT message arrived /////////////////////
 
 ////////////////////// peripheral function ///////////////////////////////////
+
+// function called to adapt the brightness and the state of the led
+void setPWMLightState() {
+	if (m_pwm_light_state) {
+		analogWrite(PWM_LIGHT_PIN, m_light_brightness);
+		Serial.print("INFO: PWM Brightness: ");
+		Serial.println(m_light_brightness);
+	} else {
+		analogWrite(PWM_LIGHT_PIN, 0);
+		Serial.println("INFO: Turn PWM light off");
+	}
+}
+// function called to adapt the state of the led
+void setSimpleLightState() {
+	if (m_simple_light_state) {
+		digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
+		Serial.println("INFO: Simple pin on");
+	} else {
+		digitalWrite(SIMPLE_LIGHT_PIN, LOW);
+		Serial.println("INFO: Simple light off");
+	}
+}
+
+void pwmDimmTo(uint16_t dimm_to){
+	// target value:  dimm_to 
+	// current value: m_light_brightness
+	m_pwm_dimm_target = dimm_to;
+
+	if(!m_pwm_light_state){
+		m_pwm_light_state = true;
+		publishPWMLightState();
+	}
+	m_pwm_dimm_state = DIMM_DIMMING; // enabled dimming
+	if(millis()-m_pwm_dimm_time > 0){
+		timer_dimmer = millis()-m_pwm_dimm_time;
+	} else {
+		timer_dimmer = 0;
+	}
+}
+
 #if DHT_DS_MODE == DS
 float getTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
 	//returns the temperature from one DS18S20 in DEG Celsius
@@ -398,6 +436,30 @@ void loop() {
 #if DHT_DS_MODE == DHT 
 		publishHumidity(getHumidity());
 #endif
+	}
+
+	// dimming active? 
+	if(m_pwm_dimm_state == DIMM_DIMMING){
+		// check timestep (255ms to .. forever)
+		if(timer_dimmer+m_pwm_dimm_time >= millis()){
+			m_pwm_dimm_time=millis(); // save for next round
+
+			// set new value
+			if(m_light_brightness < m_pwm_dimm_target){ 
+				m_light_brightness++;
+			} else {
+				m_light_brightness--;
+			}
+
+			// stop once you reach target
+			if(m_light_brightness == m_pwm_dimm_target){
+				m_pwm_dimm_state = DIMM_DONE;
+			}
+
+			// set and publish
+			setPWMLightState();
+			publishPWMLightBrightness();
+		}
 	}
 	
 }
