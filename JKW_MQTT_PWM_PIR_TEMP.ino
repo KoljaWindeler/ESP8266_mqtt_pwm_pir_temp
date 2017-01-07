@@ -1,30 +1,19 @@
 /*
-   MQTT Light (with brightness) for Home-Assistant - NodeMCU (ESP8266)
-   https://home-assistant.io/components/light.mqtt/
+	Highly based on a combination of different version of 
+	https://github.com/mertenats/Open-Home-Automation/tree/master/ha_mqtt_binary_sensor_pir
+	
 
-   Libraries :
-    - ESP8266 core for Arduino : https://github.com/esp8266/Arduino
-    - PubSubClient : https://github.com/knolleary/pubsubclient
+	Configuration (HA) : 
+	  light:
+	    platform: mqtt
+	    name: 'Office light'
+	    state_topic: 'office/light'
+	    command_topic: 'office/light/switch'
+	    brightness_state_topic: 'office/light/brightness'
+	    brightness_command_topic: 'office/light/brightness/set'
+	    optimistic: false
 
-   Schematic :
-    - 
-
-   Configuration (HA) : 
-    light:
-      platform: mqtt
-      name: 'Office light'
-      state_topic: 'office/light'
-      command_topic: 'office/light/switch'
-      brightness_state_topic: 'office/light/brightness'
-      brightness_command_topic: 'office/light/brightness/set'
-      optimistic: false
-
-   Samuel M. - v1.0 - 08.2016
-   If you like this example, please add a star! Thank you!
-   https://github.com/mertenats/open-home-automation
-
-
-	// todo: button auf dem geraet
+   	Kolja Windeler v0.1 - untested
 */
 
 #include <ESP8266WiFi.h>
