@@ -73,17 +73,15 @@ uint8_t 		m_pir_value 				= 0;
 
 
 // pin used for the led (PWM)
-#define PWM_LIGHT_PIN 4
-#define SIMPLE_LIGHT_PIN 12 // scheinbar?!
-#define BUTTON_INPUT_PIN 0 // ja?
-// DHT - D1/GPIO5
-#define DHT 1
-#define DS 2
+#define DHT 		1
+#define DS 		2
+#define DHT_DS_MODE 	DS
 
-#define DHT_DS_MODE DS
-#define DHT_PIN 6
-// DHT - D1/GPIO5
-#define PIR_PIN 5
+#define PWM_LIGHT_PIN 		2 // IC pin 16
+#define SIMPLE_LIGHT_PIN 	7 // IC pin 12
+#define BUTTON_INPUT_PIN 	3 // IC pin 15
+#define DHT_PIN 		8 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
+#define PIR_PIN 		1 // IC pin 24
 
 // buffer used to send/receive data with MQTT
 const uint8_t 		MSG_BUFFER_SIZE 	= 60;
