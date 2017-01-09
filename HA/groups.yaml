@@ -1,0 +1,48 @@
+  default_view:
+    icon: mdi:home
+    view: yes
+    entities:
+      - group.living_room
+      - group.dining_room
+      - group.outside
+      - group.bed_room
+      - group.presents
+
+  living_room:
+    - light.dev1
+    - light.dev4
+    - sensor.dev4_temperature
+    - media_player.jkw_cast2
+
+  bed_room:
+    - binary_sensor.dev3_motion
+    - light.dev3
+    - sensor.dev3_temperature
+
+  dining_room:
+    - light.dev2
+    - binary_sensor.dev2_motion
+    - sensor.dev2_temperature
+
+  presents:
+    - sensor.To_Hannover 
+    - sensor.To_Baker
+    - device_tracker.7c11cba3f1d1
+    - device_tracker.64bc0c4df830
+
+  outside:
+    - sun.sun
+    - sensor.dark_sky_temperature
+    - sensor.dark_sky_apparent_temperature
+    - sensor.dark_sky_daily_high_temperature
+    - sensor.dark_sky_daily_low_temperature
+    - sensor.dark_sky_cloud_coverage
+    - sensor.dark_sky_precip_probability
+    - sensor.dark_sky_precip_intensity
+    - sensor.dark_sky_daily_summary
+
+  mediaplayer:
+    name: Media Player
+    view: yes
+    entities:
+      - media_player.jkw_cast2

@@ -1,0 +1,67 @@
+    switch.wohnzimmer_saeule:
+      assumed_state: false
+    switch.esszimmer_kronleuchter:
+      assumed_state: false
+    switch.kuechen_licht:
+      assumed_state: false
+    switch.esszimmer_saeule:
+      assumed_state: false
+    switch.wohnzimmer_kugel:
+      assumed_state: false
+    sensor.dark_sky_apparent_temperature:
+      friendly_name: "Apparent Temp"
+    sensor.dark_sky_cloud_coverage:
+      friendly_name: "Cloud coverage"
+    sensor.dark_sky_daily_high_temperature:
+      friendly_name: "Max today"
+    sensor.dark_sky_daily_low_temperature:
+      friendly_name: "Min today"
+    sensor.dark_sky_precip_intensity:
+      friendly_name: "Rain intensity"
+    sensor.dark_sky_precip_probability:
+      friendly_name: "Rain probability"
+    sensor.dark_sky_temperature:
+      friendly_name: "Current Temp"
+    sensor.dark_sky_daily_summary:
+      friendly_name: " "
+    device_tracker.7c11cba3f1d1:
+      friendly_name: "Kolja"
+    device_tracker.64bc0c4df830:
+      friendly_name: "Caro"
+    sensor.To_Hannover:
+      friendly_name: "Fahrzeit Uni"
+      icon: "mdi:wallet-travel"
+    sensor.To_Baker:
+      friendly_name: "Fahrzeit Baker"
+      icon: "mdi:wallet-travel"
+    group.dining_room:            
+      friendly_name: "Dining room"
+    group.living_room:            
+      friendly_name: "Living room"
+    group.bed_room:            
+      friendly_name: "Bedroom"
+
+    light.dev1:
+      friendly_name: "Tower"
+
+    light.dev2:
+      friendly_name: "Tower"
+    sensor.dev2_temperature:
+      friendly_name: "Temperature"
+      icon: "mdi:thermometer"
+    binary_sensor.dev2_motion:
+      friendly_name: "Motion"
+
+    light.dev3:
+      friendly_name: "Dimmer"
+    sensor.dev3_temperature:
+      friendly_name: "Temperature"
+      icon: "mdi:thermometer"
+    binary_sensor.dev3_motion:
+      friendly_name: "Motion"
+
+    light.dev4:
+      friendly_name: "Ball"
+    sensor.dev4_temperature:
+      friendly_name: "Temperature"
+      icon: "mdi:thermometer"

@@ -1,0 +1,9 @@
+  - platform: mqtt
+    state_topic: "dev2/motion/status"
+    name: "dev2_motion"
+    sensor_class: motion
+
+  - platform: mqtt
+    state_topic: "dev3/motion/status"
+    name: "dev3_motion"
+    sensor_class: motion

@@ -1,0 +1,58 @@
+  - platform: google_travel_time
+    name: To_Hannover
+    api_key: AIzaSyDQVWVynFHKLeC19fjirE5Ssuwn_RDClDs
+    origin: Wienhausen
+    destination: Uni, Hannover
+
+  - platform: google_travel_time
+    name: To_Baker
+    api_key: AIzaSyDQVWVynFHKLeC19fjirE5Ssuwn_RDClDs
+    origin: Wienhausen, Muehlenstr 8a
+    destination: Baker Hughes, Celle
+
+  - platform: mqtt
+    state_topic: "home/livingroom_fire/temperature"
+    name: "Wohnzimmer Kamin"
+
+  - platform: mqtt
+    state_topic: "home/livingroom_couch/temperature"
+    name: "Wohnzimmer Sofa"
+
+  - platform: mqtt
+    state_topic: "dev2/temperature"
+    name: "dev2_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev3/temperature"
+    name: "dev3_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev4/temperature"
+    name: "dev4_temperature"
+    sensor_class: "temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: darksky
+    api_key: d51a09271f9df8904e3216f388a79102
+    monitored_conditions:
+      - temperature_max
+      - temperature_min
+      - precip_intensity
+      - precip_probability
+      - temperature
+      - apparent_temperature
+      - cloud_cover
+      - daily_summary
+#      - summary
+#      - icon
+#      - precip_type
+#      - wind_speed
+#      - wind_bearing
+#      - humidity
+#      - visibility
+#      - apparent_temperature_max
+#      - apparent_temperature_min
+#      - precip_intensity_max
+
