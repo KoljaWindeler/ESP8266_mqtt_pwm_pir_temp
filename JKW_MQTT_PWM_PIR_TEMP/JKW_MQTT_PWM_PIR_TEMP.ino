@@ -28,8 +28,7 @@
 
 
 // Wifi: SSID and password
-const char*             WIFI_SSID         			= "NETGEAR40";
-const char*             WIFI_PASSWORD     			= "windycarrot475";
+#include "wifi.h"
 
 // MQTT: ID, server IP, port, username and password
 const PROGMEM char*     MQTT_CLIENT_ID    			= "office_light";
