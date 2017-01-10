@@ -54,6 +54,8 @@ const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = DEV "/PWM_ligh
 const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	= DEV "/PWM_dimm/delay/set";		// set value
 const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= DEV "/PWM_dimm/brightness/set";	// set value
 
+const PROGMEM char*     MQTT_RSSI_STATE_TOPIC   = DEV "/rssi";    // publish
+
 // payloads by default (on/off)
 const PROGMEM char*     STATE_ON          			= "ON";
 const PROGMEM char*     STATE_OFF         			= "OFF";
@@ -126,6 +128,7 @@ void publishPWMLightBrightness() {
   m_published_light_brightness = m_light_brightness;
 }
 
+
 // function called to publish the state of the led (on/off)
 void publishSimpleLightState() {
   Serial.println("publish simple light state");
@@ -154,6 +157,7 @@ void publishTemperature(float temp) {
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	client.publish(MQTT_TEMPARATURE_TOPIC, m_msg_buffer, true);
 }
+
 #if DHT_DS_MODE == DHT 
 // function called to publish the brightness of the led
 void publishHumidity(float hum) {
@@ -162,6 +166,12 @@ void publishHumidity(float hum) {
 	client.publish(MQTT_HUMIDITY_TOPIC, m_msg_buffer, true);
 }
 #endif
+
+void publishRssi(float rssi) {
+  Serial.println("publish rssi");
+  dtostrf(rssi, 3, 2, m_msg_buffer);
+  client.publish(MQTT_RSSI_STATE_TOPIC, m_msg_buffer, true);
+}
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 
 
@@ -431,6 +441,7 @@ void loop() {
 #if DHT_DS_MODE == DHT 
 		publishHumidity(getHumidity());
 #endif
+    publishRssi(WiFi.RSSI());
 	}
   //// send periodic updates of temperature ////
 
