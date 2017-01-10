@@ -29,13 +29,15 @@
 
 // Wifi: SSID and password
 #include "wifi.h"
-
+// wifi.h must contain the information below with your data
 // MQTT: ID, server IP, port, username and password
-const PROGMEM char*     MQTT_CLIENT_ID    			= "office_light";
-const PROGMEM char*     MQTT_SERVER_IP    			= "192.168.2.84";
-const PROGMEM uint16_t  MQTT_SERVER_PORT  			= 1883;
-const PROGMEM char*     MQTT_USER         			= "ha";
-const PROGMEM char*     MQTT_PASSWORD     			= "ah";
+//const char*             WIFI_SSID               = "ssid";
+//const char*             WIFI_PASSWORD           = "ultrasecret";
+//const PROGMEM char*     MQTT_CLIENT_ID    			= "office_light";
+//const PROGMEM char*     MQTT_SERVER_IP    			= "192.168.2.300";
+//const PROGMEM uint16_t  MQTT_SERVER_PORT  			= 1883;
+//const PROGMEM char*     MQTT_USER         			= "user";
+//const PROGMEM char*     MQTT_PASSWORD     			= "login";
 
 // MQTT: topics
 const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= DEV "/PWM_light/status";		// publish state here
