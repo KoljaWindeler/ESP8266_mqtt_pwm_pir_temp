@@ -28,26 +28,26 @@
 
 
 // Wifi: SSID and password
-const char*             WIFI_SSID         			= "[Redacted]";
-const char*             WIFI_PASSWORD     			= "[Redacted]";
+const char*             WIFI_SSID         			= "NETGEAR40";
+const char*             WIFI_PASSWORD     			= "windycarrot475";
 
 // MQTT: ID, server IP, port, username and password
 const PROGMEM char*     MQTT_CLIENT_ID    			= "office_light";
-const PROGMEM char*     MQTT_SERVER_IP    			= "[Redacted]";
+const PROGMEM char*     MQTT_SERVER_IP    			= "192.168.2.84";
 const PROGMEM uint16_t  MQTT_SERVER_PORT  			= 1883;
-const PROGMEM char*     MQTT_USER         			= "[Redacted]";
-const PROGMEM char*     MQTT_PASSWORD     			= "[Redacted]";
+const PROGMEM char*     MQTT_USER         			= "ha";
+const PROGMEM char*     MQTT_PASSWORD     			= "ah";
 
 // MQTT: topics
-const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= DEV "/PWM_light";			// publish state here
+const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= DEV "/PWM_light/status";		// publish state here
 const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC		= DEV "/PWM_light/switch"; 		// get command here
 
 const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= DEV "/simple_light";			// publish state here
 const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= DEV "/simple_light/switch"; 		// get command here
 
-const PROGMEM char* 	MQTT_MOTION_STATUS_TOPIC		= DEV "/motion/status";			// publish
-const PROGMEM char* 	MQTT_TEMPARATURE_TOPIC			= DEV "/temperature";			// publish
-const PROGMEM char* 	MQTT_HUMIDITY_TOPIC			= DEV "/humidity";			// publish
+const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		= DEV "/motion/status";			// publish
+const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC			= DEV "/temperature";			// publish
+const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			= DEV "/humidity";			// publish
 
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = DEV "/PWM_light/brightness";		// publish
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = DEV "/PWM_light/brightness/set";	// set value
@@ -59,17 +59,21 @@ const PROGMEM char*     STATE_ON          			= "ON";
 const PROGMEM char*     STATE_OFF         			= "OFF";
 
 // variables used to store the statea and the brightness of the light
-boolean 		m_pwm_light_state 			= false;
-boolean			m_simple_light_state 			= false;
-uint8_t 		m_light_brightness			= 255;
-uint16_t		m_pwm_dimm_time				= 100; // 100ms per Step, 255*0.1 = 25 sec
-uint8_t			m_pwm_dimm_state			= DIMM_DONE;
-uint8_t			m_pwm_dimm_target			= 0;
+boolean 		m_pwm_light_state 			          = false;
+boolean     m_published_pwm_light_state       = true; //testwise
+boolean			m_simple_light_state 		          = false;
+boolean     m_published_simple_light_state    = true; //testwise
+uint8_t 		m_light_brightness			          = 255;
+uint8_t     m_published_light_brightness      = 0; //testwise
+
+uint16_t		m_pwm_dimm_time				            = 100; // 100ms per Step, 255*0.1 = 25 sec
+uint8_t			m_pwm_dimm_state			            = DIMM_DONE;
+uint8_t			m_pwm_dimm_target			            = 0;
 
 // variables used to store the pir state
-uint8_t 		m_pir_state 				= LOW; // no motion detected
-uint8_t 		m_published_pir_state 			= LOW;
-uint8_t 		m_pir_value 				= 0;
+uint8_t 		m_pir_state 				              = LOW; // no motion detected
+uint8_t 		m_published_pir_state             = LOW;
+uint8_t 		m_pir_value 				              = 0;
 
 
 // pin used for the led (PWM)
@@ -78,10 +82,10 @@ uint8_t 		m_pir_value 				= 0;
 #define DHT_DS_MODE 	DS
 
 #define PWM_LIGHT_PIN 		2 // IC pin 16
-#define SIMPLE_LIGHT_PIN 	7 // IC pin 12
+#define SIMPLE_LIGHT_PIN 	4 // IC pin 12 --> 7 crashes the MCU
 #define BUTTON_INPUT_PIN 	3 // IC pin 15
-#define DHT_PIN 		8 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
-#define PIR_PIN 		1 // IC pin 24
+#define DHT_PIN 		5 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
+#define PIR_PIN 		9 // IC pin 24 ---> 7,6,8,1 crashes, 9 works
 
 // buffer used to send/receive data with MQTT
 const uint8_t 		MSG_BUFFER_SIZE 	= 60;
@@ -105,30 +109,37 @@ uint32_t 		timer_dimmer	= 0;
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 // function called to publish the state of the led (on/off)
 void publishPWMLightState() {
+  Serial.println("publish PWM state");
 	if (m_pwm_light_state) {
 		client.publish(MQTT_PWM_LIGHT_STATE_TOPIC, STATE_ON, true);
 	} else {
 		client.publish(MQTT_PWM_LIGHT_STATE_TOPIC, STATE_OFF, true);
 	}
+  m_published_pwm_light_state = m_pwm_light_state;
 }
 
 // function called to publish the brightness of the led
 void publishPWMLightBrightness() {
+	Serial.println("publish PWM brightness");
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_brightness);
 	client.publish(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC, m_msg_buffer, true);
+  m_published_light_brightness = m_light_brightness;
 }
 
 // function called to publish the state of the led (on/off)
 void publishSimpleLightState() {
+  Serial.println("publish simple light state");
 	if (m_simple_light_state) {
 		client.publish(MQTT_SIMPLE_LIGHT_STATE_TOPIC, STATE_ON, true);
 	} else {
 		client.publish(MQTT_SIMPLE_LIGHT_STATE_TOPIC, STATE_OFF, true);
 	}
+  m_published_simple_light_state = m_simple_light_state;
 }
 
 // function called to publish the state of the PIR (on/off)
 void publishPirState() {
+  Serial.println("publish pir state");
 	if (m_pir_state) {
 		client.publish(MQTT_MOTION_STATUS_TOPIC, STATE_ON, true);
 	} else {
@@ -139,12 +150,14 @@ void publishPirState() {
 
 // function called to publish the brightness of the led
 void publishTemperature(float temp) {
+  Serial.println("publish temp");
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	client.publish(MQTT_TEMPARATURE_TOPIC, m_msg_buffer, true);
 }
 #if DHT_DS_MODE == DHT 
 // function called to publish the brightness of the led
 void publishHumidity(float hum) {
+  Serial.println("publish humidiy");
 	dtostrf(hum, 3, 2, m_msg_buffer);
 	client.publish(MQTT_HUMIDITY_TOPIC, m_msg_buffer, true);
 }
@@ -167,13 +180,11 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			if (m_pwm_light_state != true) {
 				m_pwm_light_state = true;
 				setPWMLightState();
-				publishPWMLightState();
 			}
 		} else if (payload.equals(String(STATE_OFF))) {
 			if (m_pwm_light_state != false) {
 				m_pwm_light_state = false;
 				setPWMLightState();
-				publishPWMLightState();
 			}
 		}
 	}
@@ -183,13 +194,11 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			if (m_simple_light_state != true) {
 				m_simple_light_state = true;
 				setSimpleLightState();
-				publishSimpleLightState();
 			}
 		} else if (payload.equals(String(STATE_OFF))) {
 			if (m_simple_light_state != false) {
 				m_simple_light_state = false;
 				setSimpleLightState();
-				publishSimpleLightState();
 			}
 		}
 	}
@@ -202,8 +211,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			return;
 		} else {
 			m_light_brightness = brightness;
-			setPWMLightState();
-			publishPWMLightBrightness();
+			setPWMLightState();		
 		}
 	}
 	else if (String(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC).equals(p_topic)) {
@@ -213,7 +221,6 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			return;
 		} else {
 			pwmDimmTo(brightness);
-			//publishPWMLightBrightness();
 		}
 	}
 	else if (String(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC).equals(p_topic)) {
@@ -236,6 +243,7 @@ void setPWMLightState() {
 		Serial.println("INFO: Turn PWM light off");
 	}
 }
+
 // function called to adapt the state of the led
 void setSimpleLightState() {
 	if (m_simple_light_state) {
@@ -254,7 +262,6 @@ void pwmDimmTo(uint16_t dimm_to){
 
 	if(!m_pwm_light_state){
 		m_pwm_light_state = true;
-		publishPWMLightState();
 	}
 	m_pwm_dimm_state = DIMM_DIMMING; // enabled dimming
 	if(millis()-m_pwm_dimm_time > 0){
@@ -329,7 +336,6 @@ void updateBUTTONstate(){
 	// toggle, write to pin, publish to server
 	m_simple_light_state = !m_simple_light_state;
 	setSimpleLightState();
-	publishSimpleLightState();
 }
 
 ////////////////////// peripheral function ///////////////////////////////////
@@ -343,11 +349,6 @@ void reconnect() {
     if (client.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASSWORD)) {
       Serial.println("\nINFO: connected");
       
-      // Once connected, publish an announcement...
-      // publish the initial values
-      publishPWMLightState();
-      publishPWMLightBrightness();
-
       // ... and resubscribe
       client.subscribe(MQTT_PWM_LIGHT_COMMAND_TOPIC);
       client.subscribe(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC);
@@ -366,7 +367,7 @@ void reconnect() {
 void setup() {
 	// init the serial
 	Serial.begin(115200);
-
+  Serial.println("Boote ich nun oder nicht?");
 	// init the led
 	pinMode(PWM_LIGHT_PIN, OUTPUT);
 	analogWriteRange(255);
@@ -390,7 +391,7 @@ void setup() {
 
 #if DHT_DS_MODE == DHT 
 	// dht
-	dht.begin();
+  dht.begin();
 #endif
 
 	Serial.println("");
@@ -403,14 +404,14 @@ void setup() {
 	client.setCallback(callback);
 
 	// attache interrupt code for PIR
-	pinMode(PIR_PIN, OUTPUT);
+	pinMode(PIR_PIN, INPUT);
 	digitalWrite(PIR_PIN,HIGH); // pull up to avoid interrupts without sensor
 	attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
 
 	// attache interrupt code for button
-	pinMode(BUTTON_INPUT_PIN, OUTPUT);
+	pinMode(BUTTON_INPUT_PIN, INPUT);
 	digitalWrite(BUTTON_INPUT_PIN,HIGH); // pull up to avoid interrupts without sensor
-	attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
 
 }
 ////////////////////// SETUP ///////////////////////////////////
@@ -420,13 +421,9 @@ void loop() {
 		reconnect();
 	}
 	client.loop();
+  
 
-	// publish pir state
-	if(m_pir_state != m_published_pir_state){
-		publishPirState();
-	}
-
-	// send periodic updates of temperature
+	//// send periodic updates of temperature ////
 	if(millis()-timer>UPDATE_TEMP){
 		timer=millis();
 		// request temp here
@@ -435,8 +432,9 @@ void loop() {
 		publishHumidity(getHumidity());
 #endif
 	}
+  //// send periodic updates of temperature ////
 
-	// dimming active? 
+	//// dimming active?  ////
 	if(m_pwm_dimm_state == DIMM_DIMMING){
 		// check timestep (255ms to .. forever)
 		if(timer_dimmer+m_pwm_dimm_time >= millis()){
@@ -456,9 +454,26 @@ void loop() {
 
 			// set and publish
 			setPWMLightState();
-			publishPWMLightBrightness();
 		}
 	}
-	
+  //// dimming end ////
+
+  //// publish all state - ONLY after being connected for sure ////
+  if(m_pir_state != m_published_pir_state){
+    publishPirState();
+  }
+
+  if(m_simple_light_state != m_published_simple_light_state){
+    publishSimpleLightState();
+  }
+
+  if(m_pwm_light_state != m_published_pwm_light_state){
+    publishPWMLightState();
+  }
+
+  if(m_published_light_brightness != m_light_brightness){
+    publishPWMLightBrightness();
+  }
+  //// publish all state - ONLY after being connected for sure ////
 }
 ////////////////////// LOOP ///////////////////////////////////
