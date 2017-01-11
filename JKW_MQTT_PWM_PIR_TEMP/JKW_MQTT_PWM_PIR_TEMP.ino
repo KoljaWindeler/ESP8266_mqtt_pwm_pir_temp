@@ -23,35 +23,34 @@
 #include <PubSubClient.h>
 #include <OneWire.h> 
 
-
 #define MQTT_VERSION MQTT_VERSION_3_1_1
 #define DIMM_DONE 	0
 #define DIMM_DIMMING 	1
 
-
+// Buffer to hold data from the WiFi manager for mqtt login
 char mqtt_user[16]; 
 char mqtt_pw[16]; 
 char mqtt_dev_short[6]; 
+char mqtt_server_cli_id[20]; 
 char char_buffer[35]; 
 
-
 // MQTT: topics
-const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= "/PWM_light/status";		// publish state here
-const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC		= "/PWM_light/switch"; 		// get command here
+const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC              = "/PWM_light/status";		// publish state here
+const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC	  	      = "/PWM_light/switch"; 		// get command here
 
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= "/simple_light";			// publish state here
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= "/simple_light/switch"; 		// get command here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light";			// publish state here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		      = "/simple_light/switch"; 		// get command here
 
-const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		= "/motion/status";			// publish
-const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC		= "/temperature";			// publish
-const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			= "/humidity";			// publish
+const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		            = "/motion/status";			// publish
+const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC		              = "/temperature";			// publish
+const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			                = "/humidity";			// publish
 
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		// publish
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value
-const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	= "/PWM_dimm/delay/set";		// set value
+const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	    = "/PWM_dimm/delay/set";		// set value
 const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= "/PWM_dimm/brightness/set";	// set value
 
-const PROGMEM char*     MQTT_RSSI_STATE_TOPIC   = "/rssi";    // publish
+const PROGMEM char*     MQTT_RSSI_STATE_TOPIC                   = "/rssi";    // publish
 
 // payloads by default (on/off)
 const PROGMEM char*     STATE_ON          			= "ON";
@@ -384,7 +383,7 @@ void configModeCallback(WiFiManager *myWiFiManager) {
 }
 
 // build topics with device id on the fly
-char* build_topic(const PROGMEM char* topic){
+char* build_topic(const char *topic){
 	sprintf(char_buffer,"%s%s",mqtt_dev_short,topic);
 	return char_buffer;
 }
@@ -414,17 +413,16 @@ void setup() {
 	WiFiManagerParameter WiFiManager_mqtt_server_port("port", "mqtt server port", mqtt_server_port, 5);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_port);
 	
-	char mqtt_server_cli_id[20]; 
 	sprintf(mqtt_server_cli_id, "office_light");
 	WiFiManagerParameter WiFiManager_mqtt_client_id("cli_id", "mqtt client id", mqtt_server_cli_id, 19);
 	wifiManager.addParameter(&WiFiManager_mqtt_client_id);
 	
 	sprintf(mqtt_dev_short, "dev1");
-	WiFiManagerParameter WiFiManager_mqtt_client_short("user", "mqtt short id", mqtt_dev_short, 5);
+	WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", mqtt_dev_short, 5);
 	wifiManager.addParameter(&WiFiManager_mqtt_client_short);
 	
 	sprintf(mqtt_user, "user");
-	WiFiManagerParameter WiFiManager_mqtt_server_login("user", "mqtt login", mqtt_user, 15);
+	WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", mqtt_user, 15);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_login);
 	
 	sprintf(mqtt_pw, "pw");
@@ -438,12 +436,22 @@ void setup() {
 	Serial.print("INFO: Connecting to Wifi ");
 	wifiManager.setAPCallback(configModeCallback);
 	wifiManager.autoConnect("OPEN_ESP_CONFIG_AP");
-	mqtt_server_ip 		= WiFiManager_mqtt_server_ip.getValue();
-	mqtt_user 		= WiFiManager_mqtt_server_login.getValue();
-	mqtt_pw 		= WiFiManager_mqtt_server_pw.getValue();
-	mqtt_server_port 	= WiFiManager_mqtt_server_port.getValue();
-	mqtt_server_cli_id	= WiFiManager_mqtt_client_id.getValue();
-	mqtt_dev_short		= WiFiManager_mqtt_client_short.getValue();
+  
+	sprintf(mqtt_server_ip,"%s",WiFiManager_mqtt_server_ip.getValue());
+	sprintf(mqtt_user,"%s",WiFiManager_mqtt_server_login.getValue());
+	sprintf(mqtt_pw,"%s",WiFiManager_mqtt_server_pw.getValue());
+	sprintf(mqtt_server_port,"%s",WiFiManager_mqtt_server_port.getValue());
+	sprintf(mqtt_server_cli_id,"%s",WiFiManager_mqtt_client_id.getValue());
+	sprintf(mqtt_dev_short,"%s",WiFiManager_mqtt_client_short.getValue());
+  
+  Serial.println(("=== Loaded parameters: ==="));
+  Serial.print(("mqtt ip: ")); Serial.println(mqtt_server_ip);
+  Serial.print(("mqtt port: ")); Serial.println(mqtt_server_port);
+  Serial.print(("mqtt user: ")); Serial.println(mqtt_user);
+  Serial.print(("mqtt pw: ")); Serial.println(mqtt_pw);
+  Serial.print(("mqtt client id: ")); Serial.println(mqtt_server_cli_id);
+  Serial.print(("mqtt dev short: ")); Serial.println(mqtt_dev_short);
+  Serial.println(("=== End of parameters ==="));
 	// start wifi manager
 	
 #if DHT_DS_MODE == DHT 
@@ -457,7 +465,7 @@ void setup() {
 	Serial.println(WiFi.localIP());
 
 	// init the MQTT connection
-	client.setServer(mqtt_server_ip, mqtt_server_port);
+	client.setServer(mqtt_server_ip, atoi(mqtt_server_port));
 	client.setCallback(callback);
 
 	// attache interrupt code for PIR
@@ -479,7 +487,6 @@ void loop() {
 	}
 	client.loop();
   
-
 	//// send periodic updates of temperature ////
 	if(millis()-timer>UPDATE_TEMP){
 		timer=millis();
