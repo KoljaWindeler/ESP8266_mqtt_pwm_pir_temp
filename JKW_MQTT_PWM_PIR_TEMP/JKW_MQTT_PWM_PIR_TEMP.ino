@@ -367,6 +367,9 @@ void updateBUTTONstate() {
     };
     //Serial.println("DOWN");
     timer_button_down = millis();
+    if(timer_button_down==timer_button_up){ // make sure that we came last
+      timer_button_down++;
+    }
   } else {
     timer_button_up = millis();
     //Serial.println("UP");
