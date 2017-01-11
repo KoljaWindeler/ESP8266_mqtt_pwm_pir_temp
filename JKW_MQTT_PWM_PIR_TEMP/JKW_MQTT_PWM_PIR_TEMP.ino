@@ -84,11 +84,18 @@ uint8_t 		m_pir_value 				              = 0;
 #define DS 		2
 #define DHT_DS_MODE 	DS
 
+/*
 #define PWM_LIGHT_PIN 		2 // IC pin 16
 #define SIMPLE_LIGHT_PIN 	4 // IC pin 12 --> 7 crashes the MCU
 #define BUTTON_INPUT_PIN 	3 // IC pin 15
 #define DHT_PIN 		5 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
 #define PIR_PIN 		9 // IC pin 24 ---> 7,6,8,1 crashes, 9 works
+*/
+#define PWM_LIGHT_PIN 		D2 // IC pin 16
+#define SIMPLE_LIGHT_PIN 	D7 // IC pin 12
+#define BUTTON_INPUT_PIN 	D3 // IC pin 15
+#define DHT_PIN 		D8 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
+#define PIR_PIN 		D1 // IC pin 24
 
 // buffer used to send/receive data with MQTT
 const uint8_t 		MSG_BUFFER_SIZE 	= 60;
