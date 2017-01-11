@@ -22,6 +22,8 @@
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
 #include <OneWire.h>
+#include <EEPROM.h>
+
 
 // defines 
 #define DIMM_DONE 	        0
@@ -49,10 +51,15 @@
 #endif
 
 // Buffer to hold data from the WiFi manager for mqtt login
-char mqtt_user[16];
-char mqtt_pw[16];
-char mqtt_dev_short[6];
-char mqtt_server_cli_id[20];
+struct mqtt_data {
+  char login[16];
+  char pw[16];
+  char dev_short[6];
+  char server_cli_id[20];
+  char server_ip[16];
+  char server_port[6];
+};
+
 char char_buffer[35];
 
 // MQTT: topics, constants, etc
@@ -93,11 +100,20 @@ uint8_t 		m_published_pir_state             = LOW;
 
 
 // buffer used to send/receive data with MQTT, can not be done with the char_buffer, as both as need simultaniously 
-char            m_msg_buffer[MSG_BUFFER_SIZE];
+char                  m_msg_buffer[MSG_BUFFER_SIZE];
+WiFiClient            wifiClient;
+WiFiManager 		      wifiManager;
+PubSubClient          client(wifiClient);
+mqtt_data             mqtt;
 
-WiFiClient      wifiClient;
-WiFiManager 		wifiManager;
-PubSubClient    client(wifiClient);
+// prepare wifimanager variables
+WiFiManagerParameter  WiFiManager_mqtt_server_ip("ip", "mqtt server ip", "192.168.2.84", 15);
+WiFiManagerParameter  WiFiManager_mqtt_server_port("port", "mqtt server port", "1883", 5);
+WiFiManagerParameter  WiFiManager_mqtt_client_id("cli_id", "mqtt client id", "office_light", 19);
+WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "dev1", 5);
+WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "login", 15);
+WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "password", 15);
+
 
 uint32_t 		    timer		= 0;
 uint32_t 		    timer_dimmer	= 0;
@@ -289,17 +305,17 @@ float getTemp() { // https://blog.silvertech.at/arduino-temperatur-messen-mit-1w
   if ( !ds.search(addr)) {
     //no more sensors on chain, reset search
     ds.reset_search();
-    return -1000;
+    return -999;
   }
 
   if ( OneWire::crc8( addr, 7) != addr[7]) {
     Serial.println("CRC is not valid!");
-    return -1000;
+    return -888;
   }
 
   if ( addr[0] != 0x10 && addr[0] != 0x28) {
     Serial.print("Device is not recognized");
-    return -1000;
+    return -777;
   }
 
   ds.reset();
@@ -354,6 +370,8 @@ void updateBUTTONstate() {
       wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
     }
   }
+  Serial.print("Button push ");
+  Serial.println(counter_button);
   timer_button = millis();
 }
 
@@ -364,10 +382,11 @@ void updateBUTTONstate() {
 ////////////////////////////////// network function ///////////////////////////////////
 void reconnect() {
   // Loop until we're reconnected
+  uint8_t tries=0;
   while (!client.connected()) {
     Serial.print("INFO: Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect(mqtt_server_cli_id, mqtt_user, mqtt_pw)) {
+    if (client.connect(mqtt.server_cli_id, mqtt.login, mqtt.pw)) {
       Serial.println("\nINFO: connected");
 
       // ... and resubscribe
@@ -381,18 +400,78 @@ void reconnect() {
       // Wait 5 seconds before retrying
       delay(5000);
     }
+    tries++;
+    if(tries>=5){
+      Serial.println("Can't connect, starting AP");
+      wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+    }
   }
 }
 
 void configModeCallback(WiFiManager *myWiFiManager) {
+  wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
+  wifiManager.addParameter(&WiFiManager_mqtt_server_port);
+  wifiManager.addParameter(&WiFiManager_mqtt_client_id);
+  wifiManager.addParameter(&WiFiManager_mqtt_client_short);
+  wifiManager.addParameter(&WiFiManager_mqtt_server_login);
+  wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
+  // prepare wifimanager variables
+  
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
+// save config to eeprom
+void saveConfigCallback(){ 
+  sprintf(mqtt.server_ip, "%s", WiFiManager_mqtt_server_ip.getValue());
+  sprintf(mqtt.login, "%s", WiFiManager_mqtt_server_login.getValue());
+  sprintf(mqtt.pw, "%s", WiFiManager_mqtt_server_pw.getValue());
+  sprintf(mqtt.server_port, "%s", WiFiManager_mqtt_server_port.getValue());
+  sprintf(mqtt.server_cli_id, "%s", WiFiManager_mqtt_client_id.getValue());
+  sprintf(mqtt.dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
+  Serial.println(("=== Saving parameters: ==="));
+  Serial.print(("mqtt ip: ")); Serial.println(mqtt.server_ip);
+  Serial.print(("mqtt port: ")); Serial.println(mqtt.server_port);
+  Serial.print(("mqtt user: ")); Serial.println(mqtt.login);
+  Serial.print(("mqtt pw: ")); Serial.println(mqtt.pw);
+  Serial.print(("mqtt client id: ")); Serial.println(mqtt.server_cli_id);
+  Serial.print(("mqtt dev short: ")); Serial.println(mqtt.dev_short);
+  Serial.println(("=== End of parameters ===")); 
+  char* temp=(char*) &mqtt;
+  for(int i=0; i<sizeof(mqtt); i++){
+    EEPROM.write(i,*temp);
+    //Serial.print(*temp);
+    temp++;
+  }
+  EEPROM.commit();
+  Serial.println("Configuration saved, restarting");
+  delay(2000);
+  ESP.reset(); // reset loop if not only or configured after 5min .. 
+}
+
+void loadConfig(){
+  // fill the mqtt element with all the data from eeprom
+  char* temp=(char*) &mqtt;
+  for(int i=0; i<sizeof(mqtt); i++){
+    //Serial.print(i);
+    *temp = EEPROM.read(i);
+    //Serial.print(*temp);
+    temp++;
+  }
+  Serial.println(("=== Loaded parameters: ==="));
+  Serial.print(("mqtt ip: "));        Serial.println(mqtt.server_ip);
+  Serial.print(("mqtt port: "));      Serial.println(mqtt.server_port);
+  Serial.print(("mqtt user: "));      Serial.println(mqtt.login);
+  Serial.print(("mqtt pw: "));        Serial.println(mqtt.pw);
+  Serial.print(("mqtt client id: ")); Serial.println(mqtt.server_cli_id);
+  Serial.print(("mqtt dev short: ")); Serial.println(mqtt.dev_short);
+  Serial.println(("=== End of parameters ==="));
+}
+
 // build topics with device id on the fly
 char* build_topic(const char *topic) {
-  sprintf(char_buffer, "%s%s", mqtt_dev_short, topic);
+  sprintf(char_buffer, "%s%s", mqtt.dev_short, topic);
   return char_buffer;
 }
 ////////////////////////////////// network function ///////////////////////////////////
@@ -403,7 +482,11 @@ char* build_topic(const char *topic) {
 void setup() {
   // init the serial
   Serial.begin(115200);
-  
+  Serial.println("Warm up ...");
+  delay(1000);
+  Serial.println("Startup");
+  EEPROM.begin(512);
+
   // init the led
   pinMode(PWM_LIGHT_PIN, OUTPUT);
   analogWriteRange(255);
@@ -412,40 +495,27 @@ void setup() {
   pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
   setSimpleLightState();
 
-  // prepare wifimanager variables
-  char mqtt_server_ip[16];
-  sprintf(mqtt_server_ip, "192.168.2.84");
-  WiFiManagerParameter WiFiManager_mqtt_server_ip("ip", "mqtt server ip", mqtt_server_ip, 15);
-  wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
+  // attache interrupt code for PIR
+  pinMode(PIR_PIN, INPUT);
+  digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
+  attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
 
-  char mqtt_server_port[6];
-  sprintf(mqtt_server_port, "1883");
-  WiFiManagerParameter WiFiManager_mqtt_server_port("port", "mqtt server port", mqtt_server_port, 5);
-  wifiManager.addParameter(&WiFiManager_mqtt_server_port);
-
-  sprintf(mqtt_server_cli_id, "office_light");
-  WiFiManagerParameter WiFiManager_mqtt_client_id("cli_id", "mqtt client id", mqtt_server_cli_id, 19);
-  wifiManager.addParameter(&WiFiManager_mqtt_client_id);
-
-  sprintf(mqtt_dev_short, "dev1");
-  WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", mqtt_dev_short, 5);
-  wifiManager.addParameter(&WiFiManager_mqtt_client_short);
-
-  sprintf(mqtt_user, "user");
-  WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", mqtt_user, 15);
-  wifiManager.addParameter(&WiFiManager_mqtt_server_login);
-
-  sprintf(mqtt_pw, "pw");
-  WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", mqtt_pw, 15);
-  wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
-  // prepare wifimanager variables
+  // attache interrupt code for button
+  pinMode(BUTTON_INPUT_PIN, INPUT);
+  digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
 
   // start wifi manager
   Serial.println();
   Serial.println();
   Serial.print("INFO: Connecting to Wifi ");
   wifiManager.setAPCallback(configModeCallback);
+  wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
+
+  if(digitalRead(BUTTON_INPUT_PIN)==LOW){
+    wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+  };
+  
   if(!wifiManager.autoConnect(CONFIG_SSID)){
     // possible situataion: Main power out, ESP went to config mode as the routers wifi wasn available on time .. 
     Serial.println("failed to connect and hit timeout, restarting ..");
@@ -453,23 +523,10 @@ void setup() {
     ESP.reset(); // reset loop if not only or configured after 5min .. 
   }
 
-  sprintf(mqtt_server_ip, "%s", WiFiManager_mqtt_server_ip.getValue());
-  sprintf(mqtt_user, "%s", WiFiManager_mqtt_server_login.getValue());
-  sprintf(mqtt_pw, "%s", WiFiManager_mqtt_server_pw.getValue());
-  sprintf(mqtt_server_port, "%s", WiFiManager_mqtt_server_port.getValue());
-  sprintf(mqtt_server_cli_id, "%s", WiFiManager_mqtt_client_id.getValue());
-  sprintf(mqtt_dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
-
-  Serial.println(("=== Loaded parameters: ==="));
-  Serial.print(("mqtt ip: ")); Serial.println(mqtt_server_ip);
-  Serial.print(("mqtt port: ")); Serial.println(mqtt_server_port);
-  Serial.print(("mqtt user: ")); Serial.println(mqtt_user);
-  Serial.print(("mqtt pw: ")); Serial.println(mqtt_pw);
-  Serial.print(("mqtt client id: ")); Serial.println(mqtt_server_cli_id);
-  Serial.print(("mqtt dev short: ")); Serial.println(mqtt_dev_short);
-  Serial.println(("=== End of parameters ==="));
-  // start wifi manager
-
+  // load all paramters!
+  loadConfig();
+  
+ 
 #if DHT_DS_MODE == DHT
   // dht
   dht.begin();
@@ -481,19 +538,10 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   // init the MQTT connection
-  client.setServer(mqtt_server_ip, atoi(mqtt_server_port));
+  client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
   client.setCallback(callback);
 
-  // attache interrupt code for PIR
-  pinMode(PIR_PIN, INPUT);
-  digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
-  attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
-
-  // attache interrupt code for button
-  pinMode(BUTTON_INPUT_PIN, INPUT);
-  digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
   attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
-
 }
 ///////////////////////////////////////////// SETUP ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -507,7 +555,7 @@ void loop() {
   client.loop();
 
   //// send periodic updates of temperature ////
-  if (millis() - timer > UPDATE_TEMP) {
+  if (millis() - timer > UPDATE_TEMP || timer == 0) {
     timer = millis();
     // request temp here
     publishTemperature(getTemp());
