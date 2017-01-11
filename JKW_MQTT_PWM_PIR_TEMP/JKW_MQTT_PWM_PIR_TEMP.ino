@@ -117,7 +117,8 @@ WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "password", 15
 
 uint32_t 		    timer		= 0;
 uint32_t 		    timer_dimmer	= 0;
-uint32_t        timer_button  = 0;
+uint32_t        timer_button_down  = 0;
+uint32_t        timer_button_up  = 0;
 uint8_t         counter_button = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -358,21 +359,18 @@ void updatePIRstate() {
 // external button push
 void updateBUTTONstate() {
   // toggle, write to pin, publish to server
-  m_simple_light_state = !m_simple_light_state;
-  setSimpleLightState();
-
-  // 5 button pushes within 1.5 sec each to enter wifi management mode
-  if (millis() - timer_button > BUTTON_TIMEOUT) {
-    counter_button = 0;
+  if(digitalRead(BUTTON_INPUT_PIN)==LOW){
+    if(millis()-timer_button_down>500){ // avoid bouncing
+      // button down
+      m_simple_light_state = !m_simple_light_state;
+      setSimpleLightState();
+    };
+    //Serial.println("DOWN");
+    timer_button_down = millis();
   } else {
-    counter_button++;
-    if(counter_button>=5){
-      wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-    }
-  }
-  Serial.print("Button push ");
-  Serial.println(counter_button);
-  timer_button = millis();
+    timer_button_up = millis();
+    //Serial.println("UP");
+  };
 }
 
 /////////////////////////////// peripheral function ///////////////////////////////////
@@ -447,7 +445,7 @@ void saveConfigCallback(){
   EEPROM.commit();
   Serial.println("Configuration saved, restarting");
   delay(2000);
-  ESP.reset(); // reset loop if not only or configured after 5min .. 
+  ESP.reset(); // we can't change from AP mode to client mode, thus: reboot
 }
 
 void loadConfig(){
@@ -482,8 +480,7 @@ char* build_topic(const char *topic) {
 void setup() {
   // init the serial
   Serial.begin(115200);
-  Serial.println("Warm up ...");
-  delay(1000);
+  Serial.println("");
   Serial.println("Startup");
   EEPROM.begin(512);
 
@@ -541,7 +538,7 @@ void setup() {
   client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
   client.setCallback(callback);
 
-  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, CHANGE);
 }
 ///////////////////////////////////////////// SETUP ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -607,6 +604,17 @@ void loop() {
     publishPWMLightBrightness();
   }
   //// publish all state - ONLY after being connected for sure ////
+
+  /// see if we hold down the button for more then 6sec /// 
+  if(timer_button_down>timer_button_up){
+    if(millis()-timer_button_down>6000 && timer_button_down<millis()){
+      Serial.println("Rebooting to setup mode");
+      delay(200);
+      wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+      //ESP.reset(); // reboot and switch to setup mode right after that
+    };
+  }
+  /// see if we hold down the button for more then 6sec /// 
 }
 ////////////////////////////////////////////// LOOP ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
