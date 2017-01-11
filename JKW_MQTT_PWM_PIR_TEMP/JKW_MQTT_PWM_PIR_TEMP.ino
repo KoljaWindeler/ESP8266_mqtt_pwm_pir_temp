@@ -12,50 +12,46 @@
 	    brightness_state_topic: 'office/light/brightness'
 	    brightness_command_topic: 'office/light/brightness/set'
 	    optimistic: false
-
+	
+	Use https://github.com/tzapu/WiFiManager
+	
    	Kolja Windeler v0.1 - untested
 */
 
 #include <ESP8266WiFi.h>
+#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
 #include <OneWire.h> 
 
 
 #define MQTT_VERSION MQTT_VERSION_3_1_1
-#define DEV "dev1"
 #define DIMM_DONE 	0
 #define DIMM_DIMMING 	1
 
 
-// Wifi: SSID and password
-#include "wifi.h"
-// wifi.h must contain the information below with your data
-// MQTT: ID, server IP, port, username and password
-//const char*             WIFI_SSID               = "ssid";
-//const char*             WIFI_PASSWORD           = "ultrasecret";
-//const PROGMEM char*     MQTT_CLIENT_ID    			= "office_light";
-//const PROGMEM char*     MQTT_SERVER_IP    			= "192.168.2.300";
-//const PROGMEM uint16_t  MQTT_SERVER_PORT  			= 1883;
-//const PROGMEM char*     MQTT_USER         			= "user";
-//const PROGMEM char*     MQTT_PASSWORD     			= "login";
+char mqtt_user[16]; 
+char mqtt_pw[16]; 
+char mqtt_dev_short[6]; 
+char char_buffer[35]; 
+
 
 // MQTT: topics
-const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= DEV "/PWM_light/status";		// publish state here
-const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC		= DEV "/PWM_light/switch"; 		// get command here
+const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC		= "/PWM_light/status";		// publish state here
+const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC		= "/PWM_light/switch"; 		// get command here
 
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= DEV "/simple_light";			// publish state here
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= DEV "/simple_light/switch"; 		// get command here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		= "/simple_light";			// publish state here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		= "/simple_light/switch"; 		// get command here
 
-const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		= DEV "/motion/status";			// publish
-const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC			= DEV "/temperature";			// publish
-const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			= DEV "/humidity";			// publish
+const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		= "/motion/status";			// publish
+const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC		= "/temperature";			// publish
+const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			= "/humidity";			// publish
 
-const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = DEV "/PWM_light/brightness";		// publish
-const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = DEV "/PWM_light/brightness/set";	// set value
-const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	= DEV "/PWM_dimm/delay/set";		// set value
-const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= DEV "/PWM_dimm/brightness/set";	// set value
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		// publish
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value
+const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	= "/PWM_dimm/delay/set";		// set value
+const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= "/PWM_dimm/brightness/set";	// set value
 
-const PROGMEM char*     MQTT_RSSI_STATE_TOPIC   = DEV "/rssi";    // publish
+const PROGMEM char*     MQTT_RSSI_STATE_TOPIC   = "/rssi";    // publish
 
 // payloads by default (on/off)
 const PROGMEM char*     STATE_ON          			= "ON";
@@ -102,6 +98,7 @@ const uint8_t 		MSG_BUFFER_SIZE 	= 60;
 char 			m_msg_buffer[MSG_BUFFER_SIZE];
 
 WiFiClient 		wifiClient;
+WiFiManager 		wifiManager;
 PubSubClient 		client(wifiClient);
 
 //Temperature chip i/o
@@ -121,9 +118,9 @@ uint32_t 		timer_dimmer	= 0;
 void publishPWMLightState() {
   Serial.println("publish PWM state");
 	if (m_pwm_light_state) {
-		client.publish(MQTT_PWM_LIGHT_STATE_TOPIC, STATE_ON, true);
+		client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
 	} else {
-		client.publish(MQTT_PWM_LIGHT_STATE_TOPIC, STATE_OFF, true);
+		client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_OFF, true);
 	}
   m_published_pwm_light_state = m_pwm_light_state;
 }
@@ -132,7 +129,7 @@ void publishPWMLightState() {
 void publishPWMLightBrightness() {
 	Serial.println("publish PWM brightness");
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_brightness);
-	client.publish(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC, m_msg_buffer, true);
+	client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
   m_published_light_brightness = m_light_brightness;
 }
 
@@ -141,9 +138,9 @@ void publishPWMLightBrightness() {
 void publishSimpleLightState() {
   Serial.println("publish simple light state");
 	if (m_simple_light_state) {
-		client.publish(MQTT_SIMPLE_LIGHT_STATE_TOPIC, STATE_ON, true);
+		client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
 	} else {
-		client.publish(MQTT_SIMPLE_LIGHT_STATE_TOPIC, STATE_OFF, true);
+		client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_OFF, true);
 	}
   m_published_simple_light_state = m_simple_light_state;
 }
@@ -152,9 +149,9 @@ void publishSimpleLightState() {
 void publishPirState() {
   Serial.println("publish pir state");
 	if (m_pir_state) {
-		client.publish(MQTT_MOTION_STATUS_TOPIC, STATE_ON, true);
+		client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
 	} else {
-		client.publish(MQTT_MOTION_STATUS_TOPIC, STATE_OFF, true);
+		client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
 	}
 	m_published_pir_state = m_pir_state;
 }
@@ -163,7 +160,7 @@ void publishPirState() {
 void publishTemperature(float temp) {
   Serial.println("publish temp");
 	dtostrf(temp, 3, 2, m_msg_buffer);
-	client.publish(MQTT_TEMPARATURE_TOPIC, m_msg_buffer, true);
+	client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 }
 
 #if DHT_DS_MODE == DHT 
@@ -171,14 +168,14 @@ void publishTemperature(float temp) {
 void publishHumidity(float hum) {
   Serial.println("publish humidiy");
 	dtostrf(hum, 3, 2, m_msg_buffer);
-	client.publish(MQTT_HUMIDITY_TOPIC, m_msg_buffer, true);
+	client.publish(build_topic(MQTT_HUMIDITY_TOPIC), m_msg_buffer, true);
 }
 #endif
 
 void publishRssi(float rssi) {
   Serial.println("publish rssi");
   dtostrf(rssi, 3, 2, m_msg_buffer);
-  client.publish(MQTT_RSSI_STATE_TOPIC, m_msg_buffer, true);
+  client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
 }
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 
@@ -192,7 +189,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 	}
 	// handle message topic
 	////////////////////////// SET LIGHT ON/OFF ////////////////////////
-	if (String(MQTT_PWM_LIGHT_COMMAND_TOPIC).equals(p_topic)) {
+	if (String(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)).equals(p_topic)) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_pwm_light_state != true) {
@@ -206,7 +203,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			}
 		}
 	}
-	else if (String(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC).equals(p_topic)) {
+	else if (String(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)).equals(p_topic)) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_simple_light_state != true) {
@@ -222,7 +219,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 	}
 	////////////////////////// SET LIGHT ON/OFF ////////////////////////
 	////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
-	else if (String(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC).equals(p_topic)) {
+	else if (String(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {
 		uint8_t brightness = payload.toInt();
 		if (brightness < 0 || brightness > 255) {
 			// do nothing...
@@ -232,7 +229,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			setPWMLightState();		
 		}
 	}
-	else if (String(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC).equals(p_topic)) {
+	else if (String(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {
 		uint8_t brightness = payload.toInt();
 		if (brightness < 0 || brightness > 255) {
 			// do nothing...
@@ -241,7 +238,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 			pwmDimmTo(brightness);
 		}
 	}
-	else if (String(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC).equals(p_topic)) {
+	else if (String(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC)).equals(p_topic)) {
 		m_pwm_dimm_time = payload.toInt();
 	}
 	////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
@@ -249,7 +246,6 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 ///////////////////// function called when a MQTT message arrived /////////////////////
 
 ////////////////////// peripheral function ///////////////////////////////////
-
 // function called to adapt the brightness and the state of the led
 void setPWMLightState() {
 	if (m_pwm_light_state) {
@@ -364,13 +360,13 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("INFO: Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASSWORD)) {
+    if (client.connect(mqtt_server_cli_id, mqtt_user, mqtt_pw)) {
       Serial.println("\nINFO: connected");
       
       // ... and resubscribe
-      client.subscribe(MQTT_PWM_LIGHT_COMMAND_TOPIC);
-      client.subscribe(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC);
-      client.subscribe(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC);
+      client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));
+      client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC));
+      client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC));
     } else {
       Serial.print("ERROR: failed, rc=");
       Serial.print(client.state());
@@ -380,12 +376,24 @@ void reconnect() {
     }
   }
 }
+
+void configModeCallback(WiFiManager *myWiFiManager) {
+	Serial.println("Entered config mode");
+	Serial.println(WiFi.softAPIP());
+	Serial.println(myWiFiManager->getConfigPortalSSID());
+}
+
+// build topics with device id on the fly
+char* build_topic(const PROGMEM char* topic){
+	sprintf(char_buffer,"%s%s",mqtt_dev_short,topic);
+	return char_buffer;
+}
 ////////////////////// network function ///////////////////////////////////
 ////////////////////// SETUP ///////////////////////////////////
 void setup() {
 	// init the serial
 	Serial.begin(115200);
-  Serial.println("Boote ich nun oder nicht?");
+	Serial.println("Boote ich nun oder nicht?");
 	// init the led
 	pinMode(PWM_LIGHT_PIN, OUTPUT);
 	analogWriteRange(255);
@@ -395,18 +403,49 @@ void setup() {
 	setSimpleLightState();
 	
 
-	// init the WiFi connection
+	// prepare wifimanager variables
+	char mqtt_server_ip[16]; 
+	sprintf(mqtt_server_ip, "192.168.2.84");
+	WiFiManagerParameter WiFiManager_mqtt_server_ip("ip", "mqtt server ip", mqtt_server_ip, 15);
+	wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
+	
+	char mqtt_server_port[6]; 
+	sprintf(mqtt_server_port, "1883");
+	WiFiManagerParameter WiFiManager_mqtt_server_port("port", "mqtt server port", mqtt_server_port, 5);
+	wifiManager.addParameter(&WiFiManager_mqtt_server_port);
+	
+	char mqtt_server_cli_id[20]; 
+	sprintf(mqtt_server_cli_id, "office_light");
+	WiFiManagerParameter WiFiManager_mqtt_client_id("cli_id", "mqtt client id", mqtt_server_cli_id, 19);
+	wifiManager.addParameter(&WiFiManager_mqtt_client_id);
+	
+	sprintf(mqtt_dev_short, "dev1");
+	WiFiManagerParameter WiFiManager_mqtt_client_short("user", "mqtt short id", mqtt_dev_short, 5);
+	wifiManager.addParameter(&WiFiManager_mqtt_client_short);
+	
+	sprintf(mqtt_user, "user");
+	WiFiManagerParameter WiFiManager_mqtt_server_login("user", "mqtt login", mqtt_user, 15);
+	wifiManager.addParameter(&WiFiManager_mqtt_server_login);
+	
+	sprintf(mqtt_pw, "pw");
+	WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", mqtt_pw, 15);
+	wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
+	// prepare wifimanager variables
+	
+	// start wifi manager
 	Serial.println();
 	Serial.println();
-	Serial.print("INFO: Connecting to ");
-	Serial.println(WIFI_SSID);
-	WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-	while (WiFi.status() != WL_CONNECTED) {
-		delay(500);
-		Serial.print(".");
-	}
-
+	Serial.print("INFO: Connecting to Wifi ");
+	wifiManager.setAPCallback(configModeCallback);
+	wifiManager.autoConnect("OPEN_ESP_CONFIG_AP");
+	mqtt_server_ip 		= WiFiManager_mqtt_server_ip.getValue();
+	mqtt_user 		= WiFiManager_mqtt_server_login.getValue();
+	mqtt_pw 		= WiFiManager_mqtt_server_pw.getValue();
+	mqtt_server_port 	= WiFiManager_mqtt_server_port.getValue();
+	mqtt_server_cli_id	= WiFiManager_mqtt_client_id.getValue();
+	mqtt_dev_short		= WiFiManager_mqtt_client_short.getValue();
+	// start wifi manager
+	
 #if DHT_DS_MODE == DHT 
 	// dht
   dht.begin();
@@ -418,7 +457,7 @@ void setup() {
 	Serial.println(WiFi.localIP());
 
 	// init the MQTT connection
-	client.setServer(MQTT_SERVER_IP, MQTT_SERVER_PORT);
+	client.setServer(mqtt_server_ip, mqtt_server_port);
 	client.setCallback(callback);
 
 	// attache interrupt code for PIR
@@ -429,7 +468,7 @@ void setup() {
 	// attache interrupt code for button
 	pinMode(BUTTON_INPUT_PIN, INPUT);
 	digitalWrite(BUTTON_INPUT_PIN,HIGH); // pull up to avoid interrupts without sensor
-  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
+	attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, FALLING);
 
 }
 ////////////////////// SETUP ///////////////////////////////////
