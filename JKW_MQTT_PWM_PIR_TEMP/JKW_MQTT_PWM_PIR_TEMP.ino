@@ -208,6 +208,10 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
       if (m_pwm_light_state != true) {
         m_pwm_light_state = true;
         setPWMLightState();
+        // Home Assistant will assume that the pwm light is 100%, once we report toggle to on
+        // but it should return to whatever the m_light_brithness is, so lets set the published
+        // version to something != the actual brightness. This will trigger the publishing
+        m_light_brightness = m_published_light_brightness + 1;
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
@@ -366,8 +370,17 @@ void updateBUTTONstate() {
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
     if(millis()-timer_button_down>BUTTON_DEBOUNCE){ // avoid bouncing
       // button down
+      // toggle status of both lights
       m_simple_light_state = !m_simple_light_state;
       setSimpleLightState();
+
+      // Home Assistant will assume that the pwm light is 100%, once we report toggle to on
+      // but it should return to whatever the m_light_brithness is, so lets set the published
+      // version to something != the actual brightness. This will trigger the publishing
+      m_pwm_light_state = !m_pwm_light_state;
+      setPWMLightState();
+      m_light_brightness = m_published_light_brightness + 1;
+      // toggle status of both lights
 
       if(millis()-timer_button_down<BUTTON_TIMEOUT){
         counter_button++;
