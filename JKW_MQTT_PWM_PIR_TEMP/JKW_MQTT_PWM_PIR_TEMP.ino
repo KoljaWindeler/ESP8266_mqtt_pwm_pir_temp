@@ -48,7 +48,8 @@
 #define UPDATE_TEMP         60000 // update temperature once per minute
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count to 5 (start of config)
 #define BUTTON_DEBOUNCE     200 // ms debouncing
-#define MSG_BUFFER_SIZE     160 // mqtt messages max size
+#define MSG_BUFFER_SIZE     60 // mqtt messages max size
+#define PUBLISH_TIME_OFFSET 200 // ms timeout between two publishes
 //Temperature chip i/o
 #if DHT_DS_MODE == DHT
   #include "DHT.h"
@@ -98,12 +99,12 @@ boolean     m_published_pwm_light_state       = true; // to force instant publis
 boolean			m_simple_light_state 		          = false;
 boolean     m_published_simple_light_state    = true; // to force instant publish once we are online
 uint8_t 		m_light_brightness			          = 99;
-uint8_t     m_light_brightness_backup         = 99;
+int16_t     m_light_brightness_backup         = -1;
 uint8_t     m_published_light_brightness      = 0; // to force instant publish once we are online
 
 uint16_t		m_pwm_dimm_time				            = 10; // 10ms per Step, 255*0.01 = 2.5 sec
 uint8_t			m_pwm_dimm_state			            = DIMM_DONE;
-uint8_t			m_pwm_dimm_target			            = 0;
+uint8_t			m_pwm_dimm_current  	            = 0;
 
 uint8_t 		m_pir_state 				              = LOW; // no motion detected
 uint8_t 		m_published_pir_state             = LOW;
@@ -132,6 +133,7 @@ uint32_t 		    timer		= 0;
 uint32_t 		    timer_dimmer	= 0;
 uint32_t        timer_button_down  = 0;
 uint8_t         counter_button = 0;
+uint32_t        timer_last_publish = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
@@ -244,20 +246,27 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     // test if the payload is equal to "ON" or "OFF"
     if (payload.equals(String(STATE_ON))) {
       if (m_pwm_light_state != true) {
-        Serial.println("light was off");
+        //Serial.println("light was off");
         m_pwm_light_state = true;
 
         // bei diesem topic ein dimmen
-        uint8_t keeper = m_light_brightness;
-        Serial.print("dimming towards ");
-        Serial.println(keeper);
-        publishPWMLightBrightness(); // make sure that we already communicate where we are dimming towards
-        m_light_brightness = 0; // set to zero to dimm to this target
+        uint8_t keeper;
+        if(m_light_brightness_backup != -1){ // we are still "dimming down", while this new command "dimm up" came in
+          keeper = m_light_brightness_backup; // keep the origial value (from where we started to "dimm down")
+          m_light_brightness = m_light_brightness_backup; // restore for the publish process
+        } else {
+          keeper = m_light_brightness; // not dimming, just remember the "old" brightness value 
+        }
+        //Serial.print("dimming towards ");
+        //Serial.println(keeper);
+        
+        publishPWMLightBrightness(); // communicate where we are dimming towards
+        m_light_brightness = 0; // set to zero, Dimm to will grab this as start value
         pwmDimmTo(keeper); // start dimmer towards old and therefore target value 
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
-        Serial.println("light was on");
+        //Serial.println("light was on");
         m_pwm_light_state = false;
         // TODO .. wir koennen wir hier ausdimmen ohne eben den m_light_brightness auf 0 zu setzen
         // a bit hacky .. we keep an backup of the old brightness, dimm to 0 and restore the backup dimm value
@@ -313,9 +322,15 @@ void setPWMLightState(boolean over_ride) {
     if(m_light_brightness>=sizeof(intens) || m_light_brightness<0){
       m_light_brightness=sizeof(intens)-1;
     }
-    analogWrite(PWM_LIGHT_PIN, intens[m_light_brightness]);
     Serial.print("[INFO PWM] PWM Brightness: ");
-    Serial.println(m_light_brightness);
+    
+    if (m_pwm_dimm_state == DIMM_DIMMING) {
+      analogWrite(PWM_LIGHT_PIN, intens[m_pwm_dimm_current]);
+      Serial.println(m_pwm_dimm_current);
+    } else {
+      analogWrite(PWM_LIGHT_PIN, intens[m_light_brightness]);
+      Serial.println(m_light_brightness);
+    };    
   } else {
     analogWrite(PWM_LIGHT_PIN, 0);
     Serial.println("[INFO PWM] Turn PWM light off");
@@ -336,7 +351,12 @@ void setSimpleLightState() {
 void pwmDimmTo(uint8_t dimm_to) {
   // target value:  dimm_to, 0..99
   // current value: m_light_brightness
-  m_pwm_dimm_target = dimm_to;
+  if(m_pwm_dimm_state == DIMM_DIMMING){
+    m_pwm_dimm_current = m_pwm_dimm_current;
+  } else {
+    m_pwm_dimm_current = m_light_brightness;
+  };
+  m_light_brightness = dimm_to;
   m_pwm_dimm_state = DIMM_DIMMING; // enabled dimming
   //Serial.print("Enabled dimming, timing: ");
   //Serial.println(m_pwm_dimm_time);
@@ -627,22 +647,21 @@ void loop() {
       timer_dimmer = millis(); // save for next round
 
       // set new value
-      if (m_light_brightness < m_pwm_dimm_target) {
-        m_light_brightness++;
+      if (m_pwm_dimm_current < m_light_brightness) {
+        m_pwm_dimm_current++;
       } else {
-        m_light_brightness--;
+        m_pwm_dimm_current--;
       }
-      // avoid constant reporting of the pwm state
-      m_published_light_brightness = m_light_brightness;
-
+      
       //Serial.println(m_light_brightness);
       setPWMLightState(true); // with override 
 
       // stop once you reach target
-      if (m_light_brightness == m_pwm_dimm_target) {
+      if(m_pwm_dimm_current == m_light_brightness) {
         m_pwm_dimm_state = DIMM_DONE;
-        if(!m_pwm_light_state){ // we were dimming while the light was off .. 
+        if(m_light_brightness_backup!=-1){ // we were dimming while the light was off .. 
            m_light_brightness = m_light_brightness_backup;
+           m_light_brightness_backup = -1;
         }
       }
     }
@@ -652,25 +671,37 @@ void loop() {
   //// publish all state - ONLY after being connected for sure ////
   
   if (m_simple_light_state != m_published_simple_light_state) {
-    publishSimpleLightState();
+    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+      publishSimpleLightState();
+      timer_last_publish = millis();
+    }
   }
 
   if (m_pwm_light_state != m_published_pwm_light_state) {
-    publishPWMLightState();
+    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+      publishPWMLightState();
+      timer_last_publish = millis();
+    };
   }
 
   if (m_published_light_brightness != m_light_brightness) { // todo .. fails to publish if we publish to much at the first run ... 
-    publishPWMLightBrightness();
+    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+      publishPWMLightBrightness();
+      timer_last_publish = millis();
+    }
   }
 
   if (m_pir_state != m_published_pir_state) {
-    publishPirState();
+    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+      publishPirState();  
+      timer_last_publish = millis();
+    }
   }
   //// publish all state - ONLY after being connected for sure ////
 
   
   //// send periodic updates of temperature ////
-  if (millis() - timer > UPDATE_TEMP || timer == 0) {
+  if ((millis() - timer > UPDATE_TEMP || timer == 0) && millis()-timer_last_publish >PUBLISH_TIME_OFFSET) {
     timer = millis();
     // request temp here
     publishTemperature(getTemp());
