@@ -125,7 +125,7 @@ uint8_t         counter_button = 0;
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 // function called to publish the state of the led (on/off)
 void publishPWMLightState() {
-  Serial.println("publish PWM state");
+  Serial.println("[mqtt] publish PWM state");
   if (m_pwm_light_state) {
     client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
   } else {
@@ -136,7 +136,8 @@ void publishPWMLightState() {
 
 // function called to publish the brightness of the led
 void publishPWMLightBrightness() {
-  Serial.println("publish PWM brightness");
+  Serial.print("[mqtt] publish PWM brightness ");
+  Serial.println(m_light_brightness);
   snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_brightness);
   client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
   m_published_light_brightness = m_light_brightness;
@@ -144,7 +145,7 @@ void publishPWMLightBrightness() {
 
 // function called to publish the state of the led (on/off)
 void publishSimpleLightState() {
-  Serial.print("publish simple light state ");
+  Serial.print("[mqtt] publish simple light state ");
   if (m_simple_light_state) {
     Serial.println("ON");
     client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
@@ -157,7 +158,7 @@ void publishSimpleLightState() {
 
 // function called to publish the state of the PIR (on/off)
 void publishPirState() {
-  Serial.print("publish pir state ");
+  Serial.print("[mqtt] publish pir state ");
   if (m_pir_state) {
     Serial.println("motion");
     client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
@@ -170,7 +171,7 @@ void publishPirState() {
 
 // function called to publish the brightness of the led
 void publishTemperature(float temp) {
-  Serial.println("publish temp");
+  Serial.println("[mqtt] publish temp");
   dtostrf(temp, 3, 2, m_msg_buffer);
   client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 }
@@ -178,14 +179,14 @@ void publishTemperature(float temp) {
 #if DHT_DS_MODE == DHT
 // function called to publish the brightness of the led
 void publishHumidity(float hum) {
-  Serial.println("publish humidiy");
+  Serial.println("[mqtt] publish humidiy");
   dtostrf(hum, 3, 2, m_msg_buffer);
   client.publish(build_topic(MQTT_HUMIDITY_TOPIC), m_msg_buffer, true);
 }
 #endif
 
 void publishRssi(float rssi) {
-  Serial.println("publish rssi");
+  Serial.println("[mqtt] publish rssi");
   dtostrf(rssi, 3, 2, m_msg_buffer);
   client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
 }
@@ -208,10 +209,10 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
       if (m_pwm_light_state != true) {
         m_pwm_light_state = true;
         setPWMLightState();
-        // Home Assistant will assume that the pwm light is 100%, once we report toggle to on
+        // Home Assistant will assume that the pwm light is 100%, once we "turn it on"
         // but it should return to whatever the m_light_brithness is, so lets set the published
         // version to something != the actual brightness. This will trigger the publishing
-        m_light_brightness = m_published_light_brightness + 1;
+        m_published_light_brightness = m_light_brightness + 1;
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
@@ -272,11 +273,11 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
 void setPWMLightState() {
   if (m_pwm_light_state) {
     analogWrite(PWM_LIGHT_PIN, m_light_brightness);
-    Serial.print("INFO: PWM Brightness: ");
+    Serial.print("[INFO PWM] PWM Brightness: ");
     Serial.println(m_light_brightness);
   } else {
     analogWrite(PWM_LIGHT_PIN, 0);
-    Serial.println("INFO: Turn PWM light off");
+    Serial.println("[INFO PWM] Turn PWM light off");
   }
 }
 
@@ -284,10 +285,10 @@ void setPWMLightState() {
 void setSimpleLightState() {
   if (m_simple_light_state) {
     digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
-    Serial.println("INFO: Simple pin on");
+    Serial.println("[INFO SL] Simple pin on");
   } else {
     digitalWrite(SIMPLE_LIGHT_PIN, LOW);
-    Serial.println("INFO: Simple light off");
+    Serial.println("[INFO SL] Simple light off");
   }
 }
 
@@ -379,7 +380,7 @@ void updateBUTTONstate() {
       // version to something != the actual brightness. This will trigger the publishing
       m_pwm_light_state = !m_pwm_light_state;
       setPWMLightState();
-      m_light_brightness = m_published_light_brightness + 1;
+      m_published_light_brightness = m_light_brightness + 1;
       // toggle status of both lights
 
       if(millis()-timer_button_down<BUTTON_TIMEOUT){
@@ -387,7 +388,7 @@ void updateBUTTONstate() {
       } else {
         counter_button=1;
       }
-      Serial.print("---> Button push nr ");
+      Serial.print("[BUTTON] push nr ");
       Serial.println(counter_button);
 
     };
@@ -405,10 +406,10 @@ void reconnect() {
   // Loop until we're reconnected
   uint8_t tries=0;
   while (!client.connected()) {
-    Serial.print("INFO: Attempting MQTT connection...");
+    Serial.print("[INFO MQTT] Attempting MQTT connection...");
     // Attempt to connect
     if (client.connect(mqtt.server_cli_id, mqtt.login, mqtt.pw)) {
-      Serial.println("\nINFO: connected");
+      Serial.println("\n[INFO MQTT] connected");
 
       // ... and resubscribe
       client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));
@@ -530,7 +531,7 @@ void setup() {
   // start wifi manager
   Serial.println();
   Serial.println();
-  Serial.print("INFO: Connecting to Wifi ");
+  Serial.println("[INFO WiFi] Connecting ");
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
@@ -556,8 +557,8 @@ void setup() {
 #endif
 
   Serial.println("");
-  Serial.println("INFO: WiFi connected");
-  Serial.print("INFO: IP address: ");
+  Serial.println("[INFO WiFi] connected");
+  Serial.print("[INFO WiFi] IP address: ");
   Serial.println(WiFi.localIP());
 
   // init the MQTT connection
@@ -637,7 +638,7 @@ void loop() {
 
   /// see if we hold down the button for more then 6sec /// 
   if(counter_button>=5){
-    Serial.println("Rebooting to setup mode");
+    Serial.println("[SYS] Rebooting to setup mode");
     delay(200);
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
     //ESP.reset(); // reboot and switch to setup mode right after that
