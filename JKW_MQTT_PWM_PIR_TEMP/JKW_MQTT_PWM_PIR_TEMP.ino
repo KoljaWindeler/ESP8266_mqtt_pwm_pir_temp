@@ -41,6 +41,7 @@
 #define PIR_PIN             D1 // IC pin 24
 #define UPDATE_TEMP         60000 // update temperature once per minute
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count to 5 (start of config)
+#define BUTTON_DEBOUNCE     200 // ms debouncing
 #define MSG_BUFFER_SIZE     60 // mqtt messages max size
 //Temperature chip i/o
 #if DHT_DS_MODE == DHT
@@ -143,10 +144,12 @@ void publishPWMLightBrightness() {
 
 // function called to publish the state of the led (on/off)
 void publishSimpleLightState() {
-  Serial.println("publish simple light state");
+  Serial.print("publish simple light state ");
   if (m_simple_light_state) {
+    Serial.println("ON");
     client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
   } else {
+    Serial.println("OFF");
     client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_OFF, true);
   }
   m_published_simple_light_state = m_simple_light_state;
@@ -154,10 +157,12 @@ void publishSimpleLightState() {
 
 // function called to publish the state of the PIR (on/off)
 void publishPirState() {
-  Serial.println("publish pir state");
+  Serial.print("publish pir state ");
   if (m_pir_state) {
+    Serial.println("motion");
     client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
   } else {
+    Serial.println("no motion");
     client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
   }
   m_published_pir_state = m_pir_state;
@@ -239,6 +244,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   }
   else if (String(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {
     uint8_t brightness = payload.toInt();
+    Serial.println("dimm input");
     if (brightness < 0 || brightness > 255) {
       // do nothing...
       return;
@@ -248,6 +254,8 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   }
   else if (String(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC)).equals(p_topic)) {
     m_pwm_dimm_time = payload.toInt();
+    Serial.print("Setting dimm time to: ");
+    Serial.println(m_pwm_dimm_time);
   }
   ////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
 }
@@ -288,11 +296,8 @@ void pwmDimmTo(uint16_t dimm_to) {
     m_pwm_light_state = true;
   }
   m_pwm_dimm_state = DIMM_DIMMING; // enabled dimming
-  if (millis() - m_pwm_dimm_time > 0) {
-    timer_dimmer = millis() - m_pwm_dimm_time;
-  } else {
-    timer_dimmer = 0;
-  }
+  //Serial.print("Enabled dimming, timing: ");
+  //Serial.println(m_pwm_dimm_time);
 }
 
 #if DHT_DS_MODE == DS
@@ -359,7 +364,7 @@ void updatePIRstate() {
 void updateBUTTONstate() {
   // toggle, write to pin, publish to server
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
-    if(millis()-timer_button_down>500){ // avoid bouncing
+    if(millis()-timer_button_down>BUTTON_DEBOUNCE){ // avoid bouncing
       // button down
       m_simple_light_state = !m_simple_light_state;
       setSimpleLightState();
@@ -396,6 +401,9 @@ void reconnect() {
       client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));
       client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC));
       client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC));
+      client.subscribe(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));
+      client.subscribe(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
+
     } else {
       Serial.print("ERROR: failed, rc=");
       Serial.print(client.state());
@@ -571,8 +579,9 @@ void loop() {
   //// dimming active?  ////
   if (m_pwm_dimm_state == DIMM_DIMMING) {
     // check timestep (255ms to .. forever)
-    if (timer_dimmer + m_pwm_dimm_time >= millis()) {
-      m_pwm_dimm_time = millis(); // save for next round
+    if (millis() >= timer_dimmer + m_pwm_dimm_time) {
+      //Serial.print("DIMMER ");
+      timer_dimmer = millis(); // save for next round
 
       // set new value
       if (m_light_brightness < m_pwm_dimm_target) {
@@ -580,12 +589,15 @@ void loop() {
       } else {
         m_light_brightness--;
       }
+      // avoid constant reporting of the pwm state
+      m_published_light_brightness = m_light_brightness;
 
       // stop once you reach target
       if (m_light_brightness == m_pwm_dimm_target) {
         m_pwm_dimm_state = DIMM_DONE;
       }
 
+      //Serial.println(m_light_brightness);
       // set and publish
       setPWMLightState();
     }
