@@ -118,7 +118,6 @@ WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "password", 15
 uint32_t 		    timer		= 0;
 uint32_t 		    timer_dimmer	= 0;
 uint32_t        timer_button_down  = 0;
-uint32_t        timer_button_up  = 0;
 uint8_t         counter_button = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -364,15 +363,18 @@ void updateBUTTONstate() {
       // button down
       m_simple_light_state = !m_simple_light_state;
       setSimpleLightState();
+
+      if(millis()-timer_button_down<BUTTON_TIMEOUT){
+        counter_button++;
+      } else {
+        counter_button=1;
+      }
+      Serial.print("---> Button push nr ");
+      Serial.println(counter_button);
+
     };
     //Serial.println("DOWN");
     timer_button_down = millis();
-    if(timer_button_down==timer_button_up){ // make sure that we came last
-      timer_button_down++;
-    }
-  } else {
-    timer_button_up = millis();
-    //Serial.println("UP");
   };
 }
 
@@ -609,13 +611,11 @@ void loop() {
   //// publish all state - ONLY after being connected for sure ////
 
   /// see if we hold down the button for more then 6sec /// 
-  if(timer_button_down>timer_button_up){
-    if(millis()-timer_button_down>6000 && timer_button_down<millis()){
-      Serial.println("Rebooting to setup mode");
-      delay(200);
-      wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-      //ESP.reset(); // reboot and switch to setup mode right after that
-    };
+  if(counter_button>=5){
+    Serial.println("Rebooting to setup mode");
+    delay(200);
+    wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+    //ESP.reset(); // reboot and switch to setup mode right after that
   }
   /// see if we hold down the button for more then 6sec /// 
 }
