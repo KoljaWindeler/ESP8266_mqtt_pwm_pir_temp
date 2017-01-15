@@ -29,34 +29,37 @@
 #include <PubSubClient.h>
 #include <OneWire.h>
 #include <EEPROM.h>
+#include <DHT.h>
 
 
 // defines 
 #define DIMM_DONE 	        0
 #define DIMM_DIMMING 	      1
-#define DHT                 1
-#define DS                  2
-#define DHT_DS_MODE         DS
 #define CONFIG_SSID         "OPEN_ESP_CONFIG_AP"
 #define MAX_AP_TIME         300
+#define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
 #define PWM_LIGHT_PIN       D2 // IC pin 16
 #define SIMPLE_LIGHT_PIN    D7 // IC pin 12
 #define BUTTON_INPUT_PIN    D3 // IC pin 15
-#define DHT_DS_PIN          D8 // IC pin 13 ... nicht auf der mcu aber gut am sonoff .. hmm
+#define DS_PIN              D6 // D8 war nicht so gut ... startet nicht mehr 
+#define DHT_PIN             D4 // D4 untested
 #define PIR_PIN             D1 // IC pin 24
-#define UPDATE_TEMP         60000 // update temperature once per minute
+
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count to 5 (start of config)
 #define BUTTON_DEBOUNCE     200 // ms debouncing
 #define MSG_BUFFER_SIZE     60 // mqtt messages max size
+
+#define UPDATE_TEMP         60000 // update temperature once per minute
 #define PUBLISH_TIME_OFFSET 200 // ms timeout between two publishes
-//Temperature chip i/o
-#if DHT_DS_MODE == DHT
-  #include "DHT.h"
-  DHT dht(DHT_DS_PIN, DHT22); // DHT22
-#else
-  OneWire ds(DHT_DS_PIN);  // on digital pin DHT_DS_PIN
-#endif
+#define UPDATE_PIR          900000L // ms timeout between two publishes
+
+#define DHT_def             1
+#define DS_def              2
+
+
+DHT dht(DHT_PIN, DHT22); // DHT22
+OneWire ds(DS_PIN);  // on digital pin DHT_DS_PIN
 
 // Buffer to hold data from the WiFi manager for mqtt login
 struct mqtt_data {
@@ -78,8 +81,9 @@ const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light"
 const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		      = "/simple_light/switch"; 	    // get command here
 
 const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		            = "/motion/status";			        // publish
-const PROGMEM char* 	  MQTT_TEMPARATURE_TOPIC		              = "/temperature";			          // publish
-const PROGMEM char* 	  MQTT_HUMIDITY_TOPIC			                = "/humidity";			            // publish
+const PROGMEM char* 	  MQTT_TEMPARATURE_DS_TOPIC               = "/temperature_DS";	          // publish
+const PROGMEM char*     MQTT_TEMPARATURE_DHT_TOPIC              = "/temperature_DHT";           // publish
+const PROGMEM char* 	  MQTT_HUMIDITY_DHT_TOPIC			            = "/humidity_DHT";	            // publish
 
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		  // publish
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value
@@ -106,8 +110,8 @@ uint16_t		m_pwm_dimm_time				            = 10; // 10ms per Step, 255*0.01 = 2.5 
 uint8_t			m_pwm_dimm_state			            = DIMM_DONE;
 uint8_t			m_pwm_dimm_current  	            = 0;
 
-uint8_t 		m_pir_state 				              = LOW; // no motion detected
-uint8_t 		m_published_pir_state             = LOW;
+uint8_t 		m_pir_state 				              = LOW; // inaktiv
+uint8_t 		m_published_pir_state             = HIGH; // to force instant publish once we are online
 
 uint8_t     intens[100] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,27,28,29,30,31,32,33,34,35,36,38,39,40,41,43,44,45,47,48,50,51,53,55,57,58,60,62,64,66,68,70,73,75,77,80,82,85,88,91,93,96,99,103,106,109,113,116,120,124,128,132,136,140,145,150,154,159,164,170,175,181,186,192,198,205,211,218,225,232,239,247,255};
 
@@ -129,7 +133,8 @@ WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "logi
 WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "password", 15);
 
 
-uint32_t 		    timer		= 0;
+uint32_t 		    updateFastValuesTimer		= 0;
+uint32_t        updateSlowValuesTimer   = 0;
 uint32_t 		    timer_dimmer	= 0;
 uint32_t        timer_button_down  = 0;
 uint8_t         counter_button = 0;
@@ -138,73 +143,99 @@ uint32_t        timer_last_publish = 0;
 ///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 // function called to publish the state of the led (on/off)
-void publishPWMLightState() {
+boolean publishPWMLightState() {
+  boolean ret=false;
   Serial.print("[mqtt] publish PWM state ");
   if (m_pwm_light_state) {
     Serial.println("ON");
-    client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
+    ret = client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
   } else {
     Serial.println("OFF");
-    client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_OFF, true);
+    ret = client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_OFF, true);
   }
-  m_published_pwm_light_state = m_pwm_light_state;
+  if(ret){
+    m_published_pwm_light_state = m_pwm_light_state;
+  }
+  return ret;
 }
 
 // function called to publish the brightness of the led
-void publishPWMLightBrightness() {
+boolean publishPWMLightBrightness() {
+  boolean ret=false;
   Serial.print("[mqtt] publish PWM brightness ");
   Serial.println(m_light_brightness);
   snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_brightness);
-  client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
-  m_published_light_brightness = m_light_brightness;
+  ret = client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
+  if(ret){
+    m_published_light_brightness = m_light_brightness;
+  }
+  return ret;
 }
 
 // function called to publish the state of the led (on/off)
-void publishSimpleLightState() {
+boolean publishSimpleLightState() {
+  boolean ret=false;
   Serial.print("[mqtt] publish simple light state ");
   if (m_simple_light_state) {
     Serial.println("ON");
-    client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
+    ret = client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
   } else {
     Serial.println("OFF");
-    client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_OFF, true);
+    ret = client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_OFF, true);
   }
-  m_published_simple_light_state = m_simple_light_state;
+  if(ret){
+    m_published_simple_light_state = m_simple_light_state;
+  };
+  return ret;
 }
 
 // function called to publish the state of the PIR (on/off)
-void publishPirState() {
+boolean publishPirState() {
+  boolean ret=false;
   Serial.print("[mqtt] publish pir state ");
   if (m_pir_state) {
     Serial.println("motion");
-    client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
+    ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
   } else {
     Serial.println("no motion");
-    client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
+    ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
   }
-  m_published_pir_state = m_pir_state;
+  if(ret){
+    m_published_pir_state = m_pir_state;
+  } 
+  return ret;
 }
 
 // function called to publish the brightness of the led
-void publishTemperature(float temp) {
-  Serial.println("[mqtt] publish temp");
+boolean publishTemperature(float temp,int DHT_DS) {
+  Serial.print("[mqtt] publish temp ");
+  
+  if(temp>TEMP_MAX){
+     Serial.println(">TEMP_MAX");
+     return false;
+  }
+  
   dtostrf(temp, 3, 2, m_msg_buffer);
-  client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
+  Serial.println(m_msg_buffer);
+  if(DHT_DS == DHT_def){
+    return client.publish(build_topic(MQTT_TEMPARATURE_DHT_TOPIC), m_msg_buffer, true);
+  } else {
+    return client.publish(build_topic(MQTT_TEMPARATURE_DS_TOPIC), m_msg_buffer, true);
+  }
 }
 
-#if DHT_DS_MODE == DHT
 // function called to publish the brightness of the led
-void publishHumidity(float hum) {
+boolean publishHumidity(float hum) {
   Serial.println("[mqtt] publish humidiy");
   dtostrf(hum, 3, 2, m_msg_buffer);
-  client.publish(build_topic(MQTT_HUMIDITY_TOPIC), m_msg_buffer, true);
+  return client.publish(build_topic(MQTT_HUMIDITY_DHT_TOPIC), m_msg_buffer, true);
 }
-#endif
 
-void publishRssi(float rssi) {
-  Serial.println("[mqtt] publish rssi");
+boolean publishRssi(float rssi) {
+  Serial.print("[mqtt] publish rssi ");
   dtostrf(rssi, 3, 2, m_msg_buffer);
-  client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
+  Serial.println(m_msg_buffer);
+  return client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
 }
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -362,8 +393,7 @@ void pwmDimmTo(uint8_t dimm_to) {
   //Serial.println(m_pwm_dimm_time);
 }
 
-#if DHT_DS_MODE == DS
-float getTemp() { // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
+float getDsTemp() { // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
   //returns the temperature from one DS18S20 in DEG Celsius
 
   byte data[12];
@@ -408,15 +438,14 @@ float getTemp() { // https://blog.silvertech.at/arduino-temperatur-messen-mit-1w
 
   return TemperatureSum;
 }
-#else
-float getTemp() {
+
+float getDhtTemp() {
   return dht.readTemperature();
 }
 
-float getHumidity() {
+float getDhtHumidity() {
   return dht.readHumidity();
 }
-#endif
 
 void updatePIRstate() {
   m_pir_state = digitalRead(PIR_PIN);
@@ -463,10 +492,10 @@ void reconnect() {
   // Loop until we're reconnected
   uint8_t tries=0;
   while (!client.connected()) {
-    Serial.println("[INFO MQTT] Attempting connection...");
+    Serial.println("[mqtt] Attempting connection...");
     // Attempt to connect
     if (client.connect(mqtt.server_cli_id, mqtt.login, mqtt.pw)) {
-      Serial.println("[INFO MQTT] connected");
+      Serial.println("[mqtt] connected");
 
       // ... and resubscribe
       client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));  // hard on off
@@ -477,12 +506,12 @@ void reconnect() {
       client.subscribe(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC)); // dimm on 
       client.subscribe(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));
       client.subscribe(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
-      Serial.println("[INFO MQTT] subscribed");
+      Serial.println("[mqtt] subscribed");
 
     } else {
       Serial.print("ERROR: failed, rc=");
       Serial.print(client.state());
-      Serial.println("DEBUG: try again in 5 seconds");
+      Serial.println(", DEBUG: try again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
     }
@@ -592,7 +621,7 @@ void setup() {
   // start wifi manager
   Serial.println();
   Serial.println();
-  Serial.println("[INFO WiFi] Connecting ");
+  Serial.println("[WiFi] Connecting ");
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
@@ -618,8 +647,8 @@ void setup() {
 #endif
 
   Serial.println("");
-  Serial.println("[INFO WiFi] connected");
-  Serial.print("[INFO WiFi] IP address: ");
+  Serial.println("[WiFi] connected");
+  Serial.print("[WiFi] IP address: ");
   Serial.println(WiFi.localIP());
 
   // init the MQTT connection
@@ -671,21 +700,21 @@ void loop() {
   //// publish all state - ONLY after being connected for sure ////
   
   if (m_simple_light_state != m_published_simple_light_state) {
-    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+    if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
       publishSimpleLightState();
       timer_last_publish = millis();
     }
   }
 
   if (m_pwm_light_state != m_published_pwm_light_state) {
-    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+    if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
       publishPWMLightState();
       timer_last_publish = millis();
     };
   }
 
   if (m_published_light_brightness != m_light_brightness) { // todo .. fails to publish if we publish to much at the first run ... 
-    if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
+    if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
       publishPWMLightBrightness();
       timer_last_publish = millis();
     }
@@ -701,16 +730,23 @@ void loop() {
 
   
   //// send periodic updates of temperature ////
-  if ((millis() - timer > UPDATE_TEMP || timer == 0) && millis()-timer_last_publish >PUBLISH_TIME_OFFSET) {
-    timer = millis();
+  if ( millis() - updateFastValuesTimer > UPDATE_TEMP && millis()-timer_last_publish > PUBLISH_TIME_OFFSET) {
+    updateFastValuesTimer = millis();
     // request temp here
-    publishTemperature(getTemp());
-#if DHT_DS_MODE == DHT
-    publishHumidity(getHumidity());
-#endif
+    publishTemperature(getDhtTemp(),DHT_def);
+    publishTemperature(getDsTemp(),DS_def);
+    publishHumidity(getDhtHumidity());
     publishRssi(WiFi.RSSI());
   }
   //// send periodic updates of temperature ////
+  //// send periodic updates of PIR... just in case  ////
+  if ( millis() - updateSlowValuesTimer > UPDATE_PIR && millis()-timer_last_publish > PUBLISH_TIME_OFFSET) {
+    updateSlowValuesTimer = millis();
+    timer_last_publish = millis();
+    publishPirState();  
+  }
+  //// send periodic updates of PIR ... just in case ////
+  
   
 
   /// see if we hold down the button for more then 6sec /// 
