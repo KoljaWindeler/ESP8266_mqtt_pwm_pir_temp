@@ -1,24 +1,31 @@
-  - platform: mqtt ### tower living
+  - platform: mqtt ### tower dinning
     name: "dev1"
-    state_topic: "dev1/PWM_light/status"
-    command_topic: "dev1/PWM_light/switch"
-    brightness_state_topic: 'dev1/PWM_light/brightness'
-    brightness_command_topic: 'dev1/PWM_light/brightness/set'
+    state_topic: "dev1/simple_light" ## bug
+    command_topic: "dev1/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### tower dinning
+    name: "dev2"
+    state_topic: "dev2/simple_light/status"
+    command_topic: "dev2/simple_light/switch"
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
 
-  - platform: mqtt ### tower dinning
-    name: "dev2"
-    state_topic: "dev2/PWM_light/status"
-    command_topic: "dev2/PWM_light/switch"
-    brightness_state_topic: 'dev2/PWM_light/brightness'
-    brightness_command_topic: 'dev2/PWM_light/brightness/set'
+  - platform: mqtt ### tower living
+    name: "dev99"
+    state_topic: "dev99/PWM_light/status"
+    command_topic: "dev99/PWM_dimm/switch"
+    brightness_state_topic: 'dev99/PWM_light/brightness'
+    brightness_command_topic: 'dev99/PWM_dimm/brightness/set'
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
+    brightness_scale: 99
 
   - platform: mqtt ### dimmer bedroom
     name: "dev3"

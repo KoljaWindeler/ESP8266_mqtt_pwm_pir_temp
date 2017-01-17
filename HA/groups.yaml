@@ -7,28 +7,43 @@
       - group.outside
       - group.bed_room
       - group.presents
+      - media_player.jkw_cast2
 
   living_room:
-    - light.dev1
-    - light.dev4
-    - sensor.dev4_temperature
-    - media_player.jkw_cast2
+    control: hidden
+    icon: mdi:comment-multiple-outline
+    view: no
+    entities:
+      - light.dev1
+      - sensor.dev1_temperature
+      - light.dev2
+      - light.dev4
+      - sensor.dev4_temperature
 
   bed_room:
-    - binary_sensor.dev3_motion
-    - light.dev3
-    - sensor.dev3_temperature
+    control: hidden
+    view: no
+    entities:
+      - binary_sensor.dev3_motion
+      - light.dev3
+      - sensor.dev3_temperature
 
   dining_room:
-    - light.dev2
-    - binary_sensor.dev2_motion
-    - sensor.dev2_temperature
+    control: hidden
+    view: no
+    entities:
+      - light.dev99
+      - binary_sensor.dev99_motion
+      - sensor.dev99_temperature
 
   presents:
-    - sensor.To_Hannover 
-    - sensor.To_Baker
-    - device_tracker.7c11cba3f1d1
-    - device_tracker.64bc0c4df830
+    control: hidden
+    view: no
+    entities:
+      - sensor.To_Hannover 
+      - sensor.To_Baker
+      - device_tracker.7c11cba3f1d1
+      - device_tracker.64bc0c4df830
 
   outside:
     - sun.sun
@@ -41,8 +56,27 @@
     - sensor.dark_sky_precip_intensity
     - sensor.dark_sky_daily_summary
 
+  rssi:
+    name: Signal level
+    view: yes
+    entities:
+      - sensor.dev1_rssi
+      - sensor.dev2_rssi
+
   mediaplayer:
     name: Media Player
     view: yes
     entities:
       - media_player.jkw_cast2
+
+  automation:
+    name: Automation
+    view: yes
+    entities:
+      - automation.dev1
+      - automation.dev1_on_with_dev2
+      - automation.dev2_on_with_dev1
+      - automation.dev1_off_with_dev2
+      - automation.dev2_off_with_dev1
+      - automation.sunset_dev1_dev2
+    

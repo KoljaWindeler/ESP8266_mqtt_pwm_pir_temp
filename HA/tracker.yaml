@@ -2,5 +2,3 @@
     host: 192.168.2.2
     username: admin
     password: password
-  - platform: fritz
-    host: https://192.168.2.107/

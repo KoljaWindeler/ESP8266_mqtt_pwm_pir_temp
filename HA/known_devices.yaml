@@ -142,3 +142,67 @@ acd1b8e40b97:
   picture:
   track: true
   vendor: unknown
+
+c0eefb20a86e:
+  hide_if_away: false
+  mac: C0:EE:FB:20:A8:6E
+  name: --
+  picture:
+  track: true
+  vendor: unknown
+
+a020a61332d5:
+  hide_if_away: false
+  mac: A0:20:A6:13:32:D5
+  name: --
+  picture:
+  track: true
+  vendor: unknown
+
+38a28c5e76d2:
+  hide_if_away: false
+  mac: 38:A2:8C:5E:76:D2
+  name: --
+  picture:
+  track: true
+  vendor: SHENZHEN RF-LINK TECHNOLOGY CO.,LTD.
+
+d8c4e9e9163b:
+  hide_if_away: false
+  mac: D8:C4:E9:E9:16:3B
+  name: --
+  picture:
+  track: true
+  vendor: Samsung Electronics Co.,Ltd
+
+803f5d16173f:
+  hide_if_away: false
+  mac: 80:3F:5D:16:17:3F
+  name: --
+  picture:
+  track: true
+  vendor: Winstars Technology Ltd
+
+18fe34ccc5f0:
+  hide_if_away: false
+  mac: 18:FE:34:CC:C5:F0
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+f0d5bf9d17a0:
+  hide_if_away: false
+  mac: F0:D5:BF:9D:17:A0
+  name: --
+  picture:
+  track: true
+  vendor: Intel Corporate
+
+18fe34cccf73:
+  hide_if_away: false
+  mac: 18:FE:34:CC:CF:73
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.

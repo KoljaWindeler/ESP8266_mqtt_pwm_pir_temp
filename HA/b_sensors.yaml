@@ -4,6 +4,16 @@
     sensor_class: motion
 
   - platform: mqtt
+    state_topic: "dev1/motion/status"
+    name: "dev1_motion"
+    sensor_class: motion
+
+  - platform: mqtt
     state_topic: "dev3/motion/status"
     name: "dev3_motion"
+    sensor_class: motion
+
+  - platform: mqtt
+    state_topic: "dev99/motion/status"
+    name: "dev99_motion"
     sensor_class: motion

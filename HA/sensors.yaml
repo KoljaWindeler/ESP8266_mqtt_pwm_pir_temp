@@ -18,10 +18,28 @@
     state_topic: "home/livingroom_couch/temperature"
     name: "Wohnzimmer Sofa"
 
+
+  - platform: mqtt
+    state_topic: "dev1/temperature_DS"
+    name: "dev1_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev1/rssi"
+    name: "dev1_rssi"
+    unit_of_measurement: "dbm"
+
+
   - platform: mqtt
     state_topic: "dev2/temperature"
     name: "dev2_temperature"
     unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev2/rssi"
+    name: "dev2_rssi"
+    unit_of_measurement: "dbm"
+
 
   - platform: mqtt
     state_topic: "dev3/temperature"
@@ -33,6 +51,13 @@
     name: "dev4_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev99/temperature"
+    name: "dev99_temperature"
+    sensor_class: "temperature"
+    unit_of_measurement: "ºC"
+
 
   - platform: darksky
     api_key: d51a09271f9df8904e3216f388a79102

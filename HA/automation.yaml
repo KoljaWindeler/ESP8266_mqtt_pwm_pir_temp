@@ -1,0 +1,87 @@
+  - alias: dev1
+    initial_state: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev1_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: script.timed_lamp
+
+
+  - alias: dev1_on_with_dev2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev2
+        to: 'on'
+    condition:
+      condition: state
+      entity_id: light.dev1
+      state: 'off'
+    action:
+      service: light.turn_on
+      entity_id: light.dev1
+
+  - alias: dev2_on_with_dev1
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev1
+        to: 'on'
+    condition:
+      condition: state
+      entity_id: light.dev2
+      state: 'off'
+    action:
+      service: light.turn_on
+      entity_id: light.dev2
+
+  - alias: dev1_off_with_dev2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev2
+        to: 'off'
+    condition:
+      condition: state
+      entity_id: light.dev1
+      state: 'on'
+    action:
+      service: light.turn_off
+      entity_id: light.dev1
+
+  - alias: dev2_off_with_dev1
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev1
+        to: 'off'
+    condition:
+      condition: state
+      entity_id: light.dev2
+      state: 'on'
+    action:
+      service: light.turn_off
+      entity_id: light.dev2
+
+  - alias: sunset_dev1_dev2
+    initial_state: False
+    hide_entity: False
+    trigger:
+      platform: sun
+      event: sunset
+      offset: "-00:15:00"
+#    condition:
+#      condition: state
+#      entity_id: group.all_devices
+#      state: home
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.dev1
+      - service: homeassistant.turn_on
+        entity_id: light.dev2

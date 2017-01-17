@@ -42,15 +42,24 @@
       friendly_name: "Bedroom"
 
     light.dev1:
-      friendly_name: "Tower"
+      friendly_name: "TowerE"
+    sensor.dev1_temperature:
+      friendly_name: "TowerE"
+      icon: "mdi:thermometer"
+    binary_sensor.dev1_motion:
+      friendly_name: "TowerE"
+    sensor.dev1_rssi:
+      friendly_name: "TowerE Signal"
 
     light.dev2:
-      friendly_name: "Tower"
+      friendly_name: "TowerW"
     sensor.dev2_temperature:
-      friendly_name: "Temperature"
+      friendly_name: "TowerW"
       icon: "mdi:thermometer"
     binary_sensor.dev2_motion:
-      friendly_name: "Motion"
+      friendly_name: "TowerW"
+    sensor.dev2_rssi:
+      friendly_name: "TowerW Signal"
 
     light.dev3:
       friendly_name: "Dimmer"
@@ -63,5 +72,9 @@
     light.dev4:
       friendly_name: "Ball"
     sensor.dev4_temperature:
-      friendly_name: "Temperature"
+      friendly_name: "Ball"
       icon: "mdi:thermometer"
+
+
+    automation.dev1:
+      friendly_name: "Bedroom light"

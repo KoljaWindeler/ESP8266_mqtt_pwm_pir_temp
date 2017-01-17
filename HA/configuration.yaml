@@ -64,3 +64,5 @@ light: !include lights.yaml
 device_tracker: !include tracker.yaml
 binary_sensor: !include b_sensors.yaml
 
+automation: !include automation.yaml
+script: !include scripts.yaml
