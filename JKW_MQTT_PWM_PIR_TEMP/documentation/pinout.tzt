@@ -9,22 +9,22 @@ http://download.arduino.org/products/UNOWIFI/0A-ESP8266-Datasheet-EN-v4.3.pdf
 https://github.com/esp8266/Arduino/blob/master/variants/nodemcu/pins_arduino.h
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
-(01):	VCC		-
+(01):	VCC			-
 (02):	Antenna		-
-(03):	VCC		-
-(04):	VCC		-
+(03):	VCC			-
+(04):	VCC			-
 (05):	RTC-VCC		-
 (06):	TOUT		A0	analog in,  nur MCU Pin
 (07): 	E-EN		EN	10k pullup, keine Weiterverwendung moeglich
 (08):	XPD-DCDC/GP16	?	Deepsleep wakeup
 --------------------------------------------------------------------------------------
 (09): 	SCL/MTMS/GP14	D5	an der Pfostenleiste (manchmal), sonst nur MCU Pin
-(10): 	PWM0/MTDI/GP12	D6	am Relayschalter (+N-Mosfet)
+(10): 	PWM0/MTDI/GP12	D6	am Relayschalter (+N-Mosfet)										SONOFF INLINE SCHALTER 			STECKER LED && Relais
 (11):	VCC		-
-(12): 	PWM1/MTCK/GP13	D7	LED, (dual color?)			<-- PWM out?
+(12): 	PWM1/MTCK/GP13	D7	LED, (dual color?)			<-- PWM out?							SONOFF INLINE SCHALTER 			ANDERE LED
 (13): 	PWM2/MTDO/GP15	D8	10k pulldown (R8), Erreichbar! 		<-- PIR/TEMP?
 (14): 	SDA/GP2		D4	schwer zu erreichen, nur am MCU pin	<-- PIR/TEMP?
-(15): 	E-FW/SPICS2/GP0	D3	Pullup, S1 zu gnd
+(15): 	E-FW/SPICS2/GP0	D3	Pullup, S1 zu gnd													SONOFF INLINE SCHALTER 			TASTER
 (16): 	NC/GP4		D2	schwer zu erreichen, nur am MCU pin	<-- PIR/TEMP?
 --------------------------------------------------------------------------------------
 (17): 	VCC		-
