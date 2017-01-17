@@ -40,9 +40,9 @@
 #define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
 #define PWM_LIGHT_PIN       D2 // IC pin 16
-#define SIMPLE_LIGHT_PIN    D7 // IC pin 12
+#define SIMPLE_LIGHT_PIN    D6 // IC pin 12
 #define BUTTON_INPUT_PIN    D3 // IC pin 15
-#define DS_PIN              D6 // D8 war nicht so gut ... startet nicht mehr 
+#define DS_PIN              D7 // D8 war nicht so gut ... startet nicht mehr 
 #define DHT_PIN             D4 // D4 untested
 #define PIR_PIN             D1 // IC pin 24
 
@@ -77,7 +77,7 @@ char char_buffer[35];
 const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC              = "/PWM_light/status";		      // publish state here
 const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC	  	      = "/PWM_light/switch"; 		      // get command here
 
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light";			        // publish state here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light/status";	      // publish state here
 const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		      = "/simple_light/switch"; 	    // get command here
 
 const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		            = "/motion/status";			        // publish
@@ -211,8 +211,9 @@ boolean publishTemperature(float temp,int DHT_DS) {
   Serial.print("[mqtt] publish temp ");
   
   if(temp>TEMP_MAX){
-     Serial.println(">TEMP_MAX");
-     return false;
+    Serial.print(temp);
+    Serial.println(" >TEMP_MAX");
+    return false;
   }
   
   dtostrf(temp, 3, 2, m_msg_buffer);
