@@ -275,11 +275,17 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
         // but it should return to whatever the m_light_brithness is, so lets set the published
         // version to something != the actual brightness. This will trigger the publishing
         m_published_light_brightness = m_light_brightness + 1;
+      } else {
+        // was already on .. and the received didn't know it .. so we have to re-publish
+        m_published_pwm_light_state = !m_pwm_light_state;
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
         m_pwm_light_state = false;
         setPWMLightState();
+      } else {
+        // was already off .. and the received didn't know it .. so we have to re-publish
+        m_published_pwm_light_state = !m_pwm_light_state;
       }
     }
   }
@@ -306,6 +312,9 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
         publishPWMLightBrightness(); // communicate where we are dimming towards
         m_light_brightness = 0; // set to zero, Dimm to will grab this as start value
         pwmDimmTo(keeper); // start dimmer towards old and therefore target value 
+      } else {
+        // was already on .. and the received didn't know it .. so we have to re-publish
+        m_published_pwm_light_state = !m_pwm_light_state;
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
@@ -315,6 +324,9 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
         // a bit hacky .. we keep an backup of the old brightness, dimm to 0 and restore the backup dimm value
         m_light_brightness_backup = m_light_brightness;        
         pwmDimmTo(0); // start dimmer towards old and therefore target value 
+      } else {   
+        // was already off .. and the received didn't know it .. so we have to re-publish
+        m_published_pwm_light_state = !m_pwm_light_state;
       }
     }
   }
@@ -325,11 +337,17 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
       if (m_simple_light_state != true) {
         m_simple_light_state = true;
         setSimpleLightState();
+      } else {
+        // was already on .. and the received didn't know it .. so we have to re-publish
+        m_published_simple_light_state = !m_simple_light_state;
       }
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_simple_light_state != false) {
         m_simple_light_state = false;
         setSimpleLightState();
+      } else {
+        // was already off .. and the received didn't know it .. so we have to re-publish
+        m_published_simple_light_state = !m_simple_light_state;
       }
     }
   }
