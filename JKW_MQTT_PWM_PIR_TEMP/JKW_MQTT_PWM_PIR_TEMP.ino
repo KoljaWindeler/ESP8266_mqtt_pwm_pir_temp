@@ -50,12 +50,13 @@
 #define BUTTON_DEBOUNCE     200 // ms debouncing
 #define MSG_BUFFER_SIZE     60 // mqtt messages max size
 
-#define UPDATE_TEMP         60000 // update temperature once per minute
-#define PUBLISH_TIME_OFFSET 200 // ms timeout between two publishes
-#define UPDATE_PIR          900000L // ms timeout between two publishes
+#define TOTAL_PERIODIC_SLOTS  5
+#define UPDATE_PERIODIC       60000/TOTAL_PERIODIC_SLOTS // update temperature once per minute .. but with 5 sensors we have to be faster
+#define PUBLISH_TIME_OFFSET   200 // ms timeout between two publishes
+#define UPDATE_PIR            900000L // ms timeout between two publishes
 
-#define DHT_def             1
-#define DS_def              2
+#define DHT_def               1
+#define DS_def                2
 
 
 DHT dht(DHT_PIN, DHT22); // DHT22
@@ -93,6 +94,7 @@ const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	    = "/PWM_dimm/dela
 const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= "/PWM_dimm/brightness/set";	  // set value
 
 const PROGMEM char*     MQTT_RSSI_STATE_TOPIC                   = "/rssi";                      // publish
+const PROGMEM char*     MQTT_ADC_STATE_TOPIC                    = "/adc";                       // publish
 
 const PROGMEM char*     STATE_ON          		= "ON";
 const PROGMEM char*     STATE_OFF         		= "OFF";
@@ -139,6 +141,7 @@ uint32_t 		    timer_dimmer	= 0;
 uint32_t        timer_button_down  = 0;
 uint8_t         counter_button = 0;
 uint32_t        timer_last_publish = 0;
+uint8_t         periodic_slot = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
@@ -237,6 +240,14 @@ boolean publishRssi(float rssi) {
   dtostrf(rssi, 3, 2, m_msg_buffer);
   Serial.println(m_msg_buffer);
   return client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
+}
+
+
+boolean publishADC(int adc) {
+  Serial.print("[mqtt] publish adc ");
+  snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", adc);
+  Serial.println(m_msg_buffer);
+  return client.publish(build_topic(MQTT_ADC_STATE_TOPIC), m_msg_buffer, true);
 }
 //////////////////////////////////// PUBLISHER ///////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -730,16 +741,24 @@ void loop() {
   //// publish all state - ONLY after being connected for sure ////
 
   
-  //// send periodic updates of temperature ////
-  if ( millis() - updateFastValuesTimer > UPDATE_TEMP && millis()-timer_last_publish > PUBLISH_TIME_OFFSET) {
+  //// send periodic updates ////
+  if ( millis() - updateFastValuesTimer > UPDATE_PERIODIC && millis()-timer_last_publish > PUBLISH_TIME_OFFSET) {
     updateFastValuesTimer = millis();
-    // request temp here
-    publishTemperature(getDhtTemp(),DHT_def);
-    publishTemperature(getDsTemp(),DS_def);
-    publishHumidity(getDhtHumidity());
-    publishRssi(WiFi.RSSI());
+    
+    if(periodic_slot == 0){
+      publishTemperature(getDhtTemp(),DHT_def);
+    } else if(periodic_slot == 1){
+      publishTemperature(getDsTemp(),DS_def);
+    } else if(periodic_slot == 2){
+      publishHumidity(getDhtHumidity());
+    } else if(periodic_slot == 3){
+      publishRssi(WiFi.RSSI());
+    } else if(periodic_slot == 4){
+      publishADC(analogRead(A0));
+    };
+    periodic_slot = (periodic_slot+1)%TOTAL_PERIODIC_SLOTS;
   }
-  //// send periodic updates of temperature ////
+  //// send periodic updates  ////
   //// send periodic updates of PIR... just in case  ////
   if ( millis() - updateSlowValuesTimer > UPDATE_PIR && millis()-timer_last_publish > PUBLISH_TIME_OFFSET) {
     updateSlowValuesTimer = millis();
