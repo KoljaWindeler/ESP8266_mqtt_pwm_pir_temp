@@ -17,6 +17,7 @@
       - light.dev1
       - sensor.dev1_temperature
       - light.dev2
+      - sensor.dev2_temperature
       - light.dev4
       - sensor.dev4_temperature
 
