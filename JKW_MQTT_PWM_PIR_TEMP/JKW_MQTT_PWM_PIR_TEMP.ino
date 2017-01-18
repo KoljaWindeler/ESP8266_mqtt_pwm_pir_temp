@@ -647,6 +647,7 @@ void setup() {
   // attache interrupt code for button
   pinMode(BUTTON_INPUT_PIN, INPUT);
   digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
+  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, CHANGE);
 
   // start wifi manager
   Serial.println();
@@ -684,8 +685,6 @@ void setup() {
   // init the MQTT connection
   client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
   client.setCallback(callback);
-
-  attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, CHANGE);
 }
 ///////////////////////////////////////////// SETUP ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
