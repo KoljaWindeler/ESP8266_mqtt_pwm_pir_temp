@@ -39,10 +39,18 @@
 #define MAX_AP_TIME         300
 #define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
+#define PINOUT_SONOFF 1
+#undefine PINOUT_KOLJA
+#ifdef PINOUT_SONOFF
+	#define SIMPLE_LIGHT_PIN    D6 // IC pin 12
+	#define DS_PIN              D7 // D8 war nicht so gut ... startet nicht mehr 
+#endif 
+#ifdef PINOUT_KOLJA
+	#define SIMPLE_LIGHT_PIN    D7 // IC pin 12
+	#define DS_PIN              D6 // D8 war nicht so gut ... startet nicht mehr 
+#endif 
 #define PWM_LIGHT_PIN       D2 // IC pin 16
-#define SIMPLE_LIGHT_PIN    D6 // IC pin 12
 #define BUTTON_INPUT_PIN    D3 // IC pin 15
-#define DS_PIN              D7 // D8 war nicht so gut ... startet nicht mehr 
 #define DHT_PIN             D4 // D4 untested
 #define PIR_PIN             D1 // IC pin 24
 
