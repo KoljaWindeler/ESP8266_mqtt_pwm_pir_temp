@@ -18,57 +18,55 @@
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
-     
-
 
    	Kolja Windeler v0.1 - untested
+     // requires 
+     // adafruit unified sensor
+     // adafruit dht22
+     // onewire
 */
 
 #include <ESP8266WiFi.h>
-#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include "WiFiManager.h" // local modified version          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
 #include <OneWire.h>
 #include <EEPROM.h>
 #include <DHT.h>
 
-
-// defines 
-#define DIMM_DONE 	        0
-#define DIMM_DIMMING 	      1
-#define CONFIG_SSID         "OPEN_ESP_CONFIG_AP"
-#define MAX_AP_TIME         300
+//////////////////////////////////////////////////// defines //////////////////////////////////////////////
+#define SERIAL_DEBUG
+#define DIMM_DONE 	        0 // state defs
+#define DIMM_DIMMING 	      1 // state defs
+#define DHT_def             1
+#define DS_def              2
+#define CONFIG_SSID         "OPEN_ESP_CONFIG_AP" // SSID of the configuration mode
+#define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
-#define PINOUT_SONOFF 1
-#undefine PINOUT_KOLJA
+#define PINOUT_SONOFF 1     // set this to "#define" for the sonoff
+#undef PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
+// D8 war nicht so gut ... startet nicht mehr 
 #ifdef PINOUT_SONOFF
-	#define SIMPLE_LIGHT_PIN    D6 // IC pin 12
-	#define DS_PIN              D7 // D8 war nicht so gut ... startet nicht mehr 
+	#define SIMPLE_LIGHT_PIN  D6
+	#define DS_PIN            D7
 #endif 
 #ifdef PINOUT_KOLJA
-	#define SIMPLE_LIGHT_PIN    D7 // IC pin 12
-	#define DS_PIN              D6 // D8 war nicht so gut ... startet nicht mehr 
+	#define SIMPLE_LIGHT_PIN  D7
+	#define DS_PIN            D6
 #endif 
-#define PWM_LIGHT_PIN       D2 // IC pin 16
-#define BUTTON_INPUT_PIN    D3 // IC pin 15
-#define DHT_PIN             D4 // D4 untested
-#define PIR_PIN             D1 // IC pin 24
+#define PWM_LIGHT_PIN       D2
+#define BUTTON_INPUT_PIN    D3
+#define DHT_PIN             D4
+#define PIR_PIN             D1
 
-#define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count to 5 (start of config)
-#define BUTTON_DEBOUNCE     200 // ms debouncing
-#define MSG_BUFFER_SIZE     60 // mqtt messages max size
+#define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count up (start of config)
+#define BUTTON_DEBOUNCE     200 // ms debouncing for the botton
+#define MSG_BUFFER_SIZE     60 // mqtt messages max char size
 
-#define TOTAL_PERIODIC_SLOTS  5
+#define TOTAL_PERIODIC_SLOTS  5 // 5 sensors: adc, rssi, dht_hum, dht_temp, ds18b20
 #define UPDATE_PERIODIC       60000/TOTAL_PERIODIC_SLOTS // update temperature once per minute .. but with 5 sensors we have to be faster
 #define PUBLISH_TIME_OFFSET   200 // ms timeout between two publishes
-#define UPDATE_PIR            900000L // ms timeout between two publishes
-
-#define DHT_def               1
-#define DS_def                2
-
-
-DHT dht(DHT_PIN, DHT22); // DHT22
-OneWire ds(DS_PIN);  // on digital pin DHT_DS_PIN
+#define UPDATE_PIR            900000L // ms timeout between two publishes of the pir .. needed?
 
 // Buffer to hold data from the WiFi manager for mqtt login
 struct mqtt_data {
@@ -79,6 +77,11 @@ struct mqtt_data {
   char server_ip[16];
   char server_port[6];
 };
+
+//////////////////////////////////////////////////// globals //////////////////////////////////////////////
+
+DHT dht(DHT_PIN, DHT22); // DHT22
+OneWire ds(DS_PIN);  // on digital pin DHT_DS_PIN
 
 char char_buffer[35];
 
@@ -107,7 +110,7 @@ const PROGMEM char*     MQTT_ADC_STATE_TOPIC                    = "/adc";       
 const PROGMEM char*     STATE_ON          		= "ON";
 const PROGMEM char*     STATE_OFF         		= "OFF";
 
-// variables used to store the statea and the brightness of the light
+// variables used to store the state and the brightness of the light
 boolean 		m_pwm_light_state 			          = false;
 boolean     m_published_pwm_light_state       = true; // to force instant publish once we are online
 boolean			m_simple_light_state 		          = false;
@@ -123,9 +126,8 @@ uint8_t			m_pwm_dimm_current  	            = 0;
 uint8_t 		m_pir_state 				              = LOW; // inaktiv
 uint8_t 		m_published_pir_state             = HIGH; // to force instant publish once we are online
 
+// converts from half log to linear .. the human eye is a smartass
 uint8_t     intens[100] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,27,28,29,30,31,32,33,34,35,36,38,39,40,41,43,44,45,47,48,50,51,53,55,57,58,60,62,64,66,68,70,73,75,77,80,82,85,88,91,93,96,99,103,106,109,113,116,120,124,128,132,136,140,145,150,154,159,164,170,175,181,186,192,198,205,211,218,225,232,239,247,255};
-
-
 
 // buffer used to send/receive data with MQTT, can not be done with the char_buffer, as both as need simultaniously 
 char                  m_msg_buffer[MSG_BUFFER_SIZE];
@@ -221,9 +223,9 @@ boolean publishPirState() {
 boolean publishTemperature(float temp,int DHT_DS) {
   Serial.print("[mqtt] publish temp ");
   
-  if(temp>TEMP_MAX){
+  if(temp>TEMP_MAX || temp<(-1*TEMP_MAX)){
     Serial.print(temp);
-    Serial.println(" >TEMP_MAX");
+    Serial.println(" >TEMP_MAX, no publish");
     return false;
   }
   
@@ -795,7 +797,7 @@ void loop() {
   
 
   /// see if we hold down the button for more then 6sec /// 
-  if(counter_button>=5){
+  if(counter_button>=5 && millis()-timer_button_down>BUTTON_TIMEOUT){
     Serial.println("[SYS] Rebooting to setup mode");
     delay(200);
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
