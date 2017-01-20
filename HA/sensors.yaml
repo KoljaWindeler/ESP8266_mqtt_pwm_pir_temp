@@ -1,12 +1,12 @@
   - platform: google_travel_time
     name: To_Hannover
-    api_key: AIzaSyDQVWVynFHKLeC19fjirE5Ssuwn_RDClDs
+    api_key: removed
     origin: Wienhausen
     destination: Uni, Hannover
 
   - platform: google_travel_time
     name: To_Baker
-    api_key: AIzaSyDQVWVynFHKLeC19fjirE5Ssuwn_RDClDs
+    api_key: removed
     origin: Wienhausen, Muehlenstr 8a
     destination: Baker Hughes, Celle
 
@@ -60,7 +60,7 @@
 
 
   - platform: darksky
-    api_key: d51a09271f9df8904e3216f388a79102
+    api_key: removed
     monitored_conditions:
       - temperature_max
       - temperature_min

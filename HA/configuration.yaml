@@ -38,7 +38,7 @@ conversation:
 # remember to install mysql in the virtual dev
 history:
 recorder:
-  db_url: mysql://ha:ah@localhost/ha
+  db_url: mysql://user:pw@localhost/ha
 
 # View all events in a logbook
 logbook:

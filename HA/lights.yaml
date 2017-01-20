@@ -1,6 +1,6 @@
   - platform: mqtt ### tower dinning
     name: "dev1"
-    state_topic: "dev1/simple_light" ## bug
+    state_topic: "dev1/simple_light/status"
     command_topic: "dev1/simple_light/switch"
     qos: 0
     payload_on: "ON"
