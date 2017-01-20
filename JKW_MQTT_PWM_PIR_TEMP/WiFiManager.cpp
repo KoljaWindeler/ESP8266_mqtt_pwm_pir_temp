@@ -146,7 +146,6 @@ boolean WiFiManager::autoConnect() {
 boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
   DEBUG_WM(F(""));
   DEBUG_WM(F("AutoConnect"));
-
   // read eeprom for ssid and pass
   //String ssid = getSSID();
   //String pass = getPassword();

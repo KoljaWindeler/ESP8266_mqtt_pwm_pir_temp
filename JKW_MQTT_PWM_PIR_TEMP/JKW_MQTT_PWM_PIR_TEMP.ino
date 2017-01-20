@@ -4,6 +4,11 @@
 	Also using https://github.com/tzapu/WiFiManager
 
 
+  config: generic 8266
+  DIO flash mode
+  flash 40 mhz, cpu 80mhz 
+  falsh size 1mb, 64k
+
 	Configuration (HA) :
 	  light:
   - platform: mqtt ### tower living
@@ -47,17 +52,17 @@
 #undef PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
 // D8 war nicht so gut ... startet nicht mehr 
 #ifdef PINOUT_SONOFF
-	#define SIMPLE_LIGHT_PIN  D6
-	#define DS_PIN            D7
+	#define SIMPLE_LIGHT_PIN  12
+	#define DS_PIN            13
 #endif 
 #ifdef PINOUT_KOLJA
-	#define SIMPLE_LIGHT_PIN  D7
-	#define DS_PIN            D6
+	#define SIMPLE_LIGHT_PIN  13
+	#define DS_PIN            12
 #endif 
-#define PWM_LIGHT_PIN       D2
-#define BUTTON_INPUT_PIN    D3
-#define DHT_PIN             D4
-#define PIR_PIN             D1
+#define PWM_LIGHT_PIN       4
+#define BUTTON_INPUT_PIN    0
+#define DHT_PIN             2
+#define PIR_PIN             5
 
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE     200 // ms debouncing for the botton
@@ -221,7 +226,7 @@ boolean publishPirState() {
 
 // function called to publish the brightness of the led
 boolean publishTemperature(float temp,int DHT_DS) {
-  Serial.print("[mqtt] publish temp ");
+  Serial.print("[mqtt] publish ");
   
   if(temp>TEMP_MAX || temp<(-1*TEMP_MAX)){
     Serial.print(temp);
@@ -230,10 +235,13 @@ boolean publishTemperature(float temp,int DHT_DS) {
   }
   
   dtostrf(temp, 3, 2, m_msg_buffer);
-  Serial.println(m_msg_buffer);
   if(DHT_DS == DHT_def){
+    Serial.print("DHT temp ");
+    Serial.println(m_msg_buffer);
     return client.publish(build_topic(MQTT_TEMPARATURE_DHT_TOPIC), m_msg_buffer, true);
   } else {
+    Serial.print("DS temp ");
+    Serial.println(m_msg_buffer);
     return client.publish(build_topic(MQTT_TEMPARATURE_DS_TOPIC), m_msg_buffer, true);
   }
 }
@@ -601,7 +609,7 @@ void saveConfigCallback(){
   }
   EEPROM.commit();
   Serial.println("Configuration saved, restarting");
-  delay(2000);
+  delay(2000);  
   ESP.reset(); // we can't change from AP mode to client mode, thus: reboot
 }
 
@@ -638,8 +646,10 @@ void setup() {
   // init the serial
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Startup");
+  Serial.print("Startup ");
+  Serial.println("v2.21");
   EEPROM.begin(512);
+  loadConfig();
 
   // init the led
   pinMode(PWM_LIGHT_PIN, OUTPUT);
@@ -662,15 +672,15 @@ void setup() {
   // start wifi manager
   Serial.println();
   Serial.println();
-  Serial.println("[WiFi] Connecting ");
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
+  
 
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
   };
-  
+  Serial.println("[WiFi] Connecting ");
   if(!wifiManager.autoConnect(CONFIG_SSID)){
     // possible situataion: Main power out, ESP went to config mode as the routers wifi wasn available on time .. 
     Serial.println("failed to connect and hit timeout, restarting ..");
