@@ -52,17 +52,17 @@
 #undef PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
 // D8 war nicht so gut ... startet nicht mehr 
 #ifdef PINOUT_SONOFF
-	#define SIMPLE_LIGHT_PIN  12
-	#define DS_PIN            13
+	#define SIMPLE_LIGHT_PIN  12 // D10
+	#define DS_PIN            13 // D7
 #endif 
 #ifdef PINOUT_KOLJA
-	#define SIMPLE_LIGHT_PIN  13
-	#define DS_PIN            12
+	#define SIMPLE_LIGHT_PIN  13 // D7
+	#define DS_PIN            12 // D10
 #endif 
-#define PWM_LIGHT_PIN       4
-#define BUTTON_INPUT_PIN    0
-#define DHT_PIN             2
-#define PIR_PIN             5
+#define PWM_LIGHT_PIN       4 // D2
+#define BUTTON_INPUT_PIN    0 // D3
+#define DHT_PIN             2 // D4
+#define PIR_PIN             5 // D1
 
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE     200 // ms debouncing for the botton
