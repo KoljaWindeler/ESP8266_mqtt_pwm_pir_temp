@@ -142,8 +142,8 @@ PubSubClient          client(wifiClient);
 mqtt_data             mqtt;
 
 // prepare wifimanager variables
-WiFiManagerParameter  WiFiManager_mqtt_server_ip("ip", "mqtt server ip", "", 15);
-WiFiManagerParameter  WiFiManager_mqtt_server_port("port", "mqtt server port", "1883", 5);
+WiFiManagerParameter  WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
+WiFiManagerParameter  WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
 WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 5);
 WiFiManagerParameter  WiFiManager_mqtt_client_id("cli_id", "mqtt client id", "18 char long desc.", 19);
 WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
@@ -579,10 +579,8 @@ void configModeCallback(WiFiManager *myWiFiManager) {
   wifiManager.addParameter(&WiFiManager_mqtt_server_login);
   wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
   // prepare wifimanager variables
-  
+  wifiManager.setAPStaticIPConfig(IPAddress(192,168,4,1), IPAddress(192,168,4,255), IPAddress(255,255,255,0));
   Serial.println("Entered config mode");
-  Serial.println(WiFi.softAPIP());
-  Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
 // save config to eeprom
@@ -610,7 +608,7 @@ void saveConfigCallback(){
   EEPROM.commit();
   Serial.println("Configuration saved, restarting");
   delay(2000);  
-  ESP.reset(); // we can't change from AP mode to client mode, thus: reboot
+  ESP.reset(); // eigentlich muss das gehen so, .. // we can't change from AP mode to client mode, thus: reboot
 }
 
 void loadConfig(){
@@ -649,8 +647,7 @@ void setup() {
   Serial.print("Startup ");
   Serial.println("v2.21");
   EEPROM.begin(512); // can be up to 4096
-  loadConfig();
-
+ 
   // init the led
   pinMode(PWM_LIGHT_PIN, OUTPUT);
   analogWriteRange(255);
@@ -804,7 +801,7 @@ void loop() {
   
 
   /// see if we hold down the button for more then 6sec /// 
-  if(counter_button>=5 && millis()-timer_button_down>BUTTON_TIMEOUT){
+  if(counter_button>=10 && millis()-timer_button_down>BUTTON_TIMEOUT){
     Serial.println("[SYS] Rebooting to setup mode");
     delay(200);
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
