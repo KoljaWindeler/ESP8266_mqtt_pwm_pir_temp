@@ -197,7 +197,14 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
     //DNS
     dnsServer->processNextRequest();
-    //HTTP
+    // kolja notes: im wesentlichen warten wir auf den aufruf von /wifisave
+    // das ruf die fkt handleWifiSave auf die dann die argumente
+    // einsammelt, "s" und "p" sind ssid und passwort die dann in _ssid und _pass
+    // landen, ACHTUNG nicht "ip" als custom parameter nutzen, das ist die feste IP
+    // wenn die parameter gespeichert sind wird connect auf true gesetzt und die
+    // if da unten geht los und verbindet uns. das SDK speichert die zuletzt erstellte
+    // verbindung und stellt die sogar von alleien beim naechste reboot her, daher 
+    // speichern wir die ssid nicht explizit selbst.
     server->handleClient();
 
 	  //HIER KANN MAN GANZ WUNDERBAR DIE LOOP VOM OTA reinhauen
