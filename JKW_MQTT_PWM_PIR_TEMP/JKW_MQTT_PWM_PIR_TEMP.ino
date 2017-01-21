@@ -3,12 +3,6 @@
 	https://github.com/mertenats/Open-Home-Automation/tree/master/ha_mqtt_binary_sensor_pir
 	Also using https://github.com/tzapu/WiFiManager
 
-
-  config: generic 8266
-  DIO flash mode
-  flash 40 mhz, cpu 80mhz 
-  falsh size 1mb, 64k filesystem
-
 	Configuration (HA) :
 	  light:
   - platform: mqtt ### tower living
@@ -24,11 +18,18 @@
     optimistic: false
     brightness_scale: 99
 
-   	Kolja Windeler v0.1 - untested
-     // requires 
-     // adafruit unified sensor
-     // adafruit dht22
-     // onewire
+  config for sonoff modules:
+  generic 8266
+  DIO flash mode
+  flash 40 mhz, cpu 80mhz 
+  flash size 1mb, 64k filesystem
+
+  This sketch (2017/01/21): 333k (Basic wifi sketch 230k)
+
+  requires arduino libs:
+  - adafruit unified sensor
+  - adafruit dht22
+  - onewire
 */
 
 #include <ESP8266WiFi.h>
