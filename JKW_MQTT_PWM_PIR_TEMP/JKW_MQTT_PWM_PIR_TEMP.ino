@@ -7,7 +7,7 @@
   config: generic 8266
   DIO flash mode
   flash 40 mhz, cpu 80mhz 
-  falsh size 1mb, 64k
+  falsh size 1mb, 64k filesystem
 
 	Configuration (HA) :
 	  light:
@@ -74,7 +74,7 @@
 #define UPDATE_PIR            900000L // ms timeout between two publishes of the pir .. needed?
 
 // Buffer to hold data from the WiFi manager for mqtt login
-struct mqtt_data {
+struct mqtt_data { //80 byte
   char login[16];
   char pw[16];
   char dev_short[6];
@@ -142,12 +142,12 @@ PubSubClient          client(wifiClient);
 mqtt_data             mqtt;
 
 // prepare wifimanager variables
-WiFiManagerParameter  WiFiManager_mqtt_server_ip("ip", "mqtt server ip", "192.168.2.84", 15);
+WiFiManagerParameter  WiFiManager_mqtt_server_ip("ip", "mqtt server ip", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_port("port", "mqtt server port", "1883", 5);
-WiFiManagerParameter  WiFiManager_mqtt_client_id("cli_id", "mqtt client id", "office_light", 19);
-WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "dev1", 5);
-WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "login", 15);
-WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "password", 15);
+WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 5);
+WiFiManagerParameter  WiFiManager_mqtt_client_id("cli_id", "mqtt client id", "18 char long desc.", 19);
+WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
+WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
 
 
 uint32_t 		    updateFastValuesTimer		= 0;
@@ -648,7 +648,7 @@ void setup() {
   Serial.println("");
   Serial.print("Startup ");
   Serial.println("v2.21");
-  EEPROM.begin(512);
+  EEPROM.begin(512); // can be up to 4096
   loadConfig();
 
   // init the led
@@ -691,11 +691,8 @@ void setup() {
   // load all paramters!
   loadConfig();
   
- 
-#if DHT_DS_MODE == DHT
-  // dht
+   // dht
   dht.begin();
-#endif
 
   Serial.println("");
   Serial.println("[WiFi] connected");
