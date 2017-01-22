@@ -387,7 +387,6 @@ void WiFiManager::handleUpdate() {
 }
 
 void WiFiManager::handleUpdating() {
-  DEBUG_WM(F("Handle update done"));
   if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
     return;
   }
@@ -438,13 +437,14 @@ void WiFiManager::handleUpdateDone() {
   page += "</h1>";
   page += F("<h3>WiFiManager</h3>");
   if(Update.hasError()){
-    page += FPSTR(HTTP_UPDATE_SUC);
-    Serial.println("update done");
-  } else {
     page += FPSTR(HTTP_UPDATE_FAI);
     Serial.println("update failed");
+  } else {
+    page += FPSTR(HTTP_UPDATE_SUC);
+    Serial.println("update done");    
   }
   page += FPSTR(HTTP_END);
+  server->send(200, "text/html", page);
   delay(1000); // send page
   ESP.restart();
 }
