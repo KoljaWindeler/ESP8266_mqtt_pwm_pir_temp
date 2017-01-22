@@ -646,7 +646,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("");
   Serial.print("Startup ");
-  Serial.println("v2.21");
+  Serial.println("v2.39");
   EEPROM.begin(512); // can be up to 4096
  
   // init the led

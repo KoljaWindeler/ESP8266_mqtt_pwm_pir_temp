@@ -60,23 +60,7 @@ const char* WiFiManagerParameter::getCustomHTML() {
   return _customHTML;
 }
 
-WiFiManager::WiFiManager() {
-	ArduinoOTA.onStart([]() {
-		String type;
-		if (ArduinoOTA.getCommand() == U_FLASH)
-			type = "sketch";
-		else // U_SPIFFS
-			type = "filesystem";
-		// NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-		Serial.println("Start updating " + type);
-		});
-	ArduinoOTA.onEnd([]() {
-		Serial.println("\nEnd");
-	});
-	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-		Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-	});
-}
+WiFiManager::WiFiManager() {}
 
 void WiFiManager::addParameter(WiFiManagerParameter *p) {
   _params[_paramsCount] = p;
@@ -130,8 +114,10 @@ void WiFiManager::setupConfigPortal() {
   server->on("/wifisave", std::bind(&WiFiManager::handleWifiSave, this));
   server->on("/i", std::bind(&WiFiManager::handleInfo, this));
   server->on("/r", std::bind(&WiFiManager::handleReset, this));
-  //server->on("/generate_204", std::bind(&WiFiManager::handle204, this));  //Android/Chrome OS captive portal check.
   server->on("/fwlink", std::bind(&WiFiManager::handleRoot, this));  //Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
+  //
+  server->on("/u", std::bind(&WiFiManager::handleUpdate, this)); // handler for the /update form page
+  server->on("/update", HTTP_POST, std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
   server->onNotFound (std::bind(&WiFiManager::handleNotFound, this));
   server->begin(); // Web server start
   DEBUG_WM(F("HTTP server started"));
@@ -182,12 +168,6 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   }
 
    // ist das ne schlaue idee die hier on the fly zu laden? 
-  DEBUG_WM(F("Starting https server for upload on port 81"));
-  ArduinoOTA.begin(); // eigentlich macht der nix anderes als die port auf das "onRx" zu mappen
-  ESP8266WebServer httpServer(81);
-  ESP8266HTTPUpdateServer httpUpdater;
-  httpUpdater.setup(&httpServer);
-  httpServer.begin();
   DEBUG_WM(F("Done"));
   
 
@@ -207,9 +187,6 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
     // speichern wir die ssid nicht explizit selbst.
     server->handleClient();
 
-	  //HIER KANN MAN GANZ WUNDERBAR DIE LOOP VOM OTA reinhauen
-	  httpServer.handleClient();
-	  ArduinoOTA.handle();    
 
     if (connect) {
       connect = false;
@@ -386,6 +363,90 @@ void WiFiManager::setMinimumSignalQuality(int quality) {
 
 void WiFiManager::setBreakAfterConfig(boolean shouldBreak) {
   _shouldBreakAfterConfig = shouldBreak;
+}
+
+/** Handle  update doc */
+void WiFiManager::handleUpdate() {
+  DEBUG_WM(F("Handle update"));
+  if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
+    return;
+  }
+  String page = FPSTR(HTTP_HEAD);
+  page.replace("{v}", "Options");
+  page += FPSTR(HTTP_SCRIPT);
+  page += FPSTR(HTTP_STYLE);
+  page += _customHeadElement;
+  page += FPSTR(HTTP_HEAD_END);
+  page += "<h1>";
+  page += _apName;
+  page += "</h1>";
+  page += F("<h3>WiFiManager</h3>");
+  page += FPSTR(HTTP_UPDATE);
+  page += FPSTR(HTTP_END);
+  server->send(200, "text/html", page);
+}
+
+void WiFiManager::handleUpdating() {
+  DEBUG_WM(F("Handle update done"));
+  if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
+    return;
+  }
+  // handler for the file upload, get's the sketch bytes, and writes
+  // them through the Update object
+  HTTPUpload& upload = server->upload();
+  if(upload.status == UPLOAD_FILE_START){
+    Serial.setDebugOutput(true);
+
+    WiFiUDP::stopAll();
+    Serial.printf("Update: %s\n", upload.filename.c_str());
+    uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+    if(!Update.begin(maxSketchSpace)){//start with max available size
+      Update.printError(Serial);
+    }
+  } else if(upload.status == UPLOAD_FILE_WRITE){
+    Serial.printf(".");
+    if(Update.write(upload.buf, upload.currentSize) != upload.currentSize){
+      Update.printError(Serial);
+    }
+  } else if(upload.status == UPLOAD_FILE_END){
+    if(Update.end(true)){ //true to set the size to the current progress
+      Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+    } else {
+      Update.printError(Serial);
+    }
+    Serial.setDebugOutput(false);
+  } else if(upload.status == UPLOAD_FILE_ABORTED){
+    Update.end();
+    Serial.println("Update was aborted");
+  }
+  delay(0);
+}
+
+void WiFiManager::handleUpdateDone() {
+  DEBUG_WM(F("Handle update done"));
+  if (captivePortal()) { // If caprive portal redirect instead of displaying the page.
+    return;
+  }
+  String page = FPSTR(HTTP_HEAD);
+  page.replace("{v}", "Options");
+  page += FPSTR(HTTP_SCRIPT);
+  page += FPSTR(HTTP_STYLE);
+  page += _customHeadElement;
+  page += FPSTR(HTTP_HEAD_END);
+  page += "<h1>";
+  page += _apName;
+  page += "</h1>";
+  page += F("<h3>WiFiManager</h3>");
+  if(Update.hasError()){
+    page += FPSTR(HTTP_UPDATE_SUC);
+    Serial.println("update done");
+  } else {
+    page += FPSTR(HTTP_UPDATE_FAI);
+    Serial.println("update failed");
+  }
+  page += FPSTR(HTTP_END);
+  delay(1000); // send page
+  ESP.restart();
 }
 
 /** Handle root or redirect to captive portal */

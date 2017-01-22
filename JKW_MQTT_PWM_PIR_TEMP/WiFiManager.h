@@ -18,8 +18,7 @@
 #include <DNSServer.h>
 #include <memory>
 #include <WiFiUdp.h>
-#include "ArduinoOTA.h" // local modified version
-#include "ESP8266HTTPUpdateServer.h"
+//#include "ArduinoOTA.h" // local modified version
 
 extern "C" {
   #include "user_interface.h"
@@ -29,14 +28,18 @@ const char HTTP_HEAD[] PROGMEM            = "<!DOCTYPE html><html lang=\"en\"><h
 const char HTTP_STYLE[] PROGMEM           = "<style>.c{text-align: center;} div,input{padding:5px;font-size:1em;} input{width:95%;} body{text-align: center;font-family:verdana;} button{border:0;border-radius:0.3rem;background-color:#1fa3ec;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%;} .q{float: right;width: 64px;text-align: right;} .l{background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAALVBMVEX///8EBwfBwsLw8PAzNjaCg4NTVVUjJiZDRUUUFxdiZGSho6OSk5Pg4eFydHTCjaf3AAAAZElEQVQ4je2NSw7AIAhEBamKn97/uMXEGBvozkWb9C2Zx4xzWykBhFAeYp9gkLyZE0zIMno9n4g19hmdY39scwqVkOXaxph0ZCXQcqxSpgQpONa59wkRDOL93eAXvimwlbPbwwVAegLS1HGfZAAAAABJRU5ErkJggg==\") no-repeat left center;background-size: 1em;}</style>";
 const char HTTP_SCRIPT[] PROGMEM          = "<script>function c(l){document.getElementById('s').value=l.innerText||l.textContent;document.getElementById('p').focus();}</script>";
 const char HTTP_HEAD_END[] PROGMEM        = "</head><body><div style='text-align:left;display:inline-block;min-width:260px;'>";
-const char HTTP_PORTAL_OPTIONS[] PROGMEM  = "<form action=\"/wifi\" method=\"get\"><button>Configure WiFi</button></form><br/><form action=\"/0wifi\" method=\"get\"><button>Configure WiFi (No Scan)</button></form><br/><form action=\"/i\" method=\"get\"><button>Info</button></form><br/><form action=\"/r\" method=\"post\"><button>Reset</button></form>";
+const char HTTP_PORTAL_OPTIONS[] PROGMEM  = "<form action=\"/wifi\" method=\"get\"><button>Configure WiFi</button></form><br/><form action=\"/0wifi\" method=\"get\"><button>Configure WiFi (No Scan)</button></form><br/><form action=\"/i\" method=\"get\"><button>Info</button></form><br/><form action=\"/r\" method=\"post\"><button>Reset</button></form><br/><form action=\"/u\" method=\"get\"><button>FW update</button></form>";
 const char HTTP_ITEM[] PROGMEM            = "<div><a href='#p' onclick='c(this)'>{v}</a>&nbsp;<span class='q {i}'>{r}%</span></div>";
 const char HTTP_FORM_START[] PROGMEM      = "<form method='get' action='wifisave'><input id='s' name='s' length=32 placeholder='SSID'><br/><input id='p' name='p' length=64 type='password' placeholder='password'><br/>";
 const char HTTP_FORM_PARAM[] PROGMEM      = "<br/><input id='{i}' name='{n}' length={l} placeholder='{p}' value='{v}' {c}>";
 const char HTTP_FORM_END[] PROGMEM        = "<br/><button type='submit'>save</button></form>";
 const char HTTP_SCAN_LINK[] PROGMEM       = "<br/><div class=\"c\"><a href=\"/wifi\">Scan</a></div>";
 const char HTTP_SAVED[] PROGMEM           = "<div>Credentials Saved<br />Trying to connect ESP to network.<br />If it fails reconnect to AP to try again</div>";
-const char HTTP_END[] PROGMEM             = "<br/><form action=\"http://192.168.4.1:81/update\" method=\"get\"><button>FW update</button></form></div></body></html>";
+const char HTTP_END[] PROGMEM             = "</div></body></html>";
+const char HTTP_UPDATE[] PROGMEM          = "<form method='POST' action='update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>";
+const char HTTP_UPDATE_FAI[] PROGMEM      = "Update Failed!";
+const char HTTP_UPDATE_SUC[] PROGMEM      = "Update Success! Rebooting...";
+
 
 #define WIFI_MANAGER_MAX_PARAMS 10
 
@@ -156,6 +159,9 @@ class WiFiManager
     uint8_t       waitForConnectResult();
 
     void          handleRoot();
+    void          handleUpdate();
+    void          handleUpdating();
+    void          handleUpdateDone();
     void          handleWifi(boolean scan);
     void          handleWifiSave();
     void          handleInfo();
