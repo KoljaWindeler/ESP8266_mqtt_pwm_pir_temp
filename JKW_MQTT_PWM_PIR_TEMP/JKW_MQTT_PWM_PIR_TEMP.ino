@@ -55,15 +55,17 @@
 #ifdef PINOUT_SONOFF
 	#define SIMPLE_LIGHT_PIN  12 // D10
 	#define DS_PIN            13 // D7
+  #define PIR_PIN           14 // D5
 #endif 
 #ifdef PINOUT_KOLJA
 	#define SIMPLE_LIGHT_PIN  13 // D7
 	#define DS_PIN            12 // D10
+  #define PIR_PIN            5 // D1
 #endif 
 #define PWM_LIGHT_PIN       4 // D2
 #define BUTTON_INPUT_PIN    0 // D3
 #define DHT_PIN             2 // D4
-#define PIR_PIN             5 // D1
+
 
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE     200 // ms debouncing for the botton
@@ -145,7 +147,7 @@ mqtt_data             mqtt;
 // prepare wifimanager variables
 WiFiManagerParameter  WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
-WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 5);
+WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter  WiFiManager_mqtt_client_id("cli_id", "mqtt client id", "18 char long desc.", 19);
 WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -226,15 +228,19 @@ boolean publishPirState() {
 }
 
 // function called to publish the brightness of the led
-boolean publishTemperature(float temp,int DHT_DS) {
-  Serial.print("[mqtt] publish ");
-  
-  if(temp>TEMP_MAX || temp<(-1*TEMP_MAX)){
-    Serial.print(temp);
-    Serial.println(" >TEMP_MAX, no publish");
+boolean publishTemperature(float temp,int DHT_DS) {  
+  if(temp>TEMP_MAX || temp<(-1*TEMP_MAX) || isnan(temp)){
+    Serial.print("[mqtt] no publish temp, ");
+    if(isnan(temp)){
+      Serial.println("nan");  
+    } else {
+      Serial.print(temp);
+      Serial.println(" >TEMP_MAX");
+    }
     return false;
   }
-  
+
+  Serial.print("[mqtt] publish ");
   dtostrf(temp, 3, 2, m_msg_buffer);
   if(DHT_DS == DHT_def){
     Serial.print("DHT temp ");
@@ -249,8 +255,13 @@ boolean publishTemperature(float temp,int DHT_DS) {
 
 // function called to publish the brightness of the led
 boolean publishHumidity(float hum) {
-  Serial.println("[mqtt] publish humidiy");
+  if(isnan(hum)){
+    Serial.println("[mqtt] no publish humidiy");
+    return false;
+  }
+  Serial.print("[mqtt] publish humidiy ");
   dtostrf(hum, 3, 2, m_msg_buffer);
+  Serial.println(m_msg_buffer);
   return client.publish(build_topic(MQTT_HUMIDITY_DHT_TOPIC), m_msg_buffer, true);
 }
 
@@ -543,6 +554,8 @@ void reconnect() {
   while (!client.connected()) {
     Serial.println("[mqtt] Attempting connection...");
     // Attempt to connect
+    Serial.print("client id: ");
+    Serial.println(mqtt.server_cli_id);
     if (client.connect(mqtt.server_cli_id, mqtt.login, mqtt.pw)) {
       Serial.println("[mqtt] connected");
 
@@ -646,7 +659,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("");
   Serial.print("Startup ");
-  Serial.println("v2.393");
+  Serial.println("v2.411");
   EEPROM.begin(512); // can be up to 4096
  
   // init the led
@@ -666,7 +679,7 @@ void setup() {
   pinMode(BUTTON_INPUT_PIN, INPUT);
   digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
   attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, CHANGE);
-
+  
   // start wifi manager
   Serial.println();
   Serial.println();
@@ -674,10 +687,10 @@ void setup() {
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
   
-
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
   };
+
   Serial.println("[WiFi] Connecting ");
   if(!wifiManager.autoConnect(CONFIG_SSID)){
     // possible situataion: Main power out, ESP went to config mode as the routers wifi wasn available on time .. 
