@@ -1,3 +1,4 @@
+# ----------------------------------------------------------
   - alias: dev1
     initial_state: False
     trigger:
@@ -7,8 +8,7 @@
     action:
       service: homeassistant.turn_on
       entity_id: script.timed_lamp
-
-
+# ----------------------------------------------------------
   - alias: dev1_on_with_dev2
     initial_state: True
     hide_entity: False
@@ -23,7 +23,7 @@
     action:
       service: light.turn_on
       entity_id: light.dev1
-
+# ----------------------------------------------------------
   - alias: dev2_on_with_dev1
     initial_state: True
     hide_entity: False
@@ -38,7 +38,7 @@
     action:
       service: light.turn_on
       entity_id: light.dev2
-
+# ----------------------------------------------------------
   - alias: dev1_off_with_dev2
     initial_state: True
     hide_entity: False
@@ -53,7 +53,7 @@
     action:
       service: light.turn_off
       entity_id: light.dev1
-
+# ----------------------------------------------------------
   - alias: dev2_off_with_dev1
     initial_state: True
     hide_entity: False
@@ -68,7 +68,7 @@
     action:
       service: light.turn_off
       entity_id: light.dev2
-
+# ----------------------------------------------------------
   - alias: sunset_dev1_dev2
     initial_state: False
     hide_entity: False
@@ -85,3 +85,15 @@
         entity_id: light.dev1
       - service: homeassistant.turn_on
         entity_id: light.dev2
+# ----------------------------------------------------------
+  - alias: Turn_on_kitchen_lights_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev4_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: script.timed_kitchen_lamp
+

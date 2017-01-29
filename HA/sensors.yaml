@@ -29,7 +29,6 @@
     name: "dev1_rssi"
     unit_of_measurement: "dbm"
 
-
   - platform: mqtt
     state_topic: "dev2/temperature_DS"
     name: "dev2_temperature"
@@ -47,10 +46,23 @@
     unit_of_measurement: "ºC"
 
   - platform: mqtt
+    state_topic: "dev3/rssi"
+    name: "dev3_rssi"
+    unit_of_measurement: "dbm"
+
+
+  - platform: mqtt
     state_topic: "dev4/temperature_DS"
     name: "dev4_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev4/rssi"
+    name: "dev4_rssi"
+    unit_of_measurement: "dbm"
+
+
 
   - platform: mqtt
     state_topic: "dev99/temperature_DS"

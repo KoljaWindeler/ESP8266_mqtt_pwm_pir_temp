@@ -15,7 +15,16 @@
     payload_off: "OFF"
     optimistic: false
 
-  - platform: mqtt ### tower living
+  - platform: mqtt ### sonoff 1, kitchen rack
+    name: "dev4"
+    state_topic: "dev4/simple_light/status"
+    command_topic: "dev4/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+
+  - platform: mqtt ### template
     name: "dev99"
     state_topic: "dev99/PWM_light/status"
     command_topic: "dev99/PWM_dimm/switch"
@@ -27,23 +36,13 @@
     optimistic: false
     brightness_scale: 99
 
-  - platform: mqtt ### dimmer bedroom
-    name: "dev3"
-    state_topic: "dev3/PWM_light/status"
-    command_topic: "dev3/PWM_light/switch"
-    brightness_state_topic: 'dev3/PWM_light/brightness'
-    brightness_command_topic: 'dev3/PWM_light/brightness/set'
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
 
   - platform: mqtt ### ball living
-    name: "dev4"
-    state_topic: "dev4/PWM_light/status"
-    command_topic: "dev4/PWM_light/switch"
-    brightness_state_topic: 'dev4/PWM_light/brightness'
-    brightness_command_topic: 'dev4/PWM_light/brightness/set'
+    name: "dev98"
+    state_topic: "dev98/PWM_light/status"
+    command_topic: "dev98/PWM_light/switch"
+    brightness_state_topic: 'dev98/PWM_light/brightness'
+    brightness_command_topic: 'dev98/PWM_light/brightness/set'
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"

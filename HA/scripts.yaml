@@ -1,23 +1,21 @@
-  timed_lamp:
-    alias: "Turn on lamp and set timer"
+  timed_kitchen_lamp:
+    alias: "Turn on kitchen lamp and set timer"
     sequence:
-      # Cancel ev. old timers
       - service: script.turn_off
         data:
-           entity_id: script.timer_off
+          entity_id: script.kitchen_timer_off
       - service: light.turn_on
         data:
-          entity_id: light.dev1
-      # Set new timer
+          entity_id: light.dev4 # kitche rack
       - service: script.turn_on
         data:
-          entity_id: script.timer_off
+          entity_id: script.kitchen_timer_off
 
-  timer_off:
-    alias: "Turn off lamp after 10 minutes"
+  kitchen_timer_off:
+    alias: "Turn kitchen off lamp after 10 minutes"
     sequence:
       - delay:
           minutes: 10
       - service: light.turn_off
         data:
-          entity_id: light.dev1
+          entity_id: light.dev4 # kitchen light

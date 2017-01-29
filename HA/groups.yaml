@@ -3,6 +3,7 @@
     view: yes
     entities:
       - group.living_room
+      - group.kitchen
       - group.dining_room
       - group.outside
       - group.bed_room
@@ -18,8 +19,15 @@
       - sensor.dev1_temperature
       - light.dev2
       - sensor.dev2_temperature
+
+  kitchen:
+    control: hidden
+    icon: mdi:comment-multiple-outline
+    view: no
+    entities:
       - light.dev4
       - sensor.dev4_temperature
+      - binary_sensor.dev4_motion
 
   bed_room:
     control: hidden
@@ -47,6 +55,7 @@
       - device_tracker.64bc0c4df830
 
   outside:
+    - light.dev3
     - sun.sun
     - sensor.dark_sky_temperature
     - sensor.dark_sky_apparent_temperature
@@ -63,6 +72,8 @@
     entities:
       - sensor.dev1_rssi
       - sensor.dev2_rssi
+      - sensor.dev3_rssi
+      - sensor.dev4_rssi
 
   mediaplayer:
     name: Media Player
@@ -80,4 +91,5 @@
       - automation.dev1_off_with_dev2
       - automation.dev2_off_with_dev1
       - automation.sunset_dev1_dev2
+      - automation.Turn_on_kitchen_lights_when_there_is_movement
     

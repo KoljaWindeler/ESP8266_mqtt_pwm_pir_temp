@@ -62,18 +62,19 @@
       friendly_name: "TowerW Signal"
 
     light.dev3:
-      friendly_name: "Dimmer"
-    sensor.dev3_temperature:
-      friendly_name: "Temperature"
-      icon: "mdi:thermometer"
-    binary_sensor.dev3_motion:
-      friendly_name: "Motion"
+      friendly_name: "DoorLight"
+    sensor.dev3_rssi:
+      friendly_name: "bedroom? Signal"
 
     light.dev4:
-      friendly_name: "Ball"
+      friendly_name: "Kitchen Rack"
     sensor.dev4_temperature:
-      friendly_name: "Ball"
+      friendly_name: "Kitchen Rack"
       icon: "mdi:thermometer"
+    binary_sensor.dev4_motion:
+      friendly_name: "Kitchen Rack"
+    sensor.dev4_rssi:
+      friendly_name: "Kitchen Signal"
 
 
     automation.dev1:

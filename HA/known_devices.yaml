@@ -206,3 +206,75 @@ f0d5bf9d17a0:
   picture:
   track: true
   vendor: Espressif Inc.
+
+60019482dbe9:
+  hide_if_away: false
+  mac: 60:01:94:82:DB:E9
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+38a28c5e94b5:
+  hide_if_away: false
+  mac: 38:A2:8C:5E:94:B5
+  name: --
+  picture:
+  track: true
+  vendor: SHENZHEN RF-LINK TECHNOLOGY CO.,LTD.
+
+5ccf7f973795:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:37:95
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+5ccf7f973b92:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:3B:92
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+a020a61260d2:
+  hide_if_away: false
+  mac: A0:20:A6:12:60:D2
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+a020a600f46c:
+  hide_if_away: false
+  mac: A0:20:A6:00:F4:6C
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+a020a600cb75:
+  hide_if_away: false
+  mac: A0:20:A6:00:CB:75
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+5ccf7f9735fa:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:35:FA
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+7475481e0bd6:
+  hide_if_away: false
+  mac: 74:75:48:1E:0B:D6
+  name: --
+  picture:
+  track: true
+  vendor: Amazon Technologies Inc.
