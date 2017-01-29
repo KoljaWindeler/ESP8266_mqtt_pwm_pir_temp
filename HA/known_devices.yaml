@@ -278,3 +278,11 @@ a020a600cb75:
   picture:
   track: true
   vendor: Amazon Technologies Inc.
+
+8871e586cd27:
+  hide_if_away: false
+  mac: 88:71:E5:86:CD:27
+  name: --
+  picture:
+  track: true
+  vendor: Amazon Technologies Inc.

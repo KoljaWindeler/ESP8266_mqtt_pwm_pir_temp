@@ -1,14 +1,4 @@
 # ----------------------------------------------------------
-  - alias: dev1
-    initial_state: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev1_motion
-        to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: script.timed_lamp
-# ----------------------------------------------------------
   - alias: dev1_on_with_dev2
     initial_state: True
     hide_entity: False
@@ -70,16 +60,21 @@
       entity_id: light.dev2
 # ----------------------------------------------------------
   - alias: sunset_dev1_dev2
-    initial_state: False
+    initial_state: True
     hide_entity: False
     trigger:
       platform: sun
       event: sunset
       offset: "-00:15:00"
-#    condition:
-#      condition: state
-#      entity_id: group.all_devices
-#      state: home
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: 'device_tracker.7c11cba3f1d1'
+          state: 'home'
+        - condition: state
+          entity_id: 'device_tracker.64bc0c4df830'
+          state: 'home'
     action:
       - service: homeassistant.turn_on
         entity_id: light.dev1

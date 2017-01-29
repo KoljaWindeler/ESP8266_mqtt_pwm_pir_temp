@@ -37,14 +37,6 @@
       - light.dev3
       - sensor.dev3_temperature
 
-  dining_room:
-    control: hidden
-    view: no
-    entities:
-      - light.dev99
-      - binary_sensor.dev99_motion
-      - sensor.dev99_temperature
-
   presents:
     control: hidden
     view: no
@@ -55,7 +47,6 @@
       - device_tracker.64bc0c4df830
 
   outside:
-    - light.dev3
     - sun.sun
     - sensor.dark_sky_temperature
     - sensor.dark_sky_apparent_temperature
@@ -81,8 +72,8 @@
     entities:
       - media_player.jkw_cast2
 
-  automation:
-    name: Automation
+  system:
+    name: System
     view: yes
     entities:
       - automation.dev1
@@ -92,4 +83,6 @@
       - automation.dev2_off_with_dev1
       - automation.sunset_dev1_dev2
       - automation.Turn_on_kitchen_lights_when_there_is_movement
-    
+      - sensor.ram_free
+      - sensor.disk_use_home
+      - sensor.cpu_use

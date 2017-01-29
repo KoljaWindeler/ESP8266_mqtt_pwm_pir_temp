@@ -61,9 +61,11 @@ mqtt:
 media_player:
   - platform: cast
 
+emulated_hue:
+
 # Weather Prediction
 sensor: !include sensors.yaml
-switch: !include switches.yaml
+# switch: !include switches.yaml
 group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml

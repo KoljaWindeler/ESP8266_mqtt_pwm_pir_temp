@@ -1,3 +1,4 @@
+# ---------------------------------------------------------
   timed_kitchen_lamp:
     alias: "Turn on kitchen lamp and set timer"
     sequence:
@@ -10,7 +11,7 @@
       - service: script.turn_on
         data:
           entity_id: script.kitchen_timer_off
-
+# ---------------------------------------------------------
   kitchen_timer_off:
     alias: "Turn kitchen off lamp after 10 minutes"
     sequence:
@@ -19,3 +20,4 @@
       - service: light.turn_off
         data:
           entity_id: light.dev4 # kitchen light
+# ---------------------------------------------------------
