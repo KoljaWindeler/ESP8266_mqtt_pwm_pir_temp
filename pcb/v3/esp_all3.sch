@@ -23830,13 +23830,17 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <label x="146.05" y="38.1" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$23" class="0">
+<net name="PIR" class="0">
 <segment>
 <pinref part="ESP" gate="G$1" pin="D5"/>
-<wire x1="93.98" y1="45.72" x2="99.06" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="45.72" x2="111.76" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="45.72" x2="111.76" y2="83.82" width="0.1524" layer="91"/>
+<pinref part="PIR" gate="G$1" pin="OUT"/>
+<wire x1="111.76" y1="83.82" x2="-5.08" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="-5.08" y1="83.82" x2="-5.08" y2="88.9" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$26" class="0">
+<net name="DHT_SIG" class="0">
 <segment>
 <pinref part="ESP" gate="G$1" pin="D4"/>
 <wire x1="93.98" y1="53.34" x2="121.92" y2="53.34" width="0.1524" layer="91"/>
@@ -23854,23 +23858,13 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <wire x1="109.22" y1="109.22" x2="78.74" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$28" class="0">
+<net name="TTL_DIMM" class="0">
 <segment>
 <pinref part="ESP" gate="G$1" pin="D2"/>
 <wire x1="93.98" y1="58.42" x2="104.14" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="104.14" y1="58.42" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="DIMMING" gate="G$1" pin="G"/>
 <wire x1="132.08" y1="88.9" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$29" class="0">
-<segment>
-<pinref part="ESP" gate="G$1" pin="D1"/>
-<wire x1="93.98" y1="60.96" x2="101.6" y2="60.96" width="0.1524" layer="91"/>
-<wire x1="101.6" y1="60.96" x2="101.6" y2="83.82" width="0.1524" layer="91"/>
-<pinref part="PIR" gate="G$1" pin="OUT"/>
-<wire x1="101.6" y1="83.82" x2="-5.08" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="-5.08" y1="83.82" x2="-5.08" y2="88.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$30" class="0">
@@ -24099,7 +24093,7 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <wire x1="93.98" y1="27.94" x2="99.06" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$25" class="0">
+<net name="3V3" class="0">
 <segment>
 <wire x1="111.76" y1="27.94" x2="119.38" y2="27.94" width="0.1524" layer="91"/>
 <wire x1="119.38" y1="27.94" x2="170.18" y2="27.94" width="0.1524" layer="91"/>
@@ -24146,6 +24140,12 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <pinref part="D3" gate="G$1" pin="A"/>
 <wire x1="25.4" y1="30.48" x2="25.4" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="25.4" y1="58.42" x2="58.42" y2="58.42" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$16" class="0">
+<segment>
+<pinref part="ESP" gate="G$1" pin="D1"/>
+<wire x1="93.98" y1="60.96" x2="101.6" y2="60.96" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
