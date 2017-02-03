@@ -36,15 +36,14 @@
       friendly_name: "Bedroom"
 # -----------------------------------------------
     light.dev1:
-      friendly_name: "E"
-#      emulated_hue_name: "Esszimmer"
+      friendly_name: "Ball"
     sensor.dev1_temperature:
-      friendly_name: "E"
+      friendly_name: "Ball"
       icon: "mdi:thermometer"
     binary_sensor.dev1_motion:
-      friendly_name: "E"
+      friendly_name: "Ball"
     sensor.dev1_rssi:
-      friendly_name: "E Signal"
+      friendly_name: "Ball Signal"
 # -----------------------------------------------
     light.dev2:
       friendly_name: "Hood"
@@ -107,4 +106,30 @@
 # -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"
+# -----------------------------------------------
+# -----------------------------------------------
+    automation.dev2_4_off:
+      friendly_name: "Kitchen off"
+    automation.dev2_4_on:
+      friendly_name: "Kitchen on"
+    automation.Turn_off_kitchen_lights_10min_after_movement:
+      friendly_name: "Kitchen 10min delay off"
+    automation.Turn_on_kitchen_lights_when_there_is_movement:
+      friendly_name: "Kitchen movement on"
+# -----------------------------------------------
+# -----------------------------------------------
+    automation.sunset_dev7_dev11_dev1:
+      friendly_name: "Livingroom sunset on"
+    automation.dev7_11_1_off:
+      friendly_name: "Livingroom combined off"
+    automation.dev7_11_1_on:
+      friendly_name: "Livingroom combined on"
+# -----------------------------------------------
+# -----------------------------------------------
+    automation.all_home_dev5:
+      friendly_name: "Entrance fast off"
+    automation.midnight_dev5:
+      friendly_name: "Entrance late off"
+    automation.sunset_dev5:
+      friendly_name: "Entrance sunset on"
 # -----------------------------------------------

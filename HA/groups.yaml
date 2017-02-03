@@ -16,9 +16,11 @@
     view: no
     entities:
       - light.dev11
-      - sensor.dev11_temperature
       - light.dev7
+      - light.dev1
+      - sensor.dev11_temperature
       - sensor.dev7_temperature
+      - sensor.dev1_temperature
 
   kitchen:
     control: hidden
@@ -48,7 +50,7 @@
       - sensor.To_Baker
       - device_tracker.7c11cba3f1d1
       - device_tracker.64bc0c4df830
-	  
+
   motion:
     control: hidden
     view: no
@@ -99,11 +101,11 @@
     name: System
     view: yes
     entities:
-      - automation.dev7_11_on
-      - automation.dev7_11_off
+      - automation.dev7_11_1_on
+      - automation.dev7_11_1_off
       - automation.dev2_4_on
       - automation.dev2_4_off
-      - automation.sunset_dev7_dev11
+      - automation.sunset_dev7_dev11_dev1
       - automation.Turn_on_kitchen_lights_when_there_is_movement
       - automation.Turn_off_kitchen_lights_10min_after_movement
       - automation.sunset_dev5

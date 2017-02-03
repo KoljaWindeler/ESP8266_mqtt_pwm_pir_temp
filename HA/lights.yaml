@@ -1,5 +1,5 @@
 # --------------------------------------------------
-  - platform: mqtt ### tower dinning
+  - platform: mqtt ### ball living room
     name: "dev1"
     state_topic: "dev1/simple_light/status"
     command_topic: "dev1/simple_light/switch"

@@ -33,7 +33,7 @@
           - light.dev4
 # ----------------------------------------------------------
 # ----------------------------------------------------------
-  - alias: dev7_11_on
+  - alias: dev7_11_1_on
     initial_state: True
     hide_entity: False
     trigger:
@@ -41,18 +41,25 @@
         entity_id: light.dev7
         to: 'on'
       - platform: state
+        entity_id: light.dev1
+        to: 'on'
+      - platform: state
         entity_id: light.dev11
         to: 'on'
     action:
       - service: light.turn_on
         entity_id: 
+          - light.dev1
           - light.dev7
           - light.dev11
 # ----------------------------------------------------------
-  - alias: dev7_11_off
+  - alias: dev7_11_1_off
     initial_state: True
     hide_entity: False
     trigger:
+      - platform: state
+        entity_id: light.dev1
+        to: 'off'
       - platform: state
         entity_id: light.dev7
         to: 'off'
@@ -62,11 +69,12 @@
     action:
       - service: light.turn_off
         entity_id:
+          - light.dev1
           - light.dev7
           - light.dev11
 # ----------------------------------------------------------
 # ----------------------------------------------------------
-  - alias: sunset_dev7_dev11
+  - alias: sunset_dev7_dev11_dev1
     initial_state: True
     hide_entity: False
     trigger:
@@ -83,6 +91,8 @@
           entity_id: 'device_tracker.64bc0c4df830'
           state: 'home'
     action:
+      - service: homeassistant.turn_on
+        entity_id: light.dev1
       - service: homeassistant.turn_on
         entity_id: light.dev7
       - service: homeassistant.turn_on
@@ -121,7 +131,7 @@
       event: sunset
       offset: "+00:15:00"
     condition:
-      platform: time
+      condition: time
       before: '23:30:00'
     action:
       - service: homeassistant.turn_on
@@ -133,7 +143,10 @@
     hide_entity: False
     trigger:
       - platform: state
-        entity_id: 'device_tracker.7c11cba3f1d1', 'device_tracker.64bc0c4df830'
+        entity_id: 'device_tracker.64bc0c4df830'
+        to: 'home'
+      - platform: state
+        entity_id: 'device_tracker.7c11cba3f1d1'
         to: 'home'
       - platform: time
         hours: 22
