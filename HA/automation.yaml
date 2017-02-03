@@ -112,13 +112,14 @@
       entity_id: script.kitchen_lamp_off
 # ----------------------------------------------------------
 # ----------------------------------------------------------
+# switch the light on, 15 min after sunset, but only if that before 23:30
   - alias: sunset_dev5
     initial_state: True
     hide_entity: False
     trigger:
       platform: sun
       event: sunset
-      offset: "-00:15:00"
+      offset: "+00:15:00"
     condition:
       platform: time
       before: '23:30:00'
@@ -126,6 +127,34 @@
       - service: homeassistant.turn_on
         entity_id: light.dev5
 # ----------------------------------------------------------
+# turn the lights off if both of us are at home and it is after 22:00
+  - alias: all_home_dev5
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: 'device_tracker.7c11cba3f1d1', 'device_tracker.64bc0c4df830'
+        to: 'home'
+      - platform: time
+        hours: 22
+        minutes: 00
+        seconds: 10
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: 'device_tracker.7c11cba3f1d1'
+          state: 'home'
+        - condition: state
+          entity_id: 'device_tracker.64bc0c4df830'
+          state: 'home'
+        - condition: time
+          after: '22:00:00'
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.dev5
+# ----------------------------------------------------------
+# turn the lights of at 23:30
   - alias: midnight_dev5
     initial_state: True
     hide_entity: False
