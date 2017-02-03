@@ -108,6 +108,7 @@
       - automation.Turn_off_kitchen_lights_10min_after_movement
       - automation.sunset_dev5
       - automation.midnight_dev5
+      - automation.all_home_dev5
       - sensor.ram_free
       - sensor.disk_use_home
       - sensor.cpu_use
