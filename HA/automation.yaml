@@ -119,6 +119,9 @@
       platform: sun
       event: sunset
       offset: "-00:15:00"
+    condition:
+      platform: time
+      before: '23:30:00'
     action:
       - service: homeassistant.turn_on
         entity_id: light.dev5
