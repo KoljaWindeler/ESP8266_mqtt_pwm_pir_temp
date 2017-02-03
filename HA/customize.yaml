@@ -36,34 +36,36 @@
       friendly_name: "Bedroom"
 # -----------------------------------------------
     light.dev1:
-      friendly_name: "TowerE"
+      friendly_name: "E"
 #      emulated_hue_name: "Esszimmer"
     sensor.dev1_temperature:
-      friendly_name: "TowerE"
+      friendly_name: "E"
       icon: "mdi:thermometer"
     binary_sensor.dev1_motion:
-      friendly_name: "TowerE"
+      friendly_name: "E"
     sensor.dev1_rssi:
-      friendly_name: "TowerE Signal"
+      friendly_name: "E Signal"
 # -----------------------------------------------
     light.dev2:
-      friendly_name: "TowerW"
-#      emulated_hue_name: "Wohnzimmer"
+      friendly_name: "Hood"
     sensor.dev2_temperature:
-      friendly_name: "TowerW"
+      friendly_name: "Hood"
       icon: "mdi:thermometer"
     binary_sensor.dev2_motion:
-      friendly_name: "TowerW"
+      friendly_name: "Hood"
     sensor.dev2_rssi:
-      friendly_name: "TowerW Signal"
+      friendly_name: "Hood Signal"
 # -----------------------------------------------
     light.dev3:
       friendly_name: "Sideboard"
     sensor.dev3_rssi:
       friendly_name: "Sideboard rssi"
     sensor.dev3_temperature:
-      friendly_name: "Sideboard"
       icon: "mdi:thermometer"
+      friendly_name: "Sideboard"
+    sensor.dev3_humidity:
+      friendly_name: "Sideboard"
+      icon: "mdi:water-percent"
     binary_sensor.dev3_motion:
       friendly_name: "Sideboard"
 # -----------------------------------------------
@@ -77,6 +79,31 @@
       friendly_name: "Rack"
     sensor.dev4_rssi:
       friendly_name: "Kitchen Signal"
+# -----------------------------------------------
+    light.dev5:
+      friendly_name: "Entrance"
+    sensor.dev5_rssi:
+      friendly_name: "Entrance Signal"
+# -----------------------------------------------
+    light.dev7:
+      friendly_name: "TowerW"
+    sensor.dev7_temperature:
+      friendly_name: "TowerW"
+      icon: "mdi:thermometer"
+    binary_sensor.dev7_motion:
+      friendly_name: "TowerW"
+    sensor.dev7_rssi:
+      friendly_name: "TowerW Signal"
+# -----------------------------------------------
+    light.dev11:
+      friendly_name: "TowerE"
+    sensor.dev11_temperature:
+      friendly_name: "TowerE"
+      icon: "mdi:thermometer"
+    binary_sensor.dev11_motion:
+      friendly_name: "TowerE"
+    sensor.dev11_rssi:
+      friendly_name: "TowerE Signal"
 # -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"

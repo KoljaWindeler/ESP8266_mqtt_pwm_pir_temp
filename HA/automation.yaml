@@ -1,65 +1,72 @@
 # ----------------------------------------------------------
-  - alias: dev1_on_with_dev2
+# ----------------------------------------------------------
+  - alias: dev2_4_on
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: light.dev2
         to: 'on'
-    condition:
-      condition: state
-      entity_id: light.dev1
-      state: 'off'
-    action:
-      service: light.turn_on
-      entity_id: light.dev1
-# ----------------------------------------------------------
-  - alias: dev2_on_with_dev1
-    initial_state: True
-    hide_entity: False
-    trigger:
       - platform: state
-        entity_id: light.dev1
+        entity_id: light.dev4
         to: 'on'
-    condition:
-      condition: state
-      entity_id: light.dev2
-      state: 'off'
     action:
-      service: light.turn_on
-      entity_id: light.dev2
+      - service: light.turn_on
+        entity_id: 
+          - light.dev2
+          - light.dev4
 # ----------------------------------------------------------
-  - alias: dev1_off_with_dev2
+  - alias: dev2_4_off
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: light.dev2
         to: 'off'
-    condition:
-      condition: state
-      entity_id: light.dev1
-      state: 'on'
+      - platform: state
+        entity_id: light.dev4
+        to: 'off'
     action:
-      service: light.turn_off
-      entity_id: light.dev1
+      - service: light.turn_off
+        entity_id:
+          - light.dev2
+          - light.dev4
 # ----------------------------------------------------------
-  - alias: dev2_off_with_dev1
+# ----------------------------------------------------------
+  - alias: dev7_11_on
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
-        entity_id: light.dev1
-        to: 'off'
-    condition:
-      condition: state
-      entity_id: light.dev2
-      state: 'on'
+        entity_id: light.dev7
+        to: 'on'
+      - platform: state
+        entity_id: light.dev11
+        to: 'on'
     action:
-      service: light.turn_off
-      entity_id: light.dev2
+      - service: light.turn_on
+        entity_id: 
+          - light.dev7
+          - light.dev11
 # ----------------------------------------------------------
-  - alias: sunset_dev1_dev2
+  - alias: dev7_11_off
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev7
+        to: 'off'
+      - platform: state
+        entity_id: light.dev11
+        to: 'off'
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.dev7
+          - light.dev11
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+  - alias: sunset_dev7_dev11
     initial_state: True
     hide_entity: False
     trigger:
@@ -77,9 +84,10 @@
           state: 'home'
     action:
       - service: homeassistant.turn_on
-        entity_id: light.dev1
+        entity_id: light.dev7
       - service: homeassistant.turn_on
-        entity_id: light.dev2
+        entity_id: light.dev11
+# ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: Turn_on_kitchen_lights_when_there_is_movement
     initial_state: True
@@ -90,5 +98,41 @@
         to: 'on'
     action:
       service: homeassistant.turn_on
-      entity_id: script.timed_kitchen_lamp
-
+      entity_id: script.kitchen_lamp_on
+# ----------------------------------------------------------
+  - alias: Turn_off_kitchen_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev4_motion
+        to: 'off'
+    action:
+      service: homeassistant.turn_on
+      entity_id: script.kitchen_lamp_off
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+  - alias: sunset_dev5
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: sun
+      event: sunset
+      offset: "-00:15:00"
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.dev5
+# ----------------------------------------------------------
+  - alias: midnight_dev5
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: time
+      hours: 23
+      minutes: 30
+      seconds: 00
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.dev5
+# ----------------------------------------------------------
+# ----------------------------------------------------------

@@ -39,9 +39,14 @@
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
-    state_topic: "dev3/temperature_DS"
+    state_topic: "dev3/temperature_DHT"
     name: "dev3_temperature"
     unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev3/humidity_DHT"
+    name: "dev3_humidity"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev3/rssi"
@@ -57,6 +62,26 @@
   - platform: mqtt
     state_topic: "dev4/rssi"
     name: "dev4_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev7/temperature_DS"
+    name: "dev7_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev7/rssi"
+    name: "dev7_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev11/temperature_DS"
+    name: "dev11_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev11/rssi"
+    name: "dev11_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt

@@ -286,3 +286,27 @@ a020a600cb75:
   picture:
   track: true
   vendor: Amazon Technologies Inc.
+
+60019417348e:
+  hide_if_away: false
+  mac: 60:01:94:17:34:8E
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+5ccf7f9735d0:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:35:D0
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+5ccf7f972136:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:21:36
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.

@@ -15,10 +15,10 @@
     icon: mdi:comment-multiple-outline
     view: no
     entities:
-      - light.dev1
-      - sensor.dev1_temperature
-      - light.dev2
-      - sensor.dev2_temperature
+      - light.dev11
+      - sensor.dev11_temperature
+      - light.dev7
+      - sensor.dev7_temperature
 
   kitchen:
     control: hidden
@@ -28,6 +28,8 @@
       - light.dev4
       - sensor.dev4_temperature
       - binary_sensor.dev4_motion
+      - light.dev2
+      - sensor.dev2_temperature
 
   bed_room:
     control: hidden
@@ -36,6 +38,7 @@
       - binary_sensor.dev3_motion
       - light.dev3
       - sensor.dev3_temperature
+      - sensor.dev3_humidity
 
   presents:
     control: hidden
@@ -47,15 +50,19 @@
       - device_tracker.64bc0c4df830
 
   outside:
-    - sun.sun
-    - sensor.dark_sky_temperature
-    - sensor.dark_sky_apparent_temperature
-    - sensor.dark_sky_daily_high_temperature
-    - sensor.dark_sky_daily_low_temperature
-    - sensor.dark_sky_cloud_coverage
-    - sensor.dark_sky_precip_probability
-    - sensor.dark_sky_precip_intensity
-    - sensor.dark_sky_daily_summary
+    control: hidden
+    entities:
+      - light.dev5
+#      - light.dev6
+      - sun.sun
+      - sensor.dark_sky_temperature
+      - sensor.dark_sky_apparent_temperature
+      - sensor.dark_sky_daily_high_temperature
+      - sensor.dark_sky_daily_low_temperature
+      - sensor.dark_sky_cloud_coverage
+      - sensor.dark_sky_precip_probability
+      - sensor.dark_sky_precip_intensity
+      - sensor.dark_sky_daily_summary
 
   rssi:
     name: Signal level
@@ -65,6 +72,13 @@
       - sensor.dev2_rssi
       - sensor.dev3_rssi
       - sensor.dev4_rssi
+      - sensor.dev5_rssi
+#      - sensor.dev6_rssi
+      - sensor.dev7_rssi
+#      - sensor.dev8_rssi
+#      - sensor.dev9_rssi
+#      - sensor.dev10_rssi
+      - sensor.dev11_rssi
 
   mediaplayer:
     name: Media Player
@@ -76,13 +90,15 @@
     name: System
     view: yes
     entities:
-      - automation.dev1
-      - automation.dev1_on_with_dev2
-      - automation.dev2_on_with_dev1
-      - automation.dev1_off_with_dev2
-      - automation.dev2_off_with_dev1
-      - automation.sunset_dev1_dev2
+      - automation.dev7_11_on
+      - automation.dev7_11_off
+      - automation.dev2_4_on
+      - automation.dev2_4_off
+      - automation.sunset_dev7_dev11
       - automation.Turn_on_kitchen_lights_when_there_is_movement
+      - automation.Turn_off_kitchen_lights_10min_after_movement
+      - automation.sunset_dev5
+      - automation.midnight_dev5
       - sensor.ram_free
       - sensor.disk_use_home
       - sensor.cpu_use
