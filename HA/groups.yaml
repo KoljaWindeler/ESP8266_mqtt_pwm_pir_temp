@@ -48,6 +48,15 @@
       - sensor.To_Baker
       - device_tracker.7c11cba3f1d1
       - device_tracker.64bc0c4df830
+	  
+  motion:
+    control: hidden
+    view: no
+    entities:
+      - binary_sensor.dev1_motion
+      - binary_sensor.dev2_motion
+      - binary_sensor.dev3_motion
+      - binary_sensor.illuminum_motion
 
   outside:
     control: hidden
