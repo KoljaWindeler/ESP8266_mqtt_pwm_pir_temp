@@ -18602,12 +18602,26 @@ design rules under a new name.</description>
 <wire x1="31.1" y1="25.18" x2="37.12" y2="25.18" width="0.4064" layer="1"/>
 <wire x1="37.12" y1="25.18" x2="38.3" y2="24" width="0.4064" layer="1"/>
 </signal>
-<signal name="N$23">
+<signal name="PIR">
 <contactref element="ESP" pad="D5"/>
 <contactref element="ESP" pad="D51"/>
 <wire x1="31.1" y1="32.8" x2="28.63" y2="32.8" width="0.4064" layer="1"/>
+<contactref element="PIR" pad="2"/>
+<wire x1="13.26" y1="48.04" x2="13.2" y2="48.1" width="0.4064" layer="1"/>
+<via x="13.2" y="48.1" extent="1-16" drill="0.3048"/>
+<wire x1="13.2" y1="48.1" x2="12.8" y2="48.5" width="0.4064" layer="16"/>
+<wire x1="12.8" y1="48.5" x2="12.8" y2="58.4" width="0.4064" layer="16"/>
+<wire x1="12.8" y1="58.4" x2="10.6" y2="60.6" width="0.4064" layer="16"/>
+<wire x1="28.63" y1="32.8" x2="29.9" y2="34.07" width="0.4064" layer="16"/>
+<wire x1="29.9" y1="34.07" x2="29.9" y2="46.8" width="0.4064" layer="16"/>
+<via x="29.9" y="46.8" extent="1-16" drill="0.3048"/>
+<wire x1="29.9" y1="46.8" x2="21.1" y2="46.8" width="0.4064" layer="1"/>
+<wire x1="21.1" y1="46.8" x2="19.8" y2="48.1" width="0.4064" layer="1"/>
+<wire x1="19.8" y1="48.1" x2="13.2" y2="48.1" width="0.4064" layer="1"/>
+<wire x1="10.6" y1="60.6" x2="10.6" y2="76.36" width="0.4064" layer="16"/>
+<wire x1="10.6" y1="76.36" x2="12.74" y2="78.5" width="0.4064" layer="16"/>
 </signal>
-<signal name="N$26">
+<signal name="DHT_SIG">
 <contactref element="ESP" pad="D4"/>
 <contactref element="DHT22" pad="2"/>
 <contactref element="ESP" pad="D41"/>
@@ -18633,7 +18647,7 @@ design rules under a new name.</description>
 <wire x1="28.63" y1="42.96" x2="15.396" y2="42.96" width="0.4064" layer="1"/>
 <wire x1="15.396" y1="42.96" x2="15.1584" y2="43.1976" width="0.4064" layer="1"/>
 </signal>
-<signal name="N$28">
+<signal name="TTL_DIMM">
 <contactref element="ESP" pad="D2"/>
 <contactref element="DIMMING" pad="1"/>
 <contactref element="ESP" pad="D21"/>
@@ -18648,24 +18662,6 @@ design rules under a new name.</description>
 <via x="19.8" y="46.3" extent="1-16" drill="0.3048"/>
 <wire x1="19.8" y1="46.3" x2="20.6" y2="45.5" width="0.4064" layer="1"/>
 <wire x1="20.6" y1="45.5" x2="28.63" y2="45.5" width="0.4064" layer="1"/>
-</signal>
-<signal name="N$29">
-<contactref element="ESP" pad="D1"/>
-<contactref element="PIR" pad="2"/>
-<contactref element="ESP" pad="D11"/>
-<wire x1="31.1" y1="48.04" x2="28.63" y2="48.04" width="0.4064" layer="1"/>
-<wire x1="28.63" y1="48.04" x2="13.26" y2="48.04" width="0.4064" layer="1"/>
-<wire x1="13.26" y1="48.04" x2="13.2" y2="48.1" width="0.4064" layer="1"/>
-<via x="13.2" y="48.1" extent="1-16" drill="0.3048"/>
-<wire x1="13.2" y1="48.1" x2="12.8" y2="48.5" width="0.4064" layer="16"/>
-<wire x1="12.8" y1="48.5" x2="12.8" y2="58.4" width="0.4064" layer="16"/>
-<wire x1="12.8" y1="58.4" x2="10.6" y2="60.6" width="0.4064" layer="16"/>
-<via x="10.6" y="60.6" extent="1-16" drill="0.3048"/>
-<wire x1="8.7" y1="71.8" x2="8.7" y2="74.46" width="0.4064" layer="1"/>
-<wire x1="8.7" y1="74.46" x2="12.74" y2="78.5" width="0.4064" layer="1"/>
-<wire x1="10.6" y1="60.6" x2="9.7" y2="61.5" width="0.4064" layer="1"/>
-<wire x1="9.7" y1="61.5" x2="9.7" y2="70.8" width="0.4064" layer="1"/>
-<wire x1="9.7" y1="70.8" x2="8.7" y2="71.8" width="0.4064" layer="1"/>
 </signal>
 <signal name="N$30">
 <contactref element="ESP" pad="D0"/>
@@ -18868,7 +18864,7 @@ design rules under a new name.</description>
 <signal name="N$11">
 <contactref element="ESP" pad="3V3@2"/>
 </signal>
-<signal name="N$25">
+<signal name="3V3">
 <contactref element="SV3" pad="1"/>
 <contactref element="SV2" pad="1"/>
 <contactref element="SV1" pad="1"/>
@@ -18942,6 +18938,11 @@ design rules under a new name.</description>
 <via x="12.8" y="16.5" extent="1-16" drill="0.3048"/>
 <wire x1="12.8" y1="16.5" x2="12.8" y2="13.9" width="0.4064" layer="1"/>
 <wire x1="12.8" y1="13.9" x2="12.9" y2="13.8" width="0.4064" layer="1"/>
+</signal>
+<signal name="N$16">
+<contactref element="ESP" pad="D1"/>
+<contactref element="ESP" pad="D11"/>
+<wire x1="31.1" y1="48.04" x2="28.63" y2="48.04" width="0.4064" layer="1"/>
 </signal>
 </signals>
 <errors>

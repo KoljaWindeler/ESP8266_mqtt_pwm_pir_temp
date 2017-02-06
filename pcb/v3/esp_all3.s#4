@@ -23988,6 +23988,7 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <wire x1="12.7" y1="15.24" x2="12.7" y2="20.32" width="0.1524" layer="91"/>
 <pinref part="D3" gate="G$1" pin="C"/>
 <wire x1="25.4" y1="15.24" x2="25.4" y2="25.4" width="0.1524" layer="91"/>
+<junction x="25.4" y="15.24"/>
 </segment>
 </net>
 <net name="RELAY_LO3" class="0">
