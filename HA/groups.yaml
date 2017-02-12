@@ -7,6 +7,7 @@
       - group.dining_room
       - group.outside
       - group.bed_room
+      - group.hallway
       - group.presents
       - media_player.jkw_cast2
 
@@ -37,10 +38,18 @@
     control: hidden
     view: no
     entities:
-      - binary_sensor.dev3_motion
-      - light.dev3
-      - sensor.dev3_temperature
-      - sensor.dev3_humidity
+      - light.dev13
+      - binary_sensor.dev13_motion
+      - sensor.dev13_temperature
+
+  hallway:
+    control: hidden
+    view: no
+    entities:
+      - light.dev10
+      - binary_sensor.dev10_motion
+      - sensor.dev10_temperature
+
 
   presents:
     control: hidden
@@ -108,9 +117,22 @@
       - automation.sunset_dev7_dev11_dev1
       - automation.Turn_on_kitchen_lights_when_there_is_movement
       - automation.Turn_off_kitchen_lights_10min_after_movement
+      - automation.Turn_on_hallway_lights_when_there_is_movement
+      - automation.Turn_off_hallway_lights_10min_after_movement
       - automation.sunset_dev5
       - automation.midnight_dev5
       - automation.all_home_dev5
       - sensor.ram_free
       - sensor.disk_use_home
       - sensor.cpu_use
+
+  system:
+    name: Playground
+    view: yes
+    entities:
+      - binary_sensor.dev3_motion
+      - light.dev3
+      - sensor.dev3_temperature
+      - sensor.dev3_humidity
+      - binary_sensor.dev12_motion
+      - light.dev12

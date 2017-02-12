@@ -63,6 +63,14 @@
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
+  - platform: mqtt ### museum flur
+    name: "dev10"
+    state_topic: "dev10/simple_light/status"
+    command_topic: "dev10/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
   - platform: mqtt ### tower living
     name: "dev11"
     state_topic: "dev11/simple_light/status"
@@ -70,6 +78,30 @@
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### dimmer treppe
+    name: "dev12"
+    state_topic: "dev12/PWM_light/status"
+    command_topic: "dev12/PWM_dimm/switch"
+    brightness_state_topic: 'dev12/PWM_light/brightness'
+    brightness_command_topic: 'dev12/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### dimmer treppe
+    name: "dev13"
+    state_topic: "dev13/PWM_light/status"
+    command_topic: "dev13/PWM_dimm/switch"
+    brightness_state_topic: 'dev13/PWM_light/brightness'
+    brightness_command_topic: 'dev13/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"

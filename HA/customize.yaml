@@ -55,17 +55,17 @@
     sensor.dev2_rssi:
       friendly_name: "Hood Signal"
 # -----------------------------------------------
-    light.dev3:
+    light.dev13:
       friendly_name: "Sideboard"
-    sensor.dev3_rssi:
+    sensor.dev13_rssi:
       friendly_name: "Sideboard rssi"
-    sensor.dev3_temperature:
+    sensor.dev13_temperature:
       icon: "mdi:thermometer"
       friendly_name: "Sideboard"
-    sensor.dev3_humidity:
-      friendly_name: "Sideboard"
-      icon: "mdi:water-percent"
-    binary_sensor.dev3_motion:
+#    sensor.dev13_humidity:
+#      friendly_name: "Sideboard"
+#      icon: "mdi:water-percent"
+    binary_sensor.dev13_motion:
       friendly_name: "Sideboard"
 # -----------------------------------------------
     light.dev4:
@@ -94,6 +94,17 @@
     sensor.dev7_rssi:
       friendly_name: "TowerW Signal"
 # -----------------------------------------------
+    light.dev10:
+      friendly_name: "HallwayU"
+      emulated_hue_name: "Kueche"
+    sensor.dev10_temperature:
+      friendly_name: "HallwayU"
+      icon: "mdi:thermometer"
+    binary_sensor.dev10_motion:
+      friendly_name: "HallwayU"
+    sensor.dev10_rssi:
+      friendly_name: "HallwayU Signal"
+# -----------------------------------------------
     light.dev11:
       friendly_name: "TowerE"
     sensor.dev11_temperature:
@@ -104,14 +115,24 @@
     sensor.dev11_rssi:
       friendly_name: "TowerE Signal"
 # -----------------------------------------------
+    light.dev3:
+      friendly_name: "PCB2"
+    sensor.dev3_temperature:
+      friendly_name: "PCB2"
+      icon: "mdi:thermometer"
+    binary_sensor.dev3_motion:
+      friendly_name: "PCB2"
+    sensor.dev3_rssi:
+      friendly_name: "PCB2 Signal"
+# -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"
 # -----------------------------------------------
 # -----------------------------------------------
     automation.dev2_4_off:
-      friendly_name: "Kitchen off"
+      friendly_name: "Kitchen combined off"
     automation.dev2_4_on:
-      friendly_name: "Kitchen on"
+      friendly_name: "Kitchen combined on"
     automation.Turn_off_kitchen_lights_10min_after_movement:
       friendly_name: "Kitchen 10min delay off"
     automation.Turn_on_kitchen_lights_when_there_is_movement:

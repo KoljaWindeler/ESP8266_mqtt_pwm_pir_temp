@@ -122,6 +122,39 @@
       entity_id: script.kitchen_lamp_off
 # ----------------------------------------------------------
 # ----------------------------------------------------------
+  - alias: Turn_on_hallway_lights_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev10_motion
+        to: 'on'
+    condition: and
+    conditions:
+      - condition: time
+        after: '06:30:00'
+      - condition: time
+        before: '23:30:00'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev10
+# ----------------------------------------------------------
+  - alias: Turn_off_hallway_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev10_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev10
+# ----------------------------------------------------------
+# ----------------------------------------------------------
 # switch the light on, 15 min after sunset, but only if that before 23:30
   - alias: sunset_dev5
     initial_state: True

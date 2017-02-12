@@ -75,6 +75,16 @@
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
+    state_topic: "dev10/temperature_DS"
+    name: "dev10_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev10/rssi"
+    name: "dev10_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
     state_topic: "dev11/temperature_DS"
     name: "dev11_temperature"
     unit_of_measurement: "ºC"
@@ -82,6 +92,16 @@
   - platform: mqtt
     state_topic: "dev11/rssi"
     name: "dev11_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev13/temperature_DS"
+    name: "dev13_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev13/rssi"
+    name: "dev13_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt

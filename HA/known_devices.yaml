@@ -310,3 +310,35 @@ a020a600cb75:
   picture:
   track: true
   vendor: Espressif Inc.
+
+a020a60f9b55:
+  hide_if_away: false
+  mac: A0:20:A6:0F:9B:55
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+98f1700188b4:
+  hide_if_away: false
+  mac: 98:F1:70:01:88:B4
+  name: --
+  picture:
+  track: true
+  vendor: Murata Manufacturing Co., Ltd.
+
+5ccf7f97359a:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:35:9A
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+a020a600f596:
+  hide_if_away: false
+  mac: A0:20:A6:00:F5:96
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
