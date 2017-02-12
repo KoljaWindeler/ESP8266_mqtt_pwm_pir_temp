@@ -70,8 +70,7 @@ group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml
 binary_sensor: !include b_sensors.yaml
+input_slider: !include slider.yaml
 
 automation: !include automation.yaml
 script: !include scripts.yaml
-
-

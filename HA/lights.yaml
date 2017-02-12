@@ -103,6 +103,14 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
+  - platform: mqtt ### kitchen drawer
+    name: "dev14"
+    state_topic: "dev14/simple_light/status"
+    command_topic: "dev14/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"
     state_topic: "dev99/PWM_light/status"

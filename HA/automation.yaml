@@ -1,6 +1,6 @@
 # ----------------------------------------------------------
-# ----------------------------------------------------------
-  - alias: dev2_4_on
+# ------------------ kitchen joiner ------------------------
+  - alias: dev2_4_14_on
     initial_state: True
     hide_entity: False
     trigger:
@@ -10,18 +10,25 @@
       - platform: state
         entity_id: light.dev4
         to: 'on'
+      - platform: state
+        entity_id: light.dev14
+        to: 'on'
     action:
       - service: light.turn_on
         entity_id: 
           - light.dev2
           - light.dev4
+          - light.dev14
 # ----------------------------------------------------------
-  - alias: dev2_4_off
+  - alias: dev2_4_14_off
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: light.dev2
+        to: 'off'
+      - platform: state
+        entity_id: light.dev14
         to: 'off'
       - platform: state
         entity_id: light.dev4
@@ -31,8 +38,12 @@
         entity_id:
           - light.dev2
           - light.dev4
+          - light.dev14
+# ------------------ kitchen joiner ------------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
+# ------------------ living room joiner --------------------
   - alias: dev7_11_1_on
     initial_state: True
     hide_entity: False
@@ -72,8 +83,11 @@
           - light.dev1
           - light.dev7
           - light.dev11
+# ------------------ living room joiner --------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
+# ------------------- living room sunset -------------------
   - alias: sunset_dev7_dev11_dev1
     initial_state: True
     hide_entity: False
@@ -92,13 +106,15 @@
           state: 'home'
     action:
       - service: homeassistant.turn_on
-        entity_id: light.dev1
-      - service: homeassistant.turn_on
-        entity_id: light.dev7
-      - service: homeassistant.turn_on
-        entity_id: light.dev11
+        entity_id: 
+          - light.dev1
+          - light.dev7
+          - light.dev11
+# ------------------- living room sunset -------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
+# ------------------- kitchen movement ---------------------
   - alias: Turn_on_kitchen_lights_when_there_is_movement
     initial_state: True
     hide_entity: False
@@ -106,22 +122,48 @@
       - platform: state
         entity_id: binary_sensor.dev4_motion
         to: 'on'
+      - platform: state
+        entity_id: binary_sensor.dev14_motion
+        to: 'on'
     action:
       service: homeassistant.turn_on
-      entity_id: script.kitchen_lamp_on
+      entity_id: light.dev14 # turn only one on, all others will follow
 # ----------------------------------------------------------
   - alias: Turn_off_kitchen_lights_10min_after_movement
     initial_state: True
     hide_entity: False
-    trigger:
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
       - platform: state
         entity_id: binary_sensor.dev4_motion
         to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.dev14_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    condition: # make sure that BOTH sensors show off
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.dev4_motion
+          state: 'off'
+        - condition: state
+          entity_id: binary_sensor.dev14_motion
+          state: 'off'
     action:
-      service: homeassistant.turn_on
-      entity_id: script.kitchen_lamp_off
+      service: homeassistant.turn_off
+      entity_id: light.dev14 # turn only one on, all others will follow
+# ------------------- kitchen movement ---------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
+# -------------------- hallway movement --------------------
   - alias: Turn_on_hallway_lights_when_there_is_movement
     initial_state: True
     hide_entity: False
@@ -129,12 +171,13 @@
       - platform: state
         entity_id: binary_sensor.dev10_motion
         to: 'on'
-    condition: and
-    conditions:
-      - condition: time
-        after: '06:30:00'
-      - condition: time
-        before: '23:30:00'
+    condition:
+      condition: and
+      conditions:
+        - condition: time
+          after: '06:30:00'
+        - condition: time
+          before: '23:30:00'
     action:
       service: homeassistant.turn_on
       entity_id: light.dev10
@@ -148,13 +191,16 @@
         to: 'off'
         for: 
           hours: 0
-          minutes: 10
+          minutes: 2
           seconds: 0
     action:
       service: homeassistant.turn_off
       entity_id: light.dev10
+# -------------------- hallway movement --------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
+# -------------------- outside on dark ---------------------
 # switch the light on, 15 min after sunset, but only if that before 23:30
   - alias: sunset_dev5
     initial_state: True
@@ -212,5 +258,17 @@
     action:
       - service: homeassistant.turn_off
         entity_id: light.dev5
+# -------------------- outside on dark ---------------------
 # ----------------------------------------------------------
-# ----------------------------------------------------------
+  - alias: set_dimmer
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: state
+      entity_id: input_slider.dev12_dimmer_delay
+    action:
+      service: mqtt.publish
+      data_template:
+        topic: "dev12/PWM_dimm/delay/set"
+        retain: true
+        payload: '{{ states.input_slider.dimmer_delay.state | int }}'

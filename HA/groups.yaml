@@ -29,9 +29,11 @@
     view: no
     entities:
       - light.dev4
-      - sensor.dev4_temperature
-      - binary_sensor.dev4_motion
+      - light.dev14
       - light.dev2
+      - binary_sensor.dev4_motion
+      - binary_sensor.dev14_motion
+      - sensor.dev4_temperature
       - sensor.dev2_temperature
 
   bed_room:
@@ -40,7 +42,6 @@
     entities:
       - light.dev13
       - binary_sensor.dev13_motion
-      - sensor.dev13_temperature
 
   hallway:
     control: hidden
@@ -99,6 +100,9 @@
 #      - sensor.dev9_rssi
 #      - sensor.dev10_rssi
       - sensor.dev11_rssi
+      - sensor.dev12_rssi
+      - sensor.dev13_rssi
+      - sensor.dev14_rssi
 
   mediaplayer:
     name: Media Player
@@ -112,8 +116,8 @@
     entities:
       - automation.dev7_11_1_on
       - automation.dev7_11_1_off
-      - automation.dev2_4_on
-      - automation.dev2_4_off
+      - automation.dev2_4_14_on
+      - automation.dev2_4_14_off
       - automation.sunset_dev7_dev11_dev1
       - automation.Turn_on_kitchen_lights_when_there_is_movement
       - automation.Turn_off_kitchen_lights_10min_after_movement
@@ -126,7 +130,7 @@
       - sensor.disk_use_home
       - sensor.cpu_use
 
-  system:
+  playground:
     name: Playground
     view: yes
     entities:
@@ -136,3 +140,4 @@
       - sensor.dev3_humidity
       - binary_sensor.dev12_motion
       - light.dev12
+      - input_slider.dev12_dimmer_delay

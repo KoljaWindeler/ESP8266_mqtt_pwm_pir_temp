@@ -342,3 +342,11 @@ a020a600f596:
   picture:
   track: true
   vendor: Espressif Inc.
+
+5ccf7fa00c3e:
+  hide_if_away: false
+  mac: 5C:CF:7F:A0:0C:3E
+  name: --
+  picture:
+  track: true
+  vendor: unknown
