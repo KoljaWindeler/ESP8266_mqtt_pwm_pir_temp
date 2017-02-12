@@ -271,4 +271,4 @@
       data_template:
         topic: "dev12/PWM_dimm/delay/set"
         retain: true
-        payload: '{{ states.input_slider.dimmer_delay.state | int }}'
+        payload: '{{ states.input_slider.dev12_dimmer_delay.state | int }}'
