@@ -49,8 +49,8 @@
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
-#define PINOUT_SONOFF 1     // set this to "#define" for the sonoff
-#undef PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
+//#define PINOUT_SONOFF 1     // set this to "#define" for the sonoff
+#define PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
 // D8 war nicht so gut ... startet nicht mehr 
 #ifdef PINOUT_SONOFF
 	#define SIMPLE_LIGHT_PIN  12 // D10
@@ -554,7 +554,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.println("[mqtt] Attempting connection...");
     // Attempt to connect
-    Serial.print("client id: ");
+    Serial.print("[mqtt] client id: ");
     Serial.println(mqtt.server_cli_id);
     if (client.connect(mqtt.server_cli_id, mqtt.login, mqtt.pw)) {
       Serial.println("[mqtt] connected");
