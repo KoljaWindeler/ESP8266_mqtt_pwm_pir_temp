@@ -23634,23 +23634,27 @@ with Current Source and Sink Capability</description>
 <part name="VDD2" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD3" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD4" library="supply1" deviceset="VDD" device=""/>
+<part name="DIMMING1" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
+<part name="U$2" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
+<part name="GND10" library="supply1" deviceset="GND" device=""/>
+<part name="GND12" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 <text x="86.36" y="165.1" size="1.778" layer="91">5v relai am 12v in? </text>
-<wire x1="220.98" y1="109.22" x2="220.98" y2="170.18" width="0.1524" layer="97"/>
+<wire x1="220.98" y1="114.3" x2="220.98" y2="170.18" width="0.1524" layer="97"/>
 <wire x1="220.98" y1="170.18" x2="165.1" y2="170.18" width="0.1524" layer="97"/>
-<wire x1="165.1" y1="170.18" x2="165.1" y2="109.22" width="0.1524" layer="97"/>
+<wire x1="165.1" y1="170.18" x2="165.1" y2="114.3" width="0.1524" layer="97"/>
 <text x="182.88" y="167.64" size="1.778" layer="97">DS18B20 Temp sensors</text>
-<wire x1="165.1" y1="109.22" x2="220.98" y2="109.22" width="0.1524" layer="97"/>
-<wire x1="220.98" y1="109.22" x2="220.98" y2="95.25" width="0.1524" layer="97"/>
-<wire x1="165.1" y1="95.25" x2="165.1" y2="109.22" width="0.1524" layer="97"/>
-<text x="182.88" y="106.68" size="1.778" layer="97">Relay</text>
+<wire x1="165.1" y1="114.3" x2="220.98" y2="114.3" width="0.1524" layer="97"/>
+<wire x1="220.98" y1="114.3" x2="220.98" y2="105.41" width="0.1524" layer="97"/>
+<wire x1="165.1" y1="105.41" x2="165.1" y2="114.3" width="0.1524" layer="97"/>
+<text x="167.64" y="111.76" size="1.778" layer="97">Relay</text>
 <wire x1="165.1" y1="87.63" x2="220.98" y2="87.63" width="0.1524" layer="97"/>
-<wire x1="220.98" y1="87.63" x2="220.98" y2="95.25" width="0.1524" layer="97"/>
-<wire x1="220.98" y1="95.25" x2="165.1" y2="95.25" width="0.1524" layer="97"/>
-<wire x1="165.1" y1="95.25" x2="165.1" y2="87.63" width="0.1524" layer="97"/>
+<wire x1="220.98" y1="87.63" x2="220.98" y2="105.41" width="0.1524" layer="97"/>
+<wire x1="220.98" y1="105.41" x2="165.1" y2="105.41" width="0.1524" layer="97"/>
+<wire x1="165.1" y1="105.41" x2="165.1" y2="87.63" width="0.1524" layer="97"/>
 <wire x1="165.1" y1="87.63" x2="165.1" y2="68.58" width="0.1524" layer="97"/>
 <wire x1="220.98" y1="68.58" x2="220.98" y2="87.63" width="0.1524" layer="97"/>
 <text x="182.88" y="92.71" size="1.778" layer="97">PWM_POW out</text>
@@ -23678,17 +23682,17 @@ with Current Source and Sink Capability</description>
 <instance part="GND8" gate="1" x="106.68" y="139.7"/>
 <instance part="P+6" gate="VCC" x="121.92" y="162.56" rot="MR0"/>
 <instance part="D8" gate="G$1" x="116.84" y="149.86" rot="MR90"/>
-<instance part="U$8" gate="G$1" x="208.28" y="99.06" smashed="yes">
-<attribute name="NAME" x="216.662" y="98.552" size="1.778" layer="95" rot="R90"/>
+<instance part="U$8" gate="G$1" x="208.28" y="109.22" smashed="yes">
+<attribute name="NAME" x="216.662" y="108.712" size="1.778" layer="95" rot="R90"/>
 </instance>
 <instance part="U$3" gate="G$1" x="208.28" y="86.36" smashed="yes">
 <attribute name="NAME" x="216.662" y="85.852" size="1.778" layer="95" rot="R90"/>
 </instance>
-<instance part="DIMMING" gate="G$1" x="134.62" y="91.44" smashed="yes">
-<attribute name="NAME" x="135.89" y="99.06" size="1.778" layer="95"/>
-<attribute name="VALUE" x="133.35" y="96.52" size="1.778" layer="96"/>
+<instance part="DIMMING" gate="G$1" x="93.98" y="106.68" smashed="yes">
+<attribute name="NAME" x="95.25" y="114.3" size="1.778" layer="95"/>
+<attribute name="VALUE" x="92.71" y="111.76" size="1.778" layer="96"/>
 </instance>
-<instance part="GND3" gate="1" x="137.16" y="78.74"/>
+<instance part="GND3" gate="1" x="96.52" y="96.52"/>
 <instance part="U$5" gate="G$1" x="10.16" y="86.36" smashed="yes" rot="MR270">
 <attribute name="NAME" x="4.699" y="88.9" size="1.778" layer="95" rot="R90"/>
 </instance>
@@ -23728,11 +23732,17 @@ with Current Source and Sink Capability</description>
 <attribute name="VALUE" x="111.76" y="106.68" size="1.778" layer="96"/>
 </instance>
 <instance part="GND11" gate="1" x="116.84" y="81.28"/>
-<instance part="DIMMING2" gate="G$1" x="127" y="96.52" smashed="yes"/>
+<instance part="DIMMING2" gate="G$1" x="60.96" y="106.68" smashed="yes"/>
 <instance part="VDD1" gate="G$1" x="119.38" y="68.58"/>
 <instance part="VDD2" gate="G$1" x="43.18" y="45.72"/>
 <instance part="VDD3" gate="G$1" x="10.16" y="96.52"/>
 <instance part="VDD4" gate="G$1" x="180.34" y="137.16"/>
+<instance part="DIMMING1" gate="G$1" x="78.74" y="106.68" smashed="yes"/>
+<instance part="U$2" gate="G$1" x="208.28" y="99.06" smashed="yes">
+<attribute name="NAME" x="216.662" y="98.552" size="1.778" layer="95" rot="R90"/>
+</instance>
+<instance part="GND10" gate="1" x="81.28" y="96.52"/>
+<instance part="GND12" gate="1" x="63.5" y="96.52"/>
 </instances>
 <busses>
 </busses>
@@ -23855,22 +23865,24 @@ with Current Source and Sink Capability</description>
 <wire x1="93.98" y1="58.42" x2="104.14" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="104.14" y1="58.42" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="DIMMING" gate="G$1" pin="G"/>
-<wire x1="132.08" y1="88.9" x2="121.92" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="Q1" gate="1" pin="G"/>
-<wire x1="121.92" y1="88.9" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="104.14" x2="88.9" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="104.14" x2="88.9" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="88.9" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="111.76" y1="93.98" x2="104.14" y2="93.98" width="0.1524" layer="91"/>
 <wire x1="104.14" y1="93.98" x2="104.14" y2="88.9" width="0.1524" layer="91"/>
 <junction x="104.14" y="88.9"/>
-<pinref part="DIMMING2" gate="G$1" pin="G"/>
-<wire x1="124.46" y1="93.98" x2="121.92" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="121.92" y1="93.98" x2="121.92" y2="88.9" width="0.1524" layer="91"/>
-<junction x="121.92" y="88.9"/>
 </segment>
 </net>
 <net name="N$30" class="0">
 <segment>
 <pinref part="ESP" gate="G$1" pin="D0"/>
-<wire x1="93.98" y1="63.5" x2="99.06" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="63.5" x2="96.52" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="63.5" x2="96.52" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="76.2" x2="53.34" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="76.2" x2="53.34" y2="104.14" width="0.1524" layer="91"/>
+<pinref part="DIMMING2" gate="G$1" pin="G"/>
+<wire x1="53.34" y1="104.14" x2="58.42" y2="104.14" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -23902,12 +23914,7 @@ with Current Source and Sink Capability</description>
 <segment>
 <pinref part="DIMMING" gate="G$1" pin="S"/>
 <pinref part="GND3" gate="1" pin="GND"/>
-<wire x1="137.16" y1="81.28" x2="137.16" y2="83.82" width="0.1524" layer="91"/>
-<pinref part="DIMMING2" gate="G$1" pin="S"/>
-<wire x1="137.16" y1="83.82" x2="137.16" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="129.54" y1="91.44" x2="129.54" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="129.54" y1="83.82" x2="137.16" y2="83.82" width="0.1524" layer="91"/>
-<junction x="137.16" y="83.82"/>
+<wire x1="96.52" y1="99.06" x2="96.52" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$7" gate="G$1" pin="2"/>
@@ -23956,6 +23963,16 @@ with Current Source and Sink Capability</description>
 <pinref part="Q1" gate="1" pin="S"/>
 <pinref part="GND11" gate="1" pin="GND"/>
 <wire x1="116.84" y1="91.44" x2="116.84" y2="83.82" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND12" gate="1" pin="GND"/>
+<pinref part="DIMMING2" gate="G$1" pin="S"/>
+<wire x1="63.5" y1="99.06" x2="63.5" y2="101.6" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND10" gate="1" pin="GND"/>
+<pinref part="DIMMING1" gate="G$1" pin="S"/>
+<wire x1="81.28" y1="99.06" x2="81.28" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -24015,39 +24032,36 @@ with Current Source and Sink Capability</description>
 <segment>
 <pinref part="RELAY1" gate="G$1" pin="SWCLOSE"/>
 <wire x1="152.4" y1="144.78" x2="142.24" y2="144.78" width="0.1524" layer="91"/>
-<wire x1="152.4" y1="144.78" x2="152.4" y2="99.06" width="0.1524" layer="91"/>
-<label x="187.96" y="99.06" size="1.778" layer="95"/>
+<wire x1="152.4" y1="144.78" x2="152.4" y2="109.22" width="0.1524" layer="91"/>
+<label x="187.96" y="109.22" size="1.778" layer="95"/>
 <pinref part="U$8" gate="G$1" pin="2"/>
-<wire x1="208.28" y1="99.06" x2="152.4" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="208.28" y1="109.22" x2="152.4" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="IN1" class="0">
 <segment>
 <pinref part="RELAY1" gate="G$1" pin="SWCOMMON"/>
 <wire x1="142.24" y1="149.86" x2="154.94" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="154.94" y1="149.86" x2="154.94" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="149.86" x2="154.94" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="U$8" gate="G$1" pin="1"/>
-<wire x1="208.28" y1="101.6" x2="154.94" y2="101.6" width="0.1524" layer="91"/>
-<label x="187.96" y="101.6" size="1.778" layer="95"/>
+<wire x1="208.28" y1="111.76" x2="154.94" y2="111.76" width="0.1524" layer="91"/>
+<label x="187.96" y="111.76" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="DIMMING" class="0">
 <segment>
 <pinref part="DIMMING" gate="G$1" pin="D"/>
-<wire x1="137.16" y1="96.52" x2="137.16" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="137.16" y1="104.14" x2="149.86" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="149.86" y1="104.14" x2="149.86" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="111.76" x2="96.52" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="116.84" x2="129.54" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="116.84" x2="129.54" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="104.14" x2="129.54" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="U$3" gate="G$1" pin="1"/>
-<wire x1="149.86" y1="88.9" x2="208.28" y2="88.9" width="0.1524" layer="91"/>
-<label x="132.08" y="104.14" size="1.778" layer="95"/>
-<wire x1="137.16" y1="104.14" x2="129.54" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="88.9" x2="208.28" y2="88.9" width="0.1524" layer="91"/>
+<label x="116.84" y="104.14" size="1.778" layer="95"/>
 <pinref part="Q1" gate="1" pin="D"/>
 <wire x1="129.54" y1="104.14" x2="116.84" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="104.14" x2="116.84" y2="101.6" width="0.1524" layer="91"/>
-<pinref part="DIMMING2" gate="G$1" pin="D"/>
-<wire x1="129.54" y1="101.6" x2="129.54" y2="104.14" width="0.1524" layer="91"/>
 <junction x="129.54" y="104.14"/>
-<junction x="137.16" y="104.14"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -24067,11 +24081,11 @@ with Current Source and Sink Capability</description>
 </net>
 <net name="N$10" class="0">
 <segment>
-<wire x1="106.68" y1="43.18" x2="106.68" y2="124.46" width="0.1524" layer="91"/>
-<wire x1="106.68" y1="124.46" x2="99.06" y2="124.46" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="124.46" x2="99.06" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="43.18" x2="106.68" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="106.68" y1="73.66" x2="48.26" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="73.66" x2="48.26" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="RELAY" gate="G$1" pin="G"/>
-<wire x1="99.06" y1="149.86" x2="101.6" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="149.86" x2="101.6" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="ESP" gate="G$1" pin="D6"/>
 <wire x1="106.68" y1="43.18" x2="93.98" y2="43.18" width="0.1524" layer="91"/>
 </segment>
@@ -24121,7 +24135,12 @@ with Current Source and Sink Capability</description>
 <net name="N$16" class="0">
 <segment>
 <pinref part="ESP" gate="G$1" pin="D1"/>
-<wire x1="93.98" y1="60.96" x2="101.6" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="60.96" x2="99.06" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="60.96" x2="99.06" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="78.74" x2="71.12" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="78.74" x2="71.12" y2="104.14" width="0.1524" layer="91"/>
+<pinref part="DIMMING1" gate="G$1" pin="G"/>
+<wire x1="71.12" y1="104.14" x2="76.2" y2="104.14" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -24168,6 +24187,26 @@ with Current Source and Sink Capability</description>
 <pinref part="VDD2" gate="G$1" pin="VDD"/>
 <wire x1="58.42" y1="38.1" x2="43.18" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="38.1" x2="43.18" y2="43.18" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$20" class="0">
+<segment>
+<pinref part="U$2" gate="G$1" pin="2"/>
+<wire x1="208.28" y1="99.06" x2="132.08" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="99.06" x2="132.08" y2="119.38" width="0.1524" layer="91"/>
+<pinref part="DIMMING1" gate="G$1" pin="D"/>
+<wire x1="132.08" y1="119.38" x2="81.28" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="119.38" x2="81.28" y2="111.76" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$21" class="0">
+<segment>
+<pinref part="U$2" gate="G$1" pin="1"/>
+<wire x1="208.28" y1="101.6" x2="134.62" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="101.6" x2="134.62" y2="121.92" width="0.1524" layer="91"/>
+<pinref part="DIMMING2" gate="G$1" pin="D"/>
+<wire x1="134.62" y1="121.92" x2="63.5" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="63.5" y1="121.92" x2="63.5" y2="111.76" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
