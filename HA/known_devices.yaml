@@ -350,3 +350,19 @@ a020a600f596:
   picture:
   track: true
   vendor: unknown
+
+3ca9f4aa7730:
+  hide_if_away: false
+  mac: 3C:A9:F4:AA:77:30
+  name: --
+  picture:
+  track: true
+  vendor: Intel Corporate
+
+a020a605e321:
+  hide_if_away: false
+  mac: A0:20:A6:05:E3:21
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.

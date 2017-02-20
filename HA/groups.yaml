@@ -48,7 +48,9 @@
     view: no
     entities:
       - light.dev10
+      - light.dev15
       - binary_sensor.dev10_motion
+      - binary_sensor.dev15_motion
       - sensor.dev10_temperature
 
 
@@ -121,8 +123,10 @@
       - automation.sunset_dev7_dev11_dev1
       - automation.Turn_on_kitchen_lights_when_there_is_movement
       - automation.Turn_off_kitchen_lights_10min_after_movement
-      - automation.Turn_on_hallway_lights_when_there_is_movement
-      - automation.Turn_off_hallway_lights_10min_after_movement
+      - automation.Turn_on_hallwayD_lights_when_there_is_movement
+      - automation.Turn_off_hallwayD_lights_10min_after_movement
+      - automation.Turn_on_hallwayU_lights_when_there_is_movement
+      - automation.Turn_off_hallwayU_lights_10min_after_movement
       - automation.sunset_dev5
       - automation.midnight_dev5
       - automation.all_home_dev5

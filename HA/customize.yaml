@@ -122,6 +122,13 @@
     sensor.dev14_rssi:
       friendly_name: "Kitchen Cabinet Signal"
 # -----------------------------------------------
+    light.dev15:
+      friendly_name: "HallwayD"
+    binary_sensor.dev15_motion:
+      friendly_name: "HallwayD"
+    sensor.dev15_rssi:
+      friendly_name: "HallwayD Signal"
+# -----------------------------------------------
 # -----------------------------------------------
     light.dev3:
       friendly_name: "PCB2"
@@ -157,6 +164,14 @@
       friendly_name: "Kitchen 10min delay off"
     automation.Turn_on_kitchen_lights_when_there_is_movement:
       friendly_name: "Kitchen movement on"
+    automation.turn_off_hallwayU_lights_10min_after_movement:
+      friendly_name: "Hallway Up off"
+    automation.turn_off_hallwayD_lights_10min_after_movement:
+      friendly_name: "Hallway Down off"
+    automation.turn_on_hallwayU_lights_when_there_is_movement:
+      friendly_name: "Hallway Up on"
+    automation.turn_on_hallwayD_lights_when_there_is_movement:
+      friendly_name: "Hallway Down on"
 # -----------------------------------------------
 # -----------------------------------------------
     automation.sunset_dev7_dev11_dev1:

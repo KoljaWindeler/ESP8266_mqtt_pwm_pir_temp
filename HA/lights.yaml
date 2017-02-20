@@ -91,7 +91,7 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
-  - platform: mqtt ### dimmer treppe
+  - platform: mqtt ### dimmer bett
     name: "dev13"
     state_topic: "dev13/PWM_light/status"
     command_topic: "dev13/PWM_dimm/switch"
@@ -110,6 +110,18 @@
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### dimmer treppe
+    name: "dev15"
+    state_topic: "dev15/PWM_light/status"
+    command_topic: "dev15/PWM_dimm/switch"
+    brightness_state_topic: 'dev15/PWM_light/brightness'
+    brightness_command_topic: 'dev15/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"

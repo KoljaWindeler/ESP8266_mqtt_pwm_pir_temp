@@ -1,6 +1,15 @@
-DEV1 - Tower Dinning Room, light, temp
-DEV2 - Tower Living Room, light
-DEV3 - Bedroom, pwm light, temperature, PIR
-DEV4 - kugel, temp
-DEV5
-DEV6 
+DEV1  - Kugel im wohnzimmer, temperature, simple light
+DEV2  - Kitchen Hood, temperature, simple light
+DEV3  - Bedroom, temperature, PIR, pwm light
+DEV4  - Kitchen, temperature, PIR, simple light
+DEV5  - outdoor 1, simple light
+DEV6  - outdoor 2
+DEV7  - dinng room tower, temperature, simple light
+DEV8  - inline unused
+DEV9  - inline unused
+DEV10 - upstairs flur, PIR, temperature, simple light
+DEV11 - living room tower, temperature, simple light
+DEV12 - first pcb unused
+DEV13 - pcb unused, PIR working, dimmer
+DEV14 - kitchen drawer, PIR, simple light
+DEV15 - World map, PIR dimmer

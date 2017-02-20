@@ -164,7 +164,7 @@
 
 # ----------------------------------------------------------
 # -------------------- hallway movement --------------------
-  - alias: Turn_on_hallway_lights_when_there_is_movement
+  - alias: Turn_on_hallwayU_lights_when_there_is_movement
     initial_state: True
     hide_entity: False
     trigger:
@@ -182,7 +182,7 @@
       service: homeassistant.turn_on
       entity_id: light.dev10
 # ----------------------------------------------------------
-  - alias: Turn_off_hallway_lights_10min_after_movement
+  - alias: Turn_off_hallwayU_lights_10min_after_movement
     initial_state: True
     hide_entity: False
     trigger:
@@ -196,6 +196,32 @@
     action:
       service: homeassistant.turn_off
       entity_id: light.dev10
+# ----------------------------------------------------------
+  - alias: Turn_on_hallwayD_lights_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev15_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev15
+# ----------------------------------------------------------
+  - alias: Turn_off_hallwayD_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev15_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev15
 # -------------------- hallway movement --------------------
 # ----------------------------------------------------------
 
