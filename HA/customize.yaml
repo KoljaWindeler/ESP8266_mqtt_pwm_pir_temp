@@ -164,6 +164,10 @@
 # -----------------------------------------------
     binary_sensor.g_motion:
       friendly_name: "Global Motion"
+    binary_sensor.g_motion_2h:
+      friendly_name: "Global Motion 2h"
+    binary_sensor.g_motion_10m:
+      friendly_name: "Global Motion 10m"
 # -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"

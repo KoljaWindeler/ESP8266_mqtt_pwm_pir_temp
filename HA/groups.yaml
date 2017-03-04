@@ -64,6 +64,8 @@
       - device_tracker.7c11cba3f1d1
       - device_tracker.64bc0c4df830
       - binary_sensor.g_motion
+      - binary_sensor.g_motion_10m
+      - binary_sensor.g_motion_2h
 
   motion:
     control: hidden

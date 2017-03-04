@@ -1,3 +1,7 @@
+  - platform: time_date
+    display_options:
+      - 'time'
+# -----------------------------------------------------------
   - platform: google_travel_time
     name: To_Hannover
     api_key: removed
@@ -10,6 +14,8 @@
     origin: Wienhausen, Muehlenstr 8a
     destination: Baker Hughes, Celle
 
+# -----------------------------------------------------------
+# -----------------------------------------------------------
   - platform: mqtt
     state_topic: "home/livingroom_fire/temperature"
     name: "Wohnzimmer Kamin"
