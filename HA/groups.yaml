@@ -40,8 +40,9 @@
     control: hidden
     view: no
     entities:
-      - light.dev13
-      - binary_sensor.dev13_motion
+      - light.dev16
+      - binary_sensor.dev16_motion
+      - sensor.dev16_temperature
 
   hallway:
     control: hidden
@@ -62,6 +63,7 @@
       - sensor.To_Baker
       - device_tracker.7c11cba3f1d1
       - device_tracker.64bc0c4df830
+      - binary_sensor.g_motion
 
   motion:
     control: hidden
@@ -105,6 +107,7 @@
       - sensor.dev12_rssi
       - sensor.dev13_rssi
       - sensor.dev14_rssi
+      - sensor.dev15_rssi
 
   mediaplayer:
     name: Media Player
@@ -139,6 +142,7 @@
     view: yes
     entities:
       - binary_sensor.dev3_motion
+      - sensor.dev13_adc
       - light.dev3
       - sensor.dev3_temperature
       - sensor.dev3_humidity

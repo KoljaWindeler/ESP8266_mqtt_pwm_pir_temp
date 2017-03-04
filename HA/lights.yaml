@@ -123,6 +123,18 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
+  - platform: mqtt ### dimmer bedroom
+    name: "dev16"
+    state_topic: "dev16/PWM_light/status"
+    command_topic: "dev16/PWM_dimm/switch"
+    brightness_state_topic: 'dev16/PWM_light/brightness'
+    brightness_command_topic: 'dev16/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"
     state_topic: "dev99/PWM_light/status"

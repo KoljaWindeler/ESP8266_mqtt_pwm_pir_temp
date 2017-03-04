@@ -129,6 +129,16 @@
     sensor.dev15_rssi:
       friendly_name: "HallwayD Signal"
 # -----------------------------------------------
+    light.dev16:
+      friendly_name: "Bedroom"
+    binary_sensor.dev16_motion:
+      friendly_name: "Bedroom"
+    sensor.dev16_rssi:
+      friendly_name: "Bedroom Signal"
+    sensor.dev16_temperature:
+      friendly_name: "Bedroom"
+      icon: "mdi:thermometer"
+# -----------------------------------------------
 # -----------------------------------------------
     light.dev3:
       friendly_name: "PCB2"
@@ -151,6 +161,9 @@
       friendly_name: "PCB1 Signal"
     input_slider.dev12_dimmer_delay:
       friendly_name: "Dimmer Speed"
+# -----------------------------------------------
+    binary_sensor.g_motion:
+      friendly_name: "Global Motion"
 # -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"

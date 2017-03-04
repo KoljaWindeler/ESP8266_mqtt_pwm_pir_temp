@@ -103,6 +103,28 @@
     state_topic: "dev13/rssi"
     name: "dev13_rssi"
     unit_of_measurement: "dbm"
+
+  - platform: mqtt
+    state_topic: "dev13/adc"
+    name: "dev13_adc"
+    sensor_class: "temperature"
+    unit_of_measurement: "ºC"
+# -----------------------------------------------------------
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev16/temperature_DS"
+    name: "dev16_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev16/rssi"
+    name: "dev16_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev15/rssi"
+    name: "dev15_rssi"
+    unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
     state_topic: "dev99/temperature_DS"

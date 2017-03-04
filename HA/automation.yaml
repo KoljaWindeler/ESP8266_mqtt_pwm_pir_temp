@@ -217,11 +217,48 @@
         to: 'off'
         for: 
           hours: 0
-          minutes: 10
+          minutes: 5
           seconds: 0
     action:
       service: homeassistant.turn_off
       entity_id: light.dev15
+# -------------------- hallway movement --------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
+# -------------------- bedroom movement --------------------
+  - alias: Turn_on_bedroom_lights_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev16_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: time
+          after: '06:30:00'
+        - condition: time
+          before: '22:30:00'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev16
+# ----------------------------------------------------------
+  - alias: Turn_off_bedroom_lights_5min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev16_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 5
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev16
 # -------------------- hallway movement --------------------
 # ----------------------------------------------------------
 
