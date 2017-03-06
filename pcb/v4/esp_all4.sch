@@ -23619,6 +23619,33 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 <rectangle x1="1.905" y1="-3.302" x2="2.667" y2="-1.778" layer="51"/>
 <rectangle x1="-0.381" y1="-3.302" x2="0.381" y2="-1.778" layer="51"/>
 </package>
+<package name="DD-3">
+<description>&lt;b&gt;DPAC&lt;/b&gt;</description>
+<wire x1="-5.398" y1="-4.445" x2="-5.084" y2="-4.445" width="0.1524" layer="21"/>
+<wire x1="-5.084" y1="-4.445" x2="5.076" y2="-4.445" width="0.1524" layer="21"/>
+<wire x1="5.076" y1="-4.445" x2="5.398" y2="-4.445" width="0.1524" layer="21"/>
+<wire x1="5.398" y1="-4.445" x2="5.398" y2="4.128" width="0.1524" layer="21"/>
+<wire x1="5.398" y1="4.128" x2="-5.398" y2="4.128" width="0.1524" layer="21"/>
+<wire x1="-5.398" y1="4.128" x2="-5.398" y2="-4.445" width="0.1524" layer="21"/>
+<wire x1="-5.084" y1="3.81" x2="5.076" y2="3.81" width="0.1524" layer="21"/>
+<wire x1="5.076" y1="3.81" x2="5.076" y2="-4.445" width="0.1524" layer="21"/>
+<wire x1="-5.084" y1="-4.445" x2="-5.084" y2="3.81" width="0.1524" layer="21"/>
+<wire x1="-5.398" y1="4.128" x2="-5.084" y2="3.81" width="0.1524" layer="21"/>
+<wire x1="5.398" y1="4.128" x2="5.076" y2="3.81" width="0.1524" layer="21"/>
+<wire x1="-5.398" y1="4.128" x2="-5.398" y2="5.08" width="0.1524" layer="21"/>
+<wire x1="-5.398" y1="5.08" x2="-4.445" y2="5.715" width="0.1524" layer="21"/>
+<wire x1="-4.445" y1="5.715" x2="4.445" y2="5.715" width="0.1524" layer="21"/>
+<wire x1="4.445" y1="5.715" x2="5.398" y2="5.08" width="0.1524" layer="21"/>
+<wire x1="5.398" y1="5.08" x2="5.398" y2="4.128" width="0.1524" layer="21"/>
+<smd name="1" x="-2.54" y="-7.9375" dx="1.27" dy="5.08" layer="1"/>
+<smd name="2" x="0" y="-7.9375" dx="1.27" dy="5.08" layer="1"/>
+<smd name="3" x="2.54" y="-7.9375" dx="1.27" dy="5.08" layer="1"/>
+<text x="-3.81" y="-10.795" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
+<text x="-2.54" y="-1.27" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<rectangle x1="-3.175" y1="-9.525" x2="-1.905" y2="-4.445" layer="51"/>
+<rectangle x1="-0.635" y1="-9.525" x2="0.635" y2="-4.445" layer="51"/>
+<rectangle x1="1.905" y1="-9.525" x2="3.175" y2="-4.445" layer="51"/>
+</package>
 </packages>
 <symbols>
 <symbol name="REG1118">
@@ -23634,25 +23661,40 @@ Source: http://www.mouser.com/ds/2/392/products_18-2245.pdf</description>
 </symbol>
 </symbols>
 <devicesets>
-<deviceset name="REG1118" prefix="IC">
-<description>&lt;b&gt;800mA Low Dropout (LDO) Positive Regulator&lt;/b&gt;&lt;p&gt;
-with Current Source and Sink Capability</description>
+<deviceset name="REG1117" prefix="IC">
+<description>&lt;b&gt;800mA and 1A Low Dropout (LDO) Positive Regulator&lt;/b&gt;&lt;p&gt;
+1.8V, 2.5V, 2.85V, 3.3V, 5V, and Adj</description>
 <gates>
 <gate name="G$1" symbol="REG1118" x="0" y="0"/>
 </gates>
 <devices>
 <device name="" package="SOT223">
 <connects>
-<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="GND" pad="1"/>
 <connect gate="G$1" pin="VIN" pad="3"/>
-<connect gate="G$1" pin="VOUT" pad="1"/>
+<connect gate="G$1" pin="VOUT" pad="2"/>
 </connects>
 <technologies>
 <technology name="">
 <attribute name="MF" value="" constant="no"/>
-<attribute name="MPN" value="REG1118-2.85/2K5G4" constant="no"/>
-<attribute name="OC_FARNELL" value="unknown" constant="no"/>
-<attribute name="OC_NEWARK" value="14M2185" constant="no"/>
+<attribute name="MPN" value="REG1117" constant="no"/>
+<attribute name="OC_FARNELL" value="1097566" constant="no"/>
+<attribute name="OC_NEWARK" value="14P6981" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="F" package="DD-3">
+<connects>
+<connect gate="G$1" pin="GND" pad="1"/>
+<connect gate="G$1" pin="VIN" pad="3"/>
+<connect gate="G$1" pin="VOUT" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="TEXAS INSTRUMENTS" constant="no"/>
+<attribute name="MPN" value="REG1117FAKTTT" constant="no"/>
+<attribute name="OC_FARNELL" value="1296120" constant="no"/>
+<attribute name="OC_NEWARK" value="87H2562" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -24564,7 +24606,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="U$9" library="JKW_CHIP" deviceset="LOGO_NO_TRASH" device="ROHS"/>
 <part name="U$11" library="JKW_CHIP" deviceset="LOGO_10X10_SILK" device=""/>
 <part name="D3" library="diode" deviceset="ES2D" device=""/>
-<part name="LDO" library="burr-brown" deviceset="REG1118" device=""/>
+<part name="LDO" library="burr-brown" deviceset="REG1117" device=""/>
 <part name="Q1" library="transistor-power" deviceset="BUZ11" device="BH"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="T_DIM3" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
