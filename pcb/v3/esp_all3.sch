@@ -24460,7 +24460,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="D8" library="diode" deviceset="DIODE-" device="SMB" value="ES2D"/>
 <part name="U$8" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="U$3" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
-<part name="DIMMING" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
+<part name="T_DIM1" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="U$5" library="JKW_CHIP" deviceset="SMD_SJ_3WAY_CLOSED" device=""/>
 <part name="U$6" library="JKW_CHIP" deviceset="SMD_SJ_3WAY_CLOSED" device=""/>
@@ -24486,12 +24486,12 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="LDO" library="burr-brown" deviceset="REG1118" device=""/>
 <part name="Q1" library="transistor-power" deviceset="BUZ11" device="BH"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
-<part name="DIMMING2" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
+<part name="T_DIM3" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
 <part name="VDD1" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD2" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD3" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD4" library="supply1" deviceset="VDD" device=""/>
-<part name="DIMMING1" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
+<part name="T_DIM2" library="transistor-power" deviceset="NMOSFET_SMD_223" device="" value="DMN6068SE-13"/>
 <part name="U$2" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
@@ -24503,10 +24503,10 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="TP1" library="testpad" deviceset="TP" device="TP20SQ"/>
 <part name="VDD6" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD7" library="supply1" deviceset="VDD" device=""/>
-<part name="D3C" library="JKW_CHIP" deviceset="SMD_SJ_3WAY_CLOSED" device=""/>
-<part name="D2C" library="JKW_CHIP" deviceset="SMD_SJ_3WAY_CLOSED" device=""/>
-<part name="D1C" library="JKW_CHIP" deviceset="SMD_SJ_3WAY_CLOSED" device=""/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
+<part name="R2" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
+<part name="R3" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
+<part name="GND14" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -24556,7 +24556,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <instance part="U$3" gate="G$1" x="208.28" y="91.44" smashed="yes">
 <attribute name="NAME" x="216.662" y="90.932" size="1.778" layer="95" rot="R90"/>
 </instance>
-<instance part="DIMMING" gate="G$1" x="93.98" y="106.68" smashed="yes">
+<instance part="T_DIM1" gate="G$1" x="93.98" y="106.68" smashed="yes">
 <attribute name="NAME" x="82.55" y="114.3" size="1.778" layer="95"/>
 <attribute name="VALUE" x="82.55" y="111.76" size="1.778" layer="96"/>
 </instance>
@@ -24602,12 +24602,12 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <attribute name="VALUE" x="116.84" y="104.14" size="1.778" layer="96"/>
 </instance>
 <instance part="GND11" gate="1" x="116.84" y="96.52"/>
-<instance part="DIMMING2" gate="G$1" x="60.96" y="106.68" smashed="yes"/>
+<instance part="T_DIM3" gate="G$1" x="60.96" y="106.68" smashed="yes"/>
 <instance part="VDD1" gate="G$1" x="10.16" y="58.42" rot="MR0"/>
 <instance part="VDD2" gate="G$1" x="53.34" y="45.72"/>
 <instance part="VDD3" gate="G$1" x="10.16" y="96.52"/>
 <instance part="VDD4" gate="G$1" x="180.34" y="137.16"/>
-<instance part="DIMMING1" gate="G$1" x="78.74" y="106.68" smashed="yes"/>
+<instance part="T_DIM2" gate="G$1" x="78.74" y="106.68" smashed="yes"/>
 <instance part="U$2" gate="G$1" x="208.28" y="96.52" smashed="yes">
 <attribute name="NAME" x="216.662" y="96.012" size="1.778" layer="95" rot="R90"/>
 </instance>
@@ -24626,16 +24626,16 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <instance part="TP1" gate="G$1" x="152.4" y="66.04"/>
 <instance part="VDD6" gate="G$1" x="104.14" y="33.02"/>
 <instance part="VDD7" gate="G$1" x="114.3" y="68.58"/>
-<instance part="D3C" gate="G$1" x="55.88" y="114.3" smashed="yes" rot="MR0">
-<attribute name="NAME" x="58.42" y="118.999" size="1.778" layer="95" rot="MR180"/>
-</instance>
-<instance part="D2C" gate="G$1" x="73.66" y="114.3" smashed="yes" rot="MR0">
-<attribute name="NAME" x="76.2" y="118.999" size="1.778" layer="95" rot="MR180"/>
-</instance>
-<instance part="D1C" gate="G$1" x="88.9" y="111.76" smashed="yes" rot="MR0">
-<attribute name="NAME" x="91.44" y="116.459" size="1.778" layer="95" rot="MR180"/>
-</instance>
 <instance part="GND6" gate="1" x="200.66" y="76.2"/>
+<instance part="R2" gate="G$1" x="50.8" y="114.3" smashed="yes" rot="R90">
+<attribute name="NAME" x="49.3014" y="110.49" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="49.022" y="115.57" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="R3" gate="G$1" x="71.12" y="121.92" smashed="yes" rot="R180">
+<attribute name="NAME" x="74.93" y="120.4214" size="1.778" layer="95" rot="R180"/>
+<attribute name="VALUE" x="69.85" y="120.142" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="GND14" gate="1" x="50.8" y="104.14"/>
 </instances>
 <busses>
 </busses>
@@ -24717,7 +24717,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <pinref part="ESP" gate="G$1" pin="D2"/>
 <wire x1="93.98" y1="58.42" x2="99.06" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="99.06" y1="58.42" x2="99.06" y2="86.36" width="0.1524" layer="91"/>
-<pinref part="DIMMING" gate="G$1" pin="G"/>
+<pinref part="T_DIM1" gate="G$1" pin="G"/>
 <pinref part="Q1" gate="1" pin="G"/>
 <wire x1="91.44" y1="104.14" x2="88.9" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="104.14" x2="88.9" y2="86.36" width="0.1524" layer="91"/>
@@ -24738,9 +24738,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <wire x1="99.06" y1="58.42" x2="134.62" y2="58.42" width="0.1524" layer="91"/>
 <junction x="99.06" y="58.42"/>
 <label x="101.6" y="58.42" size="1.778" layer="95"/>
-<pinref part="D1C" gate="G$1" pin="3"/>
-<wire x1="88.9" y1="106.68" x2="88.9" y2="104.14" width="0.1524" layer="91"/>
-<junction x="88.9" y="104.14"/>
 </segment>
 </net>
 <net name="DIMM3" class="0">
@@ -24785,7 +24782,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <wire x1="83.82" y1="142.24" x2="83.82" y2="147.32" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="DIMMING" gate="G$1" pin="S"/>
+<pinref part="T_DIM1" gate="G$1" pin="S"/>
 <pinref part="GND3" gate="1" pin="GND"/>
 <wire x1="96.52" y1="99.06" x2="96.52" y2="101.6" width="0.1524" layer="91"/>
 </segment>
@@ -24833,12 +24830,12 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </segment>
 <segment>
 <pinref part="GND12" gate="1" pin="GND"/>
-<pinref part="DIMMING2" gate="G$1" pin="S"/>
+<pinref part="T_DIM3" gate="G$1" pin="S"/>
 <wire x1="63.5" y1="99.06" x2="63.5" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND10" gate="1" pin="GND"/>
-<pinref part="DIMMING1" gate="G$1" pin="S"/>
+<pinref part="T_DIM2" gate="G$1" pin="S"/>
 <wire x1="81.28" y1="99.06" x2="81.28" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -24851,6 +24848,11 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <wire x1="208.28" y1="83.82" x2="200.66" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="200.66" y1="83.82" x2="200.66" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="GND6" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="R2" gate="G$1" pin="1"/>
+<pinref part="GND14" gate="1" pin="GND"/>
+<wire x1="50.8" y1="106.68" x2="50.8" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -24925,7 +24927,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </net>
 <net name="DIMMING1" class="0">
 <segment>
-<pinref part="DIMMING" gate="G$1" pin="D"/>
+<pinref part="T_DIM1" gate="G$1" pin="D"/>
 <wire x1="96.52" y1="111.76" x2="96.52" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="116.84" x2="116.84" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="116.84" x2="129.54" y2="93.98" width="0.1524" layer="91"/>
@@ -24937,9 +24939,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <wire x1="116.84" y1="116.84" x2="116.84" y2="111.76" width="0.1524" layer="91"/>
 <junction x="116.84" y="116.84"/>
 <label x="187.96" y="93.98" size="1.778" layer="95"/>
-<pinref part="D1C" gate="G$1" pin="2"/>
-<wire x1="93.98" y1="111.76" x2="96.52" y2="111.76" width="0.1524" layer="91"/>
-<junction x="96.52" y="111.76"/>
 </segment>
 </net>
 <net name="N$24" class="0">
@@ -25080,15 +25079,11 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <pinref part="U$2" gate="G$1" pin="2"/>
 <wire x1="208.28" y1="96.52" x2="132.08" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="132.08" y1="96.52" x2="132.08" y2="119.38" width="0.1524" layer="91"/>
-<pinref part="DIMMING1" gate="G$1" pin="D"/>
+<pinref part="T_DIM2" gate="G$1" pin="D"/>
 <wire x1="132.08" y1="119.38" x2="81.28" y2="119.38" width="0.1524" layer="91"/>
-<wire x1="81.28" y1="119.38" x2="81.28" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="119.38" x2="81.28" y2="111.76" width="0.1524" layer="91"/>
 <label x="111.76" y="119.38" size="1.778" layer="95"/>
 <label x="187.96" y="96.52" size="1.778" layer="95"/>
-<pinref part="D2C" gate="G$1" pin="2"/>
-<wire x1="81.28" y1="114.3" x2="81.28" y2="111.76" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="114.3" x2="81.28" y2="114.3" width="0.1524" layer="91"/>
-<junction x="81.28" y="114.3"/>
 </segment>
 </net>
 <net name="DIMMING3" class="0">
@@ -25096,37 +25091,26 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <pinref part="U$2" gate="G$1" pin="1"/>
 <wire x1="208.28" y1="99.06" x2="134.62" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="134.62" y1="99.06" x2="134.62" y2="121.92" width="0.1524" layer="91"/>
-<pinref part="DIMMING2" gate="G$1" pin="D"/>
-<wire x1="134.62" y1="121.92" x2="63.5" y2="121.92" width="0.1524" layer="91"/>
-<wire x1="63.5" y1="121.92" x2="63.5" y2="114.3" width="0.1524" layer="91"/>
 <label x="111.76" y="121.92" size="1.778" layer="95"/>
 <label x="187.96" y="99.06" size="1.778" layer="95"/>
-<pinref part="D3C" gate="G$1" pin="2"/>
-<wire x1="63.5" y1="114.3" x2="63.5" y2="111.76" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="114.3" x2="63.5" y2="114.3" width="0.1524" layer="91"/>
-<junction x="63.5" y="114.3"/>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="76.2" y1="121.92" x2="134.62" y2="121.92" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$20" class="0">
 <segment>
-<pinref part="DIMMING2" gate="G$1" pin="G"/>
+<pinref part="T_DIM3" gate="G$1" pin="G"/>
 <pinref part="DP3" gate="G$1" pin="2"/>
 <wire x1="55.88" y1="104.14" x2="58.42" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="55.88" y1="91.44" x2="55.88" y2="104.14" width="0.1524" layer="91"/>
-<pinref part="D3C" gate="G$1" pin="3"/>
-<wire x1="55.88" y1="109.22" x2="55.88" y2="104.14" width="0.1524" layer="91"/>
-<junction x="55.88" y="104.14"/>
 </segment>
 </net>
 <net name="N$21" class="0">
 <segment>
-<pinref part="DIMMING1" gate="G$1" pin="G"/>
+<pinref part="T_DIM2" gate="G$1" pin="G"/>
 <pinref part="DP2" gate="G$1" pin="2"/>
 <wire x1="73.66" y1="104.14" x2="76.2" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="73.66" y1="93.98" x2="73.66" y2="104.14" width="0.1524" layer="91"/>
-<pinref part="D2C" gate="G$1" pin="3"/>
-<wire x1="73.66" y1="109.22" x2="73.66" y2="104.14" width="0.1524" layer="91"/>
-<junction x="73.66" y="104.14"/>
 </segment>
 </net>
 <net name="N$4" class="0">
@@ -25135,6 +25119,18 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <pinref part="TP1" gate="G$1" pin="TP"/>
 <wire x1="149.86" y1="60.96" x2="152.4" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="152.4" y1="60.96" x2="152.4" y2="63.5" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="T_DIM3" gate="G$1" pin="D"/>
+<wire x1="63.5" y1="121.92" x2="63.5" y2="111.76" width="0.1524" layer="91"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<wire x1="50.8" y1="119.38" x2="50.8" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="50.8" y1="121.92" x2="63.5" y2="121.92" width="0.1524" layer="91"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="66.04" y1="121.92" x2="63.5" y2="121.92" width="0.1524" layer="91"/>
+<junction x="63.5" y="121.92"/>
 </segment>
 </net>
 </nets>
