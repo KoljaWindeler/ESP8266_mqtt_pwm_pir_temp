@@ -350,3 +350,51 @@ a020a600f596:
   picture:
   track: true
   vendor: unknown
+
+3ca9f4aa7730:
+  hide_if_away: false
+  mac: 3C:A9:F4:AA:77:30
+  name: --
+  picture:
+  track: true
+  vendor: Intel Corporate
+
+a020a605e321:
+  hide_if_away: false
+  mac: A0:20:A6:05:E3:21
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+38a28c5e8741:
+  hide_if_away: false
+  mac: 38:A2:8C:5E:87:41
+  name: --
+  picture:
+  track: true
+  vendor: unknown
+
+001e64444094:
+  hide_if_away: false
+  mac: 00:1E:64:44:40:94
+  name: --
+  picture:
+  track: true
+  vendor: Intel Corporate
+
+a020a6010128:
+  hide_if_away: false
+  mac: A0:20:A6:01:01:28
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+f0272d059a34:
+  hide_if_away: false
+  mac: F0:27:2D:05:9A:34
+  name: --
+  picture:
+  track: true
+  vendor: Amazon Technologies Inc.

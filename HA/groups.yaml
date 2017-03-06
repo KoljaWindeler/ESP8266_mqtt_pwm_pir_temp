@@ -40,15 +40,18 @@
     control: hidden
     view: no
     entities:
-      - light.dev13
-      - binary_sensor.dev13_motion
+      - light.dev16
+      - binary_sensor.dev16_motion
+      - sensor.dev16_temperature
 
   hallway:
     control: hidden
     view: no
     entities:
       - light.dev10
+      - light.dev15
       - binary_sensor.dev10_motion
+      - binary_sensor.dev15_motion
       - sensor.dev10_temperature
 
 
@@ -60,6 +63,9 @@
       - sensor.To_Baker
       - device_tracker.7c11cba3f1d1
       - device_tracker.64bc0c4df830
+      - binary_sensor.g_motion
+      - binary_sensor.g_motion_10m
+      - binary_sensor.g_motion_2h
 
   motion:
     control: hidden
@@ -103,6 +109,7 @@
       - sensor.dev12_rssi
       - sensor.dev13_rssi
       - sensor.dev14_rssi
+      - sensor.dev15_rssi
 
   mediaplayer:
     name: Media Player
@@ -121,8 +128,10 @@
       - automation.sunset_dev7_dev11_dev1
       - automation.Turn_on_kitchen_lights_when_there_is_movement
       - automation.Turn_off_kitchen_lights_10min_after_movement
-      - automation.Turn_on_hallway_lights_when_there_is_movement
-      - automation.Turn_off_hallway_lights_10min_after_movement
+      - automation.Turn_on_hallwayD_lights_when_there_is_movement
+      - automation.Turn_off_hallwayD_lights_10min_after_movement
+      - automation.Turn_on_hallwayU_lights_when_there_is_movement
+      - automation.Turn_off_hallwayU_lights_10min_after_movement
       - automation.sunset_dev5
       - automation.midnight_dev5
       - automation.all_home_dev5
@@ -135,6 +144,7 @@
     view: yes
     entities:
       - binary_sensor.dev3_motion
+      - sensor.dev13_adc
       - light.dev3
       - sensor.dev3_temperature
       - sensor.dev3_humidity

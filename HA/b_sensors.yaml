@@ -1,3 +1,64 @@
+# -------------- all motion sensors -------------
+  - platform: template
+    sensors:
+      g_motion:
+        sensor_class: motion
+        value_template: >-
+          {%- if is_state("binary_sensor.dev4_motion", "on")
+              or is_state("binary_sensor.dev10_motion", "on")
+              or is_state("binary_sensor.dev14_motion", "on")
+              or is_state("binary_sensor.dev15_motion", "on")
+              or is_state("binary_sensor.dev16_motion", "on") 
+          -%}
+          true
+          {%- else -%}
+          false
+          {%- endif %}
+        entity_id:
+          - binary_sensor.dev4_motion
+          - binary_sensor.dev10_motion
+          - binary_sensor.dev14_motion
+          - binary_sensor.dev15_motion
+          - binary_sensor.dev16_motion
+# ----------------------------------------------
+      g_motion_2h:
+        sensor_class: motion
+        value_template: >-
+          {%- if (as_timestamp(now()) - 
+             as_timestamp(states.binary_sensor.g_motion.last_updated)) < 7200 
+          %} 
+          true 
+          {%- else -%} 
+          false
+          {%- endif %}
+        entity_id:
+          - sensor.time
+# ----------------------------------------------
+      g_motion_10m:
+        sensor_class: motion
+        value_template: >-
+          {%- if (as_timestamp(now()) - 
+             as_timestamp(states.binary_sensor.g_motion.last_updated)) < 600 
+          %} 
+          true 
+          {%- else -%} 
+          false
+          {%- endif %}
+        entity_id:
+          - sensor.time
+# ----------------------------------------------
+      g_nomotion:
+        sensor_class: motion
+        value_template: >-
+          {%- if is_state("binary_sensor.g_motion", "on") -%}
+          false
+          {%- else -%}
+          true
+          {%- endif %}
+        entity_id:
+          - binary_sensor.g_motion        
+# -------------- all motion sensors -------------
+
   - platform: mqtt
     state_topic: "dev2/motion/status"
     name: "dev2_motion"
@@ -39,6 +100,16 @@
     sensor_class: motion
 
   - platform: mqtt
+    state_topic: "dev15/motion/status"
+    name: "dev15_motion"
+    sensor_class: motion
+
+  - platform: mqtt
+    state_topic: "dev16/motion/status"
+    name: "dev16_motion"
+    sensor_class: motion
+
+  - platform: mqtt
     state_topic: "dev99/motion/status"
     name: "dev99_motion"
     sensor_class: motion
@@ -48,3 +119,4 @@
     state_topic: "illuminum/motion/status"
     name: "illuminum_motion"
     sensor_class: motion
+

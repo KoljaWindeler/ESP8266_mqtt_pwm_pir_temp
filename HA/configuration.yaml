@@ -39,6 +39,7 @@ conversation:
 history:
 recorder:
   db_url: mysql://user:pw@localhost/ha
+  purge_days: 5
 
 # View all events in a logbook
 logbook:

@@ -49,22 +49,23 @@
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            50 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 // pins
-//#define PINOUT_SONOFF 1     // set this to "#define" for the sonoff
-#define PINOUT_KOLJA         // set this to "#define" for the pcb firmware .. incosistent pinout
+#define PINOUT_SONOFF 1     // set this to "#define" for the sonoff
+//#define PINOUT_KOLJA_V2         // set this to "#define" for the pcb firmware .. incosistent pinout
 // D8 war nicht so gut ... startet nicht mehr 
 #ifdef PINOUT_SONOFF
-	#define SIMPLE_LIGHT_PIN  12 // D10
+	#define SIMPLE_LIGHT_PIN  12 // D6
 	#define DS_PIN            13 // D7
   #define PIR_PIN           14 // D5
 #endif 
-#ifdef PINOUT_KOLJA
+#ifdef PINOUT_KOLJA_V2
 	#define SIMPLE_LIGHT_PIN  13 // D7
-	#define DS_PIN            12 // D10
+	#define DS_PIN            12 // D6
   #define PIR_PIN            5 // D1
 #endif 
-#define PWM_LIGHT_PIN       4 // D2
-#define BUTTON_INPUT_PIN    0 // D3
-#define DHT_PIN             2 // D4
+#define PWM_LIGHT_PIN       4  // D2
+#define BUTTON_INPUT_PIN    0  // D3
+#define DHT_PIN             2  // D4
+#define GPIO_D8             15 // D8
 
 
 #define BUTTON_TIMEOUT      1500 // max 1500ms timeout between each button press to count up (start of config)
@@ -670,6 +671,8 @@ void setup() {
   pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
   setSimpleLightState();
 
+  pinMode(GPIO_D8,OUTPUT);
+
   // attache interrupt code for PIR
   pinMode(PIR_PIN, INPUT);
   digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
@@ -799,7 +802,10 @@ void loop() {
     } else if(periodic_slot == 3){
       publishRssi(WiFi.RSSI());
     } else if(periodic_slot == 4){
+      digitalWrite(GPIO_D8,HIGH);
+      delay(100);
       publishADC(analogRead(A0));
+      digitalWrite(GPIO_D8,LOW);
     };
     periodic_slot = (periodic_slot+1)%TOTAL_PERIODIC_SLOTS;
   }
