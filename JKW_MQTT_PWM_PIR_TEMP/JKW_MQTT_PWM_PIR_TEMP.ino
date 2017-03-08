@@ -108,7 +108,11 @@ const PROGMEM char*     MQTT_TEMPARATURE_DHT_TOPIC              = "/temperature_
 const PROGMEM char* 	  MQTT_HUMIDITY_DHT_TOPIC			            = "/humidity_DHT";	            // publish
 
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		  // publish
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC2   = "/PWM_light2/brightness";		  // publish
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC3   = "/PWM_light3/brightness";		  // publish
 const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC2 = "/PWM_light2/brightness/set";	// set value
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC3 = "/PWM_light3/brightness/set";	// set value
 
 const PROGMEM char*     MQTT_PWM_DIMM_COMMAND_TOPIC             = "/PWM_dimm/switch";           // get ON/OFF command here
 const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	    = "/PWM_dimm/delay/set";		    // set value
@@ -564,6 +568,8 @@ void reconnect() {
       // ... and resubscribe
       client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));  // hard on off
       client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC));  // direct bright
+	  client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC2));  // direct bright
+	  client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC3));  // direct bright
       
       client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)); // on off
       
