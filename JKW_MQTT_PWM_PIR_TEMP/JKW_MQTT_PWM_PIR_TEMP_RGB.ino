@@ -5,18 +5,42 @@
 
 	Configuration (HA) :
 	  light:
+	  
+	 #######  single CHANNEL ################### 
   - platform: mqtt ### tower living
     name: "dev1"
     state_topic: "dev1/PWM_light/status"
     command_topic: "dev1/PWM_dimm/switch"
     brightness_state_topic: 'dev1/PWM_light/brightness'
-#    brightness_command_topic: 'dev1/PWM_light/brightness/set'
-    brightness_command_topic: 'dev1/PWM_dimm/brightness/set'
+	## use the line below for dimming
+	brightness_command_topic: 'dev1/PWM_dimm/brightness/set'
+	## use the line below for setting hard 
+	# brightness_command_topic: 'dev1/PWM_light/brightness/set'
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
+	#######  single CHANNEL ###################
+	#######  rgb CHANNEL ################### 
+  - platform: mqtt ### tower living
+    name: "dev1"
+    state_topic: "dev1/PWM_light/status"
+    command_topic: "dev1/PWM_dimm/switch"
+    brightness_state_topic: 'dev1/PWM_light/brightness'
+	rgb_state_topic: 'dev1/PWM_RGB_dimm/color/set'
+	## use the lines below for dimming
+    brightness_command_topic: 'dev1/PWM_dimm/brightness/set'
+	rgb_command_topic: 'dev1/PWM_RGB_dimm/color/set'
+	## use the lines below for setting
+	# brightness_command_topic: 'dev1/PWM_light/brightness/set'
+	# rgb_command_topic: 'dev1/PWM_RGB_light/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+	#######  rgb CHANNEL ###################
 
   config for sonoff modules:
   generic 8266
@@ -63,7 +87,9 @@
 	#define DS_PIN            12 // D6
   #define PIR_PIN            5 // D1
 #endif 
-#define PWM_LIGHT_PIN       4  // D2
+#define PWM_LIGHT_PIN1       4  // D2
+#define PWM_LIGHT_PIN2       5  // D1
+#define PWM_LIGHT_PIN3       16  // D0
 
 #define BUTTON_INPUT_PIN    0  // D3
 #define DHT_PIN             2  // D4
@@ -102,24 +128,27 @@ OneWire ds(DS_PIN);  // on digital pin DHT_DS_PIN
 char char_buffer[35];
 
 // MQTT: topics, constants, etc
-const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC              = "/PWM_light/status";		      // publish state here
-const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC	  	      = "/PWM_light/switch"; 		      // get command here
+const PROGMEM char*     MQTT_PWM_LIGHT_STATE_TOPIC              = "/PWM_light/status";		      // publish state here ON / OFF
+const PROGMEM char*     MQTT_PWM_LIGHT_COMMAND_TOPIC	  	      = "/PWM_light/switch"; 		      // get command here ON / OFF
 
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light/status";	      // publish state here
-const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		      = "/simple_light/switch"; 	    // get command here
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_STATE_TOPIC		        = "/simple_light/status";	      // publish state here ON / OFF
+const PROGMEM char*     MQTT_SIMPLE_LIGHT_COMMAND_TOPIC		      = "/simple_light/switch"; 	    // get command here ON / OFF
+
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		  // publish 0-99
+const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value 0-99
+const PROGMEM char*     MQTT_PWM_DIMM_COMMAND_TOPIC             = "/PWM_dimm/switch";           // get ON/OFF command here
+
+const PROGMEM char*     MQTT_PWM_RGB_DIMM_COLOR_STATE_TOPIC   = "/PWM_RGB_light/color";		  // publish value "0-99,0-99,0-99"
+const PROGMEM char*     MQTT_PWM_RGB_COLOR_COMMAND_TOPIC   = "/PWM_RGB_light/color/set";		  // set value "0-99,0-99,0-99"
+const PROGMEM char*     MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC   = "/PWM_RGB_dimm/color/set";		  // set value "0-99,0-99,0-99"
+
+const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	    = "/PWM_dimm/delay/set";		    // set value
+const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= "/PWM_dimm/brightness/set";	  // set value
 
 const PROGMEM char* 	  MQTT_MOTION_STATUS_TOPIC		            = "/motion/status";			        // publish
 const PROGMEM char* 	  MQTT_TEMPARATURE_DS_TOPIC               = "/temperature_DS";	          // publish
 const PROGMEM char*     MQTT_TEMPARATURE_DHT_TOPIC              = "/temperature_DHT";           // publish
 const PROGMEM char* 	  MQTT_HUMIDITY_DHT_TOPIC			            = "/humidity_DHT";	            // publish
-
-const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC   = "/PWM_light/brightness";		  // publish
-const PROGMEM char*     MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC = "/PWM_light/brightness/set";	// set value
-
-const PROGMEM char*     MQTT_PWM_DIMM_COMMAND_TOPIC             = "/PWM_dimm/switch";           // get ON/OFF command here
-const PROGMEM char*     MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC 	    = "/PWM_dimm/delay/set";		    // set value
-const PROGMEM char*     MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC 	= "/PWM_dimm/brightness/set";	  // set value
-
 const PROGMEM char*     MQTT_RSSI_STATE_TOPIC                   = "/rssi";                      // publish
 const PROGMEM char*     MQTT_ADC_STATE_TOPIC                    = "/adc";                       // publish
 
@@ -127,26 +156,25 @@ const PROGMEM char*     STATE_ON          		= "ON";
 const PROGMEM char*     STATE_OFF         		= "OFF";
 
 // variables used to store the state and the brightness of the light
-boolean 	m_pwm_light_state 		  = false;
-boolean     	m_published_pwm_light_state       = true; // to force instant publish once we are online
-boolean		m_simple_light_state 		  = false;
-boolean     	m_published_simple_light_state    = true; // to force instant publish once we are online
-led 	    	m_light_target_brightness	= {99,99,99};
-led 		m_light_start_brightness	= {99,99,99};
-led 		m_light_current_brightness	= {99,99,99};
-led 		m_light_backup_brightness	= {99,99,99};
+boolean		m_pwm_light_state = false;
+boolean		m_published_pwm_light_state = true; // to force instant publish once we are online
+boolean		m_simple_light_state = false;
+boolean		m_published_simple_light_state = true; // to force instant publish once we are online
 
-int32_t     m_light_brightness_backup         = -1;
-uint16_t     m_published_light_brightness      = 0; // to force instant publish once we are online
-
-uint16_t		m_pwm_dimm_time				            = 10; // 10ms per Step, 255*0.01 = 2.5 sec
-uint8_t			m_pwm_dimm_state			            = DIMM_DONE;
-
-uint8_t 		m_pir_state 				              = LOW; // inaktiv
-uint8_t 		m_published_pir_state             = HIGH; // to force instant publish once we are online
+led		m_light_target		=  {99,99,99};
+led		m_light_start		= 	{99,99,99};
+led		m_light_current	=  {99,99,99};
+led		m_light_backup	=  {99,99,99};
 
 // converts from half log to linear .. the human eye is a smartass
 uint8_t     intens[100] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,27,28,29,30,31,32,33,34,35,36,38,39,40,41,43,44,45,47,48,50,51,53,55,57,58,60,62,64,66,68,70,73,75,77,80,82,85,88,91,93,96,99,103,106,109,113,116,120,124,128,132,136,140,145,150,154,159,164,170,175,181,186,192,198,205,211,218,225,232,239,247,255};
+
+uint8_t     	m_published_light_brightness = 1; // to force instant publish once we are online
+uint8_t     	m_light_brightness = 0; // to force instant publish once we are online
+uint16_t     m_published_light_color = 1; // to force instant publish once we are online (sum of rgb)
+uint16_t	m_pwm_dimm_time = 10; // 10ms per Step, 255*0.01 = 2.5 sec
+uint8_t 		m_pir_state = LOW; // inaktiv
+uint8_t 		m_published_pir_state = HIGH; // to force instant publish once we are online
 
 // buffer used to send/receive data with MQTT, can not be done with the char_buffer, as both as need simultaniously 
 char                  m_msg_buffer[MSG_BUFFER_SIZE];
@@ -198,12 +226,25 @@ boolean publishPWMLightBrightness() {
   boolean ret=false;
   Serial.print("[mqtt] publish PWM brightness ");
   Serial.println(m_light_brightness);
-  snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_brightness);
+  snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_target.r);
   ret = client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
   if(ret){
     m_published_light_brightness = m_light_brightness;
   }
   return ret;
+}
+
+// function called to publish the color of the led
+boolearn publishPWMRGBColor(){
+	boolean ret=false;
+	Serial.print("[mqtt] publish PWM color ");
+	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_target.r, m_light_target.g, m_light_target.b);
+	Serial.println(m_msg_buffer);
+	ret = client.publish(build_topic(MQTT_PWM_RGB_DIMM_COLOR_STATE_TOPIC), m_msg_buffer, true);
+	if(ret){
+		m_published_light_color = m_light_target.r + m_light_target.g + m_light_target.b;
+	}
+	return ret;
 }
 
 // function called to publish the state of the led (on/off)
@@ -313,6 +354,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
         m_pwm_light_state = true;
 
         // bei diesem topic hartes einschalten
+		m_light_current = m_light_backup;
         setPWMLightState();
         // Home Assistant will assume that the pwm light is 100%, once we "turn it on"
         // but it should return to whatever the m_light_brithness is, so lets set the published
@@ -325,6 +367,8 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     } else if (payload.equals(String(STATE_OFF))) {
       if (m_pwm_light_state != false) {
         m_pwm_light_state = false;
+		m_light_backup = m_light_target; // save last target value to resume later on
+		m_light_current = (led){0,0,0};
         setPWMLightState();
       } else {
         // was already off .. and the received didn't know it .. so we have to re-publish
@@ -342,19 +386,9 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
         m_pwm_light_state = true;
 
         // bei diesem topic ein dimmen
-        uint8_t keeper;
-        if(m_light_brightness_backup != -1){ // we are still "dimming down", while this new command "dimm up" came in
-          keeper = m_light_brightness_backup; // keep the origial value (from where we started to "dimm down")
-          m_light_brightness = m_light_brightness_backup; // restore for the publish process
-        } else {
-          keeper = m_light_brightness; // not dimming, just remember the "old" brightness value 
-        }
-        //Serial.print("dimming towards ");
-        //Serial.println(keeper);
-        
+		pwmDimmTo(m_light_backup);
         publishPWMLightBrightness(); // communicate where we are dimming towards
-        m_light_brightness = 0; // set to zero, Dimm to will grab this as start value
-        pwmDimmTo(keeper); // start dimmer towards old and therefore target value 
+		publishPWMRGBColor(); // communicate where we are dimming towards
       } else {
         // was already on .. and the received didn't know it .. so we have to re-publish
         m_published_pwm_light_state = !m_pwm_light_state;
@@ -363,10 +397,11 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
       if (m_pwm_light_state != false) {
         //Serial.println("light was on");
         m_pwm_light_state = false;
-        // TODO .. wir koennen wir hier ausdimmen ohne eben den m_light_brightness auf 0 zu setzen
-        // a bit hacky .. we keep an backup of the old brightness, dimm to 0 and restore the backup dimm value
-        m_light_brightness_backup = m_light_brightness;        
-        pwmDimmTo(0); // start dimmer towards old and therefore target value 
+        // remember the current target value to resume to this value once we receive a 'dimm on 'command
+        m_light_backup = m_light_target;  // target instead off current (just in case we are currently dimming)
+        pwmDimmTo((led){0,0,0}); // dimm off 
+        publishPWMLightBrightness(); // communicate where we are dimming towards
+		publishPWMRGBColor(); // communicate where we are dimming towards
       } else {   
         // was already off .. and the received didn't know it .. so we have to re-publish
         m_published_pwm_light_state = !m_pwm_light_state;
@@ -395,21 +430,35 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     }
   }
   ////////////////////////// SET LIGHT ON/OFF ////////////////////////
-  ////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
-  else if (String(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {
+  ////////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
+  else if (String(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {	// directly set the PWM, hard 
     m_light_brightness = payload.toInt();
     setPWMLightState();
   }
-  else if (String(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) {
+  else if (String(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) { // smooth dimming of pwm
     Serial.println("dimm input");
-    pwmDimmTo(payload.toInt());
+    pwmDimmTo((led){payload.toInt(),0,0});
   }
-  else if (String(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC)).equals(p_topic)) {
+  else if (String(build_topic(MQTT_PWM_RGB_COLOR_COMMAND_TOPIC)).equals(p_topic)) { // directly set rgb, hard
+    Serial.println("set input hard");
+	uint8_t firstIndex = payload.indexOf(',');
+	uint8_t lastIndex = payload.lastIndexOf(',');
+	m_light_current = (led){payload.substring(0, firstIndex).toInt(), payload.substring(firstIndex + 1, lastIndex).toInt(), payload.substring(lastIndex + 1).toInt()};
+	m_light_target = m_light_current;
+	setPWMLightState();
+  }
+  else if (String(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)).equals(p_topic)) { // smoothly dimm to rgb value
+    Serial.println("dimm input");
+	uint8_t firstIndex = payload.indexOf(',');
+	uint8_t lastIndex = payload.lastIndexOf(',');
+    pwmDimmTo((led){payload.substring(0, firstIndex).toInt(), payload.substring(firstIndex + 1, lastIndex).toInt(), payload.substring(lastIndex + 1).toInt()});
+  }
+  else if (String(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC)).equals(p_topic)) { // adjust dimmer delay
     m_pwm_dimm_time = payload.toInt();
     Serial.print("Setting dimm time to: ");
     Serial.println(m_pwm_dimm_time);
   }
-  ////////////////////////// SET LIGHT BRIGHTNESS ////////////////////////
+  ////////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 }
 ///////////////////// function called when a MQTT message arrived /////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -421,24 +470,23 @@ void setPWMLightState() {
   setPWMLightState(false);
 }
 void setPWMLightState(boolean over_ride) {
-  if (m_pwm_light_state || over_ride) { // allow dimming even when lights are off
     // limit max
-    if(m_light_brightness>=sizeof(intens) || m_light_brightness<0){
-      m_light_brightness=sizeof(intens)-1;
+    if(m_light_current.r>=sizeof(intens)){
+      m_light_current.r=sizeof(intens)-1;
     }
-    Serial.print("[INFO PWM] PWM Brightness: ");
-    
-    if (m_pwm_dimm_state == DIMM_DIMMING) {
-      analogWrite(PWM_LIGHT_PIN, intens[m_pwm_dimm_current]);
-      Serial.println(m_pwm_dimm_current);
-    } else {
-      analogWrite(PWM_LIGHT_PIN, intens[m_light_brightness]);
-      Serial.println(m_light_brightness);
-    };    
-  } else {
-    analogWrite(PWM_LIGHT_PIN, 0);
-    Serial.println("[INFO PWM] Turn PWM light off");
-  }
+	if(m_light_current.g>=sizeof(intens)){
+      m_light_current.g=sizeof(intens)-1;
+    }
+	if(m_light_current.b>=sizeof(intens)){
+      m_light_current.b=sizeof(intens)-1;
+    }
+	Serial.print("[INFO PWM] PWM: ");
+	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_current.r, m_light_current.g, m_light_current.b);
+	Serial.println(m_msg_buffer);
+	
+	analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
+    analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
+	analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
 }
 
 // function called to adapt the state of the led
@@ -454,20 +502,23 @@ void setSimpleLightState() {
 
 void pwmDimmTo(led dimm_to) {
 	// find biggest difference for end time calucation
+	m_light_target = dimm_to;
+	// TODO: do we have to multiply that with the brightness value?
+	
 	uint8_t biggest_delta=0
-	uint8_t d=abs(m_light_current_brightness.r-dimm_to.r);
+	uint8_t d=abs(m_light_current.r-dimm_to.r);
 	if(d>biggest_delta){
 		biggest_delta=d;
 	}
-	d=abs(m_light_current_brightness.g-dimm_to.g);
+	d=abs(m_light_current.g-dimm_to.g);
 	if(d>biggest_delta){
 		biggest_delta=d;
 	}
-	d=abs(m_light_current_brightness.b-dimm_to.b);
+	d=abs(m_light_current.b-dimm_to.b);
 	if(d>biggest_delta){
 		biggest_delta=d;
 	}		
-	m_light_start_brightness = m_light_current_brightness;
+	m_light_start = m_light_current;
 
 	timer_dimmer_start = millis()
 	timer_dimmer_end = timer_dimmer_start+biggest_delta * m_pwm_dimm_time;
@@ -686,7 +737,9 @@ void setup() {
   EEPROM.begin(512); // can be up to 4096
  
   // init the led
-  pinMode(PWM_LIGHT_PIN, OUTPUT);
+  pinMode(PWM_LIGHT_PIN1, OUTPUT);
+  pinMode(PWM_LIGHT_PIN2, OUTPUT);
+  pinMode(PWM_LIGHT_PIN3, OUTPUT);
   analogWriteRange(255);
   setPWMLightState();
 
@@ -757,9 +810,9 @@ void loop() {
 			timer_dimmer = millis(); // save for next round
 
 			// set new value
-			m_light_current_brightness.r = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start_brightness.r, m_light_target_brightness.r);
-			m_light_current_brightness.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start_brightness.g, m_light_target_brightness.g);
-			m_light_current_brightness.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start_brightness.b, m_light_target_brightness.b);
+			m_light_current.r = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.r, m_light_target.r);
+			m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
+			m_light_current.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.b, m_light_target.b);
       
 			//Serial.println(m_light_brightness);
 			setPWMLightState(true); // with override 
@@ -790,6 +843,13 @@ void loop() {
 			timer_last_publish = millis();
 		}
 	}
+	
+	if (m_published_light_color != m_light_target.r + m_light_target.g + m_light_target.b){
+		if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
+			publishPWMRGBColor();
+			timer_last_publish = millis();
+		}
+	}
 
 	if (m_pir_state != m_published_pir_state) {
 		if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
@@ -812,9 +872,8 @@ void loop() {
 			publishHumidity(getDhtHumidity());
 		} else if(periodic_slot == 3){
 			publishRssi(WiFi.RSSI());
+			digitalWrite(GPIO_D8,HIGH); // prepare for next step ... 6sec on / 100ms would be enough .. 
 		} else if(periodic_slot == 4){
-			digitalWrite(GPIO_D8,HIGH);
-			delay(100);
 			publishADC(analogRead(A0));
 			digitalWrite(GPIO_D8,LOW);
 		};
@@ -828,7 +887,6 @@ void loop() {
 		publishPirState();  
 	}
 	//// send periodic updates of PIR ... just in case ////
-
 
 
 	/// see if we hold down the button for more then 6sec /// 

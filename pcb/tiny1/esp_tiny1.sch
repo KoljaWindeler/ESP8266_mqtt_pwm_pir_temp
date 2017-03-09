@@ -24121,24 +24121,6 @@ SMT- SWCH-08247</description>
 <label x="187.96" y="93.98" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="ONEWIRE_DS12B20" class="0">
-<segment>
-<wire x1="160.02" y1="35.56" x2="160.02" y2="127" width="0.1524" layer="91"/>
-<wire x1="160.02" y1="127" x2="187.96" y2="127" width="0.1524" layer="91"/>
-<pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="187.96" y1="132.08" x2="187.96" y2="127" width="0.1524" layer="91"/>
-<wire x1="193.04" y1="127" x2="187.96" y2="127" width="0.1524" layer="91"/>
-<wire x1="205.74" y1="157.48" x2="193.04" y2="157.48" width="0.1524" layer="91"/>
-<wire x1="193.04" y1="157.48" x2="193.04" y2="127" width="0.1524" layer="91"/>
-<junction x="187.96" y="127"/>
-<wire x1="160.02" y1="35.56" x2="45.72" y2="35.56" width="0.1524" layer="91"/>
-<label x="101.6" y="35.56" size="1.778" layer="95"/>
-<wire x1="45.72" y1="35.56" x2="45.72" y2="45.72" width="0.1524" layer="91"/>
-<pinref part="U1" gate="G$1" pin="GPIO13"/>
-<wire x1="45.72" y1="45.72" x2="50.8" y2="45.72" width="0.1524" layer="91"/>
-<pinref part="DS_SIG" gate="1" pin="P"/>
-</segment>
-</net>
 <net name="N$17" class="0">
 <segment>
 <pinref part="U$7" gate="G$1" pin="1"/>
@@ -24271,12 +24253,13 @@ SMT- SWCH-08247</description>
 <wire x1="30.48" y1="60.96" x2="30.48" y2="63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$5" class="0">
+<net name="PIR" class="0">
 <segment>
 <pinref part="PIR1" gate="G$1" pin="OUT"/>
-<wire x1="-5.08" y1="93.98" x2="-5.08" y2="50.8" width="0.1524" layer="91"/>
-<pinref part="U1" gate="G$1" pin="GPIO14"/>
-<wire x1="-5.08" y1="50.8" x2="50.8" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="-5.08" y1="93.98" x2="-5.08" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GPIO13"/>
+<wire x1="50.8" y1="45.72" x2="-5.08" y2="45.72" width="0.1524" layer="91"/>
+<label x="43.18" y="45.72" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RELAY" class="0">
@@ -24287,26 +24270,6 @@ SMT- SWCH-08247</description>
 <wire x1="50.8" y1="48.26" x2="43.18" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="48.26" x2="43.18" y2="149.86" width="0.1524" layer="91"/>
 <label x="43.18" y="63.5" size="1.778" layer="95" rot="R90"/>
-</segment>
-</net>
-<net name="SCL" class="0">
-<segment>
-<wire x1="83.82" y1="53.34" x2="91.44" y2="53.34" width="0.1524" layer="91"/>
-<wire x1="91.44" y1="53.34" x2="91.44" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="91.44" y1="78.74" x2="66.04" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="78.74" x2="66.04" y2="88.9" width="0.1524" layer="91"/>
-<pinref part="DP2" gate="G$1" pin="1"/>
-<wire x1="66.04" y1="88.9" x2="68.58" y2="88.9" width="0.1524" layer="91"/>
-<label x="91.44" y="63.5" size="1.778" layer="95" rot="R90"/>
-<wire x1="91.44" y1="53.34" x2="124.46" y2="53.34" width="0.1524" layer="91"/>
-<label x="101.6" y="53.34" size="1.778" layer="95"/>
-<wire x1="27.94" y1="17.78" x2="27.94" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="10.16" x2="124.46" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="10.16" x2="124.46" y2="53.34" width="0.1524" layer="91"/>
-<pinref part="SV4" gate="1" pin="1"/>
-<wire x1="20.32" y1="17.78" x2="27.94" y2="17.78" width="0.1524" layer="91"/>
-<junction x="91.44" y="53.34"/>
-<pinref part="U1" gate="G$1" pin="GPIO5"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -24338,6 +24301,41 @@ SMT- SWCH-08247</description>
 <wire x1="99.06" y1="22.86" x2="99.06" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="U1" gate="G$1" pin="GPIO0"/>
 <wire x1="99.06" y1="50.8" x2="83.82" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$8" class="0">
+<segment>
+<pinref part="DP2" gate="G$1" pin="1"/>
+<wire x1="66.04" y1="88.9" x2="68.58" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="78.74" x2="66.04" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="78.74" x2="66.04" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="53.34" x2="91.44" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="53.34" x2="91.44" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GPIO5"/>
+<label x="91.44" y="63.5" size="1.778" layer="95" rot="R90"/>
+</segment>
+</net>
+<net name="SCL" class="0">
+<segment>
+<wire x1="160.02" y1="35.56" x2="160.02" y2="127" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="127" x2="187.96" y2="127" width="0.1524" layer="91"/>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="187.96" y1="132.08" x2="187.96" y2="127" width="0.1524" layer="91"/>
+<wire x1="193.04" y1="127" x2="187.96" y2="127" width="0.1524" layer="91"/>
+<wire x1="205.74" y1="157.48" x2="193.04" y2="157.48" width="0.1524" layer="91"/>
+<wire x1="193.04" y1="157.48" x2="193.04" y2="127" width="0.1524" layer="91"/>
+<junction x="187.96" y="127"/>
+<wire x1="160.02" y1="35.56" x2="27.94" y2="35.56" width="0.1524" layer="91"/>
+<label x="101.6" y="35.56" size="1.778" layer="95"/>
+<pinref part="DS_SIG" gate="1" pin="P"/>
+<pinref part="SV4" gate="1" pin="1"/>
+<wire x1="20.32" y1="17.78" x2="27.94" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GPIO14"/>
+<wire x1="50.8" y1="50.8" x2="27.94" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="50.8" x2="27.94" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="35.56" x2="27.94" y2="17.78" width="0.1524" layer="91"/>
+<junction x="27.94" y="35.56"/>
+<label x="30.48" y="50.8" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
