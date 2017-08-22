@@ -63,6 +63,14 @@
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
+  - platform: mqtt ### vac
+    name: "dev9"
+    state_topic: "dev9/simple_light/status"
+    command_topic: "dev9/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
   - platform: mqtt ### museum flur
     name: "dev10"
     state_topic: "dev10/simple_light/status"
@@ -135,6 +143,30 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
+  - platform: mqtt ### testing
+    name: "dev19"
+    state_topic: "dev19/PWM_light/status"
+    command_topic: "dev19/PWM_dimm/switch"
+    rgb_state_topic: 'dev19/PWM_RGB_dimm/color/set'
+    rgb_command_topic: 'dev19/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### switch for dimmer bedroom
+    name: "dev20"
+    state_topic: "dev20/PWM_light/status"
+    command_topic: "dev20/PWM_dimm/switch"
+    brightness_state_topic: 'dev20/PWM_light/brightness'
+    brightness_command_topic: 'dev20/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"
     state_topic: "dev99/PWM_light/status"
@@ -147,14 +179,48 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
-  - platform: mqtt ### ball living
+# --------------------------------------------------
+  - platform: mqtt ### testing
     name: "dev98"
     state_topic: "dev98/PWM_light/status"
-    command_topic: "dev98/PWM_light/switch"
-    brightness_state_topic: 'dev98/PWM_light/brightness'
-    brightness_command_topic: 'dev98/PWM_light/brightness/set'
+    command_topic: "dev98/PWM_dimm/switch"
+#    brightness_state_topic: 'dev98/PWM_light/brightness'
+    rgb_state_topic: 'dev98/PWM_RGB_dimm/color/set'
+#   use the lines below for dimming
+#    brightness_command_topic: 'dev98/PWM_RGB_dimm/brightness/set'
+    rgb_command_topic: 'dev98/PWM_RGB_dimm/color/set'
+#   use the lines below for setting
+#   brightness_command_topic: 'dev98/PWM_light/brightness/set'
+#   rgb_command_topic: 'dev98/PWM_RGB_light/color/set'
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
-
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### testing
+    name: "dev42"
+    state_topic: "dev42/PWM_light/status"
+    command_topic: "dev42/PWM_dimm/switch"
+    rgb_state_topic: 'dev42/PWM_RGB_dimm/color/set'
+    rgb_command_topic: 'dev42/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### testing
+    name: "dev982"
+    state_topic: "dev98/PWM_light/status"
+    command_topic: "dev98/PWM_dimm/switch"
+    brightness_state_topic: 'dev98/PWM_light/brightness'
+#  use the line below for dimming
+    brightness_command_topic: 'dev98/PWM_dimm/brightness/set'
+#  use the line below for setting hard 
+#  brightness_command_topic: 'dev98/PWM_light/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99

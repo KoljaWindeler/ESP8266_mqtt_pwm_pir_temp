@@ -398,3 +398,75 @@ f0272d059a34:
   picture:
   track: true
   vendor: Amazon Technologies Inc.
+
+a020a600f451:
+  hide_if_away: false
+  mac: A0:20:A6:00:F4:51
+  name: --
+  picture:
+  track: true
+  vendor: unknown
+
+a020a619adc0:
+  hide_if_away: false
+  mac: A0:20:A6:19:AD:C0
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+5ccf7f976bac:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:6B:AC
+  name: --
+  picture:
+  track: true
+  vendor: Espressif Inc.
+
+803f5d161515:
+  hide_if_away: false
+  mac: 80:3F:5D:16:15:15
+  name: --
+  picture:
+  track: true
+  vendor: Winstars Technology Ltd
+
+5ccf7f970d93:
+  hide_if_away: false
+  mac: 5C:CF:7F:97:0D:93
+  name: --
+  picture:
+  track: true
+  vendor: unknown
+
+ha_hweva:
+  hide_if_away: false
+  mac:
+  name: ha
+  picture:
+  track: true
+  vendor:
+
+ha_jkw:
+  hide_if_away: false
+  mac:
+  name: ha
+  picture:
+  track: true
+  vendor:
+
+illuminum_kolja:
+  hide_if_away: false
+  mac:
+  name: illuminum
+  picture:
+  track: true
+  vendor:
+
+illuminum_caro:
+  hide_if_away: false
+  mac:
+  name: illuminum
+  picture:
+  track: true
+  vendor:

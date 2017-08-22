@@ -61,11 +61,12 @@
     entities:
       - sensor.To_Hannover 
       - sensor.To_Baker
-      - device_tracker.7c11cba3f1d1
-      - device_tracker.64bc0c4df830
+  #    - device_tracker.7c11cba3f1d1
+  #    - device_tracker.64bc0c4df830
+      - device_tracker.illuminum_kolja
+      - device_tracker.illuminum_caro
       - binary_sensor.g_motion
-      - binary_sensor.g_motion_10m
-      - binary_sensor.g_motion_2h
+      - sensor.g_motion_t
 
   motion:
     control: hidden
@@ -91,6 +92,13 @@
       - sensor.dark_sky_precip_intensity
       - sensor.dark_sky_daily_summary
 
+  shop:
+    name: Shop
+    view: yes
+    entities:
+      - sensor.dev9_temperature
+      - light.dev9
+
   rssi:
     name: Signal level
     view: yes
@@ -100,16 +108,20 @@
       - sensor.dev3_rssi
       - sensor.dev4_rssi
       - sensor.dev5_rssi
-#      - sensor.dev6_rssi
+      - sensor.dev6_rssi
       - sensor.dev7_rssi
-#      - sensor.dev8_rssi
-#      - sensor.dev9_rssi
-#      - sensor.dev10_rssi
+      - sensor.dev8_rssi
+      - sensor.dev9_rssi
+      - sensor.dev10_rssi
       - sensor.dev11_rssi
       - sensor.dev12_rssi
       - sensor.dev13_rssi
       - sensor.dev14_rssi
       - sensor.dev15_rssi
+      - sensor.dev16_rssi
+      - sensor.dev17_rssi
+      - sensor.dev18_rssi
+      - sensor.dev42_rssi
 
   mediaplayer:
     name: Media Player
@@ -121,6 +133,7 @@
     name: System
     view: yes
     entities:
+      - automation.alarm_system
       - automation.dev7_11_1_on
       - automation.dev7_11_1_off
       - automation.dev2_4_14_on
@@ -144,10 +157,17 @@
     view: yes
     entities:
       - binary_sensor.dev3_motion
+      - binary_sensor.dev17_motion
+      - binary_sensor.dev42_motion
       - sensor.dev13_adc
+      - light.dev19
+      - light.dev42
+      - light.dev98
+      - light.dev982
       - light.dev3
       - sensor.dev3_temperature
       - sensor.dev3_humidity
       - binary_sensor.dev12_motion
       - light.dev12
       - input_slider.dev12_dimmer_delay
+    

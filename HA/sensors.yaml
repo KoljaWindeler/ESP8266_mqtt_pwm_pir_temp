@@ -2,6 +2,23 @@
     display_options:
       - 'time'
 # -----------------------------------------------------------
+# ------------- TEMPLATE -----------------------------------
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
+      g_motion_t:
+        value_template: >-
+          {%- if is_state("binary_sensor.g_motion","on") -%}
+          0
+          {%- else -%}
+          {{ (( as_timestamp(now()) - as_timestamp(states.binary_sensor.g_motion.last_updated)) //60) | int }}
+          {%- endif %}
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+# -----------------------------------------------------------
+# -------------- TRAVELTIME ---------------------------------
+# -----------------------------------------------------------
   - platform: google_travel_time
     name: To_Hannover
     api_key: removed
@@ -13,8 +30,8 @@
     api_key: removed
     origin: Wienhausen, Muehlenstr 8a
     destination: Baker Hughes, Celle
-
 # -----------------------------------------------------------
+# --------------- MQTT --------------------------------------
 # -----------------------------------------------------------
   - platform: mqtt
     state_topic: "home/livingroom_fire/temperature"
@@ -71,6 +88,11 @@
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
+    state_topic: "dev5/rssi"
+    name: "dev5_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
     state_topic: "dev7/temperature_DS"
     name: "dev7_temperature"
     unit_of_measurement: "ºC"
@@ -78,6 +100,21 @@
   - platform: mqtt
     state_topic: "dev7/rssi"
     name: "dev7_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev8/rssi"
+    name: "dev8_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev9/temperature_DS"
+    name: "dev9_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev9/rssi"
+    name: "dev9_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
@@ -116,6 +153,15 @@
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
 # -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev14/rssi"
+    name: "dev14_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev15/rssi"
+    name: "dev15_rssi"
+    unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
     state_topic: "dev16/temperature_DS"
@@ -128,8 +174,23 @@
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
-    state_topic: "dev15/rssi"
-    name: "dev15_rssi"
+    state_topic: "dev17/rssi"
+    name: "dev17_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev18/rssi"
+    name: "dev18_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev42/temperature_DS"
+    name: "dev42_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev42/rssi"
+    name: "dev42_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt

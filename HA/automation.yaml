@@ -41,6 +41,41 @@
           - light.dev14
 # ------------------ kitchen joiner ------------------------
 # ----------------------------------------------------------
+# ----------------------------------------------------------
+# ------------------ bedroom joiner ------------------------
+  - alias: dev16_20_on
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev20
+        to: 'on'
+      - platform: state
+        entity_id: light.dev16
+        to: 'on'
+    action:
+      - service: light.turn_on
+        entity_id: 
+          - light.dev20
+          - light.dev16
+# ----------------------------------------------------------
+  - alias: dev16_20_off
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev20
+        to: 'off'
+      - platform: state
+        entity_id: light.dev16
+        to: 'off'
+    action:
+      - service: light.turn_off
+        entity_id:
+          - light.dev20
+          - light.dev16
+# ------------------ bedroom joiner ------------------------
+# ----------------------------------------------------------
 
 # ----------------------------------------------------------
 # ------------------ living room joiner --------------------
@@ -104,6 +139,9 @@
         - condition: state
           entity_id: 'device_tracker.64bc0c4df830'
           state: 'home'
+        - condition: state
+          entity_id: 'binary_sensor.g_motion_10m'
+          state: 'on'
     action:
       - service: homeassistant.turn_on
         entity_id: 
@@ -172,13 +210,13 @@
       - platform: state
         entity_id: binary_sensor.dev10_motion
         to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: '06:30:00'
-        - condition: time
-          before: '23:30:00'
+#    condition:
+#      condition: and
+#      conditions:
+#        - condition: time
+#          after: '06:30:00'
+#        - condition: time
+#          before: '23:30:00'
     action:
       service: homeassistant.turn_on
       entity_id: light.dev10
@@ -229,7 +267,7 @@
 # ----------------------------------------------------------
 # -------------------- bedroom movement --------------------
   - alias: Turn_on_bedroom_lights_when_there_is_movement
-    initial_state: True
+    initial_state: False
     hide_entity: False
     trigger:
       - platform: state
@@ -247,7 +285,7 @@
       entity_id: light.dev16
 # ----------------------------------------------------------
   - alias: Turn_off_bedroom_lights_5min_after_movement
-    initial_state: True
+    initial_state: False
     hide_entity: False
     trigger:
       - platform: state
@@ -260,7 +298,7 @@
     action:
       service: homeassistant.turn_off
       entity_id: light.dev16
-# -------------------- hallway movement --------------------
+# -------------------- bedroom movement --------------------
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
@@ -323,6 +361,34 @@
       - service: homeassistant.turn_off
         entity_id: light.dev5
 # -------------------- outside on dark ---------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
+# -------------------- alarm system -----------------------
+# send message as soon as there is movement and nobody is home
+  - alias: alarm_system
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.g_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: 'device_tracker.7c11cba3f1d1'
+          state: 'not_home'
+        - condition: state
+          entity_id: 'device_tracker.64bc0c4df830'
+          state: 'not_home'
+    action:
+     service: notify.pb
+     data:
+       title: "Motion detected"
+       message: "ehhhm... hallo?"
+# ----------------------------------------------------------
+# -------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
 

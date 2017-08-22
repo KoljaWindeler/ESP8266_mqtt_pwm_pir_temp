@@ -17,9 +17,13 @@
       friendly_name: " "
 # -----------------------------------------------
     device_tracker.7c11cba3f1d1:
-      friendly_name: "Kolja"
+      friendly_name: "Kolja MAC"
     device_tracker.64bc0c4df830:
-      friendly_name: "Caro"
+      friendly_name: "Caro MAC"
+    device_tracker.illuminum_kolja:
+      friendly_name: "Kolja OT"
+    device_tracker.illuminum_caro:
+      friendly_name: "Caro OT"
 # -----------------------------------------------
     sensor.To_Hannover:
       friendly_name: "Fahrzeit Uni"
@@ -37,6 +41,7 @@
 # -----------------------------------------------
     light.dev1:
       friendly_name: "Ball"
+      icon: "mdi:lamp"
     sensor.dev1_temperature:
       friendly_name: "Ball"
       icon: "mdi:thermometer"
@@ -86,6 +91,7 @@
 # -----------------------------------------------
     light.dev7:
       friendly_name: "TowerW"
+      icon: "mdi:lamp"
     sensor.dev7_temperature:
       friendly_name: "TowerW"
       icon: "mdi:thermometer"
@@ -93,6 +99,14 @@
       friendly_name: "TowerW"
     sensor.dev7_rssi:
       friendly_name: "TowerW Signal"
+# -----------------------------------------------
+    light.dev9:
+      friendly_name: "Vac"
+    sensor.dev9_temperature:
+      friendly_name: "Vac"
+      icon: "mdi:thermometer"
+    sensor.dev9_rssi:
+      friendly_name: "Vac Signal"
 # -----------------------------------------------
     light.dev10:
       friendly_name: "HallwayU"
@@ -107,6 +121,7 @@
 # -----------------------------------------------
     light.dev11:
       friendly_name: "TowerE"
+      icon: "mdi:lamp"
     sensor.dev11_temperature:
       friendly_name: "TowerE"
       icon: "mdi:thermometer"
@@ -164,10 +179,9 @@
 # -----------------------------------------------
     binary_sensor.g_motion:
       friendly_name: "Global Motion"
-    binary_sensor.g_motion_2h:
-      friendly_name: "Global Motion 2h"
-    binary_sensor.g_motion_10m:
-      friendly_name: "Global Motion 10m"
+    sensor.g_motion_t:
+      friendly_name: "Last global motion"
+      icon: "mdi:timer-sand"
 # -----------------------------------------------
     automation.dev1:
       friendly_name: "Bedroom light"

@@ -2,8 +2,8 @@ homeassistant:
   # Name of the location where Home Assistant is running
   name: Home
   # Location required to calculate the time the sun rises and sets
-  latitude: 52.4137
-  longitude: 9.7544
+  latitude: 52.5821627
+  longitude: 10.1878555
   # Impacts weather/sunrise data (altitude above sea level in meters)
   elevation: 51
   # metric for Metric, imperial for Imperial
@@ -13,8 +13,12 @@ homeassistant:
 
   customize: !include customize.yaml
 
-# database connection
-
+zone 3:
+  name: Home
+  latitude: 52.5821627
+  longitude: 10.1878555
+  radius: 500
+  icon: mdi:account-multiple
 
 # Enables the frontend
 frontend:
@@ -24,6 +28,12 @@ http:
   api_password: pw
   # Uncomment this if you are using SSL or running in Docker etc
   # base_url: example.duckdns.org:8123
+
+
+notify:
+  name: pb
+  platform: pushbullet
+  api_key: removed
 
 # Checks for available updates
 updater:
@@ -57,10 +67,10 @@ mqtt:
  port: 1883
  client_id: home-assistant-1
  username: ha
- password: ah
+ password: removed
 
-media_player:
-  - platform: cast
+# media_player:
+#  - platform: cast
 
 emulated_hue:
 

@@ -1,4 +1,2 @@
-  - platform: netgear
-    host: 192.168.2.2
-    username: admin
-    password: removed
+  - platform: owntracks
+    
