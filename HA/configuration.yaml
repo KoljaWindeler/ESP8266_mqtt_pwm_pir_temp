@@ -10,8 +10,11 @@ homeassistant:
   unit_system: metric
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Berlin
-
+  whitelist_external_dirs:
+   - /tmp
+   - /mnt
   customize: !include customize.yaml
+
 
 zone 3:
   name: Home
@@ -69,8 +72,8 @@ mqtt:
  username: ha
  password: removed
 
-# media_player:
-#  - platform: cast
+media_player:
+ - platform: cast
 
 emulated_hue:
 
@@ -85,3 +88,44 @@ input_slider: !include slider.yaml
 
 automation: !include automation.yaml
 script: !include scripts.yaml
+
+camera:
+  - name: map_caro
+    platform: generic
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}
+    limit_refetch_to_url_change: true
+
+  - name: map_kolja
+    platform: generic
+    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}
+    limit_refetch_to_url_change: true
+
+  - name: cam_101
+    platform: generic
+    still_image_url: http://192.168.2.101/cam_full.jpg
+
+  - name: cam_102
+    platform: generic
+    still_image_url: http://192.168.2.102/cam_full.jpg
+
+  - name: cam_103
+    platform: generic
+    still_image_url: http://192.168.2.103/cam_full.jpg
+
+  - name: cam_106
+    platform: generic
+    still_image_url: http://192.168.2.106/cam_full.jpg
+
+
+shell_command:
+  cam1_1: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_1.jpg
+  cam1_2: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_2.jpg
+  cam1_3: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_3.jpg
+  cam1_4: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_4.jpg
+  cam1_5: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_5.jpg
+  cam6_1: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_1.jpg
+  cam6_2: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_2.jpg
+  cam6_3: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_3.jpg
+  cam6_4: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_4.jpg
+  cam6_5: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_5.jpg
+

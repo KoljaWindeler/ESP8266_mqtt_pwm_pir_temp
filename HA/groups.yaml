@@ -19,9 +19,15 @@
       - light.dev11
       - light.dev7
       - light.dev1
+      - light.dev101
+      - light.dev103
+      - light.dev106
       - sensor.dev11_temperature
       - sensor.dev7_temperature
       - sensor.dev1_temperature
+      - binary_sensor.dev101_motion
+      - binary_sensor.dev103_motion
+      - binary_sensor.dev106_motion
 
   kitchen:
     control: hidden
@@ -41,8 +47,8 @@
     view: no
     entities:
       - light.dev16
-      - binary_sensor.dev16_motion
-      - sensor.dev16_temperature
+      # - binary_sensor.dev16_motion
+      # - sensor.dev16_temperature
 
   hallway:
     control: hidden
@@ -50,6 +56,8 @@
     entities:
       - light.dev10
       - light.dev15
+      - light.dev102
+      - binary_sensor.dev102_motion
       - binary_sensor.dev10_motion
       - binary_sensor.dev15_motion
       - sensor.dev10_temperature
@@ -61,12 +69,28 @@
     entities:
       - sensor.To_Hannover 
       - sensor.To_Baker
-  #    - device_tracker.7c11cba3f1d1
-  #    - device_tracker.64bc0c4df830
       - device_tracker.illuminum_kolja
       - device_tracker.illuminum_caro
       - binary_sensor.g_motion
       - sensor.g_motion_t
+
+  presents_ext:
+    control: hidden
+    view: yes
+    entities:
+      - group.presents
+      - camera.map_caro
+      - camera.map_kolja
+
+  cameras:
+    control: hidden
+    view: yes
+    entities:
+      - camera.cam_101
+      - camera.cam_102
+      - camera.cam_103
+      - camera.cam_106
+
 
   motion:
     control: hidden
@@ -105,23 +129,23 @@
     entities:
       - sensor.dev1_rssi
       - sensor.dev2_rssi
-      - sensor.dev3_rssi
+      # - sensor.dev3_rssi
       - sensor.dev4_rssi
       - sensor.dev5_rssi
       - sensor.dev6_rssi
       - sensor.dev7_rssi
-      - sensor.dev8_rssi
+      # - sensor.dev8_rssi
       - sensor.dev9_rssi
       - sensor.dev10_rssi
       - sensor.dev11_rssi
       - sensor.dev12_rssi
-      - sensor.dev13_rssi
+      # - sensor.dev13_rssi
       - sensor.dev14_rssi
       - sensor.dev15_rssi
       - sensor.dev16_rssi
-      - sensor.dev17_rssi
-      - sensor.dev18_rssi
-      - sensor.dev42_rssi
+      - sensor.dev20_rssi
+      # - sensor.dev18_rssi
+      # - sensor.dev42_rssi
 
   mediaplayer:
     name: Media Player
@@ -134,6 +158,8 @@
     view: yes
     entities:
       - automation.alarm_system
+      - automation.dev16_20_off
+      - automation.dev16_20_on
       - automation.dev7_11_1_on
       - automation.dev7_11_1_off
       - automation.dev2_4_14_on

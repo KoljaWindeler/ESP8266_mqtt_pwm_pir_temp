@@ -134,10 +134,10 @@
       condition: or
       conditions:
         - condition: state
-          entity_id: 'device_tracker.7c11cba3f1d1'
+          entity_id: 'device_tracker.illuminum_kolja'
           state: 'home'
         - condition: state
-          entity_id: 'device_tracker.64bc0c4df830'
+          entity_id: 'device_tracker.illuminum_caro'
           state: 'home'
         - condition: state
           entity_id: 'binary_sensor.g_motion_10m'
@@ -199,6 +199,117 @@
       service: homeassistant.turn_off
       entity_id: light.dev14 # turn only one on, all others will follow
 # ------------------- kitchen movement ---------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
+# ------------------- living  movement ---------------------
+  - alias: Turn_on_couch_light_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev101_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev101 
+# ----------------------------------------------------------
+  - alias: Turn_off_couch_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev101_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev101 
+# ------------------- living  movement ---------------------
+# ------------------- entrance  movement -------------------
+  - alias: Turn_on_couch_light_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev102_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev102 
+# ----------------------------------------------------------
+  - alias: Turn_off_entrance_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev102_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev102 
+# ------------------- entrace  movement -------------------
+# ------------------- tv  movement ------------------------
+  - alias: Turn_on_tv_light_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev103_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev103
+# ----------------------------------------------------------
+  - alias: Turn_off_tv_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev103_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev103 
+# ----------------------- tv  movement ---------------------
+# ------------------- dragonfly  movement ------------------
+  - alias: Turn_on_dragonfly_light_when_there_is_movement
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev106_motion
+        to: 'on'
+    action:
+      service: homeassistant.turn_on
+      entity_id: light.dev106 
+# ----------------------------------------------------------
+  - alias: Turn_off_dragonfly_lights_10min_after_movement
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev106_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    action:
+      service: homeassistant.turn_off
+      entity_id: light.dev106 
+# ------------------- dragonfly  movement ------------------
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
@@ -324,10 +435,10 @@
     hide_entity: False
     trigger:
       - platform: state
-        entity_id: 'device_tracker.64bc0c4df830'
+        entity_id: 'device_tracker.illuminum_caro'
         to: 'home'
       - platform: state
-        entity_id: 'device_tracker.7c11cba3f1d1'
+        entity_id: 'device_tracker.illuminum_kolja'
         to: 'home'
       - platform: time
         hours: 22
@@ -337,10 +448,10 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: 'device_tracker.7c11cba3f1d1'
+          entity_id: 'device_tracker.illuminum_kolja'
           state: 'home'
         - condition: state
-          entity_id: 'device_tracker.64bc0c4df830'
+          entity_id: 'device_tracker.illuminum_caro'
           state: 'home'
         - condition: time
           after: '22:00:00'
@@ -377,10 +488,10 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: 'device_tracker.7c11cba3f1d1'
+          entity_id: 'device_tracker.illuminum_kolja'
           state: 'not_home'
         - condition: state
-          entity_id: 'device_tracker.64bc0c4df830'
+          entity_id: 'device_tracker.illuminum_caro'
           state: 'not_home'
     action:
      service: notify.pb
@@ -405,3 +516,15 @@
         topic: "dev12/PWM_dimm/delay/set"
         retain: true
         payload: '{{ states.input_slider.dev12_dimmer_delay.state | int }}'
+
+# ------
+  - alias: test
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev99_motion
+        to: 'on'
+    action:
+     service: script.seq_101
+

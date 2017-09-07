@@ -155,6 +155,54 @@
     optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
+  - platform: mqtt ### cam illumino 101
+    name: "dev101"
+    state_topic: "128480595098010/PWM_light/status"
+    command_topic: "128480595098010/PWM_dimm/switch"
+    rgb_state_topic: '128480595098010/PWM_RGB_dimm/color'
+    rgb_command_topic: '128480595098010/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### cam illumino 102
+    name: "dev102"
+    state_topic: "255726482140298/PWM_light/status"
+    command_topic: "255726482140298/PWM_dimm/switch"
+    rgb_state_topic: '255726482140298/PWM_RGB_dimm/color'
+    rgb_command_topic: '255726482140298/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### cam illumino 103
+    name: "dev103"
+    state_topic: "128480595098001/PWM_light/status"
+    command_topic: "128480595098001/PWM_dimm/switch"
+    rgb_state_topic: '128480595098001/PWM_RGB_dimm/color'
+    rgb_command_topic: '128480595098001/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### cam illumino 106
+    name: "dev106"
+    state_topic: "137291054495417/PWM_light/status"
+    command_topic: "137291054495417/PWM_dimm/switch"
+    rgb_state_topic: '137291054495417/PWM_RGB_dimm/color'
+    rgb_command_topic: '137291054495417/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
   - platform: mqtt ### switch for dimmer bedroom
     name: "dev20"
     state_topic: "dev20/PWM_light/status"

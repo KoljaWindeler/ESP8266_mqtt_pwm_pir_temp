@@ -48,7 +48,7 @@
     binary_sensor.dev1_motion:
       friendly_name: "Ball"
     sensor.dev1_rssi:
-      friendly_name: "Ball Signal"
+      friendly_name: "01 Ball"
 # -----------------------------------------------
     light.dev2:
       friendly_name: "Hood"
@@ -58,17 +58,17 @@
     binary_sensor.dev2_motion:
       friendly_name: "Hood"
     sensor.dev2_rssi:
-      friendly_name: "Hood Signal"
+      friendly_name: "02 Hood"
 # -----------------------------------------------
     light.dev13:
       friendly_name: "Sideboard"
     sensor.dev13_rssi:
-      friendly_name: "Sideboard rssi"
+      friendly_name: "13 Sideboard"
     sensor.dev13_temperature:
       icon: "mdi:thermometer"
       friendly_name: "Sideboard"
 #    sensor.dev13_humidity:
-#      friendly_name: "Sideboard"
+#      friendly_name: "Sideboard"66
 #      icon: "mdi:water-percent"
     binary_sensor.dev13_motion:
       friendly_name: "Sideboard"
@@ -82,12 +82,12 @@
     binary_sensor.dev4_motion:
       friendly_name: "Rack"
     sensor.dev4_rssi:
-      friendly_name: "Kitchen Signal"
+      friendly_name: "04 Kitchen Rack"
 # -----------------------------------------------
     light.dev5:
       friendly_name: "Entrance"
     sensor.dev5_rssi:
-      friendly_name: "Entrance Signal"
+      friendly_name: "05 Entrance"
 # -----------------------------------------------
     light.dev7:
       friendly_name: "TowerW"
@@ -98,7 +98,7 @@
     binary_sensor.dev7_motion:
       friendly_name: "TowerW"
     sensor.dev7_rssi:
-      friendly_name: "TowerW Signal"
+      friendly_name: "07 TowerW"
 # -----------------------------------------------
     light.dev9:
       friendly_name: "Vac"
@@ -106,7 +106,7 @@
       friendly_name: "Vac"
       icon: "mdi:thermometer"
     sensor.dev9_rssi:
-      friendly_name: "Vac Signal"
+      friendly_name: "09 Vac"
 # -----------------------------------------------
     light.dev10:
       friendly_name: "HallwayU"
@@ -117,7 +117,7 @@
     binary_sensor.dev10_motion:
       friendly_name: "HallwayU"
     sensor.dev10_rssi:
-      friendly_name: "HallwayU Signal"
+      friendly_name: "10 HallwayU"
 # -----------------------------------------------
     light.dev11:
       friendly_name: "TowerE"
@@ -128,28 +128,28 @@
     binary_sensor.dev11_motion:
       friendly_name: "TowerE"
     sensor.dev11_rssi:
-      friendly_name: "TowerE Signal"
+      friendly_name: "11 TowerE"
 # -----------------------------------------------
     light.dev14:
       friendly_name: "Cabinet"
     binary_sensor.dev14_motion:
       friendly_name: "Cabinet"
     sensor.dev14_rssi:
-      friendly_name: "Kitchen Cabinet Signal"
+      friendly_name: "14 Kitchen Cabinet"
 # -----------------------------------------------
     light.dev15:
       friendly_name: "HallwayD"
     binary_sensor.dev15_motion:
       friendly_name: "HallwayD"
     sensor.dev15_rssi:
-      friendly_name: "HallwayD Signal"
+      friendly_name: "15 HallwayD"
 # -----------------------------------------------
     light.dev16:
       friendly_name: "Bedroom"
     binary_sensor.dev16_motion:
       friendly_name: "Bedroom"
     sensor.dev16_rssi:
-      friendly_name: "Bedroom Signal"
+      friendly_name: "16 Bedroom"
     sensor.dev16_temperature:
       friendly_name: "Bedroom"
       icon: "mdi:thermometer"
@@ -176,6 +176,37 @@
       friendly_name: "PCB1 Signal"
     input_slider.dev12_dimmer_delay:
       friendly_name: "Dimmer Speed"
+# -----------------------------------------------
+    light.dev101:
+      friendly_name: "Couch C"
+    binary_sensor.dev101_motion:
+      friendly_name: "Couch C"
+    camera.cam_101:
+      friendly_name: "Couch"
+# -----------------------------------------------
+    light.dev102:
+      friendly_name: "Entrance C"
+    binary_sensor.dev102_motion:
+      friendly_name: "Entrance C"
+    camera.cam_102:
+      friendly_name: "Entrance"
+# -----------------------------------------------
+    light.dev103:
+      friendly_name: "TV C"
+    binary_sensor.dev103_motion:
+      friendly_name: "TV C"
+    camera.cam_103:
+      friendly_name: "TV"
+# -----------------------------------------------
+    light.dev106:
+      friendly_name: "Dragonfly C"
+    binary_sensor.dev106_motion:
+      friendly_name: "Dragonfly C"
+    camera.cam_106:
+      friendly_name: "Dragonfly"
+# -----------------------------------------------
+    sensor.dev20_rssi:
+      friendly_name: "20 SW_Bedroom"
 # -----------------------------------------------
     binary_sensor.g_motion:
       friendly_name: "Global Motion"

@@ -184,6 +184,11 @@
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
+    state_topic: "dev20/rssi"
+    name: "dev20_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
     state_topic: "dev42/temperature_DS"
     name: "dev42_temperature"
     unit_of_measurement: "ºC"
