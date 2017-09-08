@@ -1,7 +1,4 @@
   - platform: mqtt
-    name: "Esszimmer Kronleuchter"
-    command_topic: "living/argb1/light/switch"
-  - platform: mqtt
-    name: "Kuechen licht"
-    command_topic: "living/argb1/light/switch"
-
+    name: "Alarm_System"
+    command_topic: "alarm_system/switch"
+  

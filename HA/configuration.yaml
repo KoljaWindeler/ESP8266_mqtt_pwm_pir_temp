@@ -79,7 +79,7 @@ emulated_hue:
 
 # Weather Prediction
 sensor: !include sensors.yaml
-# switch: !include switches.yaml
+switch: !include switches.yaml
 group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml
@@ -123,9 +123,22 @@ shell_command:
   cam1_3: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_3.jpg
   cam1_4: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_4.jpg
   cam1_5: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_5.jpg
+
+  cam2_1: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_1.jpg
+  cam2_2: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_2.jpg
+  cam2_3: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_3.jpg
+  cam2_4: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_4.jpg
+  cam2_5: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_5.jpg
+  
+  cam3_1: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_1.jpg
+  cam3_2: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_2.jpg
+  cam3_3: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_3.jpg
+  cam3_4: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_4.jpg
+  cam3_5: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_5.jpg
+    
   cam6_1: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_1.jpg
   cam6_2: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_2.jpg
   cam6_3: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_3.jpg
   cam6_4: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_4.jpg
   cam6_5: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_5.jpg
-
+  

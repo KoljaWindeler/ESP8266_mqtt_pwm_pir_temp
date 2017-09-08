@@ -24,6 +24,20 @@
       friendly_name: "Kolja OT"
     device_tracker.illuminum_caro:
       friendly_name: "Caro OT"
+    binary_sensor.someone_is_home:
+      friendly_name: "Home"
+    switch.Alarm_System:
+      friendly_name: "Global Alarm enabled"
+    automation.alarm_system:
+      friendly_name: "Gmontion Alarm"
+    automation.alarm_system_c101:
+      friendly_name: "C101 Alarm"
+    automation.alarm_system_c102:
+      friendly_name: "C102 Alarm"
+    automation.alarm_system_c103:
+      friendly_name: "C103 Alarm"
+    automation.alarm_system_c106:
+      friendly_name: "C106 Alarm"
 # -----------------------------------------------
     sensor.To_Hannover:
       friendly_name: "Fahrzeit Uni"

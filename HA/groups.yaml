@@ -8,7 +8,7 @@
       - group.outside
       - group.bed_room
       - group.hallway
-      - group.presents
+      # - group.presents
       - media_player.jkw_cast2
 
   living_room:
@@ -73,23 +73,32 @@
       - device_tracker.illuminum_caro
       - binary_sensor.g_motion
       - sensor.g_motion_t
+      - binary_sensor.someone_is_home
 
-  presents_ext:
+  alarm:
     control: hidden
     view: yes
     entities:
-      - group.presents
-      - camera.map_caro
-      - camera.map_kolja
-
-  cameras:
-    control: hidden
-    view: yes
-    entities:
+      - group.alarm_controll
       - camera.cam_101
       - camera.cam_102
       - camera.cam_103
       - camera.cam_106
+      - group.presents
+      - camera.map_caro
+      - camera.map_kolja
+
+      
+  alarm_controll:
+    control: hidden
+    view: no
+    entities:
+      - switch.Alarm_System
+      - automation.alarm_system
+      - automation.alarm_system_c101
+      - automation.alarm_system_c102
+      - automation.alarm_system_c103
+      - automation.alarm_system_c106
 
 
   motion:
@@ -99,7 +108,6 @@
       - binary_sensor.dev1_motion
       - binary_sensor.dev2_motion
       - binary_sensor.dev3_motion
-      - binary_sensor.illuminum_motion
 
   outside:
     control: hidden
@@ -124,8 +132,15 @@
       - light.dev9
 
   rssi:
-    name: Signal level
+    name: Signals
     view: yes
+    entities:
+     - group.rssi_p
+
+  rssi_p:
+    name: Signal level
+    control: hidden
+    view: no
     entities:
       - sensor.dev1_rssi
       - sensor.dev2_rssi
@@ -157,7 +172,7 @@
     name: System
     view: yes
     entities:
-      - automation.alarm_system
+      - group.alarm_controll
       - automation.dev16_20_off
       - automation.dev16_20_on
       - automation.dev7_11_1_on

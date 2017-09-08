@@ -1,30 +1,4 @@
 # ---------------------------------------------------------
-  kitchen_lamp_on:
-    alias: "Turn on kitchen lamp and remove timer"
-    sequence:
-      - service: script.turn_off
-        data:
-          entity_id: script.kitchen_timer_off
-      - service: light.turn_on
-        data:
-          entity_id: light.dev4 # kitche rack
-# ---------------------------------------------------------
-  kitchen_lamp_off:
-    alias: "Turn off kitchen lamp and set timer"
-    sequence: 
-      - service: script.turn_on
-        data:
-          entity_id: script.kitchen_timer_off
-# ---------------------------------------------------------
-  kitchen_timer_off:
-    alias: "Turn kitchen off lamp after 10 minutes"
-    sequence:
-      - delay:
-          minutes: 10
-      - service: light.turn_off
-        data:
-          entity_id: light.dev4 # kitchen light
-# ---------------------------------------------------------
   seq_101:
     sequence:
       - service: shell_command.cam1_1
@@ -40,6 +14,9 @@
       - delay:
           seconds: 2
       - service: shell_command.cam1_5
+      - condition: state # check that still noone came home with the last 10 sec
+        entity_id: binary_sensor.someone_is_home
+        state: 'off'
       - service: notify.pb 
         data:
           title: "Cam 1 pic 01"
@@ -70,6 +47,154 @@
           message: "motion"
           data:
             file: /tmp/101_5.jpg
+# ---------------------------------------------------------
+  seq_102:
+    sequence:
+      - service: shell_command.cam2_1
+      - delay:
+          seconds: 2
+      - service: shell_command.cam2_2
+      - delay:
+          seconds: 2
+      - service: shell_command.cam2_3
+      - delay:
+          seconds: 2
+      - service: shell_command.cam2_4
+      - delay:
+          seconds: 2
+      - service: shell_command.cam2_5
+      - condition: state # check that still noone came home with the last 10 sec
+        entity_id: binary_sensor.someone_is_home
+        state: 'off'
+      - service: notify.pb 
+        data:
+          title: "Cam 2 pic 01"
+          message: "motion"
+          data:
+            file: /tmp/102_1.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 2 pic 02"
+          message: "motion"
+          data:
+            file: /tmp/102_2.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 2 pic 03"
+          message: "motion"
+          data:
+            file: /tmp/102_3.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 2 pic 04"
+          message: "motion"
+          data:
+            file: /tmp/102_4.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 2 pic 05"
+          message: "motion"
+          data:
+            file: /tmp/102_5.jpg
+# ---------------------------------------------------------
+  seq_103:
+    sequence:
+      - service: shell_command.cam3_1
+      - delay:
+          seconds: 2
+      - service: shell_command.cam3_2
+      - delay:
+          seconds: 2
+      - service: shell_command.cam3_3
+      - delay:
+          seconds: 2
+      - service: shell_command.cam3_4
+      - delay:
+          seconds: 2
+      - service: shell_command.cam3_5
+      - condition: state # check that still noone came home with the last 10 sec
+        entity_id: binary_sensor.someone_is_home
+        state: 'off'
+      - service: notify.pb 
+        data:
+          title: "Cam 3 pic 01"
+          message: "motion"
+          data:
+            file: /tmp/103_1.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 3 pic 02"
+          message: "motion"
+          data:
+            file: /tmp/103_2.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 3 pic 03"
+          message: "motion"
+          data:
+            file: /tmp/103_3.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 3 pic 04"
+          message: "motion"
+          data:
+            file: /tmp/103_4.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 3 pic 05"
+          message: "motion"
+          data:
+            file: /tmp/103_5.jpg
+# ---------------------------------------------------------
+  seq_106:
+    sequence:
+      - service: shell_command.cam6_1
+      - delay:
+          seconds: 2
+      - service: shell_command.cam6_2
+      - delay:
+          seconds: 2
+      - service: shell_command.cam6_3
+      - delay:
+          seconds: 2
+      - service: shell_command.cam6_4
+      - delay:
+          seconds: 2
+      - service: shell_command.cam6_5
+      - condition: state # check that still noone came home with the last 10 sec
+        entity_id: binary_sensor.someone_is_home
+        state: 'off'
+      - service: notify.pb 
+        data:
+          title: "Cam 6 pic 01"
+          message: "motion"
+          data:
+            file: /tmp/106_1.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 6 pic 02"
+          message: "motion"
+          data:
+            file: /tmp/106_2.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 6 pic 03"
+          message: "motion"
+          data:
+            file: /tmp/106_3.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 6 pic 04"
+          message: "motion"
+          data:
+            file: /tmp/106_4.jpg
+      - service: notify.pb 
+        data:
+          title: "Cam 6 pic 05"
+          message: "motion"
+          data:
+            file: /tmp/106_5.jpg
+# ---------------------------------------------------------
 # ---------------------------------------------------------
   test:
     sequence:

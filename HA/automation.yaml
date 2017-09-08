@@ -134,11 +134,8 @@
       condition: or
       conditions:
         - condition: state
-          entity_id: 'device_tracker.illuminum_kolja'
-          state: 'home'
-        - condition: state
-          entity_id: 'device_tracker.illuminum_caro'
-          state: 'home'
+          entity_id: binary_sensor.someone_is_home
+          state: 'on'
         - condition: state
           entity_id: 'binary_sensor.g_motion_10m'
           state: 'on'
@@ -376,45 +373,8 @@
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
-# -------------------- bedroom movement --------------------
-  - alias: Turn_on_bedroom_lights_when_there_is_movement
-    initial_state: False
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev16_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: time
-          after: '06:30:00'
-        - condition: time
-          before: '22:30:00'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev16
-# ----------------------------------------------------------
-  - alias: Turn_off_bedroom_lights_5min_after_movement
-    initial_state: False
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev16_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 5
-          seconds: 0
-    action:
-      service: homeassistant.turn_off
-      entity_id: light.dev16
-# -------------------- bedroom movement --------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
 # -------------------- outside on dark ---------------------
-# switch the light on, 15 min after sunset, but only if that before 23:30
+# switch the light on, 15 min after sunset, but only if thats before 23:30
   - alias: sunset_dev5
     initial_state: True
     hide_entity: False
@@ -435,11 +395,8 @@
     hide_entity: False
     trigger:
       - platform: state
-        entity_id: 'device_tracker.illuminum_caro'
-        to: 'home'
-      - platform: state
-        entity_id: 'device_tracker.illuminum_kolja'
-        to: 'home'
+        entity_id: binary_sensor.someone_is_home
+        to: 'on'
       - platform: time
         hours: 22
         minutes: 00
@@ -448,11 +405,8 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: 'device_tracker.illuminum_kolja'
-          state: 'home'
-        - condition: state
-          entity_id: 'device_tracker.illuminum_caro'
-          state: 'home'
+          entity_id: binary_sensor.someone_is_home
+          state: 'on'
         - condition: time
           after: '22:00:00'
     action:
@@ -475,7 +429,8 @@
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
-# -------------------- alarm system -----------------------
+# -------------------- alarm system ------------------------
+# --------------------- gmotion ----------------------------
 # send message as soon as there is movement and nobody is home
   - alias: alarm_system
     initial_state: True
@@ -488,18 +443,102 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: 'device_tracker.illuminum_kolja'
-          state: 'not_home'
+          entity_id: switch.Alarm_System
+          state: 'on'
         - condition: state
-          entity_id: 'device_tracker.illuminum_caro'
-          state: 'not_home'
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
     action:
      service: notify.pb
      data:
        title: "Motion detected"
-       message: "ehhhm... hallo?"
-# ----------------------------------------------------------
-# -------------------- alarm system -----------------------
+       message: "GMotion triggered"
+# --------------------- gmotion ----------------------------
+# --------------------- 101 --------------------------------
+  - alias: alarm_system_c101 
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev101_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: switch.Alarm_System
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_101
+# --------------------- 101 --------------------------------
+# --------------------- 102 --------------------------------
+  - alias: alarm_system_c102 
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev102_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: switch.Alarm_System
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_102
+# --------------------- 102 --------------------------------
+# --------------------- 103 --------------------------------
+  - alias: alarm_system_c103 
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev103_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: switch.Alarm_System
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_103
+# --------------------- 103 --------------------------------
+# --------------------- 106 --------------------------------
+  - alias: alarm_system_c106 
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev106_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: switch.Alarm_System
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_106
+# --------------------- 106 --------------------------------
+# --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
 
