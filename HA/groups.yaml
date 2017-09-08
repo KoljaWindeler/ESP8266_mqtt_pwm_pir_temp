@@ -29,7 +29,7 @@
       - binary_sensor.dev103_motion
       - binary_sensor.dev106_motion
 
-  kitchen:
+  Kitchen:
     control: hidden
     icon: mdi:comment-multiple-outline
     view: no
@@ -50,7 +50,7 @@
       # - binary_sensor.dev16_motion
       # - sensor.dev16_temperature
 
-  hallway:
+  Hallway:
     control: hidden
     view: no
     entities:
@@ -75,21 +75,35 @@
       - sensor.g_motion_t
       - binary_sensor.someone_is_home
 
-  alarm:
+  alarm_maps:
     control: hidden
-    view: yes
+    view: no
     entities:
-      - group.alarm_controll
+      - camera.map_caro
+      - camera.map_kolja
+
+  alarm_cams:
+    control: hidden
+    view: no
+    entities:
       - camera.cam_101
       - camera.cam_102
       - camera.cam_103
       - camera.cam_106
+
+
+  alarm:
+    control: hidden
+    view: yes
+    entities:
+      - group.alarm_control
+      - group.alarm_cams
+      - group.alarm_maps
       - group.presents
-      - camera.map_caro
-      - camera.map_kolja
+      - group.motion
 
       
-  alarm_controll:
+  Alarm_control:
     control: hidden
     view: no
     entities:
@@ -101,15 +115,23 @@
       - automation.alarm_system_c106
 
 
-  motion:
+  Motion:
     control: hidden
     view: no
     entities:
       - binary_sensor.dev1_motion
       - binary_sensor.dev2_motion
       - binary_sensor.dev3_motion
+      - binary_sensor.dev4_motion
+      - binary_sensor.dev10_motion
+      - binary_sensor.dev14_motion
+      - binary_sensor.dev15_motion
+      - binary_sensor.dev101_motion
+      - binary_sensor.dev102_motion
+      - binary_sensor.dev103_motion
+      - binary_sensor.dev106_motion
 
-  outside:
+  Outside:
     control: hidden
     entities:
       - light.dev5
