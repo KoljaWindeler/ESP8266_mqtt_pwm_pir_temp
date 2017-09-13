@@ -389,14 +389,18 @@
       - service: homeassistant.turn_on
         entity_id: light.dev5
 # ----------------------------------------------------------
-# turn the lights off if both of us are at home and it is after 22:00
+# turn the lights off if both of us are at home for at least 10min and it is after 22:00
   - alias: all_home_dev5
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
-        entity_id: binary_sensor.someone_is_home
+        entity_id: binary_sensor.everyone_is_home
         to: 'on'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
       - platform: time
         hours: 22
         minutes: 00
@@ -405,7 +409,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: binary_sensor.someone_is_home
+          entity_id: binary_sensor.everyone_is_home
           state: 'on'
         - condition: time
           after: '22:00:00'
@@ -564,6 +568,8 @@
       - platform: state
         entity_id: binary_sensor.dev99_motion
         to: 'on'
-    action:
-     service: script.seq_101
-
+    action: 
+      service: mqtt.publish
+      data:
+        topic: "owntracks/illuminum/kolja/cmd"
+        payload: "{\"_type\":\"cmd\",\"action\":\"reportLocation\"}"

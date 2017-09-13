@@ -25,9 +25,12 @@
     device_tracker.illuminum_caro:
       friendly_name: "Caro OT"
     binary_sensor.someone_is_home:
-      friendly_name: "Home"
+      friendly_name: "1/us"
+    binary_sensor.everyone_is_home:
+      friendly_name: "all/us"
     switch.Alarm_System:
       friendly_name: "Global Alarm enabled"
+      assumed_state: false
     automation.alarm_system:
       friendly_name: "Gmontion Alarm"
     automation.alarm_system_c101:

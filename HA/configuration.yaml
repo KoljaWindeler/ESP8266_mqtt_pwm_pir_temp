@@ -80,6 +80,13 @@ emulated_hue:
 # Weather Prediction
 sensor: !include sensors.yaml
 switch: !include switches.yaml
+
+input_boolean:
+  alarm_system:
+    name: "Alarm system enabled"
+    initial: on
+
+# input_boolean: !include b_input.yaml
 group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml

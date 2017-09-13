@@ -74,6 +74,7 @@
       - binary_sensor.g_motion
       - sensor.g_motion_t
       - binary_sensor.someone_is_home
+      - binary_sensor.everyone_is_home
 
   alarm_maps:
     control: hidden
@@ -107,7 +108,7 @@
     control: hidden
     view: no
     entities:
-      - switch.Alarm_System
+      - input_boolean.Alarm_System
       - automation.alarm_system
       - automation.alarm_system_c101
       - automation.alarm_system_c102

@@ -1,4 +1,5 @@
   - platform: mqtt
+    initial: true
     name: "Alarm_System"
     command_topic: "alarm_system/switch"
   
