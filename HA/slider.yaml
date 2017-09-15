@@ -1,0 +1,7 @@
+  dev12_dimmer_delay:
+    initial: 10
+    min: 0
+    max: 500
+    step: 5
+    icon: mdi:timeer-sand
+    unit_of_measurement: ms
