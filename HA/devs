@@ -13,9 +13,9 @@ DEV11 - living room tower, temperature, simple light
 //DEV13 - pcb, currently used for humidity measurement in livingroom plant 
 DEV14 - kitchen drawer, PIR, simple light
 DEV15 - World map, PIR dimmer
-DEV16 - Bedroom, PIR, PWM led streifen, DS18B20
+DEV20 - Bedroom, PIR, PWM led streifen, DS18B20
 //DEV17 - PCB, PIR, unused
 //DEV18 - PCB, PIR, unused
 //DEV19 - PCB, PIR, unused, rgb
-DEV20 - switch for dev16 both bedroom
+DEV16 - switch for dev20 both bedroom
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused

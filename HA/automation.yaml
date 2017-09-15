@@ -41,6 +41,7 @@
           - light.dev14
 # ------------------ kitchen joiner ------------------------
 # ----------------------------------------------------------
+
 # ----------------------------------------------------------
 # ------------------ bedroom joiner ------------------------
   - alias: dev16_20_on
@@ -147,6 +148,23 @@
           - light.dev11
 # ------------------- living room sunset -------------------
 # ----------------------------------------------------------
+
+# ----------------------------------------------------------
+# ------------------- bedroom sunrise ----------------------
+  - alias: sunrise_dev20
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: sun
+      event: sunrise
+      offset: "+00:15:00"
+    action:
+      - service: homeassistant.turn_off
+        entity_id: 
+          - light.dev20
+# ------------------- bedroom sunrise ----------------------
+# ----------------------------------------------------------
+
 
 
 # ----------------------------------------------------------
@@ -447,7 +465,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.Alarm_System
+          entity_id: input_boolean.alarm_System
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home
@@ -470,7 +488,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.Alarm_System
+          entity_id: input_boolean.alarm_System
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home
@@ -491,7 +509,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.Alarm_System
+          entity_id: input_boolean.alarm_System
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home
@@ -512,7 +530,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.Alarm_System
+          entity_id: input_boolean.alarm_System
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home
@@ -533,7 +551,7 @@
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.Alarm_System
+          entity_id: input_boolean.alarm_System
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home

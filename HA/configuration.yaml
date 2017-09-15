@@ -2,8 +2,8 @@ homeassistant:
   # Name of the location where Home Assistant is running
   name: Home
   # Location required to calculate the time the sun rises and sets
-  latitude: 52.5821627
-  longitude: 10.1878555
+  latitude: !secret latitude
+  longitude: !secret longitude
   # Impacts weather/sunrise data (altitude above sea level in meters)
   elevation: 51
   # metric for Metric, imperial for Imperial
@@ -14,12 +14,12 @@ homeassistant:
    - /tmp
    - /mnt
   customize: !include customize.yaml
-
+  packages: !include_dir_named packages
 
 zone 3:
   name: Home
-  latitude: 52.5821627
-  longitude: 10.1878555
+  latitude: !secret latitude
+  longitude: !secret longitude
   radius: 500
   icon: mdi:account-multiple
 
@@ -27,16 +27,13 @@ zone 3:
 frontend:
 
 http:
-  # Uncomment this to add a password (recommended!)
-  api_password: pw
-  # Uncomment this if you are using SSL or running in Docker etc
-  # base_url: example.duckdns.org:8123
+  api_password: !secret http_password
 
 
 notify:
   name: pb
   platform: pushbullet
-  api_key: removed
+  api_key: !secret pushbullet_key
 
 # Checks for available updates
 updater:
@@ -51,7 +48,7 @@ conversation:
 # remember to install mysql in the virtual dev
 history:
 recorder:
-  db_url: mysql://user:pw@localhost/ha
+  db_url: mysql://ha:ah@localhost/ha
   purge_days: 5
 
 # View all events in a logbook
@@ -64,29 +61,28 @@ sun:
 tts:
  platform: google
 
+# button
+input_boolean:
+  alarm_system:
+    name: "Global Alarm enabled"
+    initial: on
+    icon: mdi:security-home
 
 mqtt:
  broker: 127.0.0.1
  port: 1883
  client_id: home-assistant-1
- username: ha
- password: removed
+ username: !secret mq_user
+ password: !secret mq_pass
 
 media_player:
  - platform: cast
-
+   host: 192.168.2.134
 emulated_hue:
 
 # Weather Prediction
 sensor: !include sensors.yaml
-switch: !include switches.yaml
-
-input_boolean:
-  alarm_system:
-    name: "Alarm system enabled"
-    initial: on
-
-# input_boolean: !include b_input.yaml
+#switch: !include switches.yaml
 group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml

@@ -46,9 +46,9 @@
     control: hidden
     view: no
     entities:
-      - light.dev16
+      - light.dev20
       # - binary_sensor.dev16_motion
-      # - sensor.dev16_temperature
+      - sensor.dev16_temperature
 
   Hallway:
     control: hidden
@@ -95,6 +95,7 @@
 
   alarm:
     control: hidden
+    icon: mdi:security
     view: yes
     entities:
       - group.alarm_control
@@ -149,6 +150,7 @@
 
   shop:
     name: Shop
+    icon: mdi:wrench
     view: yes
     entities:
       - sensor.dev9_temperature
@@ -156,6 +158,7 @@
 
   rssi:
     name: Signals
+    icon: mdi:signal-variant
     view: yes
     entities:
      - group.rssi_p
@@ -187,13 +190,26 @@
 
   mediaplayer:
     name: Media Player
+    icon: mdi:cast-connected
     view: yes
     entities:
       - media_player.jkw_cast2
+      - group.gmusic
+
+  gmusic:
+    name: Gmusic
+    icon: mdi:cast-connected
+    view: no
+    entities:
+      - input_select.music    
+      - switch.google_music
+      - switch.google_music_radio
+
 
   system:
     name: System
     view: yes
+    icon: mdi:settings
     entities:
       - group.alarm_controll
       - automation.dev16_20_off
@@ -210,6 +226,7 @@
       - automation.Turn_on_hallwayU_lights_when_there_is_movement
       - automation.Turn_off_hallwayU_lights_10min_after_movement
       - automation.sunset_dev5
+      - automation.sunrise_dev20
       - automation.midnight_dev5
       - automation.all_home_dev5
       - sensor.ram_free
@@ -218,6 +235,7 @@
 
   playground:
     name: Playground
+    icon: mdi:radioactive
     view: yes
     entities:
       - binary_sensor.dev3_motion
@@ -234,4 +252,8 @@
       - binary_sensor.dev12_motion
       - light.dev12
       - input_slider.dev12_dimmer_delay
-    
+
+      - input_select.music    
+      - input_select.media_player
+      - switch.google_music
+        

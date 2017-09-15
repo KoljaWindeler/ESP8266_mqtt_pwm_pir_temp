@@ -1,6 +1,7 @@
 # ---------------------------------------------------------
   seq_101:
     sequence:
+      - service: script.update_location
       - service: shell_command.cam1_1
       - delay:
           seconds: 2
@@ -50,6 +51,7 @@
 # ---------------------------------------------------------
   seq_102:
     sequence:
+      - service: script.update_location
       - service: shell_command.cam2_1
       - delay:
           seconds: 2
@@ -99,6 +101,7 @@
 # ---------------------------------------------------------
   seq_103:
     sequence:
+      - service: script.update_location
       - service: shell_command.cam3_1
       - delay:
           seconds: 2
@@ -148,6 +151,7 @@
 # ---------------------------------------------------------
   seq_106:
     sequence:
+      - service: script.update_location
       - service: shell_command.cam6_1
       - delay:
           seconds: 2
@@ -195,6 +199,18 @@
           data:
             file: /tmp/106_5.jpg
 # ---------------------------------------------------------
+  update_location:
+    sequence:
+      -  service: mqtt.publish
+         data:
+          topic: "owntracks/illuminum/kolja/cmd"
+          payload: "{\"_type\":\"cmd\",\"action\":\"reportLocation\"}"
+
+      -  service: mqtt.publish
+         data:
+          topic: "owntracks/illuminum/caro/cmd"
+          payload: "{\"_type\":\"cmd\",\"action\":\"reportLocation\"}"
+# ---------------------------------------------------------
 # ---------------------------------------------------------
   test:
     sequence:
@@ -202,4 +218,4 @@
         data:
           title: "seq"
           message: "yeah"
-# ---------------------------------------------------------
+
