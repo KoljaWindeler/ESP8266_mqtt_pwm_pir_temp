@@ -1,3 +1,34 @@
+  seq_harmony:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.tvhub_2
+        data:
+          activity: "28402150"
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------
+  seq_gradio_on:
+    sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.music
+          option: "Nice"
+      - service: switch.turn_on
+        entity_id: switch.google_music_radio
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "28406541"
+# ---------------------------------------------------------
+  seq_gradio_off:
+    sequence:
+      - service: switch.turn_off
+        entity_id: switch.google_music_radio
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "-1"
+# ---------------------------------------------------------
 # ---------------------------------------------------------
   seq_101:
     sequence:

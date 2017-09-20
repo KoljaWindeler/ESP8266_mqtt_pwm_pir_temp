@@ -9,7 +9,15 @@
       - group.bed_room
       - group.hallway
       # - group.presents
+      # - group.media
+
+  media:
+    control: hidden
+    icon: mdi:comment-multiple-outline
+    view: no
+    entities:
       - media_player.jkw_cast2
+      - switch.fernseher
 
   living_room:
     control: hidden
@@ -169,22 +177,36 @@
     view: no
     entities:
       - sensor.dev1_rssi
+      - sensor.dev1_update
       - sensor.dev2_rssi
+      - sensor.dev2_update
       # - sensor.dev3_rssi
       - sensor.dev4_rssi
+      - sensor.dev4_update
       - sensor.dev5_rssi
+      - sensor.dev5_update
       - sensor.dev6_rssi
+      - sensor.dev6_update
       - sensor.dev7_rssi
+      - sensor.dev7_update
       # - sensor.dev8_rssi
       - sensor.dev9_rssi
+      - sensor.dev9_update
       - sensor.dev10_rssi
+      - sensor.dev10_update
       - sensor.dev11_rssi
+      - sensor.dev11_update
       - sensor.dev12_rssi
+      - sensor.dev12_update
       # - sensor.dev13_rssi
       - sensor.dev14_rssi
+      - sensor.dev14_update
       - sensor.dev15_rssi
+      - sensor.dev15_update
       - sensor.dev16_rssi
+      - sensor.dev16_update
       - sensor.dev20_rssi
+      - sensor.dev20_update
       # - sensor.dev18_rssi
       # - sensor.dev42_rssi
 
@@ -193,7 +215,7 @@
     icon: mdi:cast-connected
     view: yes
     entities:
-      - media_player.jkw_cast2
+      - group.media
       - group.gmusic
 
   gmusic:
@@ -204,6 +226,7 @@
       - input_select.music    
       - switch.google_music
       - switch.google_music_radio
+      - switch.background
 
 
   system:

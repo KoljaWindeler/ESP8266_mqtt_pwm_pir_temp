@@ -1,4 +1,32 @@
 # ----------------------------------------------------------
+# ------------------ tv ------------------------------------
+# ------------------ tv ------------------------------------
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+# ------------------ gmusic player -------------------------
+  - alias: g_radion_on
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: switch.background
+        to: 'on'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_gradio_on
+# ----------------------------------------------------------
+  - alias: g_radion_off
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: switch.background
+        to: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_gradio_off
+# ------------------ gmusic player -------------------------
+# ----------------------------------------------------------
 # ------------------ kitchen joiner ------------------------
   - alias: dev2_4_14_on
     initial_state: True
@@ -130,7 +158,7 @@
     trigger:
       platform: sun
       event: sunset
-      offset: "-00:15:00"
+      offset: "-00:30:00"
     condition:
       condition: or
       conditions:

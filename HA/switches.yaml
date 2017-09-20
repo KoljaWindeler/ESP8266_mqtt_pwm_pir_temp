@@ -1,5 +1,24 @@
   - platform: mqtt
-    initial: true
-    name: "Alarm_System"
-    command_topic: "alarm_system/switch"
+    initial: false
+    name: "Background"
+    command_topic: "gmusic_nice_player"
   
+  - platform: template
+    switches:
+      fernseher:
+        value_template: >-
+            {% if states.remote.tvhub.attributes.current_activity == 'PowerOff' %}
+               off
+            {% else %}
+               on
+            {% endif %}
+        turn_on:
+          service: remote.turn_on
+          entity_id: remote.tvhub
+          data:
+            activity: 28402151
+        turn_off:
+          service: remote.turn_on
+          entity_id: remote.tvhub
+          data:
+            activity: "-1"

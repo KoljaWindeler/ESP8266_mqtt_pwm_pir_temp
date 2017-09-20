@@ -1,3 +1,10 @@
+    switch.background:
+      assumed_state: false
+      icon: mdi:youtube-play
+# -----------------------------------------------
+    switch.fernseher:
+      friendly_name: "TV"
+      icon: "mdi:television-classic"
 # -----------------------------------------------
     sensor.dark_sky_apparent_temperature:
       friendly_name: "Apparent Temp"
