@@ -18,6 +18,7 @@
     entities:
       - media_player.jkw_cast2
       - switch.fernseher
+      - switch.next_track
 
   living_room:
     control: hidden
@@ -117,6 +118,7 @@
     control: hidden
     view: no
     entities:
+      - automation.rearm_alarm_system
       - input_boolean.Alarm_System
       - automation.alarm_system
       - automation.alarm_system_c101

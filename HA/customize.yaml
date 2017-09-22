@@ -1,4 +1,10 @@
+    switch.next_track:
+      assumed_state: false
+      emulated_hue_name: "Nose"
+      friendly_name: "Next track"
     switch.background:
+      emulated_hue_name: "Background"
+      friendly_name: "Background player"
       assumed_state: false
       icon: mdi:youtube-play
 # -----------------------------------------------
@@ -39,6 +45,9 @@
       friendly_name: "all/us"
     input_boolean.alarm_System:
       friendly_name: "Global Alarm enabled"
+    automation.rearm_alarm_system:
+      friendly_name: "Auto rearm system"
+      icon: mdi:security-home
     automation.alarm_system:
       friendly_name: "Gmontion Alarm"
     automation.alarm_system_c101:

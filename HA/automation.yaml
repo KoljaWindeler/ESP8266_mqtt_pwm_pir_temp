@@ -1,6 +1,14 @@
-# ----------------------------------------------------------
-# ------------------ tv ------------------------------------
-# ------------------ tv ------------------------------------
+  - alias: next_track_lirc
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: event
+      event_type: ir_command_received
+      event_data:
+        button_name: KEY_RIGHT
+    action:
+      service: media_player.media_next_track
+      entity_id: media_player.jkw_cast2
 # ----------------------------------------------------------
 # ----------------------------------------------------------
 # ------------------ gmusic player -------------------------
@@ -480,6 +488,20 @@
 
 # ----------------------------------------------------------
 # -------------------- alarm system ------------------------
+# ----------------------------------------------------------
+# --------------------- rearm ------------------------------
+  - alias: rearm_alarm_system
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.someone_is_home
+        to: 'off'
+    action:
+      - service: homeassistant.turn_on
+        entity_id: input_boolean.alarm_System
+# --------------------- rearm ------------------------------
+# ----------------------------------------------------------
 # --------------------- gmotion ----------------------------
 # send message as soon as there is movement and nobody is home
   - alias: alarm_system

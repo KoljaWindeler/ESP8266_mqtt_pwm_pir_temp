@@ -40,11 +40,11 @@ updater:
 
 # Discover some devices automatically
 discovery:
-
+lirc:
 remote:
   - platform: harmony
     name: TVHub
-    host: 192.168.2.161
+    host: 192.168.2.164
 
 history:
 
