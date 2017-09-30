@@ -8,6 +8,7 @@
       - group.outside
       - group.bed_room
       - group.hallway
+      - group.room_carlo
       # - group.presents
       # - group.media
 
@@ -19,6 +20,18 @@
       - media_player.jkw_cast2
       - switch.fernseher
       - switch.next_track
+
+  room_carlo:
+    name: Carlo
+    control: hidden
+    icon: mdi:comment-multiple-outline
+    view: no
+    entities:
+      - light.dev77
+      - binary_sensor.dev77_motion
+      - light.dev77_rainbow
+      - sensor.dev77_temperature_dht
+      - sensor.dev77_humidity_dht
 
   living_room:
     control: hidden
@@ -209,6 +222,8 @@
       - sensor.dev16_update
       - sensor.dev20_rssi
       - sensor.dev20_update
+      - sensor.dev77_rssi
+      - sensor.dev77_update
       # - sensor.dev18_rssi
       # - sensor.dev42_rssi
 
@@ -267,6 +282,8 @@
       - binary_sensor.dev17_motion
       - binary_sensor.dev42_motion
       - sensor.dev13_adc
+      - sensor.dev9_humidity_DHT
+      - sensor.dev9_temperature_DHT
       - light.dev19
       - light.dev42
       - light.dev98
@@ -275,10 +292,9 @@
       - sensor.dev3_temperature
       - sensor.dev3_humidity
       - binary_sensor.dev12_motion
+      - binary_sensor.dev99_motion
       - light.dev12
+      - light.dev16
+      - light.dev20
       - input_slider.dev12_dimmer_delay
-
-      - input_select.music    
-      - input_select.media_player
-      - switch.google_music
         

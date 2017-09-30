@@ -18,10 +18,8 @@
           data:
             activity: 28402151
         turn_off:
-          service: remote.turn_on
-          entity_id: remote.tvhub
-          data:
-            activity: "-1"
+          service: script.turn_on
+          entity_id: script.seq_tv_off
 
 
       next_track:

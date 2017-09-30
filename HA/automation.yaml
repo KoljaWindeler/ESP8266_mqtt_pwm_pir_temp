@@ -84,9 +84,9 @@
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: state
-        entity_id: light.dev20
-        to: 'on'
+#      - platform: state
+#        entity_id: light.dev20
+#        to: 'on'
       - platform: state
         entity_id: light.dev16
         to: 'on'
@@ -94,15 +94,15 @@
       - service: light.turn_on
         entity_id: 
           - light.dev20
-          - light.dev16
+#          - light.dev16
 # ----------------------------------------------------------
   - alias: dev16_20_off
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: state
-        entity_id: light.dev20
-        to: 'off'
+ #     - platform: state
+ #       entity_id: light.dev20
+ #       to: 'off'
       - platform: state
         entity_id: light.dev16
         to: 'off'
@@ -110,7 +110,7 @@
       - service: light.turn_off
         entity_id:
           - light.dev20
-          - light.dev16
+#          - light.dev16
 # ------------------ bedroom joiner ------------------------
 # ----------------------------------------------------------
 
@@ -528,7 +528,7 @@
 # --------------------- gmotion ----------------------------
 # --------------------- 101 --------------------------------
   - alias: alarm_system_c101 
-    initial_state: True
+    initial_state: False
     hide_entity: False
     trigger:
       - platform: state

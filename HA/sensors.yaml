@@ -202,6 +202,16 @@
     unit_of_measurement: "ºC"
 
   - platform: mqtt
+    state_topic: "dev9/humidity_DHT"
+    name: "dev9_humidity_DHT"
+    unit_of_measurement: "%"
+
+  - platform: mqtt
+    state_topic: "dev9/temperature_DHT"
+    name: "dev9_temperature_DHT"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
     state_topic: "dev9/rssi"
     name: "dev9_rssi"
     unit_of_measurement: "dbm"
@@ -383,6 +393,33 @@
   - platform: mqtt
     state_topic: "dev20/rssi"
     name: "dev20_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
+      dev77_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev77.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev77/#"
+    name: "dev77"
+
+  - platform: mqtt
+    state_topic: "dev77/temperature_DHT"
+    name: "dev77_temperature_dht"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev77/humidity_DHT"
+    name: "dev77_humidity_dht"
+    unit_of_measurement: "%"
+
+  - platform: mqtt
+    state_topic: "dev77/rssi"
+    name: "dev77_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt

@@ -137,6 +137,10 @@
     name: "dev106_motion"
     device_class: motion
 
+  - platform: mqtt
+    state_topic: "dev77/motion/status"
+    name: "dev77_motion"
+    device_class: motion
 
 
 

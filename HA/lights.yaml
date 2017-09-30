@@ -133,15 +133,11 @@
 # --------------------------------------------------
   - platform: mqtt ### dimmer bedroom
     name: "dev16"
-    state_topic: "dev16/PWM_light/status"
-    command_topic: "dev16/PWM_dimm/switch"
-    brightness_state_topic: 'dev16/PWM_light/brightness'
-    brightness_command_topic: 'dev16/PWM_dimm/brightness/set'
+    state_topic: "dev16/simple_light/status"
+    command_topic: "dev16/simple_light/switch"
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### testing
     name: "dev19"
@@ -272,3 +268,22 @@
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### carlo
+    name: "dev77"
+    state_topic: "dev77/PWM_light/status"
+    command_topic: "dev77/PWM_dimm/switch"
+    rgb_state_topic: 'dev77/PWM_RGB_dimm/color/set'
+    rgb_command_topic: 'dev77/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### carlo
+    name: "dev77_rainbow"
+    state_topic: "dev77/rainbow/status"
+    command_topic: "dev77/rainbow/switch"
+    payload_on: "ON"
+    payload_off: "OFF"
