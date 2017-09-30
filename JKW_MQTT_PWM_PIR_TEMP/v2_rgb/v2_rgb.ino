@@ -129,7 +129,8 @@ Highly based on a combination of different version of
 #define PUBLISH_TIME_OFFSET   200     // ms timeout between two publishes
 #define UPDATE_PIR            900000L // ms timeout between two publishes of the pir .. needed?
 
-#define NEOPIXEL_STEP_TIME    39 //10sec per Rotation, 256 steps per rotation = 39ms per Step
+#define NEOPIXEL_STEP_TIME    15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
+#define NEOPIXEL_LED_COUNT    24
 
 // Buffer to hold data from the WiFi manager for mqtt login
 struct mqtt_data { //80 byte
@@ -150,7 +151,7 @@ struct led {
 
 DHT dht(DHT_PIN, DHT22); // DHT22
 OneWire ds(DS_PIN);  // on digital pin DHT_DS_PIN
-NeoPixelBus<NeoGrbFeature, NeoEsp8266BitBang800KbpsMethod> strip(24, PWM_LIGHT_PIN2);
+NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, PWM_LIGHT_PIN2); // this version only works on gpio3 / D9 (RX)
 
 char char_buffer[35];
 
@@ -204,9 +205,12 @@ uint8_t   m_published_light_brightness = 1; // to force instant publish once we 
 uint8_t   m_light_brightness = 0; // to force instant publish once we are online
 uint16_t  m_published_light_color = 1; // to force instant publish once we are online (sum of rgb)
 uint16_t	m_pwm_dimm_time = 10; // 10ms per Step, 255*0.01 = 2.5 sec
+boolean   m_use_neo_as_rgb = true; // if true we're going to send the color to the neopixel and not to the pwm pins
+
 uint8_t 	m_pir_state = LOW; // inaktiv
 uint8_t 	m_published_pir_state = HIGH; // to force instant publish once we are online
-uint8_t   m_rainbow_state = true; // on off internally
+
+uint8_t   m_rainbow_state = false; // on off internally
 uint8_t   m_published_rainbow_state = true; // on off published
 uint8_t   m_rainbow_pos = 0; // pointer im wheel
 
@@ -405,6 +409,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     if (payload.equals(String(STATE_ON))) {
       if (m_pwm_light_state != true) {
         m_pwm_light_state = true;
+        m_rainbow_state = false; // publish that we've switched if off .. just in case
 
         // bei diesem topic hartes einschalten
         m_light_current = m_light_backup;
@@ -443,7 +448,6 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
       if (m_pwm_light_state != true) {
         //Serial.println("light was off");
         m_pwm_light_state = true;
-
         // bei diesem topic ein dimmen
         pwmDimmTo(m_light_backup);
         publishPWMLightBrightness(); // communicate where we are dimming towards
@@ -507,8 +511,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     // test if the payload is equal to "ON" or "OFF"
     Serial.print("INPUT!");
     if (payload.equals(String(STATE_ON)) && m_rainbow_state != true) {      
-      m_rainbow_state = true;
-      setRainbowState();
+      m_rainbow_state = true;      setRainbowState();
     } else if (payload.equals(String(STATE_OFF)) && m_rainbow_state != false) {
       m_rainbow_state = false;
       setRainbowState();
@@ -589,9 +592,17 @@ void setPWMLightState(boolean over_ride) {
   snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_current.r, m_light_current.g, m_light_current.b);
   Serial.println(m_msg_buffer);
 
-  analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
-  analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
-  analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
+
+  if(m_use_neo_as_rgb){
+   for(int i=0; i<NEOPIXEL_LED_COUNT; i++) {
+      strip.SetPixelColor(i,RgbColor(intens[m_light_current.r],intens[m_light_current.g],intens[m_light_current.b]));
+    }  
+    strip.Show();
+  } else {
+    analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
+    analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
+    analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
+  }
 }
 
 // function called to adapt the state of the led
@@ -609,6 +620,13 @@ void setSimpleLightState() {
 void setRainbowState(){
   m_rainbow_pos = 0;
   m_neopixel_dimm_time = millis();
+  // switch off
+  if(!m_rainbow_state){
+    for(int i=0; i<NEOPIXEL_LED_COUNT; i++) {
+      strip.SetPixelColor(i,RgbColor(0,0,0));
+    }  
+    strip.Show();
+  }
 }
 
 void pwmDimmTo(led dimm_to) {
@@ -929,8 +947,8 @@ void setup() {
   dht.begin();
 
   // ws strip
-  //strip = Adafruit_NeoPixel(24, PWM_LIGHT_PIN2, NEO_RGB + NEO_KHZ800); // PWM_LIGHT_PIN3 = 16
   strip.Begin();
+  setRainbowState(); // important, otherwise they will be initialized half way on or strange colored
 
   Serial.println("");
   Serial.println("[WiFi] connected");
@@ -982,15 +1000,11 @@ void loop() {
   //// RGB circle ////
   if(m_rainbow_state){
     if(millis() >= m_neopixel_dimm_time) {
-      Serial.println("Y");
-      for(int i=0; i<24; i++) {
-        uint8_t color = ((i * 256 / 24) + m_rainbow_pos) & 255;       
-        strip.SetPixelColor(i,Wheel(color));
+      for(int i=0; i<NEOPIXEL_LED_COUNT; i++) {
+        strip.SetPixelColor(i,Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_rainbow_pos) & 255));
       }
       
       m_rainbow_pos++; // move wheel by one, will overrun and therefore cycle
-
-
       strip.Show();
       m_neopixel_dimm_time = millis() + NEOPIXEL_STEP_TIME; // schedule update
     }
