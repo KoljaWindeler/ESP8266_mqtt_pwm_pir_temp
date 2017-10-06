@@ -84,33 +84,47 @@
     initial_state: True
     hide_entity: False
     trigger:
-#      - platform: state
-#        entity_id: light.dev20
-#        to: 'on'
+      - platform: state
+        entity_id: light.dev20
+        from: 'off'
+        to: 'on'
+      - platform: state
+        entity_id: light.dev3
+        from: 'off'
+        to: 'on'
       - platform: state
         entity_id: light.dev16
+        from: 'off'
         to: 'on'
     action:
-      - service: light.turn_on
+      - service: script.turn_on
         entity_id: 
-          - light.dev20
-#          - light.dev16
+          - script.light_on_dev20
+          - script.light_on_dev3
+          - script.light_on_dev16
 # ----------------------------------------------------------
   - alias: dev16_20_off
     initial_state: True
     hide_entity: False
     trigger:
- #     - platform: state
- #       entity_id: light.dev20
- #       to: 'off'
+      - platform: state
+        entity_id: light.dev20
+        from: 'on'
+        to: 'off'
+      - platform: state
+        entity_id: light.dev3
+        from: 'on'
+        to: 'off'
       - platform: state
         entity_id: light.dev16
+        from: 'on'
         to: 'off'
     action:
-      - service: light.turn_off
-        entity_id:
-          - light.dev20
-#          - light.dev16
+      - service: script.turn_on
+        entity_id: 
+          - script.light_off_dev20
+          - script.light_off_dev3
+          - script.light_off_dev16
 # ------------------ bedroom joiner ------------------------
 # ----------------------------------------------------------
 

@@ -16,17 +16,14 @@
     payload_off: "OFF"
     optimistic: false
 # --------------------------------------------------
-  - platform: mqtt ### bed room sideboard
+  - platform: mqtt ### bed room touch switch
     name: "dev3"
-    state_topic: "dev3/PWM_light/status"
-    command_topic: "dev3/PWM_dimm/switch"
-    brightness_state_topic: 'dev3/PWM_light/brightness'
-    brightness_command_topic: 'dev3/PWM_dimm/brightness/set'
+    state_topic: "dev3/simple_light/status"
+    command_topic: "dev3/simple_light/switch"
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
-    brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### sonoff 1, kitchen rack
     name: "dev4"
@@ -203,12 +200,14 @@
     name: "dev20"
     state_topic: "dev20/PWM_light/status"
     command_topic: "dev20/PWM_dimm/switch"
+#    command_topic: "dev20/PWM_light/switch"
     brightness_state_topic: 'dev20/PWM_light/brightness'
-    brightness_command_topic: 'dev20/PWM_dimm/brightness/set'
-    qos: 0
+#    brightness_command_topic: 'dev20/PWM_dimm/brightness/set'
+    brightness_command_topic: 'dev20/PWM_light/brightness/set'
+#    qos: 0
     payload_on: "ON"
     payload_off: "OFF"
-    optimistic: false
+#    optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### template
@@ -280,10 +279,22 @@
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
-# --------------------------------------------------
   - platform: mqtt ### carlo
     name: "dev77_rainbow"
     state_topic: "dev77/rainbow/status"
     command_topic: "dev77/rainbow/switch"
     payload_on: "ON"
     payload_off: "OFF"
+  - platform: mqtt ### carlo
+    name: "dev77_simple_rainbow"
+    state_topic: "dev77/simple_rainbow/status"
+    command_topic: "dev77/simple_rainbow/switch"
+    payload_on: "ON"
+    payload_off: "OFF"
+  - platform: mqtt ### carlo
+    name: "dev77_color_wipe"
+    state_topic: "dev77/color_wipe/status"
+    command_topic: "dev77/color_wipe/switch"
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------

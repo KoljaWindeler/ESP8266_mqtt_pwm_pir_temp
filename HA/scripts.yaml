@@ -33,10 +33,56 @@
     sequence:
       - service: switch.turn_off
         entity_id: switch.google_music_radio
+      - service: media_player.media_stop
+        entity_id: media_player.jkw_cast2
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
           activity: "-1"
+# ---------------------------------------------------------
+# ---------------------------------------------------------
+  light_on_dev3:
+    sequence:
+      - condition: state 
+        entity_id: light.dev3
+        state: 'off'
+      - service: light.turn_on
+        entity_id: light.dev3
+  light_off_dev3:
+    sequence:
+      - condition: state 
+        entity_id: light.dev3
+        state: 'on'
+      - service: light.turn_off
+        entity_id: light.dev3
+  light_on_dev16:
+    sequence:
+      - condition: state 
+        entity_id: light.dev16
+        state: 'off'
+      - service: light.turn_on
+        entity_id: light.dev16
+  light_off_dev16:
+    sequence:
+      - condition: state 
+        entity_id: light.dev16
+        state: 'on'
+      - service: light.turn_off
+        entity_id: light.dev16
+  light_on_dev20:
+    sequence:
+      - condition: state 
+        entity_id: light.dev20
+        state: 'off'
+      - service: light.turn_on
+        entity_id: light.dev20
+  light_off_dev20:
+    sequence:
+      - condition: state 
+        entity_id: light.dev20
+        state: 'on'
+      - service: light.turn_off
+        entity_id: light.dev20
 # ---------------------------------------------------------
 # ---------------------------------------------------------
   seq_101:
@@ -251,6 +297,20 @@
           topic: "owntracks/illuminum/caro/cmd"
           payload: "{\"_type\":\"cmd\",\"action\":\"reportLocation\"}"
 # ---------------------------------------------------------
+  the_buzz:
+    sequence:
+      - service: media_player.play_media
+        entity_id: media_player.jkw_cast2
+        data:
+          media_content_id: https://c1icy.prod.playlists.ihrhls.com/2281_icy
+          media_content_type: audio/mp3
+# based on https://github.com/oldlaptop/iheart-mplayer
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "28445444"
+
+
 # ---------------------------------------------------------
   test:
     sequence:

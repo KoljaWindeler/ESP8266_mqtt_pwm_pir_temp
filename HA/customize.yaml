@@ -3,6 +3,11 @@
       assumed_state: false
       emulated_hue_name: "Nose"
       friendly_name: "Next track"
+    switch.the_buzz:
+      assumed_state: false
+      emulated_hue_name: "bus"
+      friendly_name: "The Buzz"
+      icon: mdi:youtube-play
     switch.background:
       emulated_hue_name: "Background"
       friendly_name: "Background player"
@@ -234,15 +239,18 @@
       icon: "mdi:thermometer"
 # -----------------------------------------------
 # -----------------------------------------------
+    sensor.dev3_update:
+      friendly_name: "03 Bedroom Touch"
+      icon: "mdi:timer-sand"
     light.dev3:
-      friendly_name: "PCB2"
+      friendly_name: "03 Bedroom Touch"
     sensor.dev3_temperature:
       friendly_name: "PCB2"
       icon: "mdi:thermometer"
     binary_sensor.dev3_motion:
       friendly_name: "PCB2"
     sensor.dev3_rssi:
-      friendly_name: "PCB2 Signal"
+      friendly_name: "03 Bedroom Touch"
 # -----------------------------------------------
     light.dev12:
       friendly_name: "PCB1"
@@ -306,7 +314,13 @@
       friendly_name: "Carlo"
     light.dev77_rainbow:
       icon: "mdi:traffic-light"
-      friendly_name: "Carlo Rainbow"
+      friendly_name: "Rainbow Wheel"
+    light.dev77_simple_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "Simple Rainbow"
+    light.dev77_color_wipe:
+      icon: "mdi:traffic-light"
+      friendly_name: "Color wipe"
     sensor.dev77_rssi:
       icon: "mdi:signal-variant"
       friendly_name: "77 Carlo"

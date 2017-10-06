@@ -19,6 +19,7 @@
     entities:
       - media_player.jkw_cast2
       - switch.fernseher
+      - switch.the_buzz
       - switch.next_track
 
   room_carlo:
@@ -30,6 +31,8 @@
       - light.dev77
       - binary_sensor.dev77_motion
       - light.dev77_rainbow
+      - light.dev77_simple_rainbow
+      - light.dev77_color_wipe
       - sensor.dev77_temperature_dht
       - sensor.dev77_humidity_dht
 
@@ -114,6 +117,13 @@
       - camera.cam_103
       - camera.cam_106
 
+  bedroom_joiner:
+    view: no
+    entities:
+      - light.dev20
+      - light.dev3
+      - light.dev16
+
 
   alarm:
     control: hidden
@@ -195,7 +205,8 @@
       - sensor.dev1_update
       - sensor.dev2_rssi
       - sensor.dev2_update
-      # - sensor.dev3_rssi
+      - sensor.dev3_rssi
+      - sensor.dev3_update
       - sensor.dev4_rssi
       - sensor.dev4_update
       - sensor.dev5_rssi
