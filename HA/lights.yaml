@@ -1,4 +1,17 @@
 # --------------------------------------------------
+  - platform: mqtt
+    name: "joiner_kitchen"
+    command_topic: "joiner/kitchen"
+# --------------------------------------------------
+  - platform: mqtt
+    name: "joiner_livingroom"
+    command_topic: "joiner/livingroom"
+# --------------------------------------------------
+  - platform: mqtt
+    name: "joiner_bedroom"
+    command_topic: "joiner/bedroom"
+# --------------------------------------------------
+# --------------------------------------------------
   - platform: mqtt ### ball living room
     name: "dev1"
     state_topic: "dev1/simple_light/status"

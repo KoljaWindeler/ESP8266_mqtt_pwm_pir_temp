@@ -41,9 +41,10 @@
     icon: mdi:comment-multiple-outline
     view: no
     entities:
-      - light.dev11
-      - light.dev7
-      - light.dev1
+      #- light.dev11
+      #- light.dev7
+      #- light.dev1
+      - light.joiner_livingroom
       - light.dev101
       - light.dev103
       - light.dev106
@@ -59,9 +60,10 @@
     icon: mdi:comment-multiple-outline
     view: no
     entities:
-      - light.dev4
-      - light.dev14
-      - light.dev2
+      #- light.dev4
+      #- light.dev14
+      #- light.dev2
+      - light.joiner_kitchen
       - binary_sensor.dev4_motion
       - binary_sensor.dev14_motion
       - sensor.dev4_temperature
@@ -71,7 +73,8 @@
     control: hidden
     view: no
     entities:
-      - light.dev20
+      - light.joiner_bedroom
+      # - light.dev20
       # - binary_sensor.dev16_motion
       - sensor.dev16_temperature
 
@@ -116,14 +119,6 @@
       - camera.cam_102
       - camera.cam_103
       - camera.cam_106
-
-  bedroom_joiner:
-    view: no
-    entities:
-      - light.dev20
-      - light.dev3
-      - light.dev16
-
 
   alarm:
     control: hidden
@@ -171,15 +166,15 @@
     entities:
       - light.dev5
 #      - light.dev6
-      - sun.sun
-      - sensor.dark_sky_temperature
+#      - sun.sun
+#      - sensor.dark_sky_temperature
       - sensor.dark_sky_apparent_temperature
       - sensor.dark_sky_daily_high_temperature
       - sensor.dark_sky_daily_low_temperature
-      - sensor.dark_sky_cloud_coverage
+#      - sensor.dark_sky_cloud_coverage
       - sensor.dark_sky_precip_probability
       - sensor.dark_sky_precip_intensity
-      - sensor.dark_sky_daily_summary
+#      - sensor.dark_sky_daily_summary
 
   shop:
     name: Shop
@@ -256,6 +251,42 @@
       - switch.google_music_radio
       - switch.background
 
+  joiner:
+    name: Light Joiner
+    control: hidden
+    view: no
+    entities:
+      - light.joiner_kitchen
+      - light.joiner_bedroom
+      - light.joiner_livingroom
+
+  alllights:
+    name: All lights
+    control: hidden
+    view: no
+    entities:
+      - light.dev1
+      - light.dev2
+      - light.dev3
+      - light.dev4
+      - light.dev5
+      - light.dev6
+      - light.dev7
+      - light.dev9
+      - light.dev10
+      - light.dev11
+      - light.dev12
+      - light.dev13
+      - light.dev14
+      - light.dev15
+      - light.dev16
+      - light.dev19
+      - light.dev20
+      - light.dev42
+      - light.dev77
+      - light.dev98
+      - light.dev99
+      - light.dev982
 
   system:
     name: System
@@ -263,15 +294,18 @@
     icon: mdi:settings
     entities:
       - group.alarm_controll
-      - automation.dev16_20_off
-      - automation.dev16_20_on
+      - group.alllights
+      - group.joiner
+      - automation.joiner_bedroom_in
+      - automation.joiner_bedroom_out
+      - automation.joiner_kitchen_in
+      - automation.joiner_kitchen_in2
+      - automation.joiner_kitchen_out
       - automation.dev7_11_1_on
       - automation.dev7_11_1_off
       - automation.dev2_4_14_on
       - automation.dev2_4_14_off
       - automation.sunset_dev7_dev11_dev1
-      - automation.Turn_on_kitchen_lights_when_there_is_movement
-      - automation.Turn_off_kitchen_lights_10min_after_movement
       - automation.Turn_on_hallwayD_lights_when_there_is_movement
       - automation.Turn_off_hallwayD_lights_10min_after_movement
       - automation.Turn_on_hallwayU_lights_when_there_is_movement
@@ -299,13 +333,8 @@
       - light.dev42
       - light.dev98
       - light.dev982
-      - light.dev3
-      - sensor.dev3_temperature
-      - sensor.dev3_humidity
       - binary_sensor.dev12_motion
       - binary_sensor.dev99_motion
       - light.dev12
-      - light.dev16
-      - light.dev20
       - input_slider.dev12_dimmer_delay
         

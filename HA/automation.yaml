@@ -1,3 +1,154 @@
+# ------------------- living room sunset -------------------
+  - alias: joiner_livingroom_in2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: sun
+      event: sunset
+      offset: "-00:30:00"
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'on'
+        - condition: state
+          entity_id: 'binary_sensor.g_motion_10m'
+          state: 'on'
+    action:
+      - service: light.turn_on
+        entity_id: 
+          - light.joiner_livingroom
+# ------------------- living joiner out -------------------
+  - alias: joiner_livingroom_out
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_livingroom
+    action:
+      - service_template: >
+          {% if is_state('light.joiner_livingroom','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev1
+          - light.dev7
+          - light.dev11  
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+  - alias: joiner_bedroom_in
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev3/button"
+      - platform: mqtt
+        topic: "dev16/button"
+      - platform: mqtt
+        topic: "dev20/button"
+    action:
+      service: light.toggle
+      entity_id: light.joiner_bedroom
+# ----------------------------------------------------------
+  - alias: joiner_bedroom_in2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      platform: sun
+      event: sunrise
+      offset: "+00:15:00"
+    action:
+      - service: homeassistant.turn_off
+        entity_id: 
+          - light.joiner_bedroom
+# ----------------------------------------------------------
+  - alias: joiner_bedroom_out
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_bedroom
+    action:
+      - service_template: >
+          {% if is_state('light.joiner_bedroom','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev20
+          - light.dev3
+          - light.dev16  
+# ----------------------------------------------------------
+  - alias: joiner_kitchen_in
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev4_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.dev14_motion
+        to: 'on'
+    action:
+      service: light.turn_on
+      entity_id: light.joiner_kitchen
+# ----------------------------------------------------------
+  - alias: joiner_kitchen_in2
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev4_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.dev14_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+    condition: # make sure that BOTH sensors show off
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.dev4_motion
+          state: 'off'
+        - condition: state
+          entity_id: binary_sensor.dev14_motion
+          state: 'off'
+    action:
+      service: light.turn_off
+      entity_id: light.joiner_kitchen
+# ------------------- kitchen movement ---------------------
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+  - alias: joiner_kitchen_out
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_kitchen
+    action:
+      - service_template: >
+          {% if is_state('light.joiner_kitchen','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev2
+          - light.dev4
+          - light.dev14  
+# ----------------------------------------------------------
+# ----------------------------------------------------------
   - alias: next_track_lirc
     initial_state: True
     hide_entity: False
@@ -35,239 +186,10 @@
         entity_id: script.seq_gradio_off
 # ------------------ gmusic player -------------------------
 # ----------------------------------------------------------
-# ------------------ kitchen joiner ------------------------
-  - alias: dev2_4_14_on
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev2
-        to: 'on'
-      - platform: state
-        entity_id: light.dev4
-        to: 'on'
-      - platform: state
-        entity_id: light.dev14
-        to: 'on'
-    action:
-      - service: light.turn_on
-        entity_id: 
-          - light.dev2
-          - light.dev4
-          - light.dev14
-# ----------------------------------------------------------
-  - alias: dev2_4_14_off
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev2
-        to: 'off'
-      - platform: state
-        entity_id: light.dev14
-        to: 'off'
-      - platform: state
-        entity_id: light.dev4
-        to: 'off'
-    action:
-      - service: light.turn_off
-        entity_id:
-          - light.dev2
-          - light.dev4
-          - light.dev14
-# ------------------ kitchen joiner ------------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------ bedroom joiner ------------------------
-  - alias: dev16_20_on
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev20
-        from: 'off'
-        to: 'on'
-      - platform: state
-        entity_id: light.dev3
-        from: 'off'
-        to: 'on'
-      - platform: state
-        entity_id: light.dev16
-        from: 'off'
-        to: 'on'
-    action:
-      - service: script.turn_on
-        entity_id: 
-          - script.light_on_dev20
-          - script.light_on_dev3
-          - script.light_on_dev16
-# ----------------------------------------------------------
-  - alias: dev16_20_off
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev20
-        from: 'on'
-        to: 'off'
-      - platform: state
-        entity_id: light.dev3
-        from: 'on'
-        to: 'off'
-      - platform: state
-        entity_id: light.dev16
-        from: 'on'
-        to: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: 
-          - script.light_off_dev20
-          - script.light_off_dev3
-          - script.light_off_dev16
-# ------------------ bedroom joiner ------------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------ living room joiner --------------------
-  - alias: dev7_11_1_on
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev7
-        to: 'on'
-      - platform: state
-        entity_id: light.dev1
-        to: 'on'
-      - platform: state
-        entity_id: light.dev11
-        to: 'on'
-    action:
-      - service: light.turn_on
-        entity_id: 
-          - light.dev1
-          - light.dev7
-          - light.dev11
-# ----------------------------------------------------------
-  - alias: dev7_11_1_off
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev1
-        to: 'off'
-      - platform: state
-        entity_id: light.dev7
-        to: 'off'
-      - platform: state
-        entity_id: light.dev11
-        to: 'off'
-    action:
-      - service: light.turn_off
-        entity_id:
-          - light.dev1
-          - light.dev7
-          - light.dev11
-# ------------------ living room joiner --------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------- living room sunset -------------------
-  - alias: sunset_dev7_dev11_dev1
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: sun
-      event: sunset
-      offset: "-00:30:00"
-    condition:
-      condition: or
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'on'
-        - condition: state
-          entity_id: 'binary_sensor.g_motion_10m'
-          state: 'on'
-    action:
-      - service: homeassistant.turn_on
-        entity_id: 
-          - light.dev1
-          - light.dev7
-          - light.dev11
-# ------------------- living room sunset -------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------- bedroom sunrise ----------------------
-  - alias: sunrise_dev20
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: sun
-      event: sunrise
-      offset: "+00:15:00"
-    action:
-      - service: homeassistant.turn_off
-        entity_id: 
-          - light.dev20
-# ------------------- bedroom sunrise ----------------------
-# ----------------------------------------------------------
-
 
 
 # ----------------------------------------------------------
-# ------------------- kitchen movement ---------------------
-  - alias: Turn_on_kitchen_lights_when_there_is_movement
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev4_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev14_motion
-        to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev14 # turn only one on, all others will follow
-# ----------------------------------------------------------
-  - alias: Turn_off_kitchen_lights_10min_after_movement
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
-      - platform: state
-        entity_id: binary_sensor.dev4_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev14_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    condition: # make sure that BOTH sensors show off
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.dev4_motion
-          state: 'off'
-        - condition: state
-          entity_id: binary_sensor.dev14_motion
-          state: 'off'
-    action:
-      service: homeassistant.turn_off
-      entity_id: light.dev14 # turn only one on, all others will follow
-# ------------------- kitchen movement ---------------------
-# ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------- living  movement ---------------------
+# ------------------- couch  movement ---------------------
   - alias: Turn_on_couch_light_when_there_is_movement
     initial_state: True
     hide_entity: False
@@ -293,7 +215,10 @@
     action:
       service: homeassistant.turn_off
       entity_id: light.dev101 
-# ------------------- living  movement ---------------------
+# ------------------- couch  movement ---------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
 # ------------------- entrance  movement -------------------
   - alias: Turn_on_couch_light_when_there_is_movement
     initial_state: True
@@ -321,6 +246,9 @@
       service: homeassistant.turn_off
       entity_id: light.dev102 
 # ------------------- entrace  movement -------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
 # ------------------- tv  movement ------------------------
   - alias: Turn_on_tv_light_when_there_is_movement
     initial_state: True
@@ -348,6 +276,9 @@
       service: homeassistant.turn_off
       entity_id: light.dev103 
 # ----------------------- tv  movement ---------------------
+# ----------------------------------------------------------
+
+# ----------------------------------------------------------
 # ------------------- dragonfly  movement ------------------
   - alias: Turn_on_dragonfly_light_when_there_is_movement
     initial_state: True
@@ -441,6 +372,7 @@
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
+# ------------------------ outside -------------------------
 # -------------------- outside on dark ---------------------
 # switch the light on, 15 min after sunset, but only if thats before 23:30
   - alias: sunset_dev5
@@ -498,6 +430,7 @@
       - service: homeassistant.turn_off
         entity_id: light.dev5
 # -------------------- outside on dark ---------------------
+# ------------------------ outside -------------------------
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
@@ -630,7 +563,7 @@
 
 # --------- playground --------
   - alias: set_dimmer
-    initial_state: True
+    initial_state: False
     hide_entity: False
     trigger:
       platform: state
@@ -642,16 +575,3 @@
         retain: true
         payload: '{{ states.input_slider.dev12_dimmer_delay.state | int }}'
 
-# ------
-  - alias: test
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev99_motion
-        to: 'on'
-    action: 
-      service: mqtt.publish
-      data:
-        topic: "owntracks/illuminum/kolja/cmd"
-        payload: "{\"_type\":\"cmd\",\"action\":\"reportLocation\"}"

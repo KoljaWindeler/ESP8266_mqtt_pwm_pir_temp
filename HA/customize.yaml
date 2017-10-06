@@ -1,4 +1,20 @@
 # -----------------------------------------------
+    light.joiner_bedroom:
+      assumed_state: false
+      emulated_hue_name: "Bedroom"
+      friendly_name: "Bedroom"
+
+    light.joiner_livingroom:
+      assumed_state: false
+      emulated_hue_name: "Joiner Livingroom"
+      icon: "mdi:lamp"
+      friendly_name: "(J) Livingroom"
+
+    light.joiner_kitchen:
+      assumed_state: false
+      emulated_hue_name: "Joiner Kitchen"
+      friendly_name: "(J) Kitchen"
+# -----------------------------------------------
     switch.next_track:
       assumed_state: false
       emulated_hue_name: "Nose"
@@ -250,6 +266,7 @@
     binary_sensor.dev3_motion:
       friendly_name: "PCB2"
     sensor.dev3_rssi:
+      icon: "mdi:signal-variant"
       friendly_name: "03 Bedroom Touch"
 # -----------------------------------------------
     light.dev12:
@@ -296,7 +313,7 @@
       friendly_name: "20 Bedroom"
       icon: "mdi:timer-sand"
     light.dev20:
-      friendly_name: "Bedroom"
+      friendly_name: "20 Bedroom"
     sensor.dev20_rssi:
       icon: "mdi:signal-variant"
       friendly_name: "20 Bedroom"
