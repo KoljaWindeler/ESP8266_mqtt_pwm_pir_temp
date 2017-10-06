@@ -71,11 +71,11 @@ Highly based on a combination of different version of
 #define CONFIG_SSID         "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION 			     "20171004"
+#define VERSION 			     "20171005"
 // capability list
 #define RGB_PWM_BITMASK       1<<0
 #define NEOPIXEL_BITMASK      1<<1
-#define UNUSED_1              1<<2
+#define AVOID_RELAY_BITMASK   1<<2
 #define UNUSED_2              1<<3
 // pins
 #define PINOUT_SONOFF 1     // set this to "#define" for the sonoff and pcb v3 but not v2
@@ -219,6 +219,7 @@ uint16_t  m_published_light_color = 1; // to force instant publish once we are o
 uint16_t	m_pwm_dimm_time = 10; // 10ms per Step, 255*0.01 = 2.5 sec
 boolean   m_use_neo_as_rgb = false; // if true we're going to send the color to the neopixel and not to the pwm pins
 
+boolean   m_avoid_relay = false;
 uint8_t 	m_pir_state = LOW; // inaktiv
 uint8_t 	m_published_pir_state = HIGH; // to force instant publish once we are online
 
@@ -237,7 +238,7 @@ mqtt_data             mqtt;
 // prepare wifimanager variables
 WiFiManagerParameter  WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
-WiFiManagerParameter  WiFiManager_mqtt_capability("cap", "Capability Bit0 = PWM, Bit1 = Neopixel", "", 2);
+WiFiManagerParameter  WiFiManager_mqtt_capability("cap", "Capability Bit0 = PWM, Bit1 = Neopixel, Bit2 = Avoid relay", "", 2);
 WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -687,10 +688,14 @@ void setPWMLightState(boolean over_ride) {
 // function called to adapt the state of the led
 void setSimpleLightState() {
   if (m_simple_light_state) {
-    digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
+    if(!m_avoid_relay){
+      digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
+    }
     Serial.println("[INFO SL] Simple pin on");
   } else {
-    digitalWrite(SIMPLE_LIGHT_PIN, LOW);
+    if(!m_avoid_relay){
+      digitalWrite(SIMPLE_LIGHT_PIN, LOW);
+    }
     Serial.println("[INFO SL] Simple light off");
   }
 }
@@ -968,6 +973,13 @@ void loadConfig(){
   } else {
     Serial.println(" - NeoPixel light");
   }
+  if(((uint8_t)(mqtt.cap[0])-'0') & AVOID_RELAY_BITMASK){
+    m_avoid_relay = true;
+    Serial.println(" + avoid relay");
+  } else {
+    m_avoid_relay = false;
+    Serial.println(" - avoid relay");
+  } 
   // capabilities
   
   Serial.println(("=== End of parameters ==="));
