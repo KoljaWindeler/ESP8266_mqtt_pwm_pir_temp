@@ -2,14 +2,20 @@
   - platform: mqtt
     name: "joiner_kitchen"
     command_topic: "joiner/kitchen"
+    command_topic: "joiner/bedroom"
+    retain: True
 # --------------------------------------------------
   - platform: mqtt
     name: "joiner_livingroom"
     command_topic: "joiner/livingroom"
+    command_topic: "joiner/bedroom"
+    retain: True
 # --------------------------------------------------
   - platform: mqtt
     name: "joiner_bedroom"
+    state_topic: "joiner/bedroom"
     command_topic: "joiner/bedroom"
+    retain: True
 # --------------------------------------------------
 # --------------------------------------------------
   - platform: mqtt ### ball living room
