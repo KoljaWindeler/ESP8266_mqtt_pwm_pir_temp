@@ -488,18 +488,27 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
     //Serial.print("Setting dimm time to: ");
     //Serial.println(m_pwm_dimm_time);
   }
-  else if (String(build_topic(MQTT_SETUP_TOPIC)).equals(p_topic)) { // go to setup
-    if (payload.equals(String(STATE_ON))) {
+  else if (String(build_topic(MQTT_SETUP_TOPIC)).equals(p_topic)) {
+    if (payload.equals(String(STATE_ON))) { // go to setup
       Serial.println("mqtt input: go to setup");
       delay(500);
+      if(m_use_neo_as_rgb){ // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+        Serial.end();
+        delay(500);
+        Serial.begin(115200);
+      }
       client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
     	wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
     }
-    else if(payload.substring(0,4).equals(String("http"))){
+    else if(payload.substring(0,4).equals(String("http"))){ // update
       Serial.print("Update command with url found, trying to update from ");
       Serial.println(payload);
       client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
     	ESPhttpUpdate.update(payload);
+    }
+    else if(payload.equals(String("reset"))){ // reboot
+      Serial.print("Received reset command");
+      ESP.reset();
     }
   }
   ////////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
@@ -757,8 +766,6 @@ void reconnect() {
       //Serial.println(build_topic("/INFO"));
       //Serial.println(m_msg_buffer);
       client.publish(build_topic("/INFO"), m_msg_buffer, true);
-      Serial.println("[mqtt] publishing finished");
-
     } else {
       Serial.print("ERROR: failed, rc=");
       Serial.print(client.state());
@@ -872,6 +879,7 @@ void setup() {
   if(ESP.getFlashChipRealSize()!=ESP.getFlashChipSize()){
     Serial.println("============================");
     Serial.println("warning, wrong flash config");
+    Serial.print("Dev has ");
     Serial.println(ESP.getFlashChipRealSize());
     Serial.println("============================");
   }
@@ -906,11 +914,13 @@ void setup() {
   wifiManager.setAPCallback(configModeCallback);
   wifiManager.setSaveConfigCallback(saveConfigCallback);
   wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
+  wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
   WiFi.mode(WIFI_STA); // avoid station and ap at the same time
 
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
     wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
   };
+  //wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 
   Serial.println("[WiFi] Connecting ");
   if(!wifiManager.autoConnect(CONFIG_SSID)){
@@ -926,9 +936,11 @@ void setup() {
    // dht
   dht.begin();
 
-  // ws strip
-  strip.Begin();
-  setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
+  // ws strip, only if configured
+  if(m_use_neo_as_rgb){
+    strip.Begin();
+    setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
+  };
 
   Serial.println("");
   Serial.println("[WiFi] connected");

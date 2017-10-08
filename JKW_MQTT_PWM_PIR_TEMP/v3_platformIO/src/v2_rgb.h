@@ -80,7 +80,7 @@ Highly based on a combination of different version of
 #define CONFIG_SSID         "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION 			     "20171008_3"
+#define VERSION 			     "20171008_10"
 // capability list
 #define RGB_PWM_BITMASK       1<<0
 #define NEOPIXEL_BITMASK      1<<1
@@ -150,15 +150,6 @@ Highly based on a combination of different version of
 #define ANIMATION_RAINBOW_SIMPLE    2
 #define ANIMATION_COLOR_WIPE        3
 
-// Buffer to hold data from the WiFi manager for mqtt login
-struct mqtt_data { //80 byte
-  char login[16];
-  char pw[16];
-  char dev_short[6];
-  char cap[2]; // capability
-  char server_ip[16];
-  char server_port[6];
-};
 
 struct led {
   uint8_t r;

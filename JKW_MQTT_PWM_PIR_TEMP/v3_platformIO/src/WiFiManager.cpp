@@ -11,6 +11,7 @@
  **************************************************************/
 
 #include "WiFiManager.h"
+#include "v2_rgb.h"
 
 WiFiManagerParameter::WiFiManagerParameter(const char *custom) {
   _id = NULL;
@@ -167,25 +168,139 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
     _apcallback(this);
   }
 
-   // ist das ne schlaue idee die hier on the fly zu laden? 
+   // ist das ne schlaue idee die hier on the fly zu laden?
   DEBUG_WM(F("Done"));
-  
+
 
   connect = false;
   setupConfigPortal();
 
+
+  uint8_t       char_buffer;
+  uint8_t       *p;
+  uint8_t       f_p;
+  uint8_t       f_start;
+  //uint32_t      t=millis();
+
+  m_mqtt_sizes[0]=sizeof(m_mqtt->login);
+  m_mqtt_sizes[1]=sizeof(m_mqtt->pw);
+  m_mqtt_sizes[2]=sizeof(m_mqtt->dev_short);
+  m_mqtt_sizes[3]=sizeof(m_mqtt->cap);
+  m_mqtt_sizes[4]=sizeof(m_mqtt->server_ip);
+  m_mqtt_sizes[5]=sizeof(m_mqtt->server_port);
+
+  f_p = 0; // pointer in dem struct
+  p=(uint8_t*) m_mqtt; // copy location
+
   while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
     //DNS
     dnsServer->processNextRequest();
+
     // kolja notes: im wesentlichen warten wir auf den aufruf von /wifisave
     // das ruf die fkt handleWifiSave auf die dann die argumente
     // einsammelt, "s" und "p" sind ssid und passwort die dann in _ssid und _pass
     // landen, ACHTUNG nicht "ip" als custom parameter nutzen, das ist die feste IP
     // wenn die parameter gespeichert sind wird connect auf true gesetzt und die
     // if da unten geht los und verbindet uns. das SDK speichert die zuletzt erstellte
-    // verbindung und stellt die sogar von alleien beim naechste reboot her, daher 
+    // verbindung und stellt die sogar von alleien beim naechste reboot her, daher
     // speichern wir die ssid nicht explizit selbst.
     server->handleClient();
+
+    //if(millis()-t>1000){
+    //  t=millis();
+    //  Serial.print("+");
+    //}
+
+    if(Serial.available()){
+      char_buffer = Serial.read();
+      if(char_buffer!='\r' && char_buffer!='\n'){
+          Serial.print((char)char_buffer);
+      }
+
+      if(char_buffer=='?'){ // start char for config
+        Serial.print(F("\r\n\r\nStart readig config\r\nMQTT login\r\n"));
+        p=(uint8_t*) m_mqtt;
+        f_p=0;
+      } else if(char_buffer==13){        // jump to next field
+        f_start=0;
+        for(int i=1;i<=6;i++){ // 1.2.3.4.5
+          f_start+=m_mqtt_sizes[i-1];
+          Serial.printf("+%i %i\r\n",f_p,f_start);
+          if(f_p<=f_start){ // seach for the field that starts closes to our current pos
+            for(int ii=0;ii<f_start-f_p;ii++){ // add as many 0x00 to the config as required
+              *p=0x00;
+              p++;
+            }
+            f_p=f_start; // set our new pos to the start of that field
+            if(i==1){
+              Serial.print(F("\r\nMQTT pw\r\n"));
+            } else if(i==2){
+              Serial.print(F("\r\nMQTT dev_short\r\n"));
+            } else if(i==3){
+              Serial.print(F("\r\nMQTT Capability\r\n"));
+            } else if(i==4){
+              Serial.print(F("\r\nMQTT server ip\r\n"));
+            } else if(i==5){
+              Serial.print(F("\r\nMQTT server port\r\n"));
+            } else if(i==6){ // last segement .. save and reboot
+              // fill the buffer
+              Serial.print("\r\nfinish");
+              for(int ii=0;ii<f_start-f_p;ii++){
+                // add as many 0x00 to the config as required
+                *p=0x00;
+                p++;
+              }
+              Serial.print(F("\r\nConfig stored,\r\nlogin: "));
+              Serial.println(m_mqtt->login);
+              Serial.print(F("pw: "));
+              Serial.println(m_mqtt->pw);
+              Serial.print(F("dev_short: "));
+              Serial.println(m_mqtt->dev_short);
+              Serial.print(F("cap: "));
+              Serial.println(m_mqtt->cap);
+              Serial.print(F("ip: "));
+              Serial.println(m_mqtt->server_ip);
+              Serial.print(F("port: "));
+              Serial.println(m_mqtt->server_port);
+              // write to address 0 ++
+              char* temp=(char*) m_mqtt;
+              for(int i=0; i<f_start; i++){
+                EEPROM.write(i,*temp);
+                //Serial.print(*temp);
+                temp++;
+              }
+              EEPROM.commit();
+              delay(1000);
+              // what about the wifi?
+              ESP.reset();
+            }
+            break; // leve loop
+          }
+        }
+        p=(uint8_t*)m_mqtt;
+        p+=f_p;
+      } else if(char_buffer==8) { // backspace
+        p--;
+        f_p--;
+      } else if(char_buffer!=10) { // plain char storing "\r"
+        *p=char_buffer; // store incoming char in struct
+        f_start=0;
+        for(int i=1;i<=6;i++){ // 1.2.3.4.5
+          //Serial.print("+");
+          f_start+=m_mqtt_sizes[i-1];
+          if(f_p<f_start){ // seach for the field that starts closes to our current pos
+            break;
+          }
+        }
+        //if(f_p<sizeof(*m_mqtt)-1){ // go on as long as we're in the structure
+        if(f_p<f_start){ // go on as long as we're in the structure
+          p++;
+          f_p++;
+        //} else {
+        //  Serial.println("L");
+        }
+      }
+    }
 
 
     if (connect) {
@@ -217,7 +332,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
         break;
       }
     }
-    yield();
+    //yield();
   }
 
   server.reset();
@@ -291,6 +406,10 @@ uint8_t WiFiManager::waitForConnectResult() {
     }
     return status;
   }
+}
+
+void WiFiManager::setMqtt(mqtt_data *mqtt){
+  m_mqtt = mqtt;
 }
 
 void WiFiManager::startWPS() {
@@ -397,7 +516,7 @@ void WiFiManager::handleUpdating() {
     Serial.setDebugOutput(true);
 
     WiFiUDP::stopAll();
-    Serial.printf("Update: %s\n", upload.filename.c_str());
+    Serial.printf("Update: %s\r\n", upload.filename.c_str());
     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
     if(!Update.begin(maxSketchSpace)){//start with max available size
       Update.printError(Serial);
@@ -409,7 +528,7 @@ void WiFiManager::handleUpdating() {
     }
   } else if(upload.status == UPLOAD_FILE_END){
     if(Update.end(true)){ //true to set the size to the current progress
-      Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+      Serial.printf("Update Success: %u\r\nRebooting...\r\n", upload.totalSize);
     } else {
       Update.printError(Serial);
     }
@@ -441,7 +560,7 @@ void WiFiManager::handleUpdateDone() {
     Serial.println("update failed");
   } else {
     page += FPSTR(HTTP_UPDATE_SUC);
-    Serial.println("update done");    
+    Serial.println("update done");
   }
   page += FPSTR(HTTP_END);
   server->send(200, "text/html", page);
@@ -761,17 +880,17 @@ void WiFiManager::handleNotFound() {
   if (captivePortal()) { // If captive portal redirect instead of displaying the error page.
     return;
   }
-  String message = "File Not Found\n\n";
+  String message = "File Not Found\r\n\r\n";
   message += "URI: ";
   message += server->uri();
-  message += "\nMethod: ";
+  message += "\r\nMethod: ";
   message += ( server->method() == HTTP_GET ) ? "GET" : "POST";
-  message += "\nArguments: ";
+  message += "\r\nArguments: ";
   message += server->args();
-  message += "\n";
+  message += "\r\n";
 
   for ( uint8_t i = 0; i < server->args(); i++ ) {
-    message += " " + server->argName ( i ) + ": " + server->arg ( i ) + "\n";
+    message += " " + server->argName ( i ) + ": " + server->arg ( i ) + "\r\n";
   }
   server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server->sendHeader("Pragma", "no-cache");

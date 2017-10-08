@@ -18,6 +18,7 @@
 #include <DNSServer.h>
 #include <memory>
 #include <WiFiUdp.h>
+
 //#include "ArduinoOTA.h" // local modified version
 
 extern "C" {
@@ -42,6 +43,16 @@ const char HTTP_UPDATE_SUC[] PROGMEM      = "Update Success! Rebooting...";
 
 
 #define WIFI_MANAGER_MAX_PARAMS 10
+
+// Buffer to hold data from the WiFi manager for mqtt login
+struct mqtt_data { //80 byte
+  char login[16];
+  char pw[16];
+  char dev_short[6];
+  char cap[2]; // capability
+  char server_ip[16];
+  char server_port[6];
+};
 
 class WiFiManagerParameter {
   public:
@@ -115,6 +126,8 @@ class WiFiManager
     void          setCustomHeadElement(const char* element);
     //if this is true, remove duplicated Access Points - defaut true
     void          setRemoveDuplicateAPs(boolean removeDuplicates);
+    // set mqtt storage
+    void          setMqtt(mqtt_data *mqtt);
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
@@ -177,6 +190,10 @@ class WiFiManager
     int           getRSSIasQuality(int RSSI);
     boolean       isIp(String str);
     String        toStringIp(IPAddress ip);
+
+    // kolja helper
+    mqtt_data     *m_mqtt;
+    uint8_t       m_mqtt_sizes[6];
 
     boolean       connect;
     boolean       _debug = true;
