@@ -45,6 +45,14 @@ Highly based on a combination of different version of
  flash 40 mhz, cpu 80mhz 
  flash size 1mb, 64k filesystem
 
+ config for sonoff touch modules:
+ generic 8266
+ DOUT flash mode!
+ flash 40 mhz, cpu 80mhz 
+ flash size 1mb, 64k filesystem
+
+ QIO > QOUT > DIO > DOUT.
+
  This sketch (2017/01/21): 333k (Basic wifi sketch 230k)
 
  requires arduino libs:
@@ -71,7 +79,7 @@ Highly based on a combination of different version of
 #define CONFIG_SSID         "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION 			     "20171005"
+#define VERSION 			     "20171007"
 // capability list
 #define RGB_PWM_BITMASK       1<<0
 #define NEOPIXEL_BITMASK      1<<1
@@ -193,6 +201,7 @@ const PROGMEM char* MQTT_MOTION_STATUS_TOPIC		              = "/motion/status";	
 const PROGMEM char* MQTT_TEMPARATURE_DS_TOPIC                 = "/temperature_DS";	          // publish
 const PROGMEM char* MQTT_TEMPARATURE_DHT_TOPIC                = "/temperature_DHT";           // publish
 const PROGMEM char* MQTT_HUMIDITY_DHT_TOPIC			              = "/humidity_DHT";	            // publish
+const PROGMEM char* MQTT_BUTTON_TOPIC                         = "/button";                    // publish
 const PROGMEM char* MQTT_RSSI_STATE_TOPIC                     = "/rssi";                      // publish
 const PROGMEM char* MQTT_ADC_STATE_TOPIC                      = "/adc";                       // publish
 const PROGMEM char* MQTT_SETUP_TOPIC                        	= "/setup";                     // subscribe
@@ -205,6 +214,8 @@ boolean		m_pwm_light_state = false;
 boolean		m_published_pwm_light_state = true; // to force instant publish once we are online
 boolean		m_simple_light_state = false;
 boolean		m_published_simple_light_state = true; // to force instant publish once we are online
+boolean   m_published_button_press = true;
+boolean   m_button_press = true; // same to avoid button press send
 
 led		m_light_target		=  {99,99,99};
 led		m_light_start		  =  {99,99,99};
@@ -333,6 +344,16 @@ boolean publishPirState() {
     m_published_pir_state = m_pir_state;
   } 
   return ret;
+}
+
+boolean publishButtonPush(){
+  boolean ret=false;
+  Serial.println("[mqtt] publish button push");
+  ret = client.publish(build_topic(MQTT_BUTTON_TOPIC), "", true);
+  if(ret){
+    m_published_button_press = m_button_press;
+  } 
+  return ret; 
 }
 
 // function called to publish the state of the rainbow (on/off)
@@ -634,7 +655,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   }
   else if (String(build_topic(MQTT_SETUP_TOPIC)).equals(p_topic)) { // go to setup
     if (payload.equals(String(STATE_ON))) {
-      Serial.println("mqtt inpu: go to setup");
+      Serial.println("mqtt input: go to setup");
       delay(500);
       client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
     	wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
@@ -811,6 +832,7 @@ void updateBUTTONstate() {
   if(digitalRead(BUTTON_INPUT_PIN)==LOW){
     if(millis()-timer_button_down>BUTTON_DEBOUNCE){ // avoid bouncing
       // button down
+      m_button_press=!m_published_button_press;
       // toggle status of both lights
       m_simple_light_state = !m_simple_light_state;
       setSimpleLightState();
@@ -877,16 +899,18 @@ void reconnect() {
       Serial.println("[mqtt] subscribed 7");
       client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // color topic
       client.loop();
-      Serial.println("[mqtt] subscribed 8");
-      client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
-      client.loop();
-      Serial.println("[mqtt] subscribed 9");
-      client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
-      client.loop();
-      Serial.println("[mqtt] subscribed 10");
-      client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
-      client.loop();
-      Serial.println("[mqtt] subscribed 11");
+      if(m_use_neo_as_rgb){
+        Serial.println("[mqtt] subscribed 8");
+        client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
+        client.loop();
+        Serial.println("[mqtt] subscribed 9");
+        client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
+        client.loop();
+        Serial.println("[mqtt] subscribed 10");
+        client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
+        client.loop();
+        Serial.println("[mqtt] subscribed 11");
+      }
       Serial.println("[mqtt] subscribing finished");
       snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
       //Serial.println(build_topic("/INFO"));
@@ -971,6 +995,7 @@ void loadConfig(){
     m_use_neo_as_rgb = true;
     Serial.println(" + NeoPixel light");
   } else {
+    m_use_neo_as_rgb = false;
     Serial.println(" - NeoPixel light");
   }
   if(((uint8_t)(mqtt.cap[0])-'0') & AVOID_RELAY_BITMASK){
@@ -1003,8 +1028,13 @@ void setup() {
   Serial.println(VERSION);
   Serial.print("Pinout ");
   Serial.println(PINOUT);
-  Serial.print("Dev ");
-  Serial.println(mqtt.dev_short);
+  if(ESP.getFlashChipRealSize()!=ESP.getFlashChipSize()){
+    Serial.println("============================");
+    Serial.println("warning, wrong flash config");
+    Serial.println(ESP.getFlashChipRealSize());
+    Serial.println("============================");
+  }
+  Serial.println("Flash config correct");
   EEPROM.begin(512); // can be up to 4096
 
   // init the led
@@ -1142,6 +1172,14 @@ void loop() {
 		}
 	}
 
+if (m_button_press != m_published_button_press) {
+    if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
+      publishButtonPush();
+      timer_republish_avoid = millis();
+      timer_last_publish = millis();
+    }
+  }
+
 	if (m_pwm_light_state != m_published_pwm_light_state) {
 		if(millis()-timer_last_publish > PUBLISH_TIME_OFFSET){
 			publishPWMLightState();
@@ -1170,8 +1208,8 @@ void loop() {
 			timer_last_publish = millis();
 		}
 	}
-
-  if(m_published_animation_type != m_animation_type){
+ 
+  if(m_use_neo_as_rgb & m_published_animation_type != m_animation_type){
     if(millis()-timer_last_publish >PUBLISH_TIME_OFFSET){
       publishAnimationType();
       timer_last_publish = millis();
