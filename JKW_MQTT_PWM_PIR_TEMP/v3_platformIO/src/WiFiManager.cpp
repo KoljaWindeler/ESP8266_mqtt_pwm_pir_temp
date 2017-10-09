@@ -188,6 +188,8 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   m_mqtt_sizes[3]=sizeof(m_mqtt->cap);
   m_mqtt_sizes[4]=sizeof(m_mqtt->server_ip);
   m_mqtt_sizes[5]=sizeof(m_mqtt->server_port);
+  m_mqtt_sizes[6]=sizeof(m_mqtt->nw_ssid);
+  m_mqtt_sizes[7]=sizeof(m_mqtt->nw_pw);
 
   f_p = 0; // pointer in dem struct
   p=(uint8_t*) m_mqtt; // copy location
@@ -213,18 +215,17 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
 
     if(Serial.available()){
       char_buffer = Serial.read();
-      if(char_buffer!='\r' && char_buffer!='\n'){
-          Serial.print((char)char_buffer);
-      }
-
       if(char_buffer=='?'){ // start char for config
-        Serial.print(F("\r\n\r\nStart readig config\r\nMQTT login\r\n"));
         p=(uint8_t*) m_mqtt;
         f_p=0;
-      } else if(char_buffer==13){        // jump to next field
+		char_buffer = 13; // enter if below
+	  }
+      if(char_buffer==13){        // jump to next field
         f_start=0;
-        for(int i=1;i<=6;i++){ // 1.2.3.4.5
-          f_start+=m_mqtt_sizes[i-1];
+        for(int i=0;i<=sizeof(m_mqtt_sizes)/sizeof(m_mqtt_sizes[0]);i++){ // 1.2.3.4.5.6.7
+		  if(i>0){
+            f_start+=m_mqtt_sizes[i-1];
+		  }
           Serial.printf("+%i %i\r\n",f_p,f_start);
           if(f_p<=f_start){ // seach for the field that starts closes to our current pos
             for(int ii=0;ii<f_start-f_p;ii++){ // add as many 0x00 to the config as required
@@ -232,36 +233,30 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
               p++;
             }
             f_p=f_start; // set our new pos to the start of that field
-            if(i==1){
-              Serial.print(F("\r\nMQTT pw\r\n"));
-            } else if(i==2){
-              Serial.print(F("\r\nMQTT dev_short\r\n"));
-            } else if(i==3){
-              Serial.print(F("\r\nMQTT Capability\r\n"));
-            } else if(i==4){
-              Serial.print(F("\r\nMQTT server ip\r\n"));
-            } else if(i==5){
-              Serial.print(F("\r\nMQTT server port\r\n"));
-            } else if(i==6){ // last segement .. save and reboot
+			if(i==0){
+			  Serial.print(F("\r\n\r\nStart readig config"));
+			};
+			if(i>=0 && i<sizeof(m_mqtt_sizes)/sizeof(m_mqtt_sizes[0])){
+			  explainMqttStruct(i,true);
+            } else if(i==sizeof(m_mqtt_sizes)/sizeof(m_mqtt_sizes[0])){ // last segement .. save and reboot
               // fill the buffer
-              Serial.print("\r\nfinish");
-              for(int ii=0;ii<f_start-f_p;ii++){
-                // add as many 0x00 to the config as required
-                *p=0x00;
-                p++;
-              }
-              Serial.print(F("\r\nConfig stored,\r\nlogin: "));
-              Serial.println(m_mqtt->login);
-              Serial.print(F("pw: "));
-              Serial.println(m_mqtt->pw);
-              Serial.print(F("dev_short: "));
-              Serial.println(m_mqtt->dev_short);
-              Serial.print(F("cap: "));
-              Serial.println(m_mqtt->cap);
-              Serial.print(F("ip: "));
-              Serial.println(m_mqtt->server_ip);
-              Serial.print(F("port: "));
-              Serial.println(m_mqtt->server_port);
+              Serial.print(F("\r\nConfig stored,"));
+			  explainMqttStruct(0,true);
+              Serial.print(m_mqtt->login);
+              explainMqttStruct(1,true);
+              Serial.print(m_mqtt->pw);
+              explainMqttStruct(2,true);
+              Serial.print(m_mqtt->dev_short);
+              explainMqttStruct(3,true);
+              Serial.print(m_mqtt->cap);
+              explainMqttStruct(4,true);
+              Serial.print(m_mqtt->server_ip);
+              explainMqttStruct(5,true);
+              Serial.print(m_mqtt->server_port);
+			  explainMqttStruct(6,true);
+              Serial.print(m_mqtt->nw_ssid);
+			  explainMqttStruct(7,true);
+              Serial.println(m_mqtt->nw_pw);
               // write to address 0 ++
               char* temp=(char*) m_mqtt;
               for(int i=0; i<f_start; i++){
@@ -272,28 +267,41 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
               EEPROM.commit();
               delay(1000);
               // what about the wifi?
-              ESP.reset();
+			  if (connectWifi(m_mqtt->nw_ssid, m_mqtt->nw_pw) != WL_CONNECTED) {
+				Serial.print(F("Failed to connect."));
+			  } else {
+				Serial.print(F("Connect ok. Restart now"));
+				delay(500);
+                ESP.restart();
+			  }
             }
-            break; // leve loop
+            break; // leave loop
           }
         }
+		// set pointer to start of the field
         p=(uint8_t*)m_mqtt;
         p+=f_p;
       } else if(char_buffer==8) { // backspace
         p--;
         f_p--;
+		Serial.print((char)char_buffer); // geht das?
       } else if(char_buffer!=10) { // plain char storing "\r"
-        *p=char_buffer; // store incoming char in struct
+		// calc next segment
         f_start=0;
-        for(int i=1;i<=6;i++){ // 1.2.3.4.5
+        for(int i=0;i<sizeof(m_mqtt_sizes)/sizeof(m_mqtt_sizes[0]);i++){ // 0.1.2.3.4.5.6.7
           //Serial.print("+");
-          f_start+=m_mqtt_sizes[i-1];
+          f_start+=m_mqtt_sizes[i];
           if(f_p<f_start){ // seach for the field that starts closes to our current pos
             break;
           }
         }
         //if(f_p<sizeof(*m_mqtt)-1){ // go on as long as we're in the structure
-        if(f_p<f_start){ // go on as long as we're in the structure
+        if(f_p<f_start-1){ // go on as long as we're in the structure
+		// e.g.: first field is 16 byte long (f_start=16), we can use [0]..[14], [15] must be 0x00, so 13<16-1, 14<16-1; !! 15<16-1
+		  if(char_buffer!='\r' && char_buffer!='\n'){
+		    Serial.print((char)char_buffer);
+		  }
+		  *p=char_buffer; // store incoming char in struct
           p++;
           f_p++;
         //} else {
@@ -341,6 +349,33 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   return  WiFi.status() == WL_CONNECTED;
 }
 
+void WiFiManager::explainMqttStruct(uint8_t i,boolean rn){
+	if(rn){
+		Serial.print(F("\r\n"));
+	}
+	if(i==0){
+	  Serial.print(F("MQTT login"));
+	} else if(i==1){
+	  Serial.print(F("MQTT pw"));
+	} else if(i==2){
+	  Serial.print(F("MQTT dev_short"));
+	} else if(i==3){
+	  Serial.print(F("MQTT Capability"));
+	} else if(i==4){
+	  Serial.print(F("MQTT server ip"));
+	} else if(i==5){
+	  Serial.print(F("MQTT server port"));
+	} else if(i==6){
+	  Serial.print(F("Network SSID"));
+	} else if(i==7){
+	  Serial.print(F("Network PW"));
+	} else {
+	  Serial.print(F("ERROR 404"));
+	}
+	if(rn){
+		Serial.print(F("\r\n"));
+	}
+};
 
 int WiFiManager::connectWifi(String ssid, String pass) {
   DEBUG_WM(F("Connecting as wifi client..."));
