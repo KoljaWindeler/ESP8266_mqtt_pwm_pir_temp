@@ -66,7 +66,6 @@ Highly based on a combination of different version of
 #include <NeoPixelBus.h>
 #include <PubSubClient.h>
 #include <OneWire.h>
-#include <EEPROM.h>
 #include <DHT.h>
 #include <Wire.h>
 #include <Arduino.h>
@@ -81,6 +80,7 @@ Highly based on a combination of different version of
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 #define VERSION 			     "20171009_2"
+#define CHK_FORMAT_V2       0x22
 // capability list
 #define RGB_PWM_BITMASK       1<<0
 #define NEOPIXEL_BITMASK      1<<1

@@ -814,13 +814,7 @@ void saveConfigCallback(){
   Serial.print(("mqtt pw: ")); Serial.println(mqtt.pw);
   Serial.print(("mqtt dev short: ")); Serial.println(mqtt.dev_short);
   Serial.println(("=== End of parameters ==="));
-  char* temp=(char*) &mqtt;
-  for(int i=0; i<sizeof(mqtt); i++){
-    EEPROM.write(i,*temp);
-    //Serial.print(*temp);
-    temp++;
-  }
-  EEPROM.commit();
+  wifiManager.storeMqttStruct((char*) &mqtt, sizeof(mqtt));
   Serial.println("Configuration saved, restarting");
   delay(2000);
   ESP.reset(); // eigentlich muss das gehen so, .. // we can't change from AP mode to client mode, thus: reboot
@@ -828,13 +822,7 @@ void saveConfigCallback(){
 
 void loadConfig(){
   // fill the mqtt element with all the data from eeprom
-  char* temp=(char*) &mqtt;
-  for(int i=0; i<sizeof(mqtt); i++){
-    //Serial.print(i);
-    *temp = EEPROM.read(i);
-    //Serial.print(*temp);
-    temp++;
-  }
+  wifiManager.loadMqttStruct((char*) &mqtt, sizeof(mqtt));
   Serial.println(("=== Loaded parameters: ==="));
   wifiManager.explainMqttStruct(0, false);
   Serial.println(mqtt.login);
@@ -895,7 +883,6 @@ void setup() {
     Serial.println("============================");
   }
   Serial.println("Flash config correct");
-  EEPROM.begin(512); // can be up to 4096
 
   // init the led
   pinMode(PWM_LIGHT_PIN1, OUTPUT);

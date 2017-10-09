@@ -18,6 +18,7 @@
 #include <DNSServer.h>
 #include <memory>
 #include <WiFiUdp.h>
+#include <EEPROM.h>
 
 //#include "ArduinoOTA.h" // local modified version
 
@@ -97,6 +98,8 @@ class WiFiManager
 
     void          resetSettings();
     void          explainMqttStruct(uint8_t i,boolean rn);
+    boolean       storeMqttStruct(char* temp,uint8_t size);
+    boolean       loadMqttStruct(char* temp,uint8_t size);
 
     //sets timeout before webserver loop ends and exits even if there has been no setup.
     //usefully for devices that failed to connect at some point and got stuck in a webserver loop
