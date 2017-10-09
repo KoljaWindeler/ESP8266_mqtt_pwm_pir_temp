@@ -80,7 +80,7 @@ Highly based on a combination of different version of
 #define CONFIG_SSID         "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
 #define MAX_AP_TIME         300 // restart eps after 300 sec in config mode
 #define TEMP_MAX            70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION 			     "20171009"
+#define VERSION 			     "20171009_2"
 // capability list
 #define RGB_PWM_BITMASK       1<<0
 #define NEOPIXEL_BITMASK      1<<1
