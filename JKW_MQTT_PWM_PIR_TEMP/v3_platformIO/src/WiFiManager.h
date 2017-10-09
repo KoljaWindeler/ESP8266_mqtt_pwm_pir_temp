@@ -52,6 +52,8 @@ struct mqtt_data { //80 byte
   char cap[2]; // capability
   char server_ip[16];
   char server_port[6];
+  char nw_ssid[16];
+  char nw_pw[16];
 };
 
 class WiFiManagerParameter {
@@ -94,6 +96,7 @@ class WiFiManager
     String        getConfigPortalSSID();
 
     void          resetSettings();
+    void          explainMqttStruct(uint8_t i,boolean rn);
 
     //sets timeout before webserver loop ends and exits even if there has been no setup.
     //usefully for devices that failed to connect at some point and got stuck in a webserver loop
@@ -193,7 +196,7 @@ class WiFiManager
 
     // kolja helper
     mqtt_data     *m_mqtt;
-    uint8_t       m_mqtt_sizes[6];
+    uint8_t       m_mqtt_sizes[8];
 
     boolean       connect;
     boolean       _debug = true;

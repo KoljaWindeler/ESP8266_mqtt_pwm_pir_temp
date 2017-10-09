@@ -776,6 +776,11 @@ void reconnect() {
     tries++;
     if(tries>=5){
       Serial.println("Can't connect, starting AP");
+      if(m_use_neo_as_rgb){ // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+        Serial.end();
+        delay(500);
+        Serial.begin(115200);
+      }
       wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
     }
   }
@@ -831,12 +836,18 @@ void loadConfig(){
     temp++;
   }
   Serial.println(("=== Loaded parameters: ==="));
-  Serial.print(("mqtt ip: "));        Serial.println(mqtt.server_ip);
-  Serial.print(("mqtt port: "));      Serial.println(mqtt.server_port);
-  Serial.print(("mqtt user: "));      Serial.println(mqtt.login);
-  Serial.print(("mqtt pw: "));        Serial.println(mqtt.pw);
-  Serial.print(("mqtt dev short: ")); Serial.println(mqtt.dev_short);
-  Serial.print(("capabilities: "));   Serial.println(mqtt.cap);
+  wifiManager.explainMqttStruct(0, false);
+  Serial.println(mqtt.login);
+  wifiManager.explainMqttStruct(1, false);
+  Serial.println(mqtt.pw);
+  wifiManager.explainMqttStruct(2, false);
+  Serial.println(mqtt.dev_short);
+  wifiManager.explainMqttStruct(3, false);
+  Serial.println(mqtt.cap);
+  wifiManager.explainMqttStruct(4, false);
+  Serial.println(mqtt.server_ip);
+  wifiManager.explainMqttStruct(5, false);
+  Serial.println(mqtt.server_port);
 
   // capabilities
   if(((uint8_t)(mqtt.cap[0])-'0') & NEOPIXEL_BITMASK){
