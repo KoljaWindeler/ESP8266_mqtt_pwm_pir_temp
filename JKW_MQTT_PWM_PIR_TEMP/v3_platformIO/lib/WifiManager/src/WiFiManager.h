@@ -44,6 +44,7 @@ const char HTTP_UPDATE_SUC[] PROGMEM      = "Update Success! Rebooting...";
 
 
 #define WIFI_MANAGER_MAX_PARAMS 10
+#define CHK_FORMAT_V2       0x22
 
 // Buffer to hold data from the WiFi manager for mqtt login
 struct mqtt_data { //80 byte

@@ -11,7 +11,7 @@
  **************************************************************/
 
 #include "WiFiManager.h"
-#include "v2_rgb.h"
+//#include "v2_rgb.h"
 
 WiFiManagerParameter::WiFiManagerParameter(const char *custom) {
   _id = NULL;
