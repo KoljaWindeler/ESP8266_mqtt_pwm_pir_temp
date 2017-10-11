@@ -157,9 +157,9 @@ boolean WiFiManager::startConfigPortal() {
 
 boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPassword) {
   //setup AP
-  WiFi.mode(WIFI_AP_STA);
-  DEBUG_WM("SET AP STA");
-
+  WiFi.mode(WIFI_AP);
+  DEBUG_WM("SET AP");
+	
   _apName = apName;
   _apPassword = apPassword;
 
