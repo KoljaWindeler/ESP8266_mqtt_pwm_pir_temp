@@ -80,7 +80,7 @@ class WiFiManagerParameter {
     const char *_customHTML;
     bool        _isBoolean;
 
-    void init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom);
+    void init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom, bool isBoolean);
 
     friend class WiFiManager;
 };
