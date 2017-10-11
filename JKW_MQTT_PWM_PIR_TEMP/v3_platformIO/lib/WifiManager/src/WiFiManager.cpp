@@ -23,18 +23,28 @@ WiFiManagerParameter::WiFiManagerParameter(const char *custom) {
 }
 
 WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length) {
-  init(id, placeholder, defaultValue, length, "");
+  init(id, placeholder, defaultValue, length, "", false);
 }
+
+WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length, bool isBoolean){
+  init(id, placeholder, defaultValue, length, "", isBoolean);
+}
+
 
 WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom) {
-  init(id, placeholder, defaultValue, length, custom);
+  init(id, placeholder, defaultValue, length, custom, false);
 }
 
-void WiFiManagerParameter::init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom) {
+bool WiFiManagerParameter::getType(){
+  return _isBoolean;
+}
+
+void WiFiManagerParameter::init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom, bool isBoolean) {
   _id = id;
   _placeholder = placeholder;
   _length = length;
   _value = new char[length + 1];
+  _isBoolean = isBoolean;
   for (int i = 0; i < length; i++) {
     _value[i] = 0;
   }
@@ -792,19 +802,28 @@ void WiFiManager::handleWifi(boolean scan) {
       break;
     }
 
-    String pitem = FPSTR(HTTP_FORM_PARAM);
     if (_params[i]->getID() != NULL) {
+      if (!_params[i]->getType()){ // regular parameter
+        String pitem = FPSTR(HTTP_FORM_PARAM);
+	pitem.replace("{c}", _params[i]->getCustomHTML());
+      } else { // boolean parameter
+	String pitem = FPSTR(HTTP_FORM_BOOL_PARAM);
+	if (_params[i]->getValue()){
+	  pitem.replace("{c}", "checked");
+	}else{
+	  pitem.replace("{c}", "");
+	}
+      }
       pitem.replace("{i}", _params[i]->getID());
       pitem.replace("{n}", _params[i]->getID());
       pitem.replace("{p}", _params[i]->getPlaceholder());
       snprintf(parLength, 2, "%d", _params[i]->getValueLength());
       pitem.replace("{l}", parLength);
       pitem.replace("{v}", _params[i]->getValue());
-      pitem.replace("{c}", _params[i]->getCustomHTML());
+      
     } else {
       pitem = _params[i]->getCustomHTML();
     }
-
     page += pitem;
   }
   if (_params[0] != NULL) {
