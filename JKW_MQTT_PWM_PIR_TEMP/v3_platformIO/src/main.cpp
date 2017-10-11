@@ -84,7 +84,9 @@ mqtt_data             mqtt;
 // prepare wifimanager variables
 WiFiManagerParameter  WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
-WiFiManagerParameter  WiFiManager_mqtt_capability("cap", "Capability Bit0 = PWM, Bit1 = Neopixel, Bit2 = Avoid relay", "", 2);
+WiFiManagerParameter  WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", "", 1, true); // Capability Bit0 = PWM LEDs connected
+WiFiManagerParameter  WiFiManager_mqtt_capability_b1("cap_1", "Neopixel", "", 1, true); // Bit1 = Neopixel, 
+WiFiManagerParameter  WiFiManager_mqtt_capability_b2("cap_2", "Avoid relay", "", 1, true); // Bit2 = Avoid relay
 WiFiManagerParameter  WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter  WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter  WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -789,7 +791,9 @@ void reconnect() {
 void configModeCallback(WiFiManager *myWiFiManager) {
   wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
   wifiManager.addParameter(&WiFiManager_mqtt_server_port);
-  wifiManager.addParameter(&WiFiManager_mqtt_capability);
+  wifiManager.addParameter(&WiFiManager_mqtt_capability_b0);
+  wifiManager.addParameter(&WiFiManager_mqtt_capability_b1);
+  wifiManager.addParameter(&WiFiManager_mqtt_capability_b2);
   wifiManager.addParameter(&WiFiManager_mqtt_client_short);
   wifiManager.addParameter(&WiFiManager_mqtt_server_login);
   wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
@@ -803,7 +807,18 @@ void saveConfigCallback(){
   sprintf(mqtt.server_ip, "%s", WiFiManager_mqtt_server_ip.getValue());
   sprintf(mqtt.login, "%s", WiFiManager_mqtt_server_login.getValue());
   sprintf(mqtt.pw, "%s", WiFiManager_mqtt_server_pw.getValue());
-  sprintf(mqtt.cap, "%s", WiFiManager_mqtt_capability.getValue());
+  // collect capability
+  mqtt.cap = 0x00;
+  if(WiFiManager_mqtt_capability_b0.getValue()[0]=='1'){
+    mqtt.cap |= RGB_PWM_BITMASK;
+  }
+  if(WiFiManager_mqtt_capability_b1.getValue()[0]=='1'){
+    mqtt.cap |= NEOPIXEL_BITMASK;
+  }
+  if(WiFiManager_mqtt_capability_b2.getValue()[0]=='1'){
+    mqtt.cap |= AVOID_RELAY_BITMASK;
+  }
+  //sprintf(mqtt.cap, "%s", WiFiManager_mqtt_capability.getValue());
   sprintf(mqtt.server_port, "%s", WiFiManager_mqtt_server_port.getValue());
   sprintf(mqtt.dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
   Serial.println(("=== Saving parameters: ==="));
