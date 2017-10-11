@@ -78,6 +78,8 @@ void WiFiManager::addParameter(WiFiManagerParameter *p) {
   _paramsCount++;
   DEBUG_WM("Adding parameter");
   DEBUG_WM(p->getID());
+  DEBUG_WM(p->getValue());
+
 }
 
 void WiFiManager::setupConfigPortal() {
@@ -169,7 +171,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   //setup AP
   WiFi.mode(WIFI_AP);
   DEBUG_WM("SET AP");
-	
+
   _apName = apName;
   _apPassword = apPassword;
 
@@ -247,22 +249,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
             } else if(i==sizeof(m_mqtt_sizes)/sizeof(m_mqtt_sizes[0])){ // last segement .. save and reboot
               // fill the buffer
               Serial.print(F("\r\n==========\r\nConfig stored\r\n"));
-      			  explainMqttStruct(0,false);
-              Serial.println(m_mqtt->login);
-              explainMqttStruct(1,false);
-              Serial.println(m_mqtt->pw);
-              explainMqttStruct(2,false);
-              Serial.println(m_mqtt->dev_short);
-              explainMqttStruct(3,false);
-              Serial.println(m_mqtt->cap);
-              explainMqttStruct(4,false);
-              Serial.println(m_mqtt->server_ip);
-              explainMqttStruct(5,false);
-              Serial.println(m_mqtt->server_port);
-      			  explainMqttStruct(6,false);
-              Serial.println(m_mqtt->nw_ssid);
-      			  explainMqttStruct(7,false);
-              Serial.println(m_mqtt->nw_pw);
+              explainFullMqttStruct(m_mqtt);
               Serial.print(F("==========\r\n"));
               // write to address 0 ++
               f_start=0;
@@ -428,6 +415,21 @@ boolean WiFiManager::loadMqttStruct(char* temp,uint8_t size){
     // try legacy V1 to v2 conversion
   }
   return false;
+}
+
+void WiFiManager::explainFullMqttStruct(mqtt_data *mqtt){
+  explainMqttStruct(0, false);
+  Serial.println(mqtt->login);
+  explainMqttStruct(1, false);
+  Serial.println(mqtt->pw);
+  explainMqttStruct(2, false);
+  Serial.println(mqtt->dev_short);
+  explainMqttStruct(3, false);
+  Serial.println(mqtt->cap);
+  explainMqttStruct(4, false);
+  Serial.println(mqtt->server_ip);
+  explainMqttStruct(5, false);
+  Serial.println(mqtt->server_port);
 }
 
 void WiFiManager::explainMqttStruct(uint8_t i,boolean rn){
@@ -802,17 +804,18 @@ void WiFiManager::handleWifi(boolean scan) {
       break;
     }
 
+    String pitem;
     if (_params[i]->getID() != NULL) {
       if (!_params[i]->getType()){ // regular parameter
-        String pitem = FPSTR(HTTP_FORM_PARAM);
-	pitem.replace("{c}", _params[i]->getCustomHTML());
+        pitem = FPSTR(HTTP_FORM_PARAM);
+        pitem.replace("{c}", _params[i]->getCustomHTML());
       } else { // boolean parameter
-	String pitem = FPSTR(HTTP_FORM_BOOL_PARAM);
-	if (_params[i]->getValue()){
-	  pitem.replace("{c}", "checked");
-	}else{
-	  pitem.replace("{c}", "");
-	}
+        pitem = FPSTR(HTTP_FORM_BOOL_PARAM);
+        if (*(_params[i]->getValue())!=0 && *(_params[i]->getValue())!='0'){ // not 0 and not '0'
+          pitem.replace("{c}", "checked");
+        } else {
+          pitem.replace("{c}", "");
+        }
       }
       pitem.replace("{i}", _params[i]->getID());
       pitem.replace("{n}", _params[i]->getID());
@@ -820,7 +823,7 @@ void WiFiManager::handleWifi(boolean scan) {
       snprintf(parLength, 2, "%d", _params[i]->getValueLength());
       pitem.replace("{l}", parLength);
       pitem.replace("{v}", _params[i]->getValue());
-      
+
     } else {
       pitem = _params[i]->getCustomHTML();
     }
