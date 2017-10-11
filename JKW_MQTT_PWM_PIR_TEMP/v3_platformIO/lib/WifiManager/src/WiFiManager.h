@@ -34,6 +34,7 @@ const char HTTP_PORTAL_OPTIONS[] PROGMEM  = "<form action=\"/wifi\" method=\"get
 const char HTTP_ITEM[] PROGMEM            = "<div><a href='#p' onclick='c(this)'>{v}</a>&nbsp;<span class='q {i}'>{r}%</span></div>";
 const char HTTP_FORM_START[] PROGMEM      = "<form method='get' action='wifisave'><input id='s' name='s' length=32 placeholder='SSID'><br/><input id='p' name='p' length=64 type='password' placeholder='password'><br/>";
 const char HTTP_FORM_PARAM[] PROGMEM      = "<br/><input id='{i}' name='{n}' length={l} placeholder='{p}' value='{v}' {c}>";
+const char HTTP_FORM_BOOL_PARAM[] PROGMEM = "<br/><input type='checkbox' id='{i}' name='{n}' length='{l}' value='1' {c}>";
 const char HTTP_FORM_END[] PROGMEM        = "<br/><button type='submit'>save</button></form>";
 const char HTTP_SCAN_LINK[] PROGMEM       = "<br/><div class=\"c\"><a href=\"/wifi\">Scan</a></div>";
 const char HTTP_SAVED[] PROGMEM           = "<div>Credentials Saved<br />Trying to connect ESP to network.<br />If it fails reconnect to AP to try again</div>";
@@ -63,18 +64,21 @@ class WiFiManagerParameter {
     WiFiManagerParameter(const char *custom);
     WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length);
     WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom);
+    WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length, bool isBoolean);
 
     const char *getID();
     const char *getValue();
     const char *getPlaceholder();
     int         getValueLength();
     const char *getCustomHTML();
+    bool        getType();
   private:
     const char *_id;
     const char *_placeholder;
     char       *_value;
     int         _length;
     const char *_customHTML;
+    bool        _isBoolean;
 
     void init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom);
 
