@@ -14,6 +14,16 @@
       assumed_state: false
       emulated_hue_name: "Joiner Kitchen"
       friendly_name: "(J) Kitchen"
+
+    light.joiner_hallwayU:
+      assumed_state: false
+      emulated_hue_name: "Joiner HallwayU"
+      friendly_name: "(J) Hallway U"
+
+    light.joiner_hallwayD:
+      assumed_state: false
+      emulated_hue_name: "Joiner HallwayD"
+      friendly_name: "(J) HallwayD"
 # -----------------------------------------------
     switch.next_track:
       assumed_state: false
@@ -317,6 +327,33 @@
     sensor.dev20_rssi:
       icon: "mdi:signal-variant"
       friendly_name: "20 Bedroom"
+# -----------------------------------------------
+    sensor.dev21_update:
+      friendly_name: "21 SL Livingroom"
+      icon: "mdi:timer-sand"
+    light.dev21:
+      friendly_name: "21 SL Livingroom"
+    sensor.dev21_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "21 SL Livingroom"
+# -----------------------------------------------
+    sensor.dev55_update:
+      friendly_name: "55 Lampinions"
+      icon: "mdi:timer-sand"
+    light.dev55:
+      friendly_name: "Lampinions"
+    sensor.dev55_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "55 Lampinions"
+# -----------------------------------------------
+    sensor.dev56_update:
+      friendly_name: "56 Lampinion"
+      icon: "mdi:timer-sand"
+    light.dev56:
+      friendly_name: "Lampinion"
+    sensor.dev56_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "56 Lampinion"
 # -----------------------------------------------
     sensor.dev77_update:
       friendly_name: "77 Carlo"

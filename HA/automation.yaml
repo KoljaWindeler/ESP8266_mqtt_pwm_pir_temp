@@ -36,7 +36,8 @@
         entity_id: 
           - light.dev1
           - light.dev7
-          - light.dev11  
+          - light.dev11
+          - light.dev21  
 # ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: joiner_bedroom_in
@@ -310,7 +311,8 @@
 
 # ----------------------------------------------------------
 # -------------------- hallway movement --------------------
-  - alias: Turn_on_hallwayU_lights_when_there_is_movement
+# ------ Turn_on_hallwayU_lights_when_there_is_movement ----
+  - alias: joiner_hallwayU_in
     initial_state: True
     hide_entity: False
     trigger:
@@ -326,9 +328,10 @@
 #          before: '23:30:00'
     action:
       service: homeassistant.turn_on
-      entity_id: light.dev10
+      entity_id: light.joiner_hallwayU
 # ----------------------------------------------------------
-  - alias: Turn_off_hallwayU_lights_10min_after_movement
+# -- alias: Turn_off_hallwayU_lights_10min_after_movement --
+  - alias: joiner_hallwayU_in2
     initial_state: True
     hide_entity: False
     trigger:
@@ -341,9 +344,27 @@
           seconds: 0
     action:
       service: homeassistant.turn_off
-      entity_id: light.dev10
+      entity_id: light.joiner_hallwayU
 # ----------------------------------------------------------
-  - alias: Turn_on_hallwayD_lights_when_there_is_movement
+  - alias: joiner_hallwayU_out
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_hallwayU
+    action:
+      - service_template: >
+          {% if is_state('light.joiner_hallwayU','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev10
+# ----------------------------------------------------------
+# ----------------------------------------------------------
+# -- alias: Turn_on_hallwayD_lights_when_there_is_movement -
+  - alias: joiner_hallwayD_in
     initial_state: True
     hide_entity: False
     trigger:
@@ -352,9 +373,10 @@
         to: 'on'
     action:
       service: homeassistant.turn_on
-      entity_id: light.dev15
+      entity_id: light.joiner_hallwayD
 # ----------------------------------------------------------
-  - alias: Turn_off_hallwayD_lights_10min_after_movement
+# -- alias: Turn_off_hallwayD_lights_10min_after_movement -
+  - alias: joiner_hallwayD_in2
     initial_state: True
     hide_entity: False
     trigger:
@@ -367,11 +389,27 @@
           seconds: 0
     action:
       service: homeassistant.turn_off
-      entity_id: light.dev15
-# -------------------- hallway movement --------------------
+      entity_id: light.joiner_hallwayD
+# ----------------------------------------------------------
+  - alias: joiner_hallwayD_out
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_hallwayD
+    action:
+      - service_template: >
+          {% if is_state('light.joiner_hallwayD','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev56
+          - light.dev15
+# ----------------------------------------------------------
 # ----------------------------------------------------------
 
-# ----------------------------------------------------------
 # ------------------------ outside -------------------------
 # -------------------- outside on dark ---------------------
 # switch the light on, 15 min after sunset, but only if thats before 23:30

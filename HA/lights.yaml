@@ -1,14 +1,16 @@
 # --------------------------------------------------
+# ------ JOINER ------------------------------------
+# --------------------------------------------------
   - platform: mqtt
     name: "joiner_kitchen"
+    state_topic: "joiner/kitchen"
     command_topic: "joiner/kitchen"
-    command_topic: "joiner/bedroom"
     retain: True
 # --------------------------------------------------
   - platform: mqtt
     name: "joiner_livingroom"
+    state_topic: "joiner/livingroom"
     command_topic: "joiner/livingroom"
-    command_topic: "joiner/bedroom"
     retain: True
 # --------------------------------------------------
   - platform: mqtt
@@ -17,6 +19,21 @@
     command_topic: "joiner/bedroom"
     retain: True
 # --------------------------------------------------
+  - platform: mqtt
+    name: "joiner_hallwayD"
+    state_topic: "joiner/hallwayD"
+    command_topic: "joiner/hallwayD"
+    retain: True
+# --------------------------------------------------
+  - platform: mqtt
+    name: "joiner_hallwayU"
+    state_topic: "joiner/hallwayU"
+    command_topic: "joiner/hallwayU"
+    retain: True
+# --------------------------------------------------
+# ------ JOINER ------------------------------------
+# --------------------------------------------------
+
 # --------------------------------------------------
   - platform: mqtt ### ball living room
     name: "dev1"
@@ -161,6 +178,38 @@
     command_topic: "dev19/PWM_dimm/switch"
     rgb_state_topic: 'dev19/PWM_RGB_dimm/color/set'
     rgb_command_topic: 'dev19/PWM_RGB_dimm/color/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### slamper livingroom
+    name: "dev21"
+    state_topic: "dev21/simple_light/status"
+    command_topic: "dev21/simple_light/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### carlo lampinions
+    name: "dev55"
+    state_topic: "dev55/PWM_light/status"
+    command_topic: "dev55/PWM_dimm/switch"
+    brightness_state_topic: 'dev55/PWM_light/brightness'
+    brightness_command_topic: 'dev55/PWM_dimm/brightness/set'
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### helle lampinions
+    name: "dev56"
+    state_topic: "dev56/PWM_light/status"
+    command_topic: "dev56/PWM_dimm/switch"
+    brightness_state_topic: 'dev56/PWM_light/brightness'
+    brightness_command_topic: 'dev56/PWM_dimm/brightness/set'
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"

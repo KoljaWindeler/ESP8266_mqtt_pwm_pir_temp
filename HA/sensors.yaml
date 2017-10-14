@@ -397,6 +397,67 @@
 # -----------------------------------------------------------
   - platform: template
     sensors:
+      dev21_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev21.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev21/#"
+    name: "dev21"
+
+  - platform: mqtt
+    state_topic: "dev21/rssi"
+    name: "dev21_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: mqtt
+    state_topic: "dev42/temperature_DS"
+    name: "dev42_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev42/rssi"
+    name: "dev42_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
+      dev55_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev55.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev55/#"
+    name: "dev55"
+
+  - platform: mqtt
+    state_topic: "dev55/rssi"
+    name: "dev55_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
+      dev56_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev56.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev56/#"
+    name: "dev56"
+
+  - platform: mqtt
+    state_topic: "dev56/rssi"
+    name: "dev56_rssi"
+    unit_of_measurement: "dbm"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
       dev77_update:
         value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev77.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
@@ -420,16 +481,6 @@
   - platform: mqtt
     state_topic: "dev77/rssi"
     name: "dev77_rssi"
-    unit_of_measurement: "dbm"
-# -----------------------------------------------------------
-  - platform: mqtt
-    state_topic: "dev42/temperature_DS"
-    name: "dev42_temperature"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev42/rssi"
-    name: "dev42_rssi"
     unit_of_measurement: "dbm"
 # -----------------------------------------------------------
   - platform: mqtt
