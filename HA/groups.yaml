@@ -35,6 +35,7 @@
       - light.dev77_color_wipe
       - sensor.dev77_temperature_dht
       - sensor.dev77_humidity_dht
+      - light.dev55
 
   living_room:
     control: hidden
@@ -82,8 +83,8 @@
     control: hidden
     view: no
     entities:
-      - light.dev10
-      - light.dev15
+      - light.joiner_hallwayU
+      - light.joiner_hallwayD
       - light.dev102
       - binary_sensor.dev102_motion
       - binary_sensor.dev10_motion
@@ -228,6 +229,10 @@
       - sensor.dev16_update
       - sensor.dev20_rssi
       - sensor.dev20_update
+      - sensor.dev55_rssi
+      - sensor.dev55_update
+      - sensor.dev56_rssi
+      - sensor.dev56_update
       - sensor.dev77_rssi
       - sensor.dev77_update
       # - sensor.dev18_rssi
@@ -282,7 +287,10 @@
       - light.dev16
       - light.dev19
       - light.dev20
+      - light.dev21
       - light.dev42
+      - light.dev55
+      - light.dev56
       - light.dev77
       - light.dev98
       - light.dev99
