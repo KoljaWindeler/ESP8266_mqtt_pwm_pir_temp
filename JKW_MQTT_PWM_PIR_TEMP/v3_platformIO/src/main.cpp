@@ -7,6 +7,8 @@ const char MyText[]  PROGMEM = { "My flash based text" };
 DHT dht(DHT_PIN, DHT22);                                                                          // DHT22
 OneWire ds(DS_PIN);                                                                               // on digital pin DHT_DS_PIN
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, PWM_LIGHT_PIN2); // this version only works on gpio3 / D9 (RX)
+my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT, MY9291_CHANNELS);
+
 
 char char_buffer[35];
 
@@ -72,6 +74,7 @@ uint8_t m_published_light_brightness = 1; // to force instant publish once we ar
 uint16_t m_published_light_color     = 1; // to force instant publish once we are online (sum of rgb)
 uint16_t m_pwm_dimm_time = 10;            // 10ms per Step, 255*0.01 = 2.5 sec
 bool m_use_neo_as_rgb    = false;         // if true we're going to send the color to the neopixel and not to the pwm pins
+bool m_use_my9291_as_rgb = false;         // for b1 bubble
 
 boolean m_avoid_relay         = false;
 uint8_t m_pir_state           = LOW;  // inaktiv
@@ -562,6 +565,10 @@ void setPWMLightState(boolean over_ride){
 		}
 		Serial.print(F("[INFO PWM] NEO: "));
 		strip.Show();
+	} else if(m_use_my9291_as_rgb){
+		Serial.print(F("[INFO PWM] MY9291: "));
+		_my9291.setColor((my9291_color_t) { intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b], 0, 0 }); // last two: white, warm white
+    _my9291.setState(true);
 	} else {
 		Serial.print(F("[INFO PWM] PWM: "));
 		analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
@@ -978,7 +985,11 @@ void setup(){
 		strip.Begin();
 		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
 	}
-	;
+
+	if(m_use_my9291_as_rgb){
+		_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
+    _my9291.setState(true);
+	}
 
 	Serial.println("");
 	Serial.println(F("[WiFi] connected"));

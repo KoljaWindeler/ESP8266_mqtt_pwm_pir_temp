@@ -70,6 +70,7 @@
 #include <Wire.h>
 #include <Arduino.h>
 #include <ESP8266httpUpdate.h>
+#include <my9291.h>
 // ////////////////////////////////////////////////// defines //////////////////////////////////////////////
 #define SERIAL_DEBUG
 #define DIMM_DONE    0 // state defs
@@ -128,6 +129,10 @@
 	# define GPIO_D8          15
 #endif // ifdef PINOUT_KOLJA_TINY
 
+
+#define MY9291_DI_PIN	12	// mtdi 12
+#define MY9291_DCKI_PIN	14 // mtms gpio 14?
+#define MY9291_CHANNELS	5 // r,g,b,warm white, cold white
 
 #define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
