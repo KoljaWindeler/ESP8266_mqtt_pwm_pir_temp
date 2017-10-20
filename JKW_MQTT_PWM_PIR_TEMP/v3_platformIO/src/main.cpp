@@ -74,7 +74,8 @@ uint8_t m_published_light_brightness = 1; // to force instant publish once we ar
 uint16_t m_published_light_color     = 1; // to force instant publish once we are online (sum of rgb)
 uint16_t m_pwm_dimm_time = 10;            // 10ms per Step, 255*0.01 = 2.5 sec
 bool m_use_neo_as_rgb    = false;         // if true we're going to send the color to the neopixel and not to the pwm pins
-bool m_use_my9291_as_rgb = false;         // for b1 bubble
+bool m_use_my92x1_as_rgb = false;         // for b1 bubble / aitinker
+bool m_use_pwm_as_rgb    = false;         // for mosfet pwm
 
 boolean m_avoid_relay         = false;
 uint8_t m_pir_state           = LOW;  // inaktiv
@@ -98,6 +99,8 @@ WiFiManagerParameter WiFiManager_mqtt_server_port("mq_port", "mqtt server port",
 WiFiManagerParameter WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", 0, 2, true);    // length must be at least tw0 .. why? // Capability Bit0 = PWM LEDs connected
 WiFiManagerParameter WiFiManager_mqtt_capability_b1("cap_1", "Neopixel", 0, 2, true);    // Bit1 = Neopixel,
 WiFiManagerParameter WiFiManager_mqtt_capability_b2("cap_2", "Avoid relay", 0, 2, true); // Bit2 = Avoid relay
+WiFiManagerParameter WiFiManager_mqtt_capability_b3("cap_3", "Sonoff B1", 0, 2, true); // Bit3 = sonoff b1
+WiFiManagerParameter WiFiManager_mqtt_capability_b4("cap_4", "AiTinker light", 0, 2, true); // Bit4 = aitinker
 WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -480,7 +483,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	} else if (String(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC)).equals(p_topic)) { // smooth dimming of pwm
 		Serial.print(F("pwm dimm input "));
 		Serial.println((uint8_t) payload.toInt());
-		pwmDimmTo((led){ (uint8_t) payload.toInt(), (uint8_t) 0, (uint8_t) 0 });
+		pwmDimmTo((led){ (uint8_t) payload.toInt(), (uint8_t) payload.toInt(), (uint8_t) payload.toInt() });
 	} else if (String(build_topic(MQTT_PWM_RGB_COLOR_COMMAND_TOPIC)).equals(p_topic)) { // directly set rgb, hard
 		Serial.println(F("set input hard"));
 		uint8_t firstIndex = payload.indexOf(',');
@@ -557,24 +560,33 @@ void setPWMLightState(boolean over_ride){
 	if (m_light_current.b >= sizeof(intens)) {
 		m_light_current.b = sizeof(intens) - 1;
 	}
-
-
+	//////////////////////////////////////// output color ////////////////////////
+	//// via neopixel
 	if (m_use_neo_as_rgb) {
 		for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 			strip.SetPixelColor(i, RgbColor(intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b]));
 		}
 		Serial.print(F("[INFO PWM] NEO: "));
 		strip.Show();
-	} else if(m_use_my9291_as_rgb){
+	}
+	//// via my92x1
+	else if(m_use_my92x1_as_rgb){
 		Serial.print(F("[INFO PWM] MY9291: "));
-		_my9291.setColor((my9291_color_t) { intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b], 0, 0 }); // last two: white, warm white
-    _my9291.setState(true);
-	} else {
+		if(m_light_current.r == m_light_current.b && m_light_current.r == m_light_current.g){ // all the same = warm white
+			_my9291.setColor((my9291_color_t) { 0,0,0, intens[m_light_current.r],0 }); // last two: warm white, cold white
+		} else {
+			_my9291.setColor((my9291_color_t) { intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b], 0, 0 }); // dedicated color
+		}
+		_my9291.setState(true);
+	}
+	//// via PWM pins
+	else if(m_use_pwm_as_rgb){
 		Serial.print(F("[INFO PWM] PWM: "));
 		analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
 		analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
 		analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
 	}
+	/////////////////////////////////// debug output /////////////////////////////
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_current.r, m_light_current.g, m_light_current.b);
 	Serial.println(m_msg_buffer);
 
@@ -583,12 +595,12 @@ void setPWMLightState(boolean over_ride){
 // function called to adapt the state of the led
 void setSimpleLightState(){
 	if (m_simple_light_state) {
-		if (!m_avoid_relay) {
+		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
 			digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
 		}
 		Serial.println(F("[INFO SL] Simple pin on"));
 	} else {
-		if (!m_avoid_relay) {
+		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
 			digitalWrite(SIMPLE_LIGHT_PIN, LOW);
 		}
 		Serial.println(F("[INFO SL] Simple light off"));
@@ -792,6 +804,9 @@ void reconnect(){
 			// Serial.println(build_topic("/INFO"));
 			// Serial.println(m_msg_buffer);
 			client.publish(build_topic("/INFO"), m_msg_buffer, true);
+
+			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", m_use_my92x1_as_rgb, m_use_neo_as_rgb, m_use_pwm_as_rgb, mqtt.cap[0]);
+			client.publish(build_topic("/CAP"), m_msg_buffer, true);
 		} else {
 			Serial.print(F("ERROR: failed, rc="));
 			Serial.print(client.state());
@@ -818,6 +833,8 @@ void configModeCallback(WiFiManager * myWiFiManager){
 	wifiManager.addParameter(&WiFiManager_mqtt_capability_b0);
 	wifiManager.addParameter(&WiFiManager_mqtt_capability_b1);
 	wifiManager.addParameter(&WiFiManager_mqtt_capability_b2);
+	wifiManager.addParameter(&WiFiManager_mqtt_capability_b3);
+	wifiManager.addParameter(&WiFiManager_mqtt_capability_b4);
 	wifiManager.addParameter(&WiFiManager_mqtt_client_short);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_login);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
@@ -844,6 +861,12 @@ void saveConfigCallback(){
 	if (WiFiManager_mqtt_capability_b2.getValue()[0] == '1') {
 		mqtt.cap[0] |= AVOID_RELAY_BITMASK;
 	}
+	if (WiFiManager_mqtt_capability_b3.getValue()[0] == '1') {
+		mqtt.cap[0] = SONOFF_B1_BITMASK; // hard set
+	}
+	if (WiFiManager_mqtt_capability_b4.getValue()[0] == '1') {
+		mqtt.cap[0] = AITINKER_BITMASK; // hard set
+	}
 	mqtt.cap[0] += '0';
 
 	Serial.println(F("=== Saving parameters: ==="));
@@ -862,6 +885,15 @@ void loadConfig(){
 	wifiManager.explainFullMqttStruct(&mqtt);
 
 	// capabilities
+	if (((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK) {
+		m_use_pwm_as_rgb = true;
+		Serial.print(F(" +"));
+	} else {
+		m_use_pwm_as_rgb = false;
+		Serial.print(F(" -"));
+	}
+	Serial.println(F(" PWM light"));
+	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK) {
 		m_use_neo_as_rgb = true;
 		Serial.print(F(" +"));
@@ -870,6 +902,20 @@ void loadConfig(){
 		Serial.print(F(" -"));
 	}
 	Serial.println(F(" NeoPixel light"));
+	//
+	if (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK) {
+		m_use_my92x1_as_rgb = true;
+		_my9291.init(true); // true = Sonoff B1
+		Serial.print(F(" + SONOFF B1 light"));
+	} else if (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK) {
+		m_use_my92x1_as_rgb = true;
+		_my9291.init(false); // false = AiTinker
+		Serial.print(F(" + AiTinker light"));
+	} else {
+		m_use_my92x1_as_rgb = false;
+		Serial.print(F(" - no smart bulb"));
+	}
+	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK) {
 		m_avoid_relay = true;
 		Serial.print(F(" +"));
@@ -895,7 +941,7 @@ char * build_topic(const char * topic){
 // /////////////////////////////////////////////////////////////////////////////////////
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
 void setup(){
-	// init the serial
+	///// init the serial and print debug /////
 	Serial.begin(115200);
 	for (uint8_t i = 0; i < 6; i++) {
 		Serial.print(i);
@@ -928,30 +974,53 @@ void setup(){
 	Serial.print(F("  available "));
 	Serial.println(system_get_free_heap_size());
 	Serial.println(F("========== INFO ========== "));
+	///// init the serial and print debug /////
 
-	// init the led
-	pinMode(PWM_LIGHT_PIN1, OUTPUT);
-	pinMode(PWM_LIGHT_PIN2, OUTPUT);
-	pinMode(PWM_LIGHT_PIN3, OUTPUT);
-	analogWriteRange(255);
+	///// init the led /////
+	// load all paramters!
+	loadConfig();
+
+	if(m_use_pwm_as_rgb){
+		pinMode(PWM_LIGHT_PIN1, OUTPUT);
+		pinMode(PWM_LIGHT_PIN2, OUTPUT);
+		pinMode(PWM_LIGHT_PIN3, OUTPUT);
+		analogWriteRange(255);
+	} else if (m_use_neo_as_rgb) {
+		strip.Begin();
+		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
+	} else if(m_use_my92x1_as_rgb){
+		_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
+    _my9291.setState(true);
+	}
+// find me wenn es hier ist gehts nicht
+
+	// set some light
+	//m_light_current.r = 99; // default all on
+	//m_light_current.g = 99;
+	//m_light_current.b = 99;
 	setPWMLightState();
 
 	pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
 	setSimpleLightState();
 
-	pinMode(GPIO_D8, OUTPUT);
+	pinMode(GPIO_D8, OUTPUT); // ?
 
-	// attache interrupt code for PIR
-	pinMode(PIR_PIN, INPUT);
-	digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
-	attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
+	// attache interrupt code for PIR on non smart bulbs
+	if(!m_use_my92x1_as_rgb){
+		pinMode(PIR_PIN, INPUT);
+		digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
+		attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
+	}
 
-	// attache interrupt code for button
+		// attache interrupt code for button
 	pinMode(BUTTON_INPUT_PIN, INPUT);
 	digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
 	attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), updateBUTTONstate, CHANGE);
 
-	// start wifi manager
+	// dht
+	dht.begin();
+	///// init the pins/etc /////
+	////// start wifi manager
 	Serial.println();
 	Serial.println();
 	wifiManager.setAPCallback(configModeCallback);
@@ -962,8 +1031,7 @@ void setup(){
 
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-	}
-	;
+	};
 	// wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 
 	Serial.println(F("[WiFi] Connecting "));
@@ -974,23 +1042,6 @@ void setup(){
 		ESP.reset(); // reset loop if not only or configured after 5min ..
 	}
 
-	// load all paramters!
-	loadConfig();
-
-	// dht
-	dht.begin();
-
-	// ws strip, only if configured
-	if (m_use_neo_as_rgb) {
-		strip.Begin();
-		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
-	}
-
-	if(m_use_my9291_as_rgb){
-		_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
-    _my9291.setState(true);
-	}
-
 	Serial.println("");
 	Serial.println(F("[WiFi] connected"));
 	Serial.print(F("[WiFi] IP address: "));
@@ -999,6 +1050,7 @@ void setup(){
 	// init the MQTT connection
 	client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 	client.setCallback(callback);
+
 } // setup
 
 // /////////////////////////////////////////// SETUP ///////////////////////////////////

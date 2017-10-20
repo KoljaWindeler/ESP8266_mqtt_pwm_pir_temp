@@ -80,13 +80,18 @@
 #define CONFIG_SSID  "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
 #define MAX_AP_TIME  300                   // restart eps after 300 sec in config mode
 #define TEMP_MAX     70                    // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION      "20171010"
+#define VERSION      "20171020_2"
 
 // capability list
-#define RGB_PWM_BITMASK     1 << 0
-#define NEOPIXEL_BITMASK    1 << 1
-#define AVOID_RELAY_BITMASK 1 << 2
-#define UNUSED_2            1 << 3
+#define RGB_PWM_BITMASK     1 << 0 // 1
+#define NEOPIXEL_BITMASK    1 << 1 // 2
+#define AVOID_RELAY_BITMASK 1 << 2 // 4
+#define SONOFF_B1_BITMASK   1 << 3 // 8
+#define AITINKER_BITMASK    1 << 4 // 16
+//#define MY9291_BITMASK      1 << 5 // 32
+//#define MY9291_BITMASK      1 << 6 // 64
+//#define MY9291_BITMASK      1 << 7 // 128
+
 // pins
 #define PINOUT_SONOFF       1 // set this to "#define" for the sonoff and pcb v3 but not v2
 // #define PINOUT_KOLJA_TINY 1
@@ -132,7 +137,7 @@
 
 #define MY9291_DI_PIN	12	// mtdi 12
 #define MY9291_DCKI_PIN	14 // mtms gpio 14?
-#define MY9291_CHANNELS	5 // r,g,b,warm white, cold white
+#define MY9291_CHANNELS	6 // r,g,b,warm white, cold white
 
 #define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
