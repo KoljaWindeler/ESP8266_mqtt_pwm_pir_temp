@@ -105,12 +105,13 @@ class my9291 {
 
         void _di_pulse(unsigned int times);
         void _dcki_pulse(unsigned int times);
-        void _set_cmd(bool b1True_aiFalse);
+        void _set_cmd();
         void _send();
         void _write(unsigned int data, unsigned char bit_length);
 
         my9291_cmd_t _command;
         unsigned char _channels = 4;
+        bool _b1True_aiFalse = false;
         bool _state = false;
         my9291_color_t _color = {0, 0, 0, 0, 0};
         unsigned char _pin_di;

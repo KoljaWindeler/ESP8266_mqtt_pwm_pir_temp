@@ -59,7 +59,7 @@ void my9291::_write(unsigned int data, unsigned char bit_length){
 	}
 }
 
-void my9291::_set_cmd(bool b1True_aiFalse){
+void my9291::_set_cmd(){
 	// ets_intr_lock();
 
 	// TStop > 12us.
@@ -82,7 +82,7 @@ void my9291::_set_cmd(bool b1True_aiFalse){
 	*/
 	// ONE_SHOT_DISABLE, REACTION_FAST, BIT_WIDTH_8, FREQUENCY_DIVIDE_1, SCATTER_APDM
 	// only one for ai, two for b1
-	if(b1True_aiFalse){
+	if(_b1True_aiFalse){
 		_write(0x18,8);
 	}
 	_write(0x18,8);
@@ -104,7 +104,7 @@ void my9291::_send(){
 	// Color to show
 	unsigned int duty[6] = { 0 };
 
-	if (_channels == 4) {
+	if (!_b1True_aiFalse) {
 		duty[0] = _color.red;
 		duty[1] = _color.green;
 		duty[2] = _color.blue;
@@ -205,6 +205,7 @@ my9291::my9291(unsigned char di, unsigned char dcki, my9291_cmd_t command, unsig
 }
 
 void my9291::init(bool b1True_aiFalse){
+	_b1True_aiFalse = b1True_aiFalse;
 	pinMode(_pin_di, OUTPUT);
 	pinMode(_pin_dcki, OUTPUT);
 
@@ -219,7 +220,7 @@ void my9291::init(bool b1True_aiFalse){
 	}
 
 	// Send init command
-	_set_cmd(b1True_aiFalse); // 0x18
+	_set_cmd(); // 0x18
 
 	DEBUG_MSG_MY9291("[MY9291] Initialized\n");
 }
