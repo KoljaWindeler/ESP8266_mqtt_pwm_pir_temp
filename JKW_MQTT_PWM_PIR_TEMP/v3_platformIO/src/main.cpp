@@ -7,7 +7,8 @@ const char MyText[]  PROGMEM = { "My flash based text" };
 DHT dht(DHT_PIN, DHT22);                                                                          // DHT22
 OneWire ds(DS_PIN);                                                                               // on digital pin DHT_DS_PIN
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, PWM_LIGHT_PIN2); // this version only works on gpio3 / D9 (RX)
-my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT, MY9291_CHANNELS);
+my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT
+, MY9291_CHANNELS);
 
 
 char char_buffer[35];
@@ -880,7 +881,28 @@ void saveConfigCallback(){
 
 void loadConfig(){
 	// fill the mqtt element with all the data from eeprom
-	wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt));
+	if(wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt))){
+		// set identifier for SSID and menu
+		wifiManager.setCustomIdElement(mqtt.dev_short);
+		// resuract eeprom values instead of defaults
+		WiFiManager_mqtt_server_ip.setValue(mqtt.server_ip);
+		WiFiManager_mqtt_server_port.setValue(mqtt.server_port);
+		WiFiManager_mqtt_client_short.setValue(mqtt.dev_short);
+		WiFiManager_mqtt_server_login.setValue(mqtt.login);
+		WiFiManager_mqtt_server_pw.setValue(mqtt.pw);
+		// technically wrong, as the value will be 1,2,4,8,... and not 0/1
+		// but still works as the test is value!=0
+		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
+		WiFiManager_mqtt_capability_b0.setValue(char_buffer);
+		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK));
+		WiFiManager_mqtt_capability_b1.setValue(char_buffer);
+		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK));
+		WiFiManager_mqtt_capability_b2.setValue(char_buffer);
+		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK));
+		WiFiManager_mqtt_capability_b3.setValue(char_buffer);
+		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
+		WiFiManager_mqtt_capability_b4.setValue(char_buffer);
+	}
 	Serial.println(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
 
@@ -906,14 +928,14 @@ void loadConfig(){
 	if (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK) {
 		m_use_my92x1_as_rgb = true;
 		_my9291.init(true); // true = Sonoff B1
-		Serial.print(F(" + SONOFF B1 light"));
+		Serial.println(F(" + SONOFF B1 light"));
 	} else if (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK) {
 		m_use_my92x1_as_rgb = true;
 		_my9291.init(false); // false = AiTinker
-		Serial.print(F(" + AiTinker light"));
+		Serial.println(F(" + AiTinker light"));
 	} else {
 		m_use_my92x1_as_rgb = false;
-		Serial.print(F(" - no smart bulb"));
+		Serial.println(F(" - no smart bulb"));
 	}
 	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK) {
@@ -1030,9 +1052,8 @@ void setup(){
 	WiFi.mode(WIFI_STA);        // avoid station and ap at the same time
 
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
-		wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+		wifiManager.startConfigPortal(CONFIG_SSID);
 	};
-	// wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 
 	Serial.println(F("[WiFi] Connecting "));
 	if (!wifiManager.autoConnect(CONFIG_SSID)) {

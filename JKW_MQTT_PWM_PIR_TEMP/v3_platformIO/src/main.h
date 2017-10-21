@@ -77,10 +77,10 @@
 #define DIMM_DIMMING 1 // state defs
 #define DHT_def      1
 #define DS_def       2
-#define CONFIG_SSID  "OPEN_ESP_CONFIG_AP2" // SSID of the configuration mode
+#define CONFIG_SSID  "ESP_CONFIG" // SSID of the configuration mode
 #define MAX_AP_TIME  300                   // restart eps after 300 sec in config mode
 #define TEMP_MAX     70                    // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION      "20171020_2"
+#define VERSION      "20171021_2"
 
 // capability list
 #define RGB_PWM_BITMASK     1 << 0 // 1
