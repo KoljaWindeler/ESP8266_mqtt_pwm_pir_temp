@@ -50,6 +50,8 @@ void WiFiManagerParameter::init(const char *id, const char *placeholder, const c
   }
   if (defaultValue != NULL) {
     strncpy(_value, defaultValue, length);
+    //Serial.println("setting value: ");
+    //Serial.println(_value);
   }
 
   _customHTML = custom;
@@ -58,6 +60,13 @@ void WiFiManagerParameter::init(const char *id, const char *placeholder, const c
 const char* WiFiManagerParameter::getValue() {
   return _value;
 }
+
+void WiFiManagerParameter::setValue(char *value) {
+  strncpy(_value, value, _length);
+  //Serial.println("setting value2: ");
+  //Serial.println(_value);
+}
+
 const char* WiFiManagerParameter::getID() {
   return _id;
 }
@@ -71,7 +80,9 @@ const char* WiFiManagerParameter::getCustomHTML() {
   return _customHTML;
 }
 
-WiFiManager::WiFiManager() {}
+WiFiManager::WiFiManager() {
+  _customIdElement = "";
+}
 
 void WiFiManager::addParameter(WiFiManagerParameter *p) {
   _params[_paramsCount] = p;
@@ -106,11 +117,28 @@ void WiFiManager::setupConfigPortal() {
     WiFi.softAPConfig(_ap_static_ip, _ap_static_gw, _ap_static_sn);
   }
 
-  if (_apPassword != NULL) {
-    WiFi.softAP(_apName, _apPassword);//password option
+  // ssid with id
+  //Serial.print("Check customID ");
+  //Serial.println(_customIdElement);
+  if(_customIdElement!=""){
+    //Serial.println("not empty ");
+    char temp[50];
+    sprintf(temp,"%s_%s",_apName,_customIdElement);
+    //Serial.println(temp);
+    if (_apPassword != NULL) {
+      WiFi.softAP(temp, _apPassword);//password option
+    } else {
+      WiFi.softAP(temp);
+    }
   } else {
-    WiFi.softAP(_apName);
+    //Serial.println("empty ");
+    if (_apPassword != NULL) {
+      WiFi.softAP(_apName, _apPassword);//password option
+    } else {
+      WiFi.softAP(_apName);
+    }
   }
+
 
   delay(500); // Without delay I've seen the IP address blank
   DEBUG_WM(F("AP IP address: "));
@@ -616,6 +644,9 @@ void WiFiManager::handleUpdate() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
   page += "<h1>";
   page += _apName;
   page += "</h1>";
@@ -671,6 +702,9 @@ void WiFiManager::handleUpdateDone() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+  page += _customIdElement;
+  page += FPSTR("</h1><br>");
   page += "<h1>";
   page += _apName;
   page += "</h1>";
@@ -701,6 +735,9 @@ void WiFiManager::handleRoot() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
   page += "<h1>";
   page += _apName;
   page += "</h1>";
@@ -721,6 +758,9 @@ void WiFiManager::handleWifi(boolean scan) {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
 
   if (scan) {
     int n = WiFi.scanNetworks();
@@ -925,6 +965,9 @@ void WiFiManager::handleWifiSave() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
   page += FPSTR(HTTP_SAVED);
   page += FPSTR(HTTP_END);
 
@@ -945,6 +988,9 @@ void WiFiManager::handleInfo() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
   page += F("<dl>");
   page += F("<dt>Chip ID</dt><dd>");
   page += ESP.getChipId();
@@ -985,6 +1031,9 @@ void WiFiManager::handleReset() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
+  page += FPSTR("<h1>CLI ");
+page += _customIdElement;
+page += FPSTR("</h1><br>");
   page += F("Module will reset in a few seconds.");
   page += FPSTR(HTTP_END);
   server->send(200, "text/html", page);
@@ -1055,6 +1104,13 @@ void WiFiManager::setSaveConfigCallback( void (*func)(void) ) {
 void WiFiManager::setCustomHeadElement(const char* element) {
   _customHeadElement = element;
 }
+
+//sets a custom element to add to Body, like a new style tag
+void WiFiManager::setCustomIdElement(const char* element) {
+  _customIdElement = element;
+}
+
+
 
 //if this is true, remove duplicated Access Points - defaut true
 void WiFiManager::setRemoveDuplicateAPs(boolean removeDuplicates) {

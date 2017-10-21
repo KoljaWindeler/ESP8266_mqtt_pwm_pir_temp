@@ -68,6 +68,7 @@ class WiFiManagerParameter {
 
     const char *getID();
     const char *getValue();
+    void setValue(char *value);
     const char *getPlaceholder();
     int         getValueLength();
     const char *getCustomHTML();
@@ -136,6 +137,8 @@ class WiFiManager
     //TODO
     //if this is set, customise style
     void          setCustomHeadElement(const char* element);
+    //if this is set, customise style
+    void          setCustomIdElement(const char* element);
     //if this is true, remove duplicated Access Points - defaut true
     void          setRemoveDuplicateAPs(boolean removeDuplicates);
     // set mqtt storage
@@ -175,6 +178,7 @@ class WiFiManager
     boolean       _tryWPS                 = false;
 
     const char*   _customHeadElement      = "";
+    const char*   _customIdElement      = "";
 
     //String        getEEPROMString(int start, int len);
     //void          setEEPROMString(int start, int len, String string);
