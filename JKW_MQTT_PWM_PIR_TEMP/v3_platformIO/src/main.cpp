@@ -293,6 +293,9 @@ boolean publishHumidity(float hum){
 
 boolean publishRssi(float rssi){
 	Serial.print(F("[mqtt] publish rssi "));
+	// this is needed to avoid reporting the same value over and over
+	// home assistant will show us as "not updated for xx Minutes" if the RSSSI stays the same
+	rssi+=((float)random(10))/100;
 	dtostrf(rssi, 3, 2, m_msg_buffer);
 	Serial.println(m_msg_buffer);
 	return client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
@@ -801,13 +804,26 @@ void reconnect(){
 				Serial.println(F("[mqtt] subscribed 11"));
 			}
 			Serial.println("[mqtt] subscribing finished");
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
-			// Serial.println(build_topic("/INFO"));
-			// Serial.println(m_msg_buffer);
-			client.publish(build_topic("/INFO"), m_msg_buffer, true);
 
+			// INFO publishing
+			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
+			client.publish(build_topic("/INFO"), m_msg_buffer, true);
+			client.loop();
+
+			// CAPability publishing
 			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", m_use_my92x1_as_rgb, m_use_neo_as_rgb, m_use_pwm_as_rgb, mqtt.cap[0]);
 			client.publish(build_topic("/CAP"), m_msg_buffer, true);
+			client.loop();
+
+			// WIFI publishing
+			client.publish(build_topic("/SSID"), WiFi.SSID().c_str(), true);
+			client.loop();
+
+			// BSSID publishing
+			uint8_t* bssid=WiFi.BSSID();
+			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x",bssid[5],bssid[4],bssid[3],bssid[2],bssid[1],bssid[0]);
+			client.publish(build_topic("/BSSID"), m_msg_buffer, true);
+			client.loop();
 		} else {
 			Serial.print(F("ERROR: failed, rc="));
 			Serial.print(client.state());
@@ -842,6 +858,19 @@ void configModeCallback(WiFiManager * myWiFiManager){
 	// prepare wifimanager variables
 	wifiManager.setAPStaticIPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 255), IPAddress(255, 255, 255, 0));
 	Serial.println(F("Entered config mode"));
+}
+
+// this is a callback so we can toggle the lights via the wifimanager and identify the light
+void toggleCallback(){
+	m_simple_light_state = !m_simple_light_state;
+	setSimpleLightState();
+	m_pwm_light_state = !m_pwm_light_state;
+	if(m_pwm_light_state){
+		m_light_target.r=99; // turn on for real
+	} else {
+		m_light_target.r=0;
+	}
+	setPWMLightState();
 }
 
 // save config to eeprom
@@ -1016,16 +1045,18 @@ void setup(){
 	}
 // find me wenn es hier ist gehts nicht
 
+	Serial.println(F("Set all lights on"));
 	// set some light
-	//m_light_current.r = 99; // default all on
-	//m_light_current.g = 99;
-	//m_light_current.b = 99;
+	m_light_current.r = 99; // default all on
+	m_light_current.g = 99;
+	m_light_current.b = 99;
 	setPWMLightState();
 
 	pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
+	m_simple_light_state = true; // default on
 	setSimpleLightState();
 
-	pinMode(GPIO_D8, OUTPUT); // ?
+	pinMode(GPIO_D8, OUTPUT); // output for the analogmeasurement
 
 	// attache interrupt code for PIR on non smart bulbs
 	if(!m_use_my92x1_as_rgb){
@@ -1046,6 +1077,7 @@ void setup(){
 	Serial.println();
 	Serial.println();
 	wifiManager.setAPCallback(configModeCallback);
+	wifiManager.setLightToggleCallback(toggleCallback);
 	wifiManager.setSaveConfigCallback(saveConfigCallback);
 	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
 	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
@@ -1071,7 +1103,7 @@ void setup(){
 	// init the MQTT connection
 	client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 	client.setCallback(callback);
-
+	randomSeed(millis());
 } // setup
 
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
