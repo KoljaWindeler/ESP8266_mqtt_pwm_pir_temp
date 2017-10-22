@@ -165,6 +165,7 @@ void WiFiManager::setupConfigPortal(){
 	server->on("/wifisave", std::bind(&WiFiManager::handleWifiSave, this));
 	server->on("/i", std::bind(&WiFiManager::handleInfo, this));
 	server->on("/r", std::bind(&WiFiManager::handleReset, this));
+	server->on("/t", std::bind(&WiFiManager::handleToggle, this));
 	server->on("/fwlink", std::bind(&WiFiManager::handleRoot, this)); // Microsoft captive portal. Maybe not needed. Might be handled by notFound handler.
 	//
 	server->on("/u", std::bind(&WiFiManager::handleUpdate, this)); // handler for the /update form page
@@ -174,6 +175,13 @@ void WiFiManager::setupConfigPortal(){
 	server->begin(); // Web server start
 	DEBUG_WM(F("HTTP server started"));
 } // setupConfigPortal
+
+void WiFiManager::handleToggle(){
+	if (_lightToggleCallback != NULL) {
+		_lightToggleCallback();
+	}
+	handleRoot();
+}
 
 boolean WiFiManager::autoConnect(){
 	String ssid = "ESP" + String(ESP.getChipId());
@@ -429,11 +437,13 @@ boolean WiFiManager::storeMqttStruct(char * temp, uint8_t size){
 }
 
 boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
+	char* temp2=temp;
 	EEPROM.begin(512); // can be up to 4096
 	uint8_t checksum = CHK_FORMAT_V2;
 	for (int i = 0; i < size; i++) {
 		*temp = EEPROM.read(i);
-		// Serial.print(int(*temp));
+		//Serial.printf(" (%i)",i);
+		//Serial.print(char(*temp));
 		checksum ^= *temp;
 		temp++;
 	}
@@ -442,17 +452,33 @@ boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
-		// Serial.println("EEfail");
+		Serial.println("EEfail");
+
 		// try legacy V1 to v2 conversion
-		temp   -= size;        // rewind
-		temp   += 16 + 16 + 6; // skip login,pw,devshort
-		*temp++ = '0';         // write cap
-		*temp++ = 0;
-		for (int i = 58; i <= 58 + 16 + 6; i++) { // 58=16+16+6+20
-			*temp = EEPROM.read(i);
-			temp++;
+		temp = temp2;        // rewind
+		for(int i=0;i<(16+16+6+20+16+6);i++){
+			//Serial.printf(" (%i)",i);
+			//Serial.print(char(*temp));
+			if(i<16+16+6){
+				*temp = EEPROM.read(i);
+				temp++;
+			} else if(i == 16+16+6){
+				*temp = '0';         // write cap
+				temp++;
+				*temp= 0;
+				temp++;
+			} else if(i >= 16+16+6+20){
+				*temp = EEPROM.read(i);
+				temp++;
+			}
 		}
-		temp -= size; // rewind
+		temp = temp2;        // rewind
+		Serial.println(F("///////////////////////"));
+		Serial.println(F("EEPROM read failed, try legacy"));
+		explainFullMqttStruct((mqtt_data*)temp);
+		Serial.println(F("saving to EEPROM with new struct"));
+		Serial.println(F("///////////////////////"));
+
 		storeMqttStruct(temp, size);
 		// try legacy V1 to v2 conversion
 	}
@@ -1106,6 +1132,10 @@ void WiFiManager::setAPCallback(void (* func)(WiFiManager * myWiFiManager) ){
 // start up save config callback
 void WiFiManager::setSaveConfigCallback(void (* func)(void) ){
 	_savecallback = func;
+}
+
+void WiFiManager::setLightToggleCallback( void (*func)(void) ){
+	_lightToggleCallback = func;
 }
 
 // sets a custom element to add to head, like a new style tag
