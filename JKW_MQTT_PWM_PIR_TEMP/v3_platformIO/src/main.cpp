@@ -1,7 +1,4 @@
 #include "main.h"
-
-#define FS(x) (__FlashStringHelper *) (x)
-const char MyText[]  PROGMEM = { "My flash based text" };
 // ////////////////////////////////////////////////// globals //////////////////////////////////////////////
 
 DHT dht(DHT_PIN, DHT22);                                                                          // DHT22
@@ -10,8 +7,6 @@ NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT,
 my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT
 , MY9291_CHANNELS);
 
-
-char char_buffer[35];
 
 // MQTT: topics, constants, etc
 static constexpr char MQTT_PWM_LIGHT_STATE_TOPIC[]   = "/PWM_light/status"; // publish state here ON / OFF
@@ -87,8 +82,10 @@ uint8_t m_published_animation_type = -1; // on off published
 uint8_t m_animation_pos = 0;             // pointer im wheel
 
 
-// buffer used to send/receive data with MQTT, can not be done with the char_buffer, as both as need simultaniously
+// buffer used to send/receive data with MQTT, can not be done with the m_topic_buffer, as both as need simultaniously
+char m_topic_buffer[TOPIC_BUFFER_SIZE];
 char m_msg_buffer[MSG_BUFFER_SIZE];
+
 WiFiClient wifiClient;
 WiFiManager wifiManager;
 PubSubClient client(wifiClient);
@@ -117,7 +114,7 @@ uint32_t timer_button_down     = 0;
 uint8_t counter_button         = 0;
 uint32_t timer_last_publish    = 0;
 uint8_t periodic_slot          = 0;
-uint32_t m_neopixel_dimm_time  = 0;
+uint32_t m_animation_dimm_time  = 0;
 
 // /////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////// PUBLISHER ///////////////////////////////////////
@@ -320,10 +317,14 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	for (uint8_t i = 0; i < p_length; i++) {
 		payload.concat((char) p_payload[i]);
 	}
+
 	// handle message topic
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// direct set PWM value
-	if (String(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)).equals(p_topic)) {
+	p_payload[p_length]=0x00;
+	Serial.printf("[mqtt] IN: %s --> %s\r\n",p_topic,p_payload);
+	if(!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))){
+	//if (String(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)).equals(p_topic)) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_pwm_light_state != true) {
@@ -591,6 +592,10 @@ void setPWMLightState(boolean over_ride){
 		analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
 	}
 	/////////////////////////////////// debug output /////////////////////////////
+	else {
+		// avoid next line
+		return;
+	}
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_current.r, m_light_current.g, m_light_current.b);
 	Serial.println(m_msg_buffer);
 
@@ -614,14 +619,18 @@ void setSimpleLightState(){
 // set rainbow start point .. thats pretty much it
 void setAnimationType(int type){
 	m_animation_pos      = 0; // start all animation from beginning
-	m_neopixel_dimm_time = millis();
+	m_animation_dimm_time = millis();
 	m_animation_type     = type;
 	// switch off
 	if (m_animation_type == ANIMATION_OFF) {
-		for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-			strip.SetPixelColor(i, RgbColor(0, 0, 0));
+		if(m_use_neo_as_rgb){
+			for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+				strip.SetPixelColor(i, RgbColor(0, 0, 0));
+			}
+			strip.Show();
+		} else if(m_use_my92x1_as_rgb){
+			_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
 		}
-		strip.Show();
 	}
 }
 
@@ -808,6 +817,7 @@ void reconnect(){
 			// INFO publishing
 			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 			client.publish(build_topic("/INFO"), m_msg_buffer, true);
+
 			client.loop();
 
 			// CAPability publishing
@@ -840,6 +850,8 @@ void reconnect(){
 				Serial.begin(115200);
 			}
 			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+			tries=0;
+			Serial.println(F("Config AP closed"));
 		}
 	}
 } // reconnect
@@ -921,16 +933,16 @@ void loadConfig(){
 		WiFiManager_mqtt_server_pw.setValue(mqtt.pw);
 		// technically wrong, as the value will be 1,2,4,8,... and not 0/1
 		// but still works as the test is value!=0
-		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
-		WiFiManager_mqtt_capability_b0.setValue(char_buffer);
-		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK));
-		WiFiManager_mqtt_capability_b1.setValue(char_buffer);
-		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK));
-		WiFiManager_mqtt_capability_b2.setValue(char_buffer);
-		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK));
-		WiFiManager_mqtt_capability_b3.setValue(char_buffer);
-		sprintf(char_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
-		WiFiManager_mqtt_capability_b4.setValue(char_buffer);
+		sprintf(m_msg_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
+		WiFiManager_mqtt_capability_b0.setValue(m_msg_buffer);
+		sprintf(m_msg_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK));
+		WiFiManager_mqtt_capability_b1.setValue(m_msg_buffer);
+		sprintf(m_msg_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK));
+		WiFiManager_mqtt_capability_b2.setValue(m_msg_buffer);
+		sprintf(m_msg_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK));
+		WiFiManager_mqtt_capability_b3.setValue(m_msg_buffer);
+		sprintf(m_msg_buffer,"%i",(((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
+		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);
 	}
 	Serial.println(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
@@ -957,6 +969,7 @@ void loadConfig(){
 	if (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK) {
 		m_use_my92x1_as_rgb = true;
 		_my9291.init(true); // true = Sonoff B1
+		_my9291.setState(true); // useless state var
 		Serial.println(F(" + SONOFF B1 light"));
 	} else if (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK) {
 		m_use_my92x1_as_rgb = true;
@@ -982,8 +995,8 @@ void loadConfig(){
 
 // build topics with device id on the fly
 char * build_topic(const char * topic){
-	sprintf(char_buffer, "%s%s", mqtt.dev_short, topic);
-	return char_buffer;
+	sprintf(m_topic_buffer, "%s%s", mqtt.dev_short, topic);
+	return m_topic_buffer;
 }
 
 // //////////////////////////////// network function ///////////////////////////////////
@@ -1040,20 +1053,21 @@ void setup(){
 		strip.Begin();
 		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
 	} else if(m_use_my92x1_as_rgb){
-		_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
-    _my9291.setState(true);
+		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
 	}
-// find me wenn es hier ist gehts nicht
 
-	Serial.println(F("Set all lights on"));
-	// set some light
-	m_light_current.r = 99; // default all on
-	m_light_current.g = 99;
-	m_light_current.b = 99;
+	// get reset reason
+	if(ESP.getResetInfoPtr()->reason == REASON_DEFAULT_RST){
+		// set some light on regular power up
+		Serial.println(F("Set all lights on"));
+		m_light_current.r = 99;
+		m_light_current.g = 99;
+		m_light_current.b = 99;
+		m_simple_light_state = true;
+	}
+
 	setPWMLightState();
-
 	pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
-	m_simple_light_state = true; // default on
 	setSimpleLightState();
 
 	pinMode(GPIO_D8, OUTPUT); // output for the analogmeasurement
@@ -1080,6 +1094,7 @@ void setup(){
 	wifiManager.setLightToggleCallback(toggleCallback);
 	wifiManager.setSaveConfigCallback(saveConfigCallback);
 	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
+	wifiManager.setConnectTimeout(MAX_CON_TIME);
 	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
 	WiFi.mode(WIFI_STA);        // avoid station and ap at the same time
 
@@ -1140,28 +1155,36 @@ void loop(){
 
 	// // RGB circle ////
 	if (m_animation_type) {
-		if (millis() >= m_neopixel_dimm_time) {
-			if (m_animation_type == ANIMATION_RAINBOW_WHEEL) {
-				for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-					strip.SetPixelColor(i, Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255));
+		if (millis() >= m_animation_dimm_time) {
+			if(m_use_neo_as_rgb){
+				if (m_animation_type == ANIMATION_RAINBOW_WHEEL) {
+					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+						strip.SetPixelColor(i, Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255));
+					}
+					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+					strip.Show();
+					m_animation_dimm_time = millis() + ANIMATION_STEP_TIME; // schedule update
+				} else if (m_animation_type == ANIMATION_RAINBOW_SIMPLE) {
+					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+						strip.SetPixelColor(i, Wheel(m_animation_pos & 255));
+					}
+					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+					strip.Show();
+					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
+				} else if (m_animation_type == ANIMATION_COLOR_WIPE) {
+					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
+					strip.SetPixelColor(m_animation_pos % NEOPIXEL_LED_COUNT,
+					  Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255)); // max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
+					m_animation_pos++;                                              // move wheel by one, will overrun and therefore cycle
+					strip.Show();
+					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
-				m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-				strip.Show();
-				m_neopixel_dimm_time = millis() + NEOPIXEL_STEP_TIME; // schedule update
-			} else if (m_animation_type == ANIMATION_RAINBOW_SIMPLE) {
-				for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-					strip.SetPixelColor(i, Wheel(m_animation_pos & 255));
+			} else if (m_use_my92x1_as_rgb){
+				if (m_animation_type == ANIMATION_RAINBOW_SIMPLE) {
+					_my9291.setColor((my9291_color_t) { Wheel(m_animation_pos & 255).R,Wheel(m_animation_pos & 255).G,Wheel(m_animation_pos & 255).B, 0,0 }); // last two: warm white, cold white
+					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
 				}
-				m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-				strip.Show();
-				m_neopixel_dimm_time = millis() + 4 * NEOPIXEL_STEP_TIME; // schedule update
-			} else if (m_animation_type == ANIMATION_COLOR_WIPE) {
-				// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
-				strip.SetPixelColor(m_animation_pos % NEOPIXEL_LED_COUNT,
-				  Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255)); // max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
-				m_animation_pos++;                                              // move wheel by one, will overrun and therefore cycle
-				strip.Show();
-				m_neopixel_dimm_time = millis() + 3 * NEOPIXEL_STEP_TIME; // schedule update
 			}
 		} // timer
 	}  // if active
