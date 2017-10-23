@@ -71,6 +71,9 @@
 #include <Arduino.h>
 #include <ESP8266httpUpdate.h>
 #include <my9291.h>
+
+#define FS(x) (__FlashStringHelper *) (x)
+
 // ////////////////////////////////////////////////// defines //////////////////////////////////////////////
 #define SERIAL_DEBUG
 #define DIMM_DONE    0 // state defs
@@ -79,6 +82,7 @@
 #define DS_def       2
 #define CONFIG_SSID  "ESP_CONFIG" // SSID of the configuration mode
 #define MAX_AP_TIME  300                   // restart eps after 300 sec in config mode
+#define MAX_CON_TIME 30										// give up connecting after 30 sec
 #define TEMP_MAX     70                    // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 #define VERSION      "20171022"
 
@@ -142,6 +146,7 @@
 #define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 #define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
 #define MSG_BUFFER_SIZE        60   // mqtt messages max char size
+#define TOPIC_BUFFER_SIZE			 35		// mqtt topic buffer
 #define REPUBISH_AVOID_TIMEOUT 2000 // if the device was switched off, it will pubish its new state (and thats good)
                                     // that can retrigger another "switch off" to the same device if it's in group.
                                     // We have to avoid that we send our state again to break this loop
@@ -152,7 +157,7 @@
 #define PUBLISH_TIME_OFFSET      200                          // ms timeout between two publishes
 #define UPDATE_PIR               900000L                      // ms timeout between two publishes of the pir .. needed?
 
-#define NEOPIXEL_STEP_TIME       15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
+#define ANIMATION_STEP_TIME      15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
 #define NEOPIXEL_LED_COUNT       24
 #define ANIMATION_OFF            0
 #define ANIMATION_RAINBOW_WHEEL  1
