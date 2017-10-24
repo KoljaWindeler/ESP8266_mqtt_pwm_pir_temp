@@ -524,10 +524,13 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			}
 			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
 			wifiManager.startConfigPortal(CONFIG_SSID);                 // needs to be tested!
+      // debug
+      WiFi.printDiag(Serial);
 		} else if (payload.substring(0, 4).equals(String("http"))) { // update
 			Serial.print(F("Update command with url found, trying to update from "));
 			Serial.println(payload);
 			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
+			client.publish(build_topic("/INFO"), "updating...", true);
 			ESPhttpUpdate.update(payload);
 		} else if (payload.equals(String("reset"))) { // reboot
 			Serial.print(F("Received reset command"));
@@ -768,6 +771,12 @@ void reconnect(){
 	// Loop until we're reconnected
 	uint8_t tries = 0;
 
+  // first check wifi
+  if(WiFi.status()!=WL_CONNECTED){
+    Serial.println(F("[WiFi] Connecting "));
+    wifiManager.autoConnect(CONFIG_SSID);
+  }
+
 	while (!client.connected()) {
 		Serial.println(F("[mqtt] Attempting connection..."));
 		// Attempt to connect
@@ -779,48 +788,60 @@ void reconnect(){
 			// ... and resubscribe
 			client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)); // hard on off
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 1"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 2"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)); // on off
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 3"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC)); // dimm on
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 4"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 5"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 6"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)); // color topic
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 7"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC));
 
 			client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // color topic
 			client.loop();
-			Serial.println(F("[mqtt subscribed] 8"));
+			Serial.print(F("[mqtt subscribed] "));
+      Serial.println(build_topic(MQTT_SETUP_TOPIC));
 
 			if(m_use_my92x1_as_rgb || m_use_neo_as_rgb){
 				client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
 				client.loop();
-				Serial.println(F("[mqtt subscribed] 9"));
+				Serial.print(F("[mqtt subscribed] "));
+        Serial.println(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC));
 			}
 			if (m_use_neo_as_rgb) {
 				client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
 				client.loop();
-				Serial.println(F("[mqtt subscribed] 10"));
+				Serial.print(F("[mqtt subscribed] "));
+        Serial.println(build_topic(MQTT_RAINBOW_COMMAND_TOPIC));
+
 				client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
 				client.loop();
-				Serial.println(F("[mqtt subscribed] 11"));
+				Serial.print(F("[mqtt subscribed] "));
+        Serial.println(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC));
 			}
 			Serial.println("[mqtt] subscribing finished");
 
@@ -866,6 +887,8 @@ void reconnect(){
 			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 			tries = 0;
 			Serial.println(F("Config AP closed"));
+      // debug
+      WiFi.printDiag(Serial);
 		}
 	}
 } // reconnect
@@ -1021,7 +1044,7 @@ char * build_topic(const char * topic){
 void setup(){
 	// /// init the serial and print debug /////
 	Serial.begin(115200);
-	for (uint8_t i = 0; i < 6; i++) {
+	for (uint8_t i = 0; i < 10; i++) {
 		Serial.print(i);
 		Serial.print(F(".. "));
 		delay(500);
