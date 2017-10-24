@@ -96,9 +96,10 @@ WiFiManager::WiFiManager(){
 void WiFiManager::addParameter(WiFiManagerParameter * p){
 	_params[_paramsCount] = p;
 	_paramsCount++;
-	DEBUG_WM("Adding parameter");
-	DEBUG_WM(p->getID());
-	DEBUG_WM(p->getValue());
+	Serial.print(F("Adding parameter: "));
+	Serial.print(p->getID());
+	Serial.print(F(" -> "));
+	Serial.println(p->getValue());
 }
 
 void WiFiManager::setupConfigPortal(){
@@ -190,8 +191,6 @@ boolean WiFiManager::autoConnect(){
 }
 
 boolean WiFiManager::autoConnect(char const * apName, char const * apPassword){
-	DEBUG_WM(F(""));
-	DEBUG_WM(F("AutoConnect"));
 	// read eeprom for ssid and pass
 	// String ssid = getSSID();
 	// String pass = getPassword();
@@ -387,7 +386,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 		if (connect) {
 			connect = false;
 			delay(2000);
-			DEBUG_WM(F("Connecting to new AP"));
+			DEBUG_WM(F("*WM: Connecting to new AP"));
 
 			// using user-provided  _ssid, _pass in place of system-stored ssid and pass
 			if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
@@ -415,9 +414,10 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 		}
 		// yield();
 	}
-
+	Serial.println(F("*WM: end startConfigPortal"));
 	server.reset();
 	dnsServer.reset();
+	WiFi.mode(WIFI_STA);
 
 	return WiFi.status() == WL_CONNECTED;
 } // startConfigPortal
@@ -529,7 +529,9 @@ void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
 };
 
 int WiFiManager::connectWifi(String ssid, String pass){
-	DEBUG_WM(F("Connecting as wifi client..."));
+	//DEBUG_WM(F("Connecting as wifi client..."));
+	Serial.print(F("*WM: Connecting to "));
+	Serial.println(WiFi.SSID());
 
 	// check if we've got static_ip settings, if we do, use those.
 	if (_sta_static_ip) {
@@ -547,7 +549,7 @@ int WiFiManager::connectWifi(String ssid, String pass){
 		WiFi.begin(ssid.c_str(), pass.c_str());
 	} else {
 		if (WiFi.SSID()) {
-			DEBUG_WM("Using last saved values, should be faster");
+
 			// trying to fix connection in progress hanging
 			ETS_UART_INTR_DISABLE();
 			wifi_station_disconnect();
