@@ -328,9 +328,12 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_pwm_light_state != true) {
-				m_pwm_light_state = true;
-				m_animation_type  = ANIMATION_OFF; // publish that we've switched if off .. just in case
+        // we don't want to keep running the animation if brightness was submitted
+        if(m_animation_type){
+          setAnimationType(ANIMATION_OFF);
+        }
 
+				m_pwm_light_state = true;
 				// bei diesem topic hartes einschalten
 				m_light_current = m_light_backup;
 				setPWMLightState();
@@ -366,6 +369,10 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_pwm_light_state != true) {
+        // we don't want to keep running the animation if brightness was submitted
+        if(m_animation_type){
+          setAnimationType(ANIMATION_OFF);
+        }
 				// Serial.println("light was off");
 				m_pwm_light_state = true;
 				// bei diesem topic ein dimmen
@@ -429,7 +436,6 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		Serial.print(F("INPUT!"));
 		if (payload.equals(String(STATE_ON)) && m_animation_type != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL);
 		} else if (payload.equals(String(STATE_OFF)) && m_animation_type == ANIMATION_RAINBOW_WHEEL) {
@@ -447,7 +453,6 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		Serial.print(F("INPUT!"));
 		if (payload.equals(String(STATE_ON)) && m_animation_type != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
 		} else if (payload.equals(String(STATE_OFF)) && m_animation_type == ANIMATION_RAINBOW_SIMPLE) {
@@ -483,10 +488,12 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		m_light_current.r = payload.toInt();                                              // das regelt die helligkeit
 		m_light_current.g = payload.toInt();                                              // das regelt die helligkeit
 		m_light_current.b = payload.toInt();                                              // das regelt die helligkeit
+    m_pwm_light_state = true; // simply set, if it was off this will trigger a publish
 		setPWMLightState();
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
 		Serial.print(F("pwm dimm input "));
 		Serial.println((uint8_t) payload.toInt());
+    m_pwm_light_state = true; // simply set, if it was off this will trigger a publish
 		pwmDimmTo((led){ (uint8_t) payload.toInt(), (uint8_t) payload.toInt(), (uint8_t) payload.toInt() });
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_RGB_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
 		Serial.println(F("set input hard"));
@@ -498,11 +505,13 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			(uint8_t) map((uint8_t) payload.substring(lastIndex + 1).toInt(), 0, 255, 0, 99)
 		};
 		m_light_target = m_light_current;
+    m_pwm_light_state = true; // simply set, if it was off this will trigger a publish
 		setPWMLightState();
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC))) { // smoothly dimm to rgb value
 		Serial.println(F("color dimm input"));
 		uint8_t firstIndex = payload.indexOf(',');
 		uint8_t lastIndex  = payload.lastIndexOf(',');
+    m_pwm_light_state = true; // simply set, if it was off this will trigger a publish
 		// input color values are 888rgb .. we need precentage
 		pwmDimmTo((led){
 		   (uint8_t) map((uint8_t) payload.substring(0, firstIndex).toInt(), 0, 255, 0, 99),
@@ -583,8 +592,7 @@ void setPWMLightState(boolean over_ride){
 			_my9291.setColor((my9291_color_t) { 0, 0, 0, intens[m_light_current.r], 0 }); // last two: warm white, cold white
 		} else {
 			_my9291.setColor((my9291_color_t) { intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b],
-			                                    0,
-			                                    0 }); // dedicated color
+			                                    0, 0 }); // dedicated color
 		}
 		_my9291.setState(true);
 	}
@@ -621,6 +629,16 @@ void setSimpleLightState(){
 
 // set rainbow start point .. thats pretty much it
 void setAnimationType(int type){
+  // if we're starting a animation and have been on pwm light, switch pwm off
+  if(m_pwm_light_state && type!=ANIMATION_OFF){
+    m_pwm_light_state = false; // this will triggerthe publish
+    m_light_backup = m_light_current; // store to resume state
+    m_light_current.r = 0;  // this will lead to the correct state dimm wise
+    m_light_current.g = 0; //  if we leave them at whereever they are, switch to animation
+    m_light_current.b = 0; // and switch back  to dimm light no dimming would happen cause the sys thinks it still/already there
+  }
+
+  // animation processing
 	m_animation_pos       = 0; // start all animation from beginning
 	m_animation_dimm_time = millis();
 	m_animation_type      = type;
@@ -772,6 +790,7 @@ void reconnect(){
 	uint8_t tries = 0;
 
   // first check wifi
+  WiFi.mode(WIFI_STA);        // avoid station and ap at the same time
   if(WiFi.status()!=WL_CONNECTED){
     Serial.println(F("[WiFi] Connecting "));
     wifiManager.autoConnect(CONFIG_SSID);
@@ -846,7 +865,7 @@ void reconnect(){
 			Serial.println("[mqtt] subscribing finished");
 
 			// INFO publishing
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
+			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s %i", PINOUT, VERSION,ESP.getResetInfoPtr()->reason);
 			client.publish(build_topic("/INFO"), m_msg_buffer, true);
 
 			client.loop();
@@ -1101,13 +1120,21 @@ void setup(){
 		m_light_current.g    = 99;
 		m_light_current.b    = 99;
 		m_simple_light_state = true;
-	}
-
+	} else {
+    Serial.println(F("Set all lights off"));
+		m_light_current.r    = 0;
+		m_light_current.g    = 0;
+		m_light_current.b    = 0;
+		m_simple_light_state = false;
+  }
+  m_published_simple_light_state = !m_simple_light_state; // forces publish
+  m_published_pwm_light_state = !m_pwm_light_state; // forces publish
 	setPWMLightState();
 	pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
 	setSimpleLightState();
 
-	pinMode(GPIO_D8, OUTPUT); // output for the analogmeasurement
+  // output for the analogmeasurement
+	pinMode(GPIO_D8, OUTPUT);
 
 	// attache interrupt code for PIR on non smart bulbs
 	if (!m_use_my92x1_as_rgb) {
@@ -1133,25 +1160,10 @@ void setup(){
 	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
 	wifiManager.setConnectTimeout(MAX_CON_TIME);
 	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
-	WiFi.mode(WIFI_STA);        // avoid station and ap at the same time
 
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		wifiManager.startConfigPortal(CONFIG_SSID);
-	}
-	;
-
-	Serial.println(F("[WiFi] Connecting "));
-	if (!wifiManager.autoConnect(CONFIG_SSID)) {
-		// possible situataion: Main power out, ESP went to config mode as the routers wifi wasn available on time ..
-		Serial.println(F("failed to connect and hit timeout, restarting .."));
-		delay(1000); // time for serial to print
-		ESP.reset(); // reset loop if not only or configured after 5min ..
-	}
-
-	Serial.println("");
-	Serial.println(F("[WiFi] connected"));
-	Serial.print(F("[WiFi] IP address: "));
-	Serial.println(WiFi.localIP());
+	};
 
 	// init the MQTT connection
 	client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
@@ -1171,7 +1183,7 @@ void loop(){
 	client.loop();
 
 	// // dimming active?  ////
-	if (millis() <= timer_dimmer_end) {
+	if (timer_dimmer_end) { // we are dimming as long as this is non-zero
 		if (millis() >= timer_dimmer + m_pwm_dimm_time) {
 			// Serial.print("DIMMER ");
 			timer_dimmer = millis(); // save for next round
@@ -1179,6 +1191,7 @@ void loop(){
 			// set new value
 			if (timer_dimmer + m_pwm_dimm_time > timer_dimmer_end) {
 				m_light_current = m_light_target;
+        timer_dimmer_end = 0; // last step, stop dimming
 			} else {
 				m_light_current.r = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.r, m_light_target.r);
 				m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
@@ -1229,89 +1242,91 @@ void loop(){
 	}  // if active
 	   // // RGB circle ////
 
-	// // publish all state - ONLY after being connected for sure ////
+  // // publish all state - ONLY after being connected for sure and not during dimming  ////
+  // except we dimm very slow aka dimm end is >3sec
+  if(!timer_dimmer_end || timer_dimmer_end>millis()+3000){
+  	if (m_simple_light_state != m_published_simple_light_state) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishSimpleLightState();
+  			timer_republish_avoid = millis();
+  			timer_last_publish    = millis();
+  		}
+  	}
 
-	if (m_simple_light_state != m_published_simple_light_state) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishSimpleLightState();
-			timer_republish_avoid = millis();
-			timer_last_publish    = millis();
-		}
-	}
+  	if (m_button_press != m_published_button_press) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishButtonPush();
+  			timer_republish_avoid = millis();
+  			timer_last_publish    = millis();
+  		}
+  	}
 
-	if (m_button_press != m_published_button_press) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishButtonPush();
-			timer_republish_avoid = millis();
-			timer_last_publish    = millis();
-		}
-	}
+  	if (m_pwm_light_state != m_published_pwm_light_state) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishPWMLightState();
+  			timer_republish_avoid = millis();
+  			timer_last_publish    = millis();
+  		}
+  		;
+  	}
 
-	if (m_pwm_light_state != m_published_pwm_light_state) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishPWMLightState();
-			timer_republish_avoid = millis();
-			timer_last_publish    = millis();
-		}
-		;
-	}
+  	if (m_published_light_brightness != m_light_target.r) { // todo .. fails to publish if we publish to much at the first run ...
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishPWMLightBrightness();
+  			timer_last_publish = millis();
+  		}
+  	}
 
-	if (m_published_light_brightness != m_light_target.r) { // todo .. fails to publish if we publish to much at the first run ...
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishPWMLightBrightness();
-			timer_last_publish = millis();
-		}
-	}
+  	if (m_published_light_color != m_light_target.r + m_light_target.g + m_light_target.b) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishPWMRGBColor();
+  			timer_last_publish = millis();
+  		}
+  	}
 
-	if (m_published_light_color != m_light_target.r + m_light_target.g + m_light_target.b) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishPWMRGBColor();
-			timer_last_publish = millis();
-		}
-	}
+  	if (m_pir_state != m_published_pir_state) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishPirState();
+  			timer_last_publish = millis();
+  		}
+  	}
 
-	if (m_pir_state != m_published_pir_state) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishPirState();
-			timer_last_publish = millis();
-		}
-	}
+  	if (m_published_animation_type != m_animation_type) {
+  		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  			publishAnimationType();
+  			timer_last_publish = millis();
+  		}
+  	}
+  	// // publish all state - ONLY after being connected for sure ////
 
-	if (m_use_neo_as_rgb & m_published_animation_type != m_animation_type) {
-		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			publishAnimationType();
-			timer_last_publish = millis();
-		}
-	}
-	// // publish all state - ONLY after being connected for sure ////
+  	// // send periodic updates ////
+  	if (millis() - updateFastValuesTimer > UPDATE_PERIODIC && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  		updateFastValuesTimer = millis();
 
-	// // send periodic updates ////
-	if (millis() - updateFastValuesTimer > UPDATE_PERIODIC && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-		updateFastValuesTimer = millis();
-
-		if (periodic_slot == 0) {
-			publishTemperature(getDhtTemp(), DHT_def);
-		} else if (periodic_slot == 1) {
-			publishTemperature(getDsTemp(), DS_def);
-		} else if (periodic_slot == 2) {
-			publishHumidity(getDhtHumidity());
-		} else if (periodic_slot == 3) {
-			publishRssi(WiFi.RSSI());
-			digitalWrite(GPIO_D8, HIGH); // prepare for next step ... 6sec on / 100ms would be enough ..
-		} else if (periodic_slot == 4) {
-			publishADC(analogRead(A0));
-			digitalWrite(GPIO_D8, LOW);
-		}
-		;
-		periodic_slot = (periodic_slot + 1) % TOTAL_PERIODIC_SLOTS;
-	}
-	// // send periodic updates  ////
-	// // send periodic updates of PIR... just in case  ////
-	if (millis() - updateSlowValuesTimer > UPDATE_PIR && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-		updateSlowValuesTimer = millis();
-		timer_last_publish    = millis();
-		publishPirState();
-	}
+  		if (periodic_slot == 0) {
+  			publishTemperature(getDhtTemp(), DHT_def);
+  		} else if (periodic_slot == 1) {
+  			publishTemperature(getDsTemp(), DS_def);
+  		} else if (periodic_slot == 2) {
+  			publishHumidity(getDhtHumidity());
+  		} else if (periodic_slot == 3) {
+  			publishRssi(WiFi.RSSI());
+  			digitalWrite(GPIO_D8, HIGH); // prepare for next step ... 6sec on / 100ms would be enough ..
+  		} else if (periodic_slot == 4) {
+  			publishADC(analogRead(A0));
+  			digitalWrite(GPIO_D8, LOW);
+  		}
+  		;
+  		periodic_slot = (periodic_slot + 1) % TOTAL_PERIODIC_SLOTS;
+  	}
+  	// // send periodic updates  ////
+  	// // send periodic updates of PIR... just in case  ////
+  	if (millis() - updateSlowValuesTimer > UPDATE_PIR && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+  		updateSlowValuesTimer = millis();
+  		timer_last_publish    = millis();
+  		publishPirState();
+  	}
+  }
 	// // send periodic updates of PIR ... just in case ////
 
 	// / see if we hold down the button for more then 6sec ///
