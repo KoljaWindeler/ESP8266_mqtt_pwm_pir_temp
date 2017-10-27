@@ -7,8 +7,15 @@ class mqtt_parameter_8 {
 		mqtt_parameter_8();
 		void check_set(uint8_t input);
 		void set(uint8_t input);
-		boolean update_required;
-		uint8_t value;
+		void set(uint8_t input, bool update);
+		uint8_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		uint8_t _value;
+		boolean _update_required;
+
 };
 
 class mqtt_parameter_16 {
@@ -16,8 +23,14 @@ class mqtt_parameter_16 {
 		mqtt_parameter_16();
 		void check_set(uint16_t input);
 		void set(uint16_t input);
-		boolean update_required;
-		uint16_t value;
+		void set(uint16_t input, bool update);
+		uint16_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		uint16_t _value;
+		boolean _update_required;
 };
 
 class mqtt_parameter_32 {
@@ -25,8 +38,14 @@ class mqtt_parameter_32 {
 		mqtt_parameter_32();
 		void check_set(uint32_t input);
 		void set(uint32_t input);
-		boolean update_required;
-		uint32_t value;
+		void set(uint32_t input, bool update);
+		uint32_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		uint32_t _value;
+		boolean _update_required;
 };
 
 #endif

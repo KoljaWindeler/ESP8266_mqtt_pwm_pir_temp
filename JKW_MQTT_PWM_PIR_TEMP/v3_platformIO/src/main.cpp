@@ -51,12 +51,14 @@ led m_light_current = { 99, 99, 99 }; // actual value written to PWM
 led m_light_backup = { 99, 99, 99 };  // to be able to resume "dimm on" to the last set color
 
 // converts from half log to linear .. the human eye is a smartass
-uint8_t intens[100] =
+const uint8_t intens[100] =
 { 0,       1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,
 	 23,     24,  25,  26,  27,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  38,  39,  40,  41,  43,  44,  45,  47,
 	 48,     50,  51,  53,  55,  57,  58,  60,  62,  64,  66,  68,  70,  73,  75,  77,  80,  82,  85,  88,  91,  93,  96,
 	 99,    103, 106, 109, 113, 116, 120, 124, 128, 132, 136, 140, 145, 150, 154, 159, 164, 170, 175, 181, 186, 192, 198,
 	 205,   211, 218, 225, 232, 239, 247, 255 };
+
+const uint8_t hb[34] = {14,14,14,14,14,14,1,14,26,7,14,14,14,14,14,44,67,86,99,99,21,0,16,44,44,21,6,13,21,13,5,14,14,14};
 
 uint16_t m_pwm_dimm_time = 10;            // 10ms per Step, 255*0.01 = 2.5 sec
 bool m_use_neo_as_rgb    = false;         // if true we're going to send the color to the neopixel and not to the pwm pins
@@ -106,7 +108,7 @@ uint32_t m_animation_dimm_time = 0;
 boolean publishPWMLightState(){
 	boolean ret = false;
 	Serial.print(F("[mqtt publish] PWM state "));
-	if (m_pwm_light_state.value) {
+	if (m_pwm_light_state.get_value()) {
 		Serial.println(STATE_ON);
 		ret = client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
 	} else {
@@ -114,7 +116,7 @@ boolean publishPWMLightState(){
 		ret = client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_OFF, true);
 	}
 	if (ret) {
-		m_pwm_light_state.update_required = false;
+		m_pwm_light_state.outdated(false);
 	}
 	return ret;
 }
@@ -127,9 +129,7 @@ boolean publishPWMLightBrightness(){
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_target.r);
 	ret = client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
 	if (ret) {
-		m_light_brightness.set(m_light_target.r); // required?
-		m_light_brightness.update_required = false;
-
+		m_light_brightness.set(m_light_target.r,false); // required?
 	}
 	return ret;
 }
@@ -142,7 +142,7 @@ boolean publishPWMRGBColor(){
 	Serial.println(m_msg_buffer);
 	ret = client.publish(build_topic(MQTT_PWM_RGB_DIMM_COLOR_STATE_TOPIC), m_msg_buffer, true);
 	if (ret) {
-		m_light_color.update_required = false;
+		m_light_color.outdated(false);
 	}
 	return ret;
 }
@@ -151,7 +151,7 @@ boolean publishPWMRGBColor(){
 boolean publishSimpleLightState(){
 	boolean ret = false;
 	Serial.print(F("[mqtt publish] simple light state "));
-	if (m_simple_light_state.value) {
+	if (m_simple_light_state.get_value()) {
 		Serial.println(STATE_ON);
 		ret = client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
 	} else {
@@ -159,7 +159,7 @@ boolean publishSimpleLightState(){
 		ret = client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_OFF, true);
 	}
 	if (ret) {
-		m_simple_light_state.update_required = false;
+		m_simple_light_state.outdated(false);
 	}
 	return ret;
 }
@@ -168,7 +168,7 @@ boolean publishSimpleLightState(){
 boolean publishPirState(){
 	boolean ret = false;
 	Serial.print(F("[mqtt publish] pir state "));
-	if (m_pir_state.value) {
+	if (m_pir_state.get_value()) {
 		Serial.println(F("motion"));
 		ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
 	} else {
@@ -176,7 +176,7 @@ boolean publishPirState(){
 		ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
 	}
 	if (ret) {
-		m_pir_state.update_required = false;
+		m_pir_state.outdated(false);
 	}
 	return ret;
 }
@@ -186,7 +186,7 @@ boolean publishButtonPush(){
 	Serial.println(F("[mqtt publish] button push"));
 	ret = client.publish(build_topic(MQTT_BUTTON_TOPIC), "", true);
 	if (ret) {
-		m_button_press.update_required = false;
+		m_button_press.outdated(false);
 	}
 	return ret;
 }
@@ -195,7 +195,7 @@ boolean publishButtonPush(){
 boolean publishAnimationType(){
 	boolean ret = true;
 	Serial.print(F("[mqtt publish] rainbow state "));
-	if (m_animation_type.value == ANIMATION_RAINBOW_WHEEL) {
+	if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_RAINBOW_STATUS_TOPIC), STATE_ON, true);
 	} else {
@@ -204,7 +204,7 @@ boolean publishAnimationType(){
 	}
 
 	Serial.print(F("[mqtt publish] simple rainbow state "));
-	if (m_animation_type.value == ANIMATION_RAINBOW_SIMPLE) {
+	if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_SIMPLE_RAINBOW_STATUS_TOPIC), STATE_ON, true);
 	} else {
@@ -213,7 +213,7 @@ boolean publishAnimationType(){
 	}
 
 	Serial.print(F("[mqtt publish] color WIPE state "));
-	if (m_animation_type.value == ANIMATION_COLOR_WIPE) {
+	if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_COLOR_WIPE_STATUS_TOPIC), STATE_ON, true);
 	} else {
@@ -222,7 +222,7 @@ boolean publishAnimationType(){
 	}
 
 	if (ret) {
-		m_animation_type.update_required = false;
+		m_animation_type.outdated(false);
 	}
 	return ret;
 } // publishAnimationType
@@ -304,9 +304,9 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		// if(!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
-			if (m_pwm_light_state.value != true) {
+			if (m_pwm_light_state.get_value() != true) {
 				// we don't want to keep running the animation if brightness was submitted
-				if(m_animation_type.value){
+				if(m_animation_type.get_value()){ // if there is an animation, switch it off
 					setAnimationType(ANIMATION_OFF);
 				}
 
@@ -317,16 +317,16 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 				// Home Assistant will assume that the pwm light is 100%, once we "turn it on"
 				// but it should return to whatever the m_light_brithness is, so lets set the published
 				// version to something != the actual brightness. This will trigger the publishing
-				m_light_brightness.value = m_light_target.r + 1;
+				m_light_brightness.set(m_light_target.r + 1);
 			} else {
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_pwm_light_state.update_required = true;
+					m_pwm_light_state.outdated();
 				}
 			}
 		} else if (payload.equals(String(STATE_OFF))) {
-			if (m_pwm_light_state.value != false) {
+			if (m_pwm_light_state.get_value() != false) {
 				m_pwm_light_state.set(false);
 				m_light_backup    = m_light_target; // save last target value to resume later on
 				m_light_current   = (led){ 0, 0, 0 };
@@ -335,7 +335,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 				// was already off .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_pwm_light_state.update_required = true;
+					m_pwm_light_state.outdated();
 				}
 			}
 		}
@@ -345,9 +345,9 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		Serial.println(F("[mqtt] received dimm command"));
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
-			if (m_pwm_light_state.value != true) {
+			if (m_pwm_light_state.get_value() != true) {
 				// we don't want to keep running the animation if brightness was submitted
-				if(m_animation_type.value){
+				if(m_animation_type.get_value()){
 				  setAnimationType(ANIMATION_OFF);
 				}
 				// Serial.println("light was off");
@@ -359,11 +359,11 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_pwm_light_state.update_required = true;
+					m_pwm_light_state.outdated();
 				}
 			}
 		} else if (payload.equals(String(STATE_OFF))) {
-			if (m_pwm_light_state.value != false) {
+			if (m_pwm_light_state.get_value() != false) {
 				// Serial.println("light was on");
 				m_pwm_light_state.set(false);
 				m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
@@ -374,7 +374,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 				// was already off .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_pwm_light_state.update_required = true;
+					m_pwm_light_state.outdated();
 				}
 			}
 		}
@@ -383,25 +383,25 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	else if (!strcmp(p_topic, build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
-			if (m_simple_light_state.value != true) {
+			if (m_simple_light_state.get_value() != true) {
 				m_simple_light_state.set(true);
 				setSimpleLightState();
 			} else {
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_simple_light_state.update_required = true;
+					m_simple_light_state.outdated();
 				}
 			}
 		} else if (payload.equals(String(STATE_OFF))) {
-			if (m_simple_light_state.value != false) {
+			if (m_simple_light_state.get_value() != false) {
 				m_simple_light_state.set(false);
 				setSimpleLightState();
 			} else {
 				// was already off .. and the received didn't know it .. so we have to re-publish
 				// but only if the last pubish is less then 3 sec ago
 				if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-					m_simple_light_state.update_required = true;
+					m_simple_light_state.outdated();
 				}
 			}
 		}
@@ -411,15 +411,15 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.value != ANIMATION_RAINBOW_WHEEL) {
+		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL); // triggers also the publishing
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.value == ANIMATION_RAINBOW_WHEEL) {
+		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			// but only if the last pubish is less then 3 sec ago
 			if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-				m_animation_type.update_required = true;
+				m_animation_type.outdated();
 			}
 		}
 	}
@@ -428,15 +428,15 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.value != ANIMATION_RAINBOW_SIMPLE) {
+		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.value == ANIMATION_RAINBOW_SIMPLE) {
+		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			// but only if the last pubish is less then 3 sec ago
 			if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-				m_animation_type.update_required = true;
+				m_animation_type.outdated();
 			}
 		}
 	}
@@ -445,15 +445,15 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.value != ANIMATION_COLOR_WIPE) {
+		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_COLOR_WIPE);
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.value == ANIMATION_COLOR_WIPE) {
+		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			// but only if the last pubish is less then 3 sec ago
 			if (timer_republish_avoid + REPUBISH_AVOID_TIMEOUT < millis()) {
-				m_animation_type.update_required = true;
+				m_animation_type.outdated();
 			}
 		}
 	}
@@ -549,7 +549,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 void setPWMLightState(){
 	// make sure that we never have a brightness of zero when we're switched on
 	// rather set it to full brightness then to have it auto-off again
-	if (m_pwm_light_state.value && m_light_target.r == 0) {
+	if (m_pwm_light_state.get_value() && m_light_target.r == 0) {
 		m_light_current.r = sizeof(intens) - 1;
 	}
 
@@ -601,7 +601,7 @@ void setPWMLightState(){
 
 // function called to adapt the state of the led
 void setSimpleLightState(){
-	if (m_simple_light_state.value) {
+	if (m_simple_light_state.get_value()) {
 		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
 			digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
 		}
@@ -617,7 +617,7 @@ void setSimpleLightState(){
 // set rainbow start point .. thats pretty much it
 void setAnimationType(int type){
 	// if we're starting a animation and have been on pwm light, switch pwm off
-	if(m_pwm_light_state.value && type!=ANIMATION_OFF){
+	if(m_pwm_light_state.get_value() && type!=ANIMATION_OFF){
 		m_pwm_light_state.set(false); // triggers update
 		m_light_backup = m_light_current; // store to resume state
 		m_light_current.r = 0;  // this will lead to the correct state dimm wise
@@ -630,7 +630,7 @@ void setAnimationType(int type){
 	m_animation_dimm_time 	= millis();
 	m_animation_type.set(type);
 	// switch off
-	if (m_animation_type.value == ANIMATION_OFF) {
+	if (m_animation_type.get_value() == ANIMATION_OFF) {
 		if (m_use_neo_as_rgb) {
 			for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 				strip.SetPixelColor(i, RgbColor(0, 0, 0));
@@ -738,17 +738,17 @@ void updateBUTTONstate(){
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		if (millis() - timer_button_down > BUTTON_DEBOUNCE) { // avoid bouncing
 			// button down
-			m_button_press.set(!m_button_press.value);
+			m_button_press.set(!m_button_press.get_value());
 			// toggle status of both lights
-			m_simple_light_state.set(!m_simple_light_state.value);
+			m_simple_light_state.set(!m_simple_light_state.get_value());
 			setSimpleLightState();
 
 			// Home Assistant will assume that the pwm light is 100%, once we report toggle to on
 			// but it should return to whatever the m_light_brithness is, so lets set the published
 			// version to update_required. This will trigger the publishing
-			m_pwm_light_state.set(!m_pwm_light_state.value);
+			m_pwm_light_state.set(!m_pwm_light_state.get_value());
 			setPWMLightState();
-			m_light_brightness.update_required = true;
+			m_light_brightness.outdated();
 			// toggle status of both lights
 
 			if (millis() - timer_button_down < BUTTON_TIMEOUT) {
@@ -851,7 +851,7 @@ void reconnect(){
 			Serial.println("[mqtt] subscribing finished");
 
 			// INFO publishing
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s %i", PINOUT, VERSION,ESP.getResetInfoPtr()->reason);
+			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %si", PINOUT, VERSION);
 			client.publish(build_topic("/INFO"), m_msg_buffer, true);
 
 			client.loop();
@@ -916,10 +916,10 @@ void configModeCallback(WiFiManager * myWiFiManager){
 
 // this is a callback so we can toggle the lights via the wifimanager and identify the light
 void toggleCallback(){
-	m_simple_light_state.set(!m_simple_light_state.value);
+	m_simple_light_state.set(!m_simple_light_state.get_value());
 	setSimpleLightState();
-	m_pwm_light_state.set(!m_pwm_light_state.value);
-	if(m_pwm_light_state.value) {
+	m_pwm_light_state.set(!m_pwm_light_state.get_value());
+	if(m_pwm_light_state.get_value()) {
 		m_light_target.r = 99; // turn on for real
 	} else {
 		m_light_target.r = 0;
@@ -1187,24 +1187,24 @@ void loop(){
 	// // dimming end ////
 
 	// // RGB circle ////
-	if (m_animation_type.value) {
+	if (m_animation_type.get_value()) {
 		if (millis() >= m_animation_dimm_time) {
 			if (m_use_neo_as_rgb) {
-				if (m_animation_type.value == ANIMATION_RAINBOW_WHEEL) {
+				if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 						strip.SetPixelColor(i, Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255));
 					}
 					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
 					strip.Show();
 					m_animation_dimm_time = millis() + ANIMATION_STEP_TIME; // schedule update
-				} else if (m_animation_type.value == ANIMATION_RAINBOW_SIMPLE) {
+				} else if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 						strip.SetPixelColor(i, Wheel(m_animation_pos & 255));
 					}
 					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
 					strip.Show();
 					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
-				} else if (m_animation_type.value == ANIMATION_COLOR_WIPE) {
+				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
 					strip.SetPixelColor(m_animation_pos % NEOPIXEL_LED_COUNT,
 					  Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255)); // max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
@@ -1213,11 +1213,17 @@ void loop(){
 					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
 			} else if (m_use_my92x1_as_rgb) {
-				if (m_animation_type.value == ANIMATION_RAINBOW_SIMPLE) {
+				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 					_my9291.setColor((my9291_color_t) { Wheel(m_animation_pos & 255).R, Wheel(m_animation_pos & 255).G,
 					                                    Wheel(m_animation_pos & 255).B, 0, 0 }); // last two: warm white, cold white
 					m_animation_pos++;                                                           // move wheel by one, will overrun and therefore cycle
 					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME;                  // schedule update
+
+					/*
+          m_animation_pos=(m_animation_pos+1)%sizeof(hb);  // move wheel by one, will overrun and therefore cycle
+          _my9291.setColor((my9291_color_t) { intens[hb[m_animation_pos]], 0, 0, 0, 0 }); // last two: warm white, cold white
+					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME;                  // schedule update
+					*/
 				}
 			}
 		} // timer
@@ -1227,7 +1233,7 @@ void loop(){
   // // publish all state - ONLY after being connected for sure and not during dimming  ////
   // except we dimm very slow aka dimm end is >3sec
 	if(!timer_dimmer_end || timer_dimmer_end>millis()+3000){
-		if (m_simple_light_state.update_required) {
+		if (m_simple_light_state.get_outdated()) {
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishSimpleLightState();
 				timer_republish_avoid = millis();
@@ -1235,7 +1241,7 @@ void loop(){
 			}
 		}
 
-		if (m_button_press.update_required) {
+		if (m_button_press.get_outdated()) {
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishButtonPush();
 				timer_republish_avoid = millis();
@@ -1243,7 +1249,7 @@ void loop(){
 			}
 		}
 
-		if (m_pwm_light_state.update_required) {
+		if (m_pwm_light_state.get_outdated()) {
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishPWMLightState();
 				timer_republish_avoid = millis(); // used to avoid that we trigger a republish on two or more switch commands
@@ -1251,28 +1257,28 @@ void loop(){
 			}
 		}
 
-		if (m_light_brightness.update_required) { // todo .. fails to publish if we publish to much at the first run ...
+		if (m_light_brightness.get_outdated()) { // todo .. fails to publish if we publish to much at the first run ...
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishPWMLightBrightness();
 				timer_last_publish = millis();
 			}
 		}
 
-		if (m_light_color.update_required){
+		if (m_light_color.get_outdated()){
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishPWMRGBColor();
 				timer_last_publish = millis();
 			}
 		}
 
-		if (m_pir_state.update_required) {
+		if (m_pir_state.get_outdated()) {
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishPirState();
 				timer_last_publish = millis();
 			}
 		}
 
-		if (m_animation_type.update_required) {
+		if (m_animation_type.get_outdated()) {
 			if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				publishAnimationType();
 				timer_last_publish = millis();
