@@ -71,6 +71,7 @@
 #include <Arduino.h>
 #include <ESP8266httpUpdate.h>
 #include <my9291.h>
+#include "mqtt_parameter.h"
 
 #define FS(x) (__FlashStringHelper *) (x)
 
@@ -84,7 +85,7 @@
 #define MAX_AP_TIME  300          // restart eps after 300 sec in config mode
 #define MAX_CON_TIME 30           // give up connecting after 30 sec
 #define TEMP_MAX     70           // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION      "20171025"
+#define VERSION      "20171027"
 
 // capability list
 #define RGB_PWM_BITMASK     1 << 0 // 1
@@ -202,3 +203,11 @@ char * build_topic(const char * topic);
 void setup();
 void loop();
 RgbColor Wheel(byte WheelPos);
+
+mqtt_parameter_8  m_pwm_light_state;
+mqtt_parameter_8  m_simple_light_state;
+mqtt_parameter_8  m_button_press;
+mqtt_parameter_8  m_light_brightness;
+mqtt_parameter_8  m_pir_state;
+mqtt_parameter_8  m_animation_type;	// type 1 = rainbow wheel, 2 = simple rainbow .. see define above
+mqtt_parameter_16 m_light_color;
