@@ -58,7 +58,8 @@ const uint8_t intens[100] =
 	 99,    103, 106, 109, 113, 116, 120, 124, 128, 132, 136, 140, 145, 150, 154, 159, 164, 170, 175, 181, 186, 192, 198,
 	 205,   211, 218, 225, 232, 239, 247, 255 };
 
-const uint8_t hb[34] = {14,14,14,14,14,14,1,14,26,7,14,14,14,14,14,44,67,86,99,99,21,0,16,44,44,21,6,13,21,13,5,14,14,14};
+const uint8_t hb[34] = {27,27,27,27,27,27,17,27,37,21,27,27,27,27,27,52,71,
+91,99,91,33,0,12,29,52,33,21,26,33,26,20,27,27,27};
 
 uint16_t m_pwm_dimm_time = 10;            // 10ms per Step, 255*0.01 = 2.5 sec
 bool m_use_neo_as_rgb    = false;         // if true we're going to send the color to the neopixel and not to the pwm pins
@@ -97,6 +98,8 @@ uint32_t timer_dimmer_start    = 0;
 uint32_t timer_dimmer_end      = 0;
 uint32_t timer_republish_avoid = 0;
 uint32_t timer_button_down     = 0;
+uint32_t timer_connected_start= 0;
+uint32_t timer_connected_stop = 0;
 uint8_t counter_button         = 0;
 uint32_t timer_last_publish    = 0;
 uint8_t periodic_slot          = 0;
@@ -107,7 +110,7 @@ uint32_t m_animation_dimm_time = 0;
 // function called to publish the state of the led (on/off)
 boolean publishPWMLightState(){
 	boolean ret = false;
-	Serial.print(F("[mqtt publish] PWM state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("PWM state "),COLOR_GREEN);
 	if (m_pwm_light_state.get_value()) {
 		Serial.println(STATE_ON);
 		ret = client.publish(build_topic(MQTT_PWM_LIGHT_STATE_TOPIC), STATE_ON, true);
@@ -124,7 +127,7 @@ boolean publishPWMLightState(){
 // function called to publish the brightness of the led
 boolean publishPWMLightBrightness(){
 	boolean ret = false;
-	Serial.print(F("[mqtt publish] PWM brightness "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("PWM brightness "),COLOR_GREEN);
 	Serial.println(m_light_target.r);
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_target.r);
 	ret = client.publish(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
@@ -137,7 +140,7 @@ boolean publishPWMLightBrightness(){
 // function called to publish the color of the led
 boolean publishPWMRGBColor(){
 	boolean ret = false;
-	Serial.print(F("[mqtt publish] PWM color "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("PWM color "),COLOR_GREEN);
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_target.r, m_light_target.g, m_light_target.b);
 	Serial.println(m_msg_buffer);
 	ret = client.publish(build_topic(MQTT_PWM_RGB_DIMM_COLOR_STATE_TOPIC), m_msg_buffer, true);
@@ -150,7 +153,7 @@ boolean publishPWMRGBColor(){
 // function called to publish the state of the led (on/off)
 boolean publishSimpleLightState(){
 	boolean ret = false;
-	Serial.print(F("[mqtt publish] simple light state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("simple light state "),COLOR_GREEN);
 	if (m_simple_light_state.get_value()) {
 		Serial.println(STATE_ON);
 		ret = client.publish(build_topic(MQTT_SIMPLE_LIGHT_STATE_TOPIC), STATE_ON, true);
@@ -167,7 +170,7 @@ boolean publishSimpleLightState(){
 // function called to publish the state of the PIR (on/off)
 boolean publishPirState(){
 	boolean ret = false;
-	Serial.print(F("[mqtt publish] pir state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("pir state "),COLOR_GREEN);
 	if (m_pir_state.get_value()) {
 		Serial.println(F("motion"));
 		ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
@@ -183,7 +186,7 @@ boolean publishPirState(){
 
 boolean publishButtonPush(){
 	boolean ret = false;
-	Serial.println(F("[mqtt publish] button push"));
+	logger.println(TOPIC_MQTT_PUBLISH, F("button push"),COLOR_GREEN);
 	ret = client.publish(build_topic(MQTT_BUTTON_TOPIC), "", true);
 	if (ret) {
 		m_button_press.outdated(false);
@@ -194,7 +197,7 @@ boolean publishButtonPush(){
 // function called to publish the state of the rainbow (on/off)
 boolean publishAnimationType(){
 	boolean ret = true;
-	Serial.print(F("[mqtt publish] rainbow state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("rainbow state "),COLOR_GREEN);
 	if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_RAINBOW_STATUS_TOPIC), STATE_ON, true);
@@ -203,7 +206,7 @@ boolean publishAnimationType(){
 		ret &= client.publish(build_topic(MQTT_RAINBOW_STATUS_TOPIC), STATE_OFF, true);
 	}
 
-	Serial.print(F("[mqtt publish] simple rainbow state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("simple rainbow state "),COLOR_GREEN);
 	if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_SIMPLE_RAINBOW_STATUS_TOPIC), STATE_ON, true);
@@ -212,7 +215,7 @@ boolean publishAnimationType(){
 		ret &= client.publish(build_topic(MQTT_SIMPLE_RAINBOW_STATUS_TOPIC), STATE_OFF, true);
 	}
 
-	Serial.print(F("[mqtt publish] color WIPE state "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("color WIPE state "),COLOR_GREEN);
 	if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 		Serial.println(STATE_ON);
 		ret &= client.publish(build_topic(MQTT_COLOR_WIPE_STATUS_TOPIC), STATE_ON, true);
@@ -230,7 +233,7 @@ boolean publishAnimationType(){
 // function called to publish the brightness of the led
 boolean publishTemperature(float temp, int DHT_DS){
 	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
-		Serial.print(F("[mqtt] no publish temp, "));
+		logger.print(TOPIC_MQTT, F("no publish temp, "),COLOR_YELLOW);
 		if (isnan(temp)) {
 			Serial.println(F("nan"));
 		} else {
@@ -240,7 +243,7 @@ boolean publishTemperature(float temp, int DHT_DS){
 		return false;
 	}
 
-	Serial.print(F("[mqtt publish] "));
+	logger.print(TOPIC_MQTT_PUBLISH, F(""));
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	if (DHT_DS == DHT_def) {
 		Serial.print(F("DHT temp "));
@@ -256,17 +259,17 @@ boolean publishTemperature(float temp, int DHT_DS){
 // function called to publish the brightness of the led
 boolean publishHumidity(float hum){
 	if (isnan(hum)) {
-		Serial.println(F("[mqtt] no publish humidiy"));
+		logger.println(TOPIC_MQTT, F("no publish humidiy"),COLOR_YELLOW);
 		return false;
 	}
-	Serial.print(F("[mqtt publish] humidiy "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("humidiy "),COLOR_GREEN);
 	dtostrf(hum, 3, 2, m_msg_buffer);
 	Serial.println(m_msg_buffer);
 	return client.publish(build_topic(MQTT_HUMIDITY_DHT_TOPIC), m_msg_buffer, true);
 }
 
 boolean publishRssi(float rssi){
-	Serial.print(F("[mqtt publish] rssi "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("rssi "),COLOR_GREEN);
 	// this is needed to avoid reporting the same value over and over
 	// home assistant will show us as "not updated for xx Minutes" if the RSSSI stays the same
 	rssi += ((float) random(10)) / 100;
@@ -276,7 +279,7 @@ boolean publishRssi(float rssi){
 }
 
 boolean publishADC(int adc){
-	Serial.print(F("[mqtt publish] adc "));
+	logger.print(TOPIC_MQTT_PUBLISH, F("adc "),COLOR_GREEN);
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", adc);
 	Serial.println(m_msg_buffer);
 	return client.publish(build_topic(MQTT_ADC_STATE_TOPIC), m_msg_buffer, true);
@@ -299,7 +302,8 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// direct set PWM value
 	p_payload[p_length] = 0x00;
-	Serial.printf("[mqtt in] %s --> %s\r\n", p_topic, p_payload);
+	logger.topic(TOPIC_MQTT_IN);
+	Serial.printf("%s --> %s\r\n", p_topic, p_payload);
 	if (!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))) {
 		// if(!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
@@ -342,7 +346,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	}
 	// dimm to given PWM value
 	else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC))) {
-		Serial.println(F("[mqtt] received dimm command"));
+		logger.println(TOPIC_MQTT, F(" received dimm command"));
 		// test if the payload is equal to "ON" or "OFF"
 		if (payload.equals(String(STATE_ON))) {
 			if (m_pwm_light_state.get_value() != true) {
@@ -515,7 +519,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		// Serial.println(m_pwm_dimm_time);
 	} else if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC))) {
 		if (payload.equals(String(STATE_ON))) { // go to setup
-			Serial.println(F("[mqtt] Go to setup"));
+			logger.println(TOPIC_MQTT, F(" Go to setup"));
 			delay(500);
 			if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 				Serial.end();
@@ -569,12 +573,12 @@ void setPWMLightState(){
 		for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 			strip.SetPixelColor(i, RgbColor(intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b]));
 		}
-		Serial.print(F("[INFO PWM] NEO: "));
+		logger.print(TOPIC_INFO_PWM,F("NEO: "));
 		strip.Show();
 	}
 	// // via my92x1
 	else if (m_use_my92x1_as_rgb) {
-		Serial.print(F("[INFO PWM] MY9291: "));
+		logger.print(TOPIC_INFO_PWM,F("MY9291: "));
 		if (m_light_current.r == m_light_current.b && m_light_current.r == m_light_current.g) { // all the same = warm white
 			_my9291.setColor((my9291_color_t) { 0, 0, 0, intens[m_light_current.r], 0 }); // last two: warm white, cold white
 		} else {
@@ -585,7 +589,7 @@ void setPWMLightState(){
 	}
 	// // via PWM pins
 	else if (m_use_pwm_as_rgb) {
-		Serial.print(F("[INFO PWM] PWM: "));
+		logger.print(TOPIC_INFO_PWM,F("PWM: "));
 		analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
 		analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
 		analogWrite(PWM_LIGHT_PIN3, intens[m_light_current.b]);
@@ -605,12 +609,12 @@ void setSimpleLightState(){
 		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
 			digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
 		}
-		Serial.println(F("[INFO SL] Simple pin on"));
+		logger.println(TOPIC_INFO_SL,F("Simple pin on"));
 	} else {
 		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
 			digitalWrite(SIMPLE_LIGHT_PIN, LOW);
 		}
-		Serial.println(F("[INFO SL] Simple light off"));
+		logger.println(TOPIC_INFO_SL,F("Simple light off"));
 	}
 }
 
@@ -756,7 +760,7 @@ void updateBUTTONstate(){
 			} else {
 				counter_button = 1;
 			}
-			Serial.print(F("[BUTTON] push nr "));
+			logger.print(TOPIC_BUTTON,F("push nr "));
 			Serial.println(counter_button);
 		}
 		;
@@ -774,128 +778,164 @@ void updateBUTTONstate(){
 void reconnect(){
 	// Loop until we're reconnected
 	uint8_t tries = 0;
+	uint8_t max_tries = 0;
+	if(timer_connected_stop < timer_connected_start){
+		timer_connected_stop = millis();
+	}
+	Serial.println("\r\n");
 
 	// first check wifi
 	WiFi.mode(WIFI_STA);        // avoid station and ap at the same time
-	if(WiFi.status()!=WL_CONNECTED){
-		Serial.println(F("[WiFi] Connecting "));
-		wifiManager.autoConnect(CONFIG_SSID);
-	}
-
 	while (!client.connected()) {
-		Serial.println(F("[mqtt] Attempting connection..."));
-		// Attempt to connect
-		Serial.print(F("[mqtt] client id: "));
-		Serial.println(mqtt.dev_short);
-		if (client.connect(mqtt.dev_short, mqtt.login, mqtt.pw)) {
-			Serial.println(F("[mqtt connected]"));
-
-			// ... and resubscribe
-			client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright, subscribe this before the on off!
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)); // hard on off
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)); // on off
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));  // dimm bright, subscribe this before the on off!
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC)); // dimm on
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)); // color topic
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC));
-
-			client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // color topic
-			client.loop();
-			Serial.print(F("[mqtt subscribed] "));
-			Serial.println(build_topic(MQTT_SETUP_TOPIC));
-
-			if(m_use_my92x1_as_rgb || m_use_neo_as_rgb){
-				client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
-				client.loop();
-				Serial.print(F("[mqtt subscribed] "));
-				Serial.println(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC));
-			}
-			if (m_use_neo_as_rgb) {
-				client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
-				client.loop();
-				Serial.print(F("[mqtt subscribed] "));
-				Serial.println(build_topic(MQTT_RAINBOW_COMMAND_TOPIC));
-
-				client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
-				client.loop();
-				Serial.print(F("[mqtt subscribed] "));
-				Serial.println(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC));
-			}
-			Serial.println("[mqtt] subscribing finished");
-
-			// INFO publishing
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %si", PINOUT, VERSION);
-			client.publish(build_topic("/INFO"), m_msg_buffer, true);
-
-			client.loop();
-
-			// CAPability publishing
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", m_use_my92x1_as_rgb, m_use_neo_as_rgb,
-			  m_use_pwm_as_rgb,
-			  mqtt.cap[0]);
-			client.publish(build_topic("/CAP"), m_msg_buffer, true);
-			client.loop();
-
-			// WIFI publishing
-			client.publish(build_topic("/SSID"), WiFi.SSID().c_str(), true);
-			client.loop();
-
-			// BSSID publishing
-			uint8_t * bssid = WiFi.BSSID();
-			snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[5], bssid[4], bssid[3], bssid[2],
-			  bssid[1],
-			  bssid[0]);
-			client.publish(build_topic("/BSSID"), m_msg_buffer, true);
-			client.loop();
-		} else {
-			Serial.print(F("ERROR: failed, rc="));
-			Serial.print(client.state());
-			Serial.println(F(", DEBUG: try again in 5 seconds"));
-			// Wait 5 seconds before retrying
-			delay(5000);
+		// each round, check wifi first
+		if(WiFi.status()!=WL_CONNECTED){
+			logger.println(TOPIC_WIFI,F("Currently not connected, initiate new connection ..."),COLOR_RED);
+			wifiManager.connectWifi("", "");
 		}
-		tries++;
-		if (tries >= 5) {
-			Serial.println(F("Can't connect, starting AP"));
-			if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
-				Serial.end();
-				delay(500);
-				Serial.begin(115200);
+		// only try mqtt after wifi is estabilshed
+		if(WiFi.status()==WL_CONNECTED){
+			logger.println(TOPIC_MQTT, F("Currently not connected, initiate new connection ..."),COLOR_RED);
+			// Attempt to connect
+			logger.print(TOPIC_MQTT, F("connecting with id: "));
+			Serial.println(mqtt.dev_short);
+			if (client.connect(mqtt.dev_short, mqtt.login, mqtt.pw)) {
+				logger.println(TOPIC_MQTT,F("connected"),COLOR_GREEN);
+
+				// ... and resubscribe
+				client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright, subscribe this before the on off!
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC)); // hard on off
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)); // on off
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC));  // dimm bright, subscribe this before the on off!
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC)); // dimm on
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC));
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)); // color topic
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC),COLOR_GREEN);
+
+				client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // color topic
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC),COLOR_GREEN);
+
+				if(m_use_my92x1_as_rgb || m_use_neo_as_rgb){
+					client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
+					client.loop();
+					logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC),COLOR_GREEN);
+				}
+				if (m_use_neo_as_rgb) {
+					client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
+					client.loop();
+					logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_RAINBOW_COMMAND_TOPIC),COLOR_GREEN);
+
+					client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
+					client.loop();
+					logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC),COLOR_GREEN);
+				}
+				logger.println(TOPIC_MQTT,F("subscribing finished"));
+
+				// INFO publishing
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
+				client.publish(build_topic("/INFO"), m_msg_buffer, true);
+
+				client.loop();
+
+				// CAPability publishing
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", m_use_my92x1_as_rgb, m_use_neo_as_rgb,
+				  m_use_pwm_as_rgb,
+				  mqtt.cap[0]);
+				client.publish(build_topic("/CAP"), m_msg_buffer, true);
+				client.loop();
+
+				// WIFI publishing
+				client.publish(build_topic("/SSID"), WiFi.SSID().c_str(), true);
+				client.loop();
+
+				// BSSID publishing
+				uint8_t * bssid = WiFi.BSSID();
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[5], bssid[4], bssid[3], bssid[2],
+				  bssid[1],
+				  bssid[0]);
+				client.publish(build_topic("/BSSID"), m_msg_buffer, true);
+				client.loop();
+
+				timer_connected_start = millis();
+			} // if MQTT client.connect ok
+		} // wifi status connected
+
+		// if client is still not connected: wait
+		if (!client.connected()) {
+			// connect failed
+
+			// per 5 sec time of connectectibility add one sec of retry
+			// aka per 25sec add one try aka 5sec
+			// max at 240 tries (each 5sec) aka 20 minutes
+
+			// wenn wir verbinden setzen wir den _start auf millis
+			// wenn wir feststellen das wir nicht mehr verbunden sind setzen wir den stop auf mills
+			// solange wir nicht verbunen sind lassen wir den stop in ruhe, das erkennen wir
+			// daran das der stop > start ist. bzw andersrum: setze den stop nur auf millis solange er < start ist
+
+			tries++;
+			max_tries = _max(5,_min(240,((timer_connected_stop-timer_connected_start)/1000)/(5*5)));
+
+			logger.addColor(COLOR_PURPLE);
+			Serial.print("MQTT was previously connected for ");
+			Serial.print((uint16_t)(timer_connected_stop-timer_connected_start)/1000);
+			Serial.println(" sec");
+			Serial.print("MQTT is disconnceted for ");
+			Serial.print((uint16_t)(millis()-timer_connected_stop)/1000);
+			Serial.println(" sec");
+			Serial.printf("---> %i/%i\r\n",tries,max_tries);
+			logger.remColor(COLOR_PURPLE);
+
+			if (tries >= max_tries) {
+				// time to start the AP
+				Serial.println(F("Can't connect, starting AP"));
+				if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+					Serial.end();
+					delay(500);
+					Serial.begin(115200);
+				}
+				wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+				tries = 0; // reset after AP mode
+				Serial.println(F("Config AP closed"));
+				// debug
+				WiFi.printDiag(Serial);
 			}
-			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-			tries = 0;
-			Serial.println(F("Config AP closed"));
-			// debug
-			WiFi.printDiag(Serial);
-		}
-	}
+			// not yet time to access point, wait 5 sec
+			else {
+				logger.print(TOPIC_WIFI,F("connect failed, "));
+				Serial.print(client.state());
+				Serial.print(F(", try again in 5 seconds "));
+				Serial.printf("%i/%i\r\n",tries,max_tries);
+
+				// only wait if the MQTT broker was not available,
+				// no need to wait if the wifi was the reason, that will take longer anyway
+				if(WiFi.status()==WL_CONNECTED){
+					// Wait 5 seconds before retrying
+					delay(5000);
+				}
+			}
+		} // end of "if (!client.connected()) {"
+		// after this .. start over
+	} // while (!client.connected()) {
 } // reconnect
 
 void configModeCallback(WiFiManager * myWiFiManager){

@@ -72,6 +72,7 @@
 #include <ESP8266httpUpdate.h>
 #include <my9291.h>
 #include "mqtt_parameter.h"
+#include "logging.h"
 
 #define FS(x) (__FlashStringHelper *) (x)
 
@@ -211,3 +212,5 @@ mqtt_parameter_8  m_light_brightness;
 mqtt_parameter_8  m_pir_state;
 mqtt_parameter_8  m_animation_type;	// type 1 = rainbow wheel, 2 = simple rainbow .. see define above
 mqtt_parameter_16 m_light_color;
+
+logging logger;
