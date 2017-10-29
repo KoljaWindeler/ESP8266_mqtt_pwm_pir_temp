@@ -577,7 +577,8 @@ uint8_t WiFiManager::waitForConnectResult(){
 	if (_connectTimeout == 0) {
 		return WiFi.waitForConnectResult();
 	} else {
-		DEBUG_WM(F("Waiting for connection result with time out"));
+		Serial.print(F("Waiting for connection result with time out "));
+		Serial.println((uint16_t)(_connectTimeout/1000));
 		unsigned long start    = millis();
 		boolean keepConnecting = true;
 		uint8_t status;
@@ -1158,7 +1159,7 @@ void WiFiManager::setRemoveDuplicateAPs(boolean removeDuplicates){
 template <typename Generic>
 void WiFiManager::DEBUG_WM(Generic text){
 	if (_debug) {
-		Serial.print("*WM: ");
+		Serial.print("[WM] ");
 		Serial.println(text);
 	}
 }

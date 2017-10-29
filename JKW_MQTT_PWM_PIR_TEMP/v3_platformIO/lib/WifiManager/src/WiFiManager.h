@@ -144,6 +144,7 @@ class WiFiManager
     void          setRemoveDuplicateAPs(boolean removeDuplicates);
     // set mqtt storage
     void          setMqtt(mqtt_data *mqtt);
+		int           connectWifi(String ssid, String pass);
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
@@ -185,7 +186,6 @@ class WiFiManager
     //void          setEEPROMString(int start, int len, String string);
 
     int           status = WL_IDLE_STATUS;
-    int           connectWifi(String ssid, String pass);
     uint8_t       waitForConnectResult();
 
     void          handleRoot();
