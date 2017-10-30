@@ -7,104 +7,6 @@ NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT,
 my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT,
   MY9291_CHANNELS);
 
-
-// MQTT: topics, constants, etc
-static constexpr char MQTT_PWM_LIGHT_STATE_TOPIC[]   = "/PWM_light/status"; // publish state here ON / OFF
-static constexpr char MQTT_PWM_LIGHT_COMMAND_TOPIC[] = "/PWM_light/switch"; // get command here ON / OFF
-
-static constexpr char MQTT_SIMPLE_LIGHT_STATE_TOPIC[]   = "/simple_light/status"; // publish state here ON / OFF
-static constexpr char MQTT_SIMPLE_LIGHT_COMMAND_TOPIC[] = "/simple_light/switch"; // get command here ON / OFF
-
-static constexpr char MQTT_RAINBOW_STATUS_TOPIC[]         = "/rainbow/status";        // publish state here ON / OFF
-static constexpr char MQTT_RAINBOW_COMMAND_TOPIC[]        = "/rainbow/switch";        // get command here ON / OFF
-static constexpr char MQTT_SIMPLE_RAINBOW_STATUS_TOPIC[]  = "/simple_rainbow/status"; // publish state here ON / OFF
-static constexpr char MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC[] = "/simple_rainbow/switch"; // get command here ON / OFF
-static constexpr char MQTT_COLOR_WIPE_STATUS_TOPIC[]      = "/color_wipe/status";     // publish state here ON / OFF
-static constexpr char MQTT_COLOR_WIPE_COMMAND_TOPIC[]     = "/color_wipe/switch";     // get command here ON / OFF
-
-static constexpr char MQTT_PWM_LIGHT_BRIGHTNESS_STATE_TOPIC[]   = "/PWM_light/brightness";     // publish 0-99
-static constexpr char MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC[] = "/PWM_light/brightness/set"; // set value 0-99
-static constexpr char MQTT_PWM_DIMM_COMMAND_TOPIC[] = "/PWM_dimm/switch";                      // get ON/OFF command here
-
-static constexpr char MQTT_PWM_RGB_DIMM_COLOR_STATE_TOPIC[]   = "/PWM_RGB_light/color";     // publish value "0-99,0-99,0-99"
-static constexpr char MQTT_PWM_RGB_COLOR_COMMAND_TOPIC[]      = "/PWM_RGB_light/color/set"; // set value "0-99,0-99,0-99"
-static constexpr char MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC[] = "/PWM_RGB_dimm/color/set";  // set value "0-99,0-99,0-99"
-
-static constexpr char MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC[]      = "/PWM_dimm/delay/set";      // set value
-static constexpr char MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC[] = "/PWM_dimm/brightness/set"; // set value
-
-static constexpr char MQTT_MOTION_STATUS_TOPIC[]   = "/motion/status";   // publish
-static constexpr char MQTT_TEMPARATURE_DS_TOPIC[]  = "/temperature_DS";  // publish
-static constexpr char MQTT_TEMPARATURE_DHT_TOPIC[] = "/temperature_DHT"; // publish
-static constexpr char MQTT_HUMIDITY_DHT_TOPIC[]    = "/humidity_DHT";    // publish
-static constexpr char MQTT_BUTTON_TOPIC[]     = "/button";               // publish
-static constexpr char MQTT_RSSI_STATE_TOPIC[] = "/rssi";                 // publish
-static constexpr char MQTT_ADC_STATE_TOPIC[]  = "/adc";                  // publish
-static constexpr char MQTT_SETUP_TOPIC[]      = "/setup";                // subscribe
-
-static constexpr char STATE_ON[]  = "ON";
-static constexpr char STATE_OFF[] = "OFF";
-
-led m_light_target = { 99, 99, 99 };
-led m_light_start = { 99, 99, 99 };
-led m_light_current = { 99, 99, 99 }; // actual value written to PWM
-led m_light_backup = { 99, 99, 99 };  // to be able to resume "dimm on" to the last set color
-
-// converts from half log to linear .. the human eye is a smartass
-const uint8_t intens[100] =
-{ 0,       1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,
-	 23,     24,  25,  26,  27,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  38,  39,  40,  41,  43,  44,  45,  47,
-	 48,     50,  51,  53,  55,  57,  58,  60,  62,  64,  66,  68,  70,  73,  75,  77,  80,  82,  85,  88,  91,  93,  96,
-	 99,    103, 106, 109, 113, 116, 120, 124, 128, 132, 136, 140, 145, 150, 154, 159, 164, 170, 175, 181, 186, 192, 198,
-	 205,   211, 218, 225, 232, 239, 247, 255 };
-
-const uint8_t hb[34] = { 27, 27, 27, 27, 27, 27, 17, 27, 37, 21, 27, 27, 27, 27, 27, 52, 71,
-	                        91, 99, 91, 33,  0, 12, 29, 52, 33, 21, 26, 33, 26, 20, 27, 27, 27 };
-
-uint16_t m_pwm_dimm_time = 10;    // 10ms per Step, 255*0.01 = 2.5 sec
-bool m_use_neo_as_rgb    = false; // if true we're going to send the color to the neopixel and not to the pwm pins
-bool m_use_my92x1_as_rgb = false; // for b1 bubble / aitinker
-bool m_use_pwm_as_rgb    = false; // for mosfet pwm
-bool m_avoid_relay       = false; // to avoid clicking relay
-uint8_t m_animation_pos  = 0;     // pointer im wheel
-
-
-// buffer used to send/receive data with MQTT, can not be done with the m_topic_buffer, as both as need simultaniously
-char m_topic_buffer[TOPIC_BUFFER_SIZE];
-char m_msg_buffer[MSG_BUFFER_SIZE];
-
-WiFiClient wifiClient;
-WiFiManager wifiManager;
-PubSubClient client(wifiClient);
-mqtt_data mqtt;
-
-// prepare wifimanager variables
-WiFiManagerParameter WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
-WiFiManagerParameter WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
-WiFiManagerParameter WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", 0, 2, true);       // length must be at least tw0 .. why? // Capability Bit0 = PWM LEDs connected
-WiFiManagerParameter WiFiManager_mqtt_capability_b1("cap_1", "Neopixel", 0, 2, true);       // Bit1 = Neopixel,
-WiFiManagerParameter WiFiManager_mqtt_capability_b2("cap_2", "Avoid relay", 0, 2, true);    // Bit2 = Avoid relay
-WiFiManagerParameter WiFiManager_mqtt_capability_b3("cap_3", "Sonoff B1", 0, 2, true);      // Bit3 = sonoff b1
-WiFiManagerParameter WiFiManager_mqtt_capability_b4("cap_4", "AiTinker light", 0, 2, true); // Bit4 = aitinker
-WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
-WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
-WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
-
-
-uint32_t updateFastValuesTimer = 0;
-uint32_t updateSlowValuesTimer = 0;
-uint32_t timer_dimmer          = 0;
-uint32_t timer_dimmer_start    = 0;
-uint32_t timer_dimmer_end      = 0;
-uint32_t timer_republish_avoid = 0;
-uint32_t timer_button_down     = 0;
-uint32_t timer_connected_start = 0;
-uint32_t timer_connected_stop  = 0;
-uint8_t counter_button         = 0;
-uint32_t timer_last_publish    = 0;
-uint8_t periodic_slot          = 0;
-uint32_t m_animation_dimm_time = 0;
-
 // /////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////// PUBLISHER ///////////////////////////////////////
 // function called to publish the state of the led (on/off)
@@ -298,13 +200,6 @@ boolean publishADC(int adc){
 // /////////////////////////////////////////////////////////////////////////////////////
 // /////////////////// function called when a MQTT message arrived /////////////////////
 void callback(char * p_topic, byte * p_payload, unsigned int p_length){
-	// concat the payload into a string
-	String payload;
-
-	for (uint8_t i = 0; i < p_length; i++) {
-		payload.concat((char) p_payload[i]);
-	}
-
 	// handle message topic
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// direct set PWM value
@@ -314,7 +209,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	if (!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))) {
 		// if(!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON))) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 			if (m_pwm_light_state.get_value() != true) {
 				// we don't want to keep running the animation if brightness was submitted
 				if (m_animation_type.get_value()) { // if there is an animation, switch it off
@@ -336,7 +231,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 					m_pwm_light_state.outdated();
 				}
 			}
-		} else if (payload.equals(String(STATE_OFF))) {
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 			if (m_pwm_light_state.get_value() != false) {
 				m_pwm_light_state.set(false);
 				m_light_backup  = m_light_target; // save last target value to resume later on
@@ -355,7 +250,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_COMMAND_TOPIC))) {
 		logger.println(TOPIC_MQTT, F(" received dimm command"));
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON))) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 			if (m_pwm_light_state.get_value() != true) {
 				// we don't want to keep running the animation if brightness was submitted
 				if (m_animation_type.get_value()) {
@@ -373,7 +268,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 					m_pwm_light_state.outdated();
 				}
 			}
-		} else if (payload.equals(String(STATE_OFF))) {
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 			if (m_pwm_light_state.get_value() != false) {
 				// Serial.println("light was on");
 				m_pwm_light_state.set(false);
@@ -393,7 +288,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON))) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 			if (m_simple_light_state.get_value() != true) {
 				m_simple_light_state.set(true);
 				setSimpleLightState();
@@ -404,7 +299,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 					m_simple_light_state.outdated();
 				}
 			}
-		} else if (payload.equals(String(STATE_OFF))) {
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 			if (m_simple_light_state.get_value() != false) {
 				m_simple_light_state.set(false);
 				setSimpleLightState();
@@ -422,9 +317,10 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL); // triggers also the publishing
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
+		} else if (!strcmp_P((const char *) p_payload,
+		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
@@ -439,9 +335,10 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
+		} else if (!strcmp_P((const char *) p_payload,
+		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
@@ -456,9 +353,9 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// simply switch GPIO ON/OFF
 	else if (!strcmp(p_topic, build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
-		if (payload.equals(String(STATE_ON)) && m_animation_type.get_value() != ANIMATION_COLOR_WIPE) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_COLOR_WIPE);
-		} else if (payload.equals(String(STATE_OFF)) && m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF) && m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
@@ -471,32 +368,42 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	else if (!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC))) { // directly set the PWM, hard
-		m_light_current.r = payload.toInt();                                              // das regelt die helligkeit
-		m_light_current.g = payload.toInt();                                              // das regelt die helligkeit
-		m_light_current.b = payload.toInt();                                              // das regelt die helligkeit
-		if (payload.toInt()) {
+		m_light_current.r = atoi((const char*)p_payload); // das regelt die helligkeit
+		m_light_current.g = atoi((const char*)p_payload); // das regelt die helligkeit
+		m_light_current.b = atoi((const char*)p_payload); // das regelt die helligkeit
+		if (m_light_current.r) {
 			m_pwm_light_state.set(true); // simply set, will trigger a publish
 		} else {
 			m_pwm_light_state.set(false); // simply set, will trigger a publish
 		}
 		setPWMLightState();
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
+		uint8_t t=(uint8_t) atoi((const char*)p_payload);
 		Serial.print(F("pwm dimm input "));
-		Serial.println((uint8_t) payload.toInt());
-		if (payload.toInt()) {
+		Serial.println(t);
+		if (t) {
 			m_pwm_light_state.set(true); // simply set, will trigger a publish
 		} else {
 			m_pwm_light_state.set(false); // simply set, will trigger a publish
 		}
-		pwmDimmTo((led){ (uint8_t) payload.toInt(), (uint8_t) payload.toInt(), (uint8_t) payload.toInt() });
+		pwmDimmTo((led){ t,t,t });
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_RGB_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
 		Serial.println(F("set input hard"));
-		uint8_t firstIndex = payload.indexOf(',');
-		uint8_t lastIndex  = payload.lastIndexOf(',');
+
+		uint8_t color[3] = { 0, 0, 0 };
+		uint8_t s        = 0;
+		for (uint8_t i = 0; p_payload[i]; i++) {
+			if (p_payload[i] == ',') {
+				s=(s+1)%3;
+			} else {
+				color[s] = color[s] * 10 + p_payload[i] - '0';
+			}
+		}
+
 		m_light_current = (led){
-			(uint8_t) map((uint8_t) payload.substring(0, firstIndex).toInt(), 0, 255, 0, 99),
-			(uint8_t) map((uint8_t) payload.substring(firstIndex + 1, lastIndex).toInt(), 0, 255, 0, 99),
-			(uint8_t) map((uint8_t) payload.substring(lastIndex + 1).toInt(), 0, 255, 0, 99)
+			(uint8_t) map(color[0], 0, 255, 0, 99),
+			(uint8_t) map(color[1], 0, 255, 0, 99),
+			(uint8_t) map(color[2], 0, 255, 0, 99)
 		};
 		m_light_target = m_light_current;
 		if (m_light_current.r + m_light_current.g + m_light_current.b > 0) {
@@ -507,27 +414,34 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		setPWMLightState();
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC))) { // smoothly dimm to rgb value
 		Serial.println(F("color dimm input"));
-		uint8_t firstIndex = payload.indexOf(',');
-		uint8_t lastIndex  = payload.lastIndexOf(',');
-		if (payload.substring(0,
-		   firstIndex).toInt()
-		  + payload.substring(firstIndex + 1, lastIndex).toInt() + payload.substring(lastIndex + 1).toInt() > 0) {
+
+		uint8_t color[3] = { 0, 0, 0 };
+		uint8_t s        = 0;
+		for (uint8_t i = 0; p_payload[i]; i++) {
+			if (p_payload[i] == ',') {
+				s=(s+1)%3;
+			} else {
+				color[s] = color[s] * 10 + p_payload[i] - '0';
+			}
+		}
+
+		if (color[0] + color[1] + color[2] > 0) {
 			m_pwm_light_state.set(true); // simply set, will trigger a publish
 		} else {
 			m_pwm_light_state.set(false); // simply set, will trigger a publish
 		}
 		// input color values are 888rgb .. dimmto needs precentage which it will convert it into half log brighness
 		pwmDimmTo((led){
-		   (uint8_t) map((uint8_t) payload.substring(0, firstIndex).toInt(), 0, 255, 0, 99),
-		   (uint8_t) map((uint8_t) payload.substring(firstIndex + 1, lastIndex).toInt(), 0, 255, 0, 99),
-		   (uint8_t) map((uint8_t) payload.substring(lastIndex + 1).toInt(), 0, 255, 0, 99)
+		   (uint8_t) map(color[0], 0, 255, 0, 99),
+		   (uint8_t) map(color[1], 0, 255, 0, 99),
+		   (uint8_t) map(color[2], 0, 255, 0, 99)
 				});
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
-		m_pwm_dimm_time = payload.toInt();
+		m_pwm_dimm_time = atoi((const char*)p_payload);
 		// Serial.print("Setting dimm time to: ");
 		// Serial.println(m_pwm_dimm_time);
 	} else if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC))) {
-		if (payload.equals(String(STATE_ON))) { // go to setup
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
 			logger.println(TOPIC_MQTT, F(" Go to setup"));
 			delay(500);
 			if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
@@ -539,13 +453,13 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 			// debug
 			WiFi.printDiag(Serial);
-		} else if (payload.substring(0, 4).equals(String("http"))) { // update
+		} else if (!strncmp_P((const char *) p_payload, "http", 4)) { // update
 			Serial.print(F("Update command with url found, trying to update from "));
-			Serial.println(payload);
+			Serial.println(((const char*)p_payload));
 			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
 			client.publish(build_topic("/INFO"), "updating...", true);
-			ESPhttpUpdate.update(payload);
-		} else if (payload.equals(String("reset"))) { // reboot
+			ESPhttpUpdate.update((const char*)p_payload);
+		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			Serial.print(F("Received reset command"));
 			ESP.reset();
 		}
@@ -786,8 +700,6 @@ void updateBUTTONstate(){
 // //////////////////////////////// network function ///////////////////////////////////
 void reconnect(){
 	// Loop until we're reconnected
-	uint8_t tries     = 0;
-	uint8_t max_tries = 0;
 
 	if (timer_connected_stop < timer_connected_start) {
 		timer_connected_stop = millis();
@@ -797,14 +709,17 @@ void reconnect(){
 	// first check wifi
 	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
 	while (!client.connected()) {
+		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
 		// each round, check wifi first
 		if (WiFi.status() != WL_CONNECTED) {
 			logger.println(TOPIC_WIFI, F("Currently not connected, initiate new connection ..."), COLOR_RED);
+			// mqtt.nw_ssid, mqtt.nw_pw or autoconnect?
 			wifiManager.connectWifi("", "");
+		} else {
+			logger.println(TOPIC_WIFI, F("online"), COLOR_GREEN);
 		}
 		// only try mqtt after wifi is estabilshed
 		if (WiFi.status() == WL_CONNECTED) {
-			logger.println(TOPIC_MQTT, F("Currently not connected, initiate new connection ..."), COLOR_RED);
 			// Attempt to connect
 			logger.print(TOPIC_MQTT, F("connecting with id: "));
 			Serial.println(mqtt.dev_short);
@@ -892,30 +807,16 @@ void reconnect(){
 		// if client is still not connected: wait
 		if (!client.connected()) {
 			// connect failed
-
-			// per 5 sec time of connectectibility add one sec of retry
-			// aka per 25sec add one try aka 5sec
-			// max at 240 tries (each 5sec) aka 20 minutes
-
-			// wenn wir verbinden setzen wir den _start auf millis
-			// wenn wir feststellen das wir nicht mehr verbunden sind setzen wir den stop auf mills
-			// solange wir nicht verbunen sind lassen wir den stop in ruhe, das erkennen wir
-			// daran das der stop > start ist. bzw andersrum: setze den stop nur auf millis solange er < start ist
-
-			tries++;
-			max_tries = _max(5, _min(240, ((timer_connected_stop - timer_connected_start) / 1000) / (5 * 5)));
+			// min 45 sec, per 5 sec connected add one sec, max 1200 sec
+			uint16_t time_connected = (timer_connected_stop - timer_connected_start) / 1000;
+			uint16_t time_not_connected = (millis() - timer_connected_stop) / 1000;
+			uint16_t time_max_reconnect = _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME+time_connected/CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
 
 			logger.addColor(COLOR_PURPLE);
-			Serial.print("MQTT was previously connected for ");
-			Serial.print((uint16_t) (timer_connected_stop - timer_connected_start) / 1000);
-			Serial.println(" sec");
-			Serial.print("MQTT is disconnceted for ");
-			Serial.print((uint16_t) (millis() - timer_connected_stop) / 1000);
-			Serial.println(" sec");
-			Serial.printf("---> %i/%i\r\n", tries, max_tries);
+			Serial.printf("MQTT was previously connected %i sec\r\nMQTT is disconnected for %i sec\r\nMax time before starting AP mode %i sec\r\n",time_connected, time_not_connected, time_max_reconnect);
 			logger.remColor(COLOR_PURPLE);
 
-			if (tries >= max_tries) {
+			if (time_not_connected>time_max_reconnect) {
 				// time to start the AP
 				Serial.println(F("Can't connect, starting AP"));
 				if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
@@ -924,7 +825,8 @@ void reconnect(){
 					Serial.begin(115200);
 				}
 				wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-				tries = 0;                                  // reset after AP mode
+				timer_connected_stop = millis(); 	// resets timer
+				timer_connected_start = millis();
 				Serial.println(F("Config AP closed"));
 				// debug
 				WiFi.printDiag(Serial);
@@ -933,8 +835,8 @@ void reconnect(){
 			else {
 				logger.print(TOPIC_WIFI, F("connect failed, "));
 				Serial.print(client.state());
-				Serial.print(F(", try again in 5 seconds "));
-				Serial.printf("%i/%i\r\n", tries, max_tries);
+				Serial.println(F(", try again in 5 seconds "));
+				//Serial.printf("%i/%i\r\n", tries, max_tries);
 
 				// only wait if the MQTT broker was not available,
 				// no need to wait if the wifi was the reason, that will take longer anyway
@@ -1196,7 +1098,6 @@ void setup(){
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		wifiManager.startConfigPortal(CONFIG_SSID);
 	}
-	;
 
 	// init the MQTT connection
 	client.setServer(mqtt.server_ip, atoi(mqtt.server_port));

@@ -1,0 +1,8 @@
+20171030
+	reconnect time based on previously connection time
+		up to 20min reconnect
+20171029
+	OTA working
+	no wifi communication during dimming
+	supports sonoff b1
+	colorized serial outout for screen
