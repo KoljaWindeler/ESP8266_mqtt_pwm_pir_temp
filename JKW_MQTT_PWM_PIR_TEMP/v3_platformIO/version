@@ -1,3 +1,5 @@
+20171031
+	fixed URL upload
 20171030
 	reconnect time based on previously connection time
 		up to 20min reconnect

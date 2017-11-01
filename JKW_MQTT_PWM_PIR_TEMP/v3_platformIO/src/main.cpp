@@ -202,6 +202,13 @@ boolean publishADC(int adc){
 void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// handle message topic
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
+	/*
+	String payload;
+	for (uint8_t i = 0; i<p_length; i++) {
+		payload.concat((char) p_payload[i]);
+	};
+	*/
+
 	// direct set PWM value
 	p_payload[p_length] = 0x00;
 	logger.topic(TOPIC_MQTT_IN);
@@ -320,7 +327,8 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL); // triggers also the publishing
 		} else if (!strcmp_P((const char *) p_payload,
-		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
+		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL)
+		{
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
@@ -338,7 +346,8 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
 		} else if (!strcmp_P((const char *) p_payload,
-		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
+		   STATE_OFF) && m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE)
+		{
 			setAnimationType(ANIMATION_OFF);
 		} else {
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
@@ -368,9 +377,9 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	else if (!strcmp(p_topic, build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC))) { // directly set the PWM, hard
-		m_light_current.r = atoi((const char*)p_payload); // das regelt die helligkeit
-		m_light_current.g = atoi((const char*)p_payload); // das regelt die helligkeit
-		m_light_current.b = atoi((const char*)p_payload); // das regelt die helligkeit
+		m_light_current.r = atoi((const char *) p_payload);                               // das regelt die helligkeit
+		m_light_current.g = atoi((const char *) p_payload);                               // das regelt die helligkeit
+		m_light_current.b = atoi((const char *) p_payload);                               // das regelt die helligkeit
 		if (m_light_current.r) {
 			m_pwm_light_state.set(true); // simply set, will trigger a publish
 		} else {
@@ -378,7 +387,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		}
 		setPWMLightState();
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
-		uint8_t t=(uint8_t) atoi((const char*)p_payload);
+		uint8_t t = (uint8_t) atoi((const char *) p_payload);
 		Serial.print(F("pwm dimm input "));
 		Serial.println(t);
 		if (t) {
@@ -386,7 +395,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		} else {
 			m_pwm_light_state.set(false); // simply set, will trigger a publish
 		}
-		pwmDimmTo((led){ t,t,t });
+		pwmDimmTo((led){ t, t, t });
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_RGB_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
 		Serial.println(F("set input hard"));
 
@@ -394,7 +403,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
 			if (p_payload[i] == ',') {
-				s=(s+1)%3;
+				s = (s + 1) % 3;
 			} else {
 				color[s] = color[s] * 10 + p_payload[i] - '0';
 			}
@@ -419,7 +428,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
 			if (p_payload[i] == ',') {
-				s=(s+1)%3;
+				s = (s + 1) % 3;
 			} else {
 				color[s] = color[s] * 10 + p_payload[i] - '0';
 			}
@@ -437,14 +446,14 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		   (uint8_t) map(color[2], 0, 255, 0, 99)
 				});
 	} else if (!strcmp(p_topic, build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
-		m_pwm_dimm_time = atoi((const char*)p_payload);
+		m_pwm_dimm_time = atoi((const char *) p_payload);
 		// Serial.print("Setting dimm time to: ");
 		// Serial.println(m_pwm_dimm_time);
 	} else if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC))) {
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
 			logger.println(TOPIC_MQTT, F(" Go to setup"));
 			delay(500);
-			if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+			if (cap.m_use_neo_as_rgb.active) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 				Serial.end();
 				delay(500);
 				Serial.begin(115200);
@@ -455,13 +464,26 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			WiFi.printDiag(Serial);
 		} else if (!strncmp_P((const char *) p_payload, "http", 4)) { // update
 			Serial.print(F("Update command with url found, trying to update from "));
-			Serial.println(((const char*)p_payload));
+			Serial.println((char*)p_payload);
+			// have to create a copy, whenever we publish we'll override the current buffer
+			char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
+			strcpy(copy_buffer,(const char*)p_payload);
 			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
 			client.publish(build_topic("/INFO"), "updating...", true);
-			ESPhttpUpdate.update((const char*)p_payload);
+
+			ESPhttpUpdate.rebootOnUpdate(false);
+			HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
+			if (res == HTTP_UPDATE_OK) {
+				client.publish(build_topic("/INFO"), "rebooting...", true);
+				Serial.println(F("Update OK, rebooting"));
+				ESP.restart();
+			} else {
+				client.publish(build_topic("/INFO"), "update failed", true);
+				Serial.println(F("Update failed"));
+			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			Serial.print(F("Received reset command"));
-			ESP.reset();
+			ESP.restart();
 		}
 	}
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
@@ -492,7 +514,7 @@ void setPWMLightState(){
 	}
 	// ////////////////////////////////////// output color ////////////////////////
 	// // via neopixel
-	if (m_use_neo_as_rgb) {
+	if (cap.m_use_neo_as_rgb.active) {
 		for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 			strip.SetPixelColor(i, RgbColor(intens[m_light_current.r], intens[m_light_current.g], intens[m_light_current.b]));
 		}
@@ -500,7 +522,7 @@ void setPWMLightState(){
 		strip.Show();
 	}
 	// // via my92x1
-	else if (m_use_my92x1_as_rgb) {
+	else if (cap.m_use_my92x1_as_rgb.active) {
 		logger.print(TOPIC_INFO_PWM, F("MY9291: "));
 		if (m_light_current.r == m_light_current.b && m_light_current.r == m_light_current.g) { // all the same = warm white
 			_my9291.setColor((my9291_color_t) { 0, 0, 0, intens[m_light_current.r], 0 });          // last two: warm white, cold white
@@ -511,7 +533,7 @@ void setPWMLightState(){
 		_my9291.setState(true);
 	}
 	// // via PWM pins
-	else if (m_use_pwm_as_rgb) {
+	else if (cap.m_use_pwm_as_rgb.active) {
 		logger.print(TOPIC_INFO_PWM, F("PWM: "));
 		analogWrite(PWM_LIGHT_PIN1, intens[m_light_current.r]);
 		analogWrite(PWM_LIGHT_PIN2, intens[m_light_current.g]);
@@ -529,12 +551,12 @@ void setPWMLightState(){
 // function called to adapt the state of the led
 void setSimpleLightState(){
 	if (m_simple_light_state.get_value()) {
-		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
+		if (!cap.m_avoid_relay.active && !cap.m_use_my92x1_as_rgb.active) {
 			digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
 		}
 		logger.println(TOPIC_INFO_SL, F("Simple pin on"));
 	} else {
-		if (!m_avoid_relay && !m_use_my92x1_as_rgb) {
+		if (!cap.m_avoid_relay.active && !cap.m_use_my92x1_as_rgb.active) {
 			digitalWrite(SIMPLE_LIGHT_PIN, LOW);
 		}
 		logger.println(TOPIC_INFO_SL, F("Simple light off"));
@@ -558,12 +580,12 @@ void setAnimationType(int type){
 	m_animation_type.set(type);
 	// switch off
 	if (m_animation_type.get_value() == ANIMATION_OFF) {
-		if (m_use_neo_as_rgb) {
+		if (cap.m_use_neo_as_rgb.active) {
 			for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 				strip.SetPixelColor(i, RgbColor(0, 0, 0));
 			}
 			strip.Show();
-		} else if (m_use_my92x1_as_rgb) {
+		} else if (cap.m_use_my92x1_as_rgb.active) {
 			_my9291.setColor((my9291_color_t) { 0, 0, 0, 0, 0 }); // lights off
 		}
 	}
@@ -759,12 +781,12 @@ void reconnect(){
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC), COLOR_GREEN);
 
-				if (m_use_my92x1_as_rgb || m_use_neo_as_rgb) {
+				if (cap.m_use_my92x1_as_rgb.active || cap.m_use_neo_as_rgb.active) {
 					client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
 					client.loop();
 					logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
 				}
-				if (m_use_neo_as_rgb) {
+				if (cap.m_use_neo_as_rgb.active) {
 					client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
 					client.loop();
 					logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
@@ -782,8 +804,9 @@ void reconnect(){
 				client.loop();
 
 				// CAPability publishing
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", m_use_my92x1_as_rgb, m_use_neo_as_rgb,
-				  m_use_pwm_as_rgb,
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", cap.m_use_my92x1_as_rgb.active,
+				  cap.m_use_neo_as_rgb.active,
+				  cap.m_use_pwm_as_rgb.active,
 				  mqtt.cap[0]);
 				client.publish(build_topic("/CAP"), m_msg_buffer, true);
 				client.loop();
@@ -808,24 +831,27 @@ void reconnect(){
 		if (!client.connected()) {
 			// connect failed
 			// min 45 sec, per 5 sec connected add one sec, max 1200 sec
-			uint16_t time_connected = (timer_connected_stop - timer_connected_start) / 1000;
+			uint16_t time_connected     = (timer_connected_stop - timer_connected_start) / 1000;
 			uint16_t time_not_connected = (millis() - timer_connected_stop) / 1000;
-			uint16_t time_max_reconnect = _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME+time_connected/CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
+			uint16_t time_max_reconnect =
+			  _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
 
 			logger.addColor(COLOR_PURPLE);
-			Serial.printf("MQTT was previously connected %i sec\r\nMQTT is disconnected for %i sec\r\nMax time before starting AP mode %i sec\r\n",time_connected, time_not_connected, time_max_reconnect);
+			Serial.printf(
+			  "MQTT was previously connected %i sec\r\nMQTT is disconnected for %i sec\r\nMax time before starting AP mode %i sec\r\n",
+			  time_connected, time_not_connected, time_max_reconnect);
 			logger.remColor(COLOR_PURPLE);
 
-			if (time_not_connected>time_max_reconnect) {
+			if (time_not_connected > time_max_reconnect) {
 				// time to start the AP
 				Serial.println(F("Can't connect, starting AP"));
-				if (m_use_neo_as_rgb) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+				if (cap.m_use_neo_as_rgb.active) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 					Serial.end();
 					delay(500);
 					Serial.begin(115200);
 				}
 				wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
-				timer_connected_stop = millis(); 	// resets timer
+				timer_connected_stop  = millis();           // resets timer
 				timer_connected_start = millis();
 				Serial.println(F("Config AP closed"));
 				// debug
@@ -836,7 +862,7 @@ void reconnect(){
 				logger.print(TOPIC_WIFI, F("connect failed, "));
 				Serial.print(client.state());
 				Serial.println(F(", try again in 5 seconds "));
-				//Serial.printf("%i/%i\r\n", tries, max_tries);
+				// Serial.printf("%i/%i\r\n", tries, max_tries);
 
 				// only wait if the MQTT broker was not available,
 				// no need to wait if the wifi was the reason, that will take longer anyway
@@ -937,48 +963,50 @@ void loadConfig(){
 		WiFiManager_mqtt_capability_b3.setValue(m_msg_buffer);
 		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
 		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);
+	} else {
+		wifiManager.setCustomIdElement("");
 	}
 	Serial.println(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
 
 	// capabilities
 	if (((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK) {
-		m_use_pwm_as_rgb = true;
+		cap.m_use_pwm_as_rgb.active = true;
 		Serial.print(F(" +"));
 	} else {
-		m_use_pwm_as_rgb = false;
+		cap.m_use_pwm_as_rgb.active = false;
 		Serial.print(F(" -"));
 	}
 	Serial.println(F(" PWM light"));
 	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK) {
-		m_use_neo_as_rgb = true;
+		cap.m_use_neo_as_rgb.active = true;
 		Serial.print(F(" +"));
 	} else {
-		m_use_neo_as_rgb = false;
+		cap.m_use_neo_as_rgb.active = false;
 		Serial.print(F(" -"));
 	}
 	Serial.println(F(" NeoPixel light"));
 	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK) {
-		m_use_my92x1_as_rgb = true;
+		cap.m_use_my92x1_as_rgb.active = true;
 		_my9291.init(true);     // true = Sonoff B1
 		_my9291.setState(true); // useless state var
 		Serial.println(F(" + SONOFF B1 light"));
 	} else if (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK) {
-		m_use_my92x1_as_rgb = true;
+		cap.m_use_my92x1_as_rgb.active = true;
 		_my9291.init(false); // false = AiTinker
 		Serial.println(F(" + AiTinker light"));
 	} else {
-		m_use_my92x1_as_rgb = false;
+		cap.m_use_my92x1_as_rgb.active = false;
 		Serial.println(F(" - no smart bulb"));
 	}
 	//
 	if (((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK) {
-		m_avoid_relay = true;
+		cap.m_avoid_relay.active = true;
 		Serial.print(F(" +"));
 	} else {
-		m_avoid_relay = false;
+		cap.m_avoid_relay.active = false;
 		Serial.print(F(" -"));
 	}
 	Serial.println(F(" avoid relay"));
@@ -1038,15 +1066,15 @@ void setup(){
 	// load all paramters!
 	loadConfig();
 
-	if (m_use_pwm_as_rgb) {
+	if (cap.m_use_pwm_as_rgb.active) {
 		pinMode(PWM_LIGHT_PIN1, OUTPUT);
 		pinMode(PWM_LIGHT_PIN2, OUTPUT);
 		pinMode(PWM_LIGHT_PIN3, OUTPUT);
 		analogWriteRange(255);
-	} else if (m_use_neo_as_rgb) {
+	} else if (cap.m_use_neo_as_rgb.active) {
 		strip.Begin();
 		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
-	} else if (m_use_my92x1_as_rgb) {
+	} else if (cap.m_use_my92x1_as_rgb.active) {
 		setAnimationType(ANIMATION_OFF); // important, otherwise they will be initialized half way on or strange colored
 	}
 
@@ -1071,7 +1099,7 @@ void setup(){
 	pinMode(GPIO_D8, OUTPUT);
 
 	// attache interrupt code for PIR on non smart bulbs
-	if (!m_use_my92x1_as_rgb) {
+	if (!cap.m_use_my92x1_as_rgb.active) {
 		pinMode(PIR_PIN, INPUT);
 		digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
 		attachInterrupt(digitalPinToInterrupt(PIR_PIN), updatePIRstate, CHANGE);
@@ -1141,7 +1169,7 @@ void loop(){
 	// // RGB circle ////
 	if (m_animation_type.get_value()) {
 		if (millis() >= m_animation_dimm_time) {
-			if (m_use_neo_as_rgb) {
+			if (cap.m_use_neo_as_rgb.active) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 						strip.SetPixelColor(i, Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255));
@@ -1164,7 +1192,7 @@ void loop(){
 					strip.Show();
 					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
-			} else if (m_use_my92x1_as_rgb) {
+			} else if (cap.m_use_my92x1_as_rgb.active) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 					_my9291.setColor((my9291_color_t) { Wheel(m_animation_pos & 255).R, Wheel(m_animation_pos & 255).G,
 					                                    Wheel(m_animation_pos & 255).B, 0, 0 }); // last two: warm white, cold white
