@@ -1,22 +1,15 @@
 DEV1  - Kugel im wohnzimmer, temperature, simple light
 DEV2  - Kitchen Hood, temperature, simple light
-
-//DEV3  - abgebaut
-
+DEV3  - touch bedroom
 DEV4  - Kitchen, temperature, PIR, simple light, schrank rechts
 DEV5  - outdoor 1, simple light, slampher
-
-//DEV6  - outdoor 2
-
-DEV7  - dinng room tower, temperature, simple light
-
-//DEV8  - inline unused
-
+DEV6 - temp / pir flur
+DEV7 - dinng room tower, temperature, simple light
+DEV8 - PIR carlo
 DEV9  - staubsauger im shop
 DEV10 - upstairs flur, PIR, temperature, simple light
 DEV11 - living room tower, temperature, simple light
-
-//DEV12 - first pcb unused
+DEV12  - b1 light bulb 1
 //DEV13 - pcb, currently used for humidity measurement in livingroom plant 
 
 DEV14 - kitchen drawer, PIR, simple light
