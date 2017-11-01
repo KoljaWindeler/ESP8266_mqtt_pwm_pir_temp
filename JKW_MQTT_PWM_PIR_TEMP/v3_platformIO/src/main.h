@@ -61,6 +61,9 @@
  ############################- onewire
  */
 
+#ifndef main_h
+#define main_h
+
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h> // local modified version          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <NeoPixelBus.h>
@@ -73,6 +76,7 @@
 #include <my9291.h>
 #include "mqtt_parameter.h"
 #include "logging.h"
+#include "capability.h"
 
 #define FS(x) (__FlashStringHelper *) (x)
 
@@ -83,7 +87,7 @@
 #define DHT_def               1
 #define DS_def                2
 #define TEMP_MAX              70           // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-#define VERSION               "20171030"
+#define VERSION               "20171031"
 
 #define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 #define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -126,8 +130,8 @@
 	# define DS_PIN           12 // D6
 	# define PIR_PIN          5  // D1
 	# define PWM_LIGHT_PIN1   4  // D2
-	# define PWM_LIGHT_PIN2   5  // D1
-	# define PWM_LIGHT_PIN3   16 // D0
+	# define PWM_LIGHT_PIN2   4  // D1
+	# define PWM_LIGHT_PIN3   4  // D0
 	# define BUTTON_INPUT_PIN 0  // D3
 	# define DHT_PIN          2  // D4
 	# define GPIO_D8          15 // D8
@@ -276,10 +280,6 @@ const uint8_t hb[34] = { 27, 27, 27, 27, 27, 27, 17, 27, 37, 21, 27, 27, 27, 27,
 	                        91, 99, 91, 33,  0, 12, 29, 52, 33, 21, 26, 33, 26, 20, 27, 27, 27 };
 
 uint16_t m_pwm_dimm_time = 10;    // 10ms per Step, 255*0.01 = 2.5 sec
-bool m_use_neo_as_rgb    = false; // if true we're going to send the color to the neopixel and not to the pwm pins
-bool m_use_my92x1_as_rgb = false; // for b1 bubble / aitinker
-bool m_use_pwm_as_rgb    = false; // for mosfet pwm
-bool m_avoid_relay       = false; // to avoid clicking relay
 uint8_t m_animation_pos  = 0;     // pointer im wheel
 
 
@@ -291,6 +291,7 @@ WiFiClient wifiClient;
 WiFiManager wifiManager;
 PubSubClient client(wifiClient);
 mqtt_data mqtt;
+capability cap;
 
 // prepare wifimanager variables
 WiFiManagerParameter WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
@@ -318,3 +319,5 @@ uint32_t timer_connected_start = 0;
 uint32_t timer_connected_stop  = 0;
 uint32_t timer_last_publish    = 0;
 uint32_t m_animation_dimm_time = 0;
+
+#endif
