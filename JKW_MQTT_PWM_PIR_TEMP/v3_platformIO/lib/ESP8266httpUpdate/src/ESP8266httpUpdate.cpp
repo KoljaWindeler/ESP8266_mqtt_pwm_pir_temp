@@ -51,6 +51,12 @@ HTTPUpdateResult ESP8266HTTPUpdate::update(const String& url, const String& curr
     return handleUpdate(http, currentVersion, false);
 }
 
+HTTPUpdateResult ESP8266HTTPUpdate::update(byte* url){
+	HTTPClient http;
+	http.begin(String((char*)url));
+	return handleUpdate(http, "", false);
+}
+
 HTTPUpdateResult ESP8266HTTPUpdate::update(const String& url, const String& currentVersion,
         const String& httpsFingerprint)
 {
@@ -296,9 +302,9 @@ HTTPUpdateResult ESP8266HTTPUpdate::handleUpdate(HTTPClient& http, const String&
                     Serial.printf("[httpUpdate] Update ok\r\n");
                     http.end();
 
-                    if(_rebootOnUpdate) {
+                    /*if(_rebootOnUpdate) {
                         ESP.restart();
-                    }
+                    }*/
 
                 } else {
                     ret = HTTP_UPDATE_FAILED;

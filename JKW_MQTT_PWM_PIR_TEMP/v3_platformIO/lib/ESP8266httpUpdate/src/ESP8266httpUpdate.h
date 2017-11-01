@@ -76,6 +76,7 @@ public:
     t_httpUpdate_return update(const String& url, const String& currentVersion,
                                const String& httpsFingerprint, bool reboot) __attribute__((deprecated));
     t_httpUpdate_return update(const String& url, const String& currentVersion = "");
+		t_httpUpdate_return update(byte* url);
     t_httpUpdate_return update(const String& url, const String& currentVersion,
                                const String& httpsFingerprint);
 
@@ -97,13 +98,14 @@ public:
 
     int getLastError(void);
     String getLastErrorString(void);
+		bool _rebootOnUpdate = false;
 
 protected:
     t_httpUpdate_return handleUpdate(HTTPClient& http, const String& currentVersion, bool spiffs = false);
     bool runUpdate(Stream& in, uint32_t size, String md5, int command = U_FLASH);
 
     int _lastError;
-    bool _rebootOnUpdate = true;
+
 };
 
 extern ESP8266HTTPUpdate ESPhttpUpdate;
