@@ -28,14 +28,15 @@
     icon: mdi:comment-multiple-outline
     view: no
     entities:
-      - light.dev77
-      - binary_sensor.dev77_motion
-      - light.dev77_rainbow
-      - light.dev77_simple_rainbow
-      - light.dev77_color_wipe
-      - sensor.dev77_temperature_dht
-      - sensor.dev77_humidity_dht
+     # - light.dev77
+     # - binary_sensor.dev77_motion
+     # - light.dev77_rainbow
+     # - light.dev77_simple_rainbow
+     # - light.dev77_color_wipe
+     # - sensor.dev77_temperature_dht
+     # - sensor.dev77_humidity_dht
       - light.dev55
+      - binary_sensor.dev8_motion
 
   living_room:
     control: hidden
@@ -75,6 +76,7 @@
     view: no
     entities:
       - light.joiner_bedroom
+      # - light.dev12
       # - light.dev20
       # - binary_sensor.dev16_motion
       - sensor.dev16_temperature
@@ -86,9 +88,11 @@
       - light.joiner_hallwayU
       - light.joiner_hallwayD
       - light.dev102
+      - light.dev12
       - binary_sensor.dev102_motion
       - binary_sensor.dev10_motion
       - binary_sensor.dev15_motion
+      - binary_sensor.dev6_motion
       - sensor.dev10_temperature
 
 
@@ -154,6 +158,8 @@
       - binary_sensor.dev2_motion
       - binary_sensor.dev3_motion
       - binary_sensor.dev4_motion
+      - binary_sensor.dev6_motion
+      - binary_sensor.dev8_motion
       - binary_sensor.dev10_motion
       - binary_sensor.dev14_motion
       - binary_sensor.dev15_motion
@@ -166,7 +172,6 @@
     control: hidden
     entities:
       - light.dev5
-#      - light.dev6
 #      - sun.sun
 #      - sensor.dark_sky_temperature
       - sensor.dark_sky_apparent_temperature
@@ -190,53 +195,181 @@
     icon: mdi:signal-variant
     view: yes
     entities:
-     - group.rssi_p
+     - group.all_rssi
+     - group.all_update
+     - group.all_status
+     - group.all_bssid
+     - group.all_ssid
+     - group.all_info
 
-  rssi_p:
+  all_info:
+    name: Info
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1_info
+      - sensor.dev2_info
+      - sensor.dev3_info
+      - sensor.dev4_info
+      - sensor.dev5_info
+      - sensor.dev6_info
+      - sensor.dev7_info
+      - sensor.dev8_info
+      - sensor.dev9_info
+      - sensor.dev10_info
+      - sensor.dev11_info
+      - sensor.dev12_info
+      # - sensor.dev13_info
+      - sensor.dev14_info
+      - sensor.dev15_info
+      - sensor.dev16_info
+      - sensor.dev20_info
+      - sensor.dev21_info
+      - sensor.dev55_info
+      - sensor.dev56_info
+      - sensor.dev77_info
+      # - sensor.dev18_info
+      # - sensor.dev42_info
+
+  all_bssid:
+    name: BSSID
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1_bssid
+      - sensor.dev2_bssid
+      - sensor.dev3_bssid
+      - sensor.dev4_bssid
+      - sensor.dev5_bssid
+      - sensor.dev6_bssid
+      - sensor.dev7_bssid
+      - sensor.dev8_bssid
+      - sensor.dev9_bssid
+      - sensor.dev10_bssid
+      - sensor.dev11_bssid
+      - sensor.dev12_bssid
+      # - sensor.dev13_bssid
+      - sensor.dev14_bssid
+      - sensor.dev15_bssid
+      - sensor.dev16_bssid
+      - sensor.dev20_bssid
+      - sensor.dev21_bssid
+      - sensor.dev55_bssid
+      - sensor.dev56_bssid
+      - sensor.dev77_bssid
+      # - sensor.dev18_bssid
+      # - sensor.dev42_bssid
+
+  all_ssid:
+    name: SSID
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1_ssid
+      - sensor.dev2_ssid
+      - sensor.dev3_ssid
+      - sensor.dev4_ssid
+      - sensor.dev5_ssid
+      - sensor.dev6_ssid
+      - sensor.dev7_ssid
+      - sensor.dev8_ssid
+      - sensor.dev9_ssid
+      - sensor.dev10_ssid
+      - sensor.dev11_ssid
+      - sensor.dev12_ssid
+      # - sensor.dev13_ssid
+      - sensor.dev14_ssid
+      - sensor.dev15_ssid
+      - sensor.dev16_ssid
+      - sensor.dev20_ssid
+      - sensor.dev21_ssid
+      - sensor.dev55_ssid
+      - sensor.dev56_ssid
+      - sensor.dev77_ssid
+      # - sensor.dev18_ssid
+      # - sensor.dev42_ssid
+
+
+  all_rssi:
     name: Signal level
     control: hidden
     view: no
     entities:
       - sensor.dev1_rssi
-      - sensor.dev1_update
       - sensor.dev2_rssi
-      - sensor.dev2_update
       - sensor.dev3_rssi
-      - sensor.dev3_update
       - sensor.dev4_rssi
-      - sensor.dev4_update
       - sensor.dev5_rssi
-      - sensor.dev5_update
       - sensor.dev6_rssi
-      - sensor.dev6_update
       - sensor.dev7_rssi
-      - sensor.dev7_update
-      # - sensor.dev8_rssi
+      - sensor.dev8_rssi
       - sensor.dev9_rssi
-      - sensor.dev9_update
       - sensor.dev10_rssi
-      - sensor.dev10_update
       - sensor.dev11_rssi
-      - sensor.dev11_update
       - sensor.dev12_rssi
-      - sensor.dev12_update
       # - sensor.dev13_rssi
       - sensor.dev14_rssi
-      - sensor.dev14_update
       - sensor.dev15_rssi
-      - sensor.dev15_update
       - sensor.dev16_rssi
-      - sensor.dev16_update
       - sensor.dev20_rssi
-      - sensor.dev20_update
+      - sensor.dev21_rssi
       - sensor.dev55_rssi
-      - sensor.dev55_update
       - sensor.dev56_rssi
-      - sensor.dev56_update
       - sensor.dev77_rssi
-      - sensor.dev77_update
       # - sensor.dev18_rssi
       # - sensor.dev42_rssi
+
+  all_update:
+    name: Last updates
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1_update
+      - sensor.dev2_update
+      - sensor.dev3_update
+      - sensor.dev4_update
+      - sensor.dev5_update
+      - sensor.dev6_update
+      - sensor.dev7_update
+      - sensor.dev8_update
+      - sensor.dev9_update
+      - sensor.dev10_update
+      - sensor.dev11_update
+      - sensor.dev12_update
+      - sensor.dev14_update
+      - sensor.dev15_update
+      - sensor.dev16_update
+      - sensor.dev20_update
+      - sensor.dev21_update
+      - sensor.dev55_update
+      - sensor.dev56_update
+      - sensor.dev77_update
+
+  all_status:
+    name: Last status
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1
+      - sensor.dev2
+      - sensor.dev3
+      - sensor.dev4
+      - sensor.dev5
+      - sensor.dev6
+      - sensor.dev7
+      - sensor.dev8
+      - sensor.dev9
+      - sensor.dev10
+      - sensor.dev11
+      - sensor.dev12
+      - sensor.dev14
+      - sensor.dev15
+      - sensor.dev16
+      - sensor.dev20
+      - sensor.dev21
+      - sensor.dev55
+      - sensor.dev56
+      - sensor.dev77
 
   mediaplayer:
     name: Media Player
@@ -244,17 +377,17 @@
     view: yes
     entities:
       - group.media
-      - group.gmusic
+      # - group.gmusic
 
   gmusic:
     name: Gmusic
     icon: mdi:cast-connected
     view: no
     entities:
-      - input_select.music    
-      - switch.google_music
-      - switch.google_music_radio
-      - switch.background
+      # - input_select.music    
+      # - switch.google_music
+      # - switch.google_music_radio
+      # - switch.background
 
   joiner:
     name: Light Joiner
@@ -277,10 +410,12 @@
       - light.dev5
       - light.dev6
       - light.dev7
+      - light.dev8
       - light.dev9
       - light.dev10
       - light.dev11
       - light.dev12
+      - light.dev12_simple_rainbow
       - light.dev13
       - light.dev14
       - light.dev15

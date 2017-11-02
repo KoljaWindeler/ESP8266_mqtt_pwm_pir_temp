@@ -1,3 +1,65 @@
+# ------------------- autoload theme ------------------------
+  - alias: 'Set theme at startup'
+    initial_state: 'on'
+    trigger:
+     - platform: homeassistant
+       event: start
+    action:
+      service: frontend.set_theme
+      data:
+        name: darkorange
+# ------------------- autoload theme ------------------------
+
+# ------------------- entrance Room ------------------------
+  - alias: entranceR_test
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev6_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 2
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.dev6_motion
+        to: 'on'
+    action:
+      - service_template: >
+          {% if is_state('binary_sensor.dev6_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev12
+# ------------------- entrance Room ------------------------
+# ------------------- carlo --------------------------------
+  - alias: carlo_test
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev8_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.dev8_motion
+        to: 'on'
+    action:
+      - service_template: >
+          {% if is_state('binary_sensor.dev8_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev55
+# ------------------- carlo --------------------------------
 # ------------------- living room sunset -------------------
   - alias: joiner_livingroom_in2
     initial_state: True
@@ -44,8 +106,8 @@
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: mqtt
-        topic: "dev3/button"
+#      - platform: mqtt
+#        topic: "dev3/button"
       - platform: mqtt
         topic: "dev16/button"
       - platform: mqtt
@@ -83,6 +145,53 @@
           - light.dev20
           - light.dev3
           - light.dev16  
+# ----------------------------------------------------------
+  - alias: dev3_toggle_dev12_and_dev20 # dev3 can toggle 20 and 12 but keep them sync
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev3/button"
+    condition: 
+      - condition: state
+        entity_id: light.joiner_bedroom
+        state: 'on'
+    action:
+      - service: light.turn_off
+        entity_id: 
+          - light.joiner_bedroom
+          - light.dev12
+# ----------------------------------------------------------
+  - alias: dev3_toggle_dev12_and_dev20_2 #dev3 can toggle 20 and 12 but keep them in sync
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev3/button"
+    condition: 
+      - condition: state
+        entity_id: light.joiner_bedroom
+        state: 'off'
+    action:
+      - service: light.turn_on
+        entity_id: 
+          - light.joiner_bedroom
+          - light.dev12
+# ----------------------------------------------------------
+  - alias: dev16_turnoff_dev12 # dev 16 can only turn off dev 12, but toggle joiner (above)
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev16/button"
+    condition: # make sure that BOTH sensors show off
+      - condition: state
+        entity_id: light.dev12
+        state: 'on'
+    action:
+      - service: light.turn_off
+        entity_id: light.dev12
+# ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: joiner_kitchen_in
     initial_state: True
@@ -411,6 +520,36 @@
 # ----------------------------------------------------------
 
 # ------------------------ outside -------------------------
+# -------------------- outside on early ---------------------
+  - alias: wakeup_dev5
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: time
+        hours: 6
+        minutes: 30
+        seconds: 00
+    condition:
+      condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.dev5
+# -------------------- outside off after sunrise ---------------------
+  - alias: sunrise_dev5
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: sun
+        event: sunrise
+        offset: "+00:30:00"
+    condition:
+      condition: time
+      after: '06:30:00'
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.dev5
 # -------------------- outside on dark ---------------------
 # switch the light on, 15 min after sunset, but only if thats before 23:30
   - alias: sunset_dev5

@@ -78,6 +78,16 @@
     device_class: motion
 
   - platform: mqtt
+    state_topic: "dev6/motion/status"
+    name: "dev6_motion"
+    device_class: motion
+
+  - platform: mqtt
+    state_topic: "dev8/motion/status"
+    name: "dev8_motion"
+    device_class: motion
+
+  - platform: mqtt
     state_topic: "dev10/motion/status"
     name: "dev10_motion"
     device_class: motion
@@ -143,6 +153,11 @@
     device_class: motion
 
 
+
+  - platform: mqtt
+    state_topic: "dev98/motion/status"
+    name: "dev98_motion"
+    device_class: motion
 
   - platform: mqtt
     state_topic: "dev99/motion/status"

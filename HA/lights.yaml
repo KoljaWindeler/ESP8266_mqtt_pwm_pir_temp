@@ -40,6 +40,7 @@
     state_topic: "dev1/simple_light/status"
     command_topic: "dev1/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
@@ -48,6 +49,7 @@
     state_topic: "dev2/simple_light/status"
     command_topic: "dev2/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -57,6 +59,7 @@
     state_topic: "dev3/simple_light/status"
     command_topic: "dev3/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -66,6 +69,7 @@
     state_topic: "dev4/simple_light/status"
     command_topic: "dev4/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -75,15 +79,7 @@
     state_topic: "dev5/simple_light/status"
     command_topic: "dev5/simple_light/switch"
     qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-# --------------------------------------------------
-  - platform: mqtt ### outdoor 2
-    name: "dev6"
-    state_topic: "dev6/simple_light/status"
-    command_topic: "dev6/simple_light/switch"
-    qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -93,6 +89,7 @@
     state_topic: "dev7/simple_light/status"
     command_topic: "dev7/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
@@ -101,6 +98,7 @@
     state_topic: "dev9/simple_light/status"
     command_topic: "dev9/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
@@ -109,6 +107,7 @@
     state_topic: "dev10/simple_light/status"
     command_topic: "dev10/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
@@ -117,20 +116,31 @@
     state_topic: "dev11/simple_light/status"
     command_topic: "dev11/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
-  - platform: mqtt ### dimmer treppe
+  - platform: mqtt ### b1
     name: "dev12"
     state_topic: "dev12/PWM_light/status"
     command_topic: "dev12/PWM_dimm/switch"
+    rgb_state_topic: 'dev12/PWM_RGB_dimm/color'
+    rgb_command_topic: 'dev12/PWM_RGB_dimm/color/set'
     brightness_state_topic: 'dev12/PWM_light/brightness'
     brightness_command_topic: 'dev12/PWM_dimm/brightness/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
+  - platform: mqtt ### b1
+    name: "dev12_simple_rainbow"
+    state_topic: "dev12/simple_rainbow/status"
+    command_topic: "dev12/simple_rainbow/switch"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
 # --------------------------------------------------
   - platform: mqtt ### dimmer bett
     name: "dev13"
@@ -139,6 +149,7 @@
     brightness_state_topic: 'dev13/PWM_light/brightness'
     brightness_command_topic: 'dev13/PWM_dimm/brightness/set'
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -148,6 +159,7 @@
     name: "dev14"
     state_topic: "dev14/simple_light/status"
     command_topic: "dev14/simple_light/switch"
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -159,6 +171,7 @@
     brightness_state_topic: 'dev15/PWM_light/brightness'
     brightness_command_topic: 'dev15/PWM_dimm/brightness/set'
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -169,6 +182,7 @@
     state_topic: "dev16/simple_light/status"
     command_topic: "dev16/simple_light/switch"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
@@ -179,6 +193,7 @@
     rgb_state_topic: 'dev19/PWM_RGB_dimm/color/set'
     rgb_command_topic: 'dev19/PWM_RGB_dimm/color/set'
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -188,6 +203,7 @@
     name: "dev21"
     state_topic: "dev21/simple_light/status"
     command_topic: "dev21/simple_light/switch"
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -198,6 +214,7 @@
     command_topic: "dev55/PWM_dimm/switch"
     brightness_state_topic: 'dev55/PWM_light/brightness'
     brightness_command_topic: 'dev55/PWM_dimm/brightness/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -210,6 +227,7 @@
     command_topic: "dev56/PWM_dimm/switch"
     brightness_state_topic: 'dev56/PWM_light/brightness'
     brightness_command_topic: 'dev56/PWM_dimm/brightness/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -222,6 +240,7 @@
     command_topic: "128480595098010/PWM_dimm/switch"
     rgb_state_topic: '128480595098010/PWM_RGB_dimm/color'
     rgb_command_topic: '128480595098010/PWM_RGB_dimm/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -234,6 +253,7 @@
     command_topic: "255726482140298/PWM_dimm/switch"
     rgb_state_topic: '255726482140298/PWM_RGB_dimm/color'
     rgb_command_topic: '255726482140298/PWM_RGB_dimm/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -246,6 +266,7 @@
     command_topic: "128480595098001/PWM_dimm/switch"
     rgb_state_topic: '128480595098001/PWM_RGB_dimm/color'
     rgb_command_topic: '128480595098001/PWM_RGB_dimm/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -258,6 +279,7 @@
     command_topic: "137291054495417/PWM_dimm/switch"
     rgb_state_topic: '137291054495417/PWM_RGB_dimm/color'
     rgb_command_topic: '137291054495417/PWM_RGB_dimm/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -272,6 +294,7 @@
     brightness_state_topic: 'dev20/PWM_light/brightness'
 #    brightness_command_topic: 'dev20/PWM_dimm/brightness/set'
     brightness_command_topic: 'dev20/PWM_light/brightness/set'
+    retain: True
 #    qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -284,6 +307,7 @@
     command_topic: "dev99/PWM_dimm/switch"
     brightness_state_topic: 'dev99/PWM_light/brightness'
     brightness_command_topic: 'dev99/PWM_dimm/brightness/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -303,6 +327,7 @@
 #   use the lines below for setting
 #   brightness_command_topic: 'dev98/PWM_light/brightness/set'
 #   rgb_command_topic: 'dev98/PWM_RGB_light/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -315,21 +340,7 @@
     command_topic: "dev42/PWM_dimm/switch"
     rgb_state_topic: 'dev42/PWM_RGB_dimm/color/set'
     rgb_command_topic: 'dev42/PWM_RGB_dimm/color/set'
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-# --------------------------------------------------
-  - platform: mqtt ### testing
-    name: "dev982"
-    state_topic: "dev98/PWM_light/status"
-    command_topic: "dev98/PWM_dimm/switch"
-    brightness_state_topic: 'dev98/PWM_light/brightness'
-#  use the line below for dimming
-    brightness_command_topic: 'dev98/PWM_dimm/brightness/set'
-#  use the line below for setting hard 
-#  brightness_command_topic: 'dev98/PWM_light/brightness/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -342,6 +353,7 @@
     command_topic: "dev77/PWM_dimm/switch"
     rgb_state_topic: 'dev77/PWM_RGB_dimm/color/set'
     rgb_command_topic: 'dev77/PWM_RGB_dimm/color/set'
+    retain: True
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
@@ -351,18 +363,21 @@
     name: "dev77_rainbow"
     state_topic: "dev77/rainbow/status"
     command_topic: "dev77/rainbow/switch"
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
   - platform: mqtt ### carlo
     name: "dev77_simple_rainbow"
     state_topic: "dev77/simple_rainbow/status"
     command_topic: "dev77/simple_rainbow/switch"
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
   - platform: mqtt ### carlo
     name: "dev77_color_wipe"
     state_topic: "dev77/color_wipe/status"
     command_topic: "dev77/color_wipe/switch"
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------

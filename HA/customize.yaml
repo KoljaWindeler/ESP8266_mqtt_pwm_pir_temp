@@ -105,6 +105,8 @@
     group.bed_room:            
       friendly_name: "Bedroom"
 # -----------------------------------------------
+    sensor.dev1_info:
+      friendly_name: "01 Ball"
     sensor.dev1_update:
       friendly_name: "01 Ball"
       icon: "mdi:timer-sand"
@@ -120,6 +122,8 @@
       friendly_name: "01 Ball"
       icon: "mdi:signal-variant"
 # -----------------------------------------------
+    sensor.dev2_info:
+      friendly_name: "02 Hood"
     sensor.dev2_update:
       friendly_name: "02 Hood"
       icon: "mdi:timer-sand"
@@ -134,18 +138,21 @@
       friendly_name: "02 Hood"
       icon: "mdi:signal-variant"
 # -----------------------------------------------
-    light.dev13:
-      friendly_name: "Sideboard"
-    sensor.dev13_rssi:
-      friendly_name: "13 Sideboard"
-    sensor.dev13_temperature:
+    sensor.dev3_update:
+      friendly_name: "03 Bedroom Touch"
+      icon: "mdi:timer-sand"
+    light.dev3:
+      friendly_name: "03 Bedroom Touch"
+    sensor.dev3_temperature:
+      friendly_name: "PCB2"
       icon: "mdi:thermometer"
-      friendly_name: "Sideboard"
-#    sensor.dev13_humidity:
-#      friendly_name: "Sideboard"66
-#      icon: "mdi:water-percent"
-    binary_sensor.dev13_motion:
-      friendly_name: "Sideboard"
+    binary_sensor.dev3_motion:
+      friendly_name: "PCB2"
+    sensor.dev3_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "03 Bedroom Touch"
+    sensor.dev3_info:
+      friendly_name: "03 Bedroom Touch"
 # -----------------------------------------------
     sensor.dev4_update:
       friendly_name: "04 Kitchen Rack"
@@ -158,17 +165,38 @@
       icon: "mdi:thermometer"
     binary_sensor.dev4_motion:
       friendly_name: "Rack"
+    sensor.dev4_info:
+      friendly_name: "04 Kitchen Rack"
     sensor.dev4_rssi:
       friendly_name: "04 Kitchen Rack"
       icon: "mdi:signal-variant"
 # -----------------------------------------------
     sensor.dev5_update:
-      friendly_name: "05 Entrance"
+      friendly_name: "05 Front Door"
       icon: "mdi:timer-sand"
     light.dev5:
-      friendly_name: "Entrance"
+      friendly_name: "Front Door"
+    sensor.dev5_info:
+      friendly_name: "05 Front Door"
     sensor.dev5_rssi:
-      friendly_name: "05 Entrance"
+      friendly_name: "05 Front Door"
+      icon: "mdi:signal-variant"
+# -----------------------------------------------
+    sensor.dev6_update:
+      friendly_name: "06 Entrance"
+      icon: "mdi:timer-sand"
+    light.dev6:
+      friendly_name: "Entrance"
+      icon: "mdi:lamp"
+    sensor.dev6_temperature:
+      friendly_name: "Entrance"
+      icon: "mdi:thermometer"
+    binary_sensor.dev6_motion:
+      friendly_name: "Entrance"
+    sensor.dev6_info:
+      friendly_name: "06 Entrance"
+    sensor.dev6_rssi:
+      friendly_name: "06 Entrance"
       icon: "mdi:signal-variant"
 # -----------------------------------------------
     sensor.dev7_update:
@@ -182,8 +210,27 @@
       icon: "mdi:thermometer"
     binary_sensor.dev7_motion:
       friendly_name: "TowerW"
+    sensor.dev7_info:
+      friendly_name: "07 TowerW"
     sensor.dev7_rssi:
       friendly_name: "07 TowerW"
+      icon: "mdi:signal-variant"
+# -----------------------------------------------
+    sensor.dev8_update:
+      friendly_name: "08 CarloPIR"
+      icon: "mdi:timer-sand"
+    light.dev8:
+      friendly_name: "Carlo PIR"
+      icon: "mdi:lamp"
+    sensor.dev8_temperature:
+      friendly_name: "Carlo PIR"
+      icon: "mdi:thermometer"
+    binary_sensor.dev8_motion:
+      friendly_name: "Carlo PIR"
+    sensor.dev8_info:
+      friendly_name: "08 Carlo PIR"
+    sensor.dev8_rssi:
+      friendly_name: "08 Carlo PIR"
       icon: "mdi:signal-variant"
 # -----------------------------------------------
     sensor.dev9_update:
@@ -194,6 +241,8 @@
     sensor.dev9_temperature:
       friendly_name: "Vac"
       icon: "mdi:thermometer"
+    sensor.dev9_info:
+      friendly_name: "09 Vac"
     sensor.dev9_rssi:
       friendly_name: "09 Vac"
       icon: "mdi:signal-variant"
@@ -209,6 +258,8 @@
       icon: "mdi:thermometer"
     binary_sensor.dev10_motion:
       friendly_name: "HallwayU"
+    sensor.dev10_info:
+      friendly_name: "10 HallwayU"
     sensor.dev10_rssi:
       friendly_name: "10 HallwayU"
       icon: "mdi:signal-variant"
@@ -224,9 +275,41 @@
       icon: "mdi:thermometer"
     binary_sensor.dev11_motion:
       friendly_name: "TowerE"
+    sensor.dev11_info:
+      friendly_name: "11 TowerE"
     sensor.dev11_rssi:
       friendly_name: "11 TowerE"
       icon: "mdi:signal-variant"
+# -----------------------------------------------
+    sensor.dev12_update:
+      friendly_name: "12 Entrance B1"
+      icon: "mdi:timer-sand"
+    light.dev12:
+      friendly_name: "Entrance B1"
+      icon: "mdi:lamp"
+    sensor.dev12_info:
+      friendly_name: "12 Entrance B1"
+    sensor.dev12_rssi:
+      friendly_name: "12 Entrance B1"
+      icon: "mdi:signal-variant"
+    light.dev12_simple_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "B1 Simple Rainbow"
+# -----------------------------------------------
+    light.dev13:
+      friendly_name: "Sideboard"
+    sensor.dev13_rssi:
+      friendly_name: "13 Sideboard"
+    sensor.dev13_info:
+      friendly_name: "13 Sideboard"
+    sensor.dev13_temperature:
+      icon: "mdi:thermometer"
+      friendly_name: "Sideboard"
+#    sensor.dev13_humidity:
+#      friendly_name: "Sideboard"66
+#      icon: "mdi:water-percent"
+    binary_sensor.dev13_motion:
+      friendly_name: "Sideboard"
 # -----------------------------------------------
     sensor.dev14_update:
       friendly_name: "14 Kitchen Cabinet"
@@ -235,6 +318,8 @@
       friendly_name: "Cabinet"
     binary_sensor.dev14_motion:
       friendly_name: "Cabinet"
+    sensor.dev14_info:
+      friendly_name: "14 Kitchen Cabinet"
     sensor.dev14_rssi:
       friendly_name: "14 Kitchen Cabinet"
       icon: "mdi:signal-variant"
@@ -246,6 +331,8 @@
       friendly_name: "HallwayD"
     binary_sensor.dev15_motion:
       friendly_name: "HallwayD"
+    sensor.dev15_info:
+      friendly_name: "15 HallwayD"
     sensor.dev15_rssi:
       friendly_name: "15 HallwayD"
       icon: "mdi:signal-variant"
@@ -257,6 +344,8 @@
       friendly_name: "Bedroom SW"
     binary_sensor.dev16_motion:
       friendly_name: "Bedroom SW"
+    sensor.dev16_info:
+      friendly_name: "16 Bedroom SW"
     sensor.dev16_rssi:
       friendly_name: "16 Bedroom SW"
       icon: "mdi:signal-variant"
@@ -264,32 +353,80 @@
       friendly_name: "Bedroom SW"
       icon: "mdi:thermometer"
 # -----------------------------------------------
-# -----------------------------------------------
-    sensor.dev3_update:
-      friendly_name: "03 Bedroom Touch"
+    sensor.dev20_update:
+      friendly_name: "20 Bedroom"
       icon: "mdi:timer-sand"
-    light.dev3:
-      friendly_name: "03 Bedroom Touch"
-    sensor.dev3_temperature:
-      friendly_name: "PCB2"
-      icon: "mdi:thermometer"
-    binary_sensor.dev3_motion:
-      friendly_name: "PCB2"
-    sensor.dev3_rssi:
+    light.dev20:
+      friendly_name: "20 Bedroom"
+    sensor.dev20_info:
+      friendly_name: "20 Bedroom"
+    sensor.dev20_rssi:
       icon: "mdi:signal-variant"
-      friendly_name: "03 Bedroom Touch"
+      friendly_name: "20 Bedroom"
 # -----------------------------------------------
-    light.dev12:
-      friendly_name: "PCB1"
-    sensor.dev12_temperature:
-      friendly_name: "PCB1"
+    sensor.dev21_update:
+      friendly_name: "21 SL Livingroom"
+      icon: "mdi:timer-sand"
+    light.dev21:
+      friendly_name: "21 SL Livingroom"
+    sensor.dev21_info:
+      friendly_name: "21 SL Livingroom"
+    sensor.dev21_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "21 SL Livingroom"
+# -----------------------------------------------
+    sensor.dev55_update:
+      friendly_name: "55 Lampinions"
+      icon: "mdi:timer-sand"
+    light.dev55:
+      friendly_name: "Lampinions"
+    sensor.dev55_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "55 Lampinions"
+    sensor.dev55_info:
+      friendly_name: "55 Lampinions"
+# -----------------------------------------------
+    sensor.dev56_update:
+      friendly_name: "56 Lampinion"
+      icon: "mdi:timer-sand"
+    light.dev56:
+      friendly_name: "Lampinion"
+    sensor.dev56_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "56 Lampinion"
+    sensor.dev56_info:
+      icon: "mdi:signal-variant"
+      friendly_name: "56 Lampinion"
+# -----------------------------------------------
+    sensor.dev77_update:
+      friendly_name: "77 Carlo"
+      icon: "mdi:timer-sand"
+    sensor.dev77_temperature_dht:
+      friendly_name: "Carlo"
       icon: "mdi:thermometer"
-    binary_sensor.dev12_motion:
-      friendly_name: "PCB1"
-    sensor.dev12_rssi:
-      friendly_name: "PCB1 Signal"
-    input_slider.dev12_dimmer_delay:
-      friendly_name: "Dimmer Speed"
+    sensor.dev77_humidity_dht:
+      friendly_name: "Carlo"
+      icon: "mdi:water-percent"
+    light.dev77:
+      friendly_name: "Carlo"
+    light.dev77_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "Rainbow Wheel"
+    light.dev77_simple_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "Simple Rainbow"
+    light.dev77_color_wipe:
+      icon: "mdi:traffic-light"
+      friendly_name: "Color wipe"
+    sensor.dev77_info:
+      friendly_name: "77 Carlo"
+    sensor.dev77_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "77 Carlo"
+    binary_sensor.dev77_motion:
+      friendly_name: "Carlo"
+# -----------------------------------------------
+# -----------------------------------------------
 # -----------------------------------------------
     light.dev101:
       friendly_name: "Couch C"
@@ -319,67 +456,6 @@
     camera.cam_106:
       friendly_name: "Dragonfly"
 # -----------------------------------------------
-    sensor.dev20_update:
-      friendly_name: "20 Bedroom"
-      icon: "mdi:timer-sand"
-    light.dev20:
-      friendly_name: "20 Bedroom"
-    sensor.dev20_rssi:
-      icon: "mdi:signal-variant"
-      friendly_name: "20 Bedroom"
-# -----------------------------------------------
-    sensor.dev21_update:
-      friendly_name: "21 SL Livingroom"
-      icon: "mdi:timer-sand"
-    light.dev21:
-      friendly_name: "21 SL Livingroom"
-    sensor.dev21_rssi:
-      icon: "mdi:signal-variant"
-      friendly_name: "21 SL Livingroom"
-# -----------------------------------------------
-    sensor.dev55_update:
-      friendly_name: "55 Lampinions"
-      icon: "mdi:timer-sand"
-    light.dev55:
-      friendly_name: "Lampinions"
-    sensor.dev55_rssi:
-      icon: "mdi:signal-variant"
-      friendly_name: "55 Lampinions"
-# -----------------------------------------------
-    sensor.dev56_update:
-      friendly_name: "56 Lampinion"
-      icon: "mdi:timer-sand"
-    light.dev56:
-      friendly_name: "Lampinion"
-    sensor.dev56_rssi:
-      icon: "mdi:signal-variant"
-      friendly_name: "56 Lampinion"
-# -----------------------------------------------
-    sensor.dev77_update:
-      friendly_name: "77 Carlo"
-      icon: "mdi:timer-sand"
-    sensor.dev77_temperature_dht:
-      friendly_name: "Carlo"
-      icon: "mdi:thermometer"
-    sensor.dev77_humidity_dht:
-      friendly_name: "Carlo"
-      icon: "mdi:water-percent"
-    light.dev77:
-      friendly_name: "Carlo"
-    light.dev77_rainbow:
-      icon: "mdi:traffic-light"
-      friendly_name: "Rainbow Wheel"
-    light.dev77_simple_rainbow:
-      icon: "mdi:traffic-light"
-      friendly_name: "Simple Rainbow"
-    light.dev77_color_wipe:
-      icon: "mdi:traffic-light"
-      friendly_name: "Color wipe"
-    sensor.dev77_rssi:
-      icon: "mdi:signal-variant"
-      friendly_name: "77 Carlo"
-    binary_sensor.dev77_motion:
-      friendly_name: "Carlo"
 # -----------------------------------------------
     binary_sensor.g_motion:
       friendly_name: "Global Motion"
