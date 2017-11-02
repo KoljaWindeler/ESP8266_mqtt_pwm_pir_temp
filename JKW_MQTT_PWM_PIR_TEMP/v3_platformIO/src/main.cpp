@@ -749,6 +749,10 @@ void reconnect(){
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
 				// ... and resubscribe
+				client.subscribe(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)); // color topic, subscribe this before brightness topic
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC), COLOR_GREEN);
+
 				client.subscribe(build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright, subscribe this before the on off!
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_LIGHT_BRIGHTNESS_COMMAND_TOPIC), COLOR_GREEN);
@@ -773,11 +777,7 @@ void reconnect(){
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_DIMM_DELAY_COMMAND_TOPIC), COLOR_GREEN);
 
-				client.subscribe(build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC)); // color topic
-				client.loop();
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_PWM_RGB_DIMM_COLOR_COMMAND_TOPIC), COLOR_GREEN);
-
-				client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // color topic
+				client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // setup topic
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC), COLOR_GREEN);
 
