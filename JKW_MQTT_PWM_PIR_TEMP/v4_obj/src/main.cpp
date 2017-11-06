@@ -29,9 +29,9 @@ const uint8_t hb[34] = { 27, 27, 27, 27, 27, 27, 17, 27, 37, 21, 27, 27, 27, 27,
 
 uint8_t active_p_pointer=0;
 uint8_t active_p_intervall_counter=0;
-peripheral *all_p[MAX_PERIPHERALS];
-peripheral *active_p[MAX_PERIPHERALS];
-peripheral *active_intervall_p[MAX_PERIPHERALS];
+peripheral **all_p[MAX_PERIPHERALS];
+peripheral **active_p[MAX_PERIPHERALS];
+peripheral **active_intervall_p[MAX_PERIPHERALS];
 
 //bool (*intervall_p[MAX_PERIPHERALS]);
 
@@ -46,7 +46,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 
 	/// will find the right component and execute the input
 	for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
-		if(active_p[i]->receive((uint8_t*)p_topic, p_payload)){
+		if((*active_p[i])->receive((uint8_t*)p_topic, p_payload)){
 			return;
 		}
 	}
@@ -128,7 +128,7 @@ void reconnect(){
 
 				for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
-					active_p[i]->subscribe();
+					(*active_p[i])->subscribe();
 				}
 
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
@@ -305,73 +305,76 @@ void loadConfig(){
 void loadPheripherals(uint8_t* peripherals){
 	// capabilities
 	// erase
-	for(uint8_t i = 0; i<sizeof(all_p)/sizeof(all_p[0]) ; i++){
+	for(uint8_t i = 0; i<MAX_PERIPHERALS ; i++){
 		if(all_p[i]){
-			delete all_p[i];
+			delete *all_p[i];
+			all_p[i] = 0x00;
 		}
 	}
 	active_p_pointer=0;
 
 	// create objects
-	peripheral *p_adc = new ADC();
-	peripheral *p_button = new button();
-	peripheral *p_pir = new PIR();
-	peripheral *p_simple_light = new simple_light();
-	peripheral *p_rssi = new rssi();
-	peripheral *p_pwm = new PWM();
-	peripheral *p_dht = new J_DHT22();
-	peripheral *p_ds = new J_DS();
-	peripheral *p_ai = new AI();
-	peripheral *p_bOne = new BOne();
-	peripheral *p_neo = new NeoStrip();
-	peripheral *p_light = new light();
+	p_adc = new ADC();
+	p_button = new button();
+	p_pir = new PIR();
+	p_simple_light = new simple_light();
+	p_rssi = new rssi();
+	p_pwm = new PWM();
+	p_dht = new J_DHT22();
+	p_ds = new J_DS();
+	p_ai = new AI();
+	p_bOne = new BOne();
+	p_neo = new NeoStrip();
+	p_light = new light();
 
 	// register
-	all_p[active_p_pointer]=p_pwm;
+	all_p[active_p_pointer]=&p_pwm;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_adc;
+	all_p[active_p_pointer]=&p_adc;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_button;
+	all_p[active_p_pointer]=&p_button;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_pir;
+	all_p[active_p_pointer]=&p_pir;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_simple_light;
+	all_p[active_p_pointer]=&p_simple_light;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_rssi;
+	all_p[active_p_pointer]=&p_rssi;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_dht;
+	all_p[active_p_pointer]=&p_dht;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_ds;
+	all_p[active_p_pointer]=&p_ds;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_ai;
+	all_p[active_p_pointer]=&p_ai;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_bOne;
+	all_p[active_p_pointer]=&p_bOne;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_neo;
+	all_p[active_p_pointer]=&p_neo;
 	active_p_pointer++;
-	all_p[active_p_pointer]=p_light;
+	all_p[active_p_pointer]=&p_light;
 	active_p_pointer++;
 	// activate
 	active_p_pointer=0;
 	active_p_intervall_counter = 0;
-
 	// remove me
 	uint8_t p_string[40];
-	sprintf((char*)p_string,"ADC,SL,PIR,PWM,R,B,DHT,DS,LIG,NEO");
+	//sprintf((char*)p_string,"ADC,SL,PIR,PWM,R,B,DHT,DS,LIG,NEO");
+	sprintf((char*)p_string,"ADC,PIR,R,B,DHT,DS,LIG,NEO");
 
 	for(uint8_t i = 0; all_p[i]!=0x00 ; i++){
-		if(all_p[i]->parse(p_string)){ // true = obj active
-			all_p[i]->init();
+		if((*all_p[i])->parse(p_string)){ // true = obj active
+			(*all_p[i])->init();
 			// store object in active peripheral list
 			active_p[active_p_pointer]=all_p[i];
 			active_p_pointer++;
 			// get the amount of intervall updates and store a pointer to the object
-			for(uint8_t ii = 0; ii<all_p[i]->count_intervall_update(); ii++){
-				active_intervall_p[active_p_intervall_counter] = all_p[i];
+			for(uint8_t ii = 0; ii<(*all_p[i])->count_intervall_update(); ii++){
+				active_intervall_p[active_p_intervall_counter] = &(*(all_p[i]));
 				active_p_intervall_counter++;
 			}
 		} else {
-			delete all_p[i];
+			delete (*all_p[i]);
+			*all_p[i]=0x00;
+			all_p[i]=0x00;
 		}
 	}
 	// set one provider
@@ -386,7 +389,6 @@ void loadPheripherals(uint8_t* peripherals){
 	} else if(p_ai){
 		((light*)p_light)->reg_provider(p_ai,T_PWM);
 	}
-
 }
 
 // build topics with device id on the fly
@@ -437,28 +439,27 @@ void setup(){
 	// /// init the serial and print debug /////
 
 	// /// init the led /////
-	for(uint8_t i = 0; i<sizeof(all_p)/sizeof(all_p[0]) ; i++){
+	for(uint8_t i = 0; i<MAX_PERIPHERALS; i++){
 		all_p[i]=0x00;
 	}
-	for(uint8_t i = 0; i<sizeof(active_intervall_p)/sizeof(active_intervall_p[0]) ; i++){
+	for(uint8_t i = 0; i<MAX_PERIPHERALS; i++){
 		active_intervall_p[i]=0x00;
 	}
 	// load all paramters!
 	loadConfig();
-
 	// get reset reason
 	if (ESP.getResetInfoPtr()->reason == REASON_DEFAULT_RST) {
 		// set some light on regular power up
-		Serial.println(F("Set all lights on"));
+		logger.println(TOPIC_GENERIC_INFO, F("PowerUp. Set all lights on"), COLOR_PURPLE);
 		((light*)p_light)->setColor(255,255,255);
+		((light*)p_light)->setState(true);
 	} else {
-		Serial.println(F("Set all lights off"));
-		((light*)p_light)->setColor(0,0,0);
+		Serial.println();
+		logger.println(TOPIC_GENERIC_INFO, F("WatchDog Reset. Set all lights off"), COLOR_PURPLE);
+		((light*)p_light)->setState(false);
 	}
 
 	// //// start wifi manager
-	Serial.println();
-	Serial.println();
 	wifiManager.setAPCallback(configModeCallback);
 	wifiManager.setLightToggleCallback(toggleCallback);
 	wifiManager.setSaveConfigCallback(saveConfigCallback);
@@ -487,7 +488,7 @@ void loop(){
 
 	uninterrupted = false;
 	for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-		if(active_p[i]->loop()){ // uninterrupted loop request ... don't execute others
+		if((*active_p[i])->loop()){ // uninterrupted loop request ... don't execute others
 			uninterrupted=true;
 			break;
 		}
@@ -497,7 +498,7 @@ void loop(){
 	if(!uninterrupted){
 		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 			for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-				if(active_p[i]->publish()){ // some one published something urgend, stop others
+				if((*active_p[i])->publish()){ // some one published something urgend, stop others
 					timer_republish_avoid = millis();
 					timer_last_publish    = millis();
 					break;
@@ -509,7 +510,7 @@ void loop(){
 		// // send periodic updates ////
 		if (millis() - updateFastValuesTimer > (60000UL/active_p_intervall_counter) && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 			updateFastValuesTimer = millis();
-			active_intervall_p[periodic_slot]->intervall_update(periodic_slot);
+			(*active_intervall_p[periodic_slot])->intervall_update(periodic_slot);
 			periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
 		}
 	}

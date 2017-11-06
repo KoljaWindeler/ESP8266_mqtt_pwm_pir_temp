@@ -37,13 +37,6 @@ bool PWM::intervall_update(uint8_t slot){
 }
 
 bool PWM::subscribe(){
-	client.subscribe(build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright, subscribe this before the on off!
-	client.loop();
-	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC), COLOR_GREEN);
-
-	client.subscribe(build_topic(MQTT_LIGHT_COMMAND_TOPIC)); // hard on off
-	client.loop();
-	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_COMMAND_TOPIC), COLOR_GREEN);
 	return true;
 }
 

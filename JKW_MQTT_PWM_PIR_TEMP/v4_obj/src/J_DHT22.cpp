@@ -51,7 +51,7 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		dtostrf(temp, 3, 2, m_msg_buffer);
 		Serial.print(F("DHT temp "));
 		Serial.println(m_msg_buffer);
-		return client.publish(build_topic(MQTT_TEMPARATURE_DHT_TOPIC), m_msg_buffer, true);
+		return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 	}
 	else if(slot%count_intervall_update()==1){
 		float hum = dht.readHumidity();
@@ -62,7 +62,7 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		logger.print(TOPIC_MQTT_PUBLISH, F("humidiy "), COLOR_GREEN);
 		dtostrf(hum, 3, 2, m_msg_buffer);
 		Serial.println(m_msg_buffer);
-		return client.publish(build_topic(MQTT_HUMIDITY_DHT_TOPIC), m_msg_buffer, true);
+		return client.publish(build_topic(MQTT_HUMIDITY_TOPIC), m_msg_buffer, true);
 	}
 	return false;
 }

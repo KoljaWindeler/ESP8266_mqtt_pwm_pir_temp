@@ -45,7 +45,7 @@ bool J_DS::intervall_update(uint8_t slot){
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	Serial.print(F("DS temp "));
 	Serial.println(m_msg_buffer);
-	return client.publish(build_topic(MQTT_TEMPARATURE_DS_TOPIC), m_msg_buffer, true);
+	return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 }
 
 bool J_DS::subscribe(){

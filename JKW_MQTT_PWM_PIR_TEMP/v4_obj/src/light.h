@@ -23,6 +23,7 @@ class light : public peripheral {
 		void send_current_light();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		void toggle();
+		void setState(bool state);
 	private:
 		mqtt_parameter_8 m_state;							// on / off
 		mqtt_parameter_32 m_light_color; 			// r,g,b code

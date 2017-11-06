@@ -34,20 +34,59 @@ uint8_t light::count_intervall_update(){	return 0;	};
 bool light::reg_provider(peripheral * p, uint8_t t){
 	type     = t;
 	provider = p;
-	logger.print(TOPIC_GENERIC_INFO, F("light registered provider "), COLOR_GREEN);
-	Serial.println(t);
+	logger.print(TOPIC_GENERIC_INFO, F("light registered provider: "), COLOR_GREEN);
+	if(t==T_SL){
+		Serial.println(F("simple light"));
+	} else if(t==T_PWM){
+		Serial.println(F("PWM light"));
+	} else if(t==T_NEO){
+		Serial.println(F("neostrip light"));
+	} else if(t==T_BOne){
+		Serial.println(F("B1 light"));
+	} else if(t==T_AI){
+		Serial.println(F("AI light"));
+	} else {
+		Serial.println(F("UNKNOWN "));
+		Serial.println(t);
+	}
+
+}
+
+void light::setState(bool state){
+	if (m_animation_type.get_value()) { // if there is an animation, switch it off
+		setAnimationType(ANIMATION_OFF);
+	}
+	if(state){
+		if (m_state.get_value() != true) {
+			m_state.set(true);
+			// bei diesem topic hartes einschalten
+			m_light_current = m_light_backup;
+			send_current_light();
+			m_light_brightness.outdated();
+		}
+	} else {
+		if (m_state.get_value() != false) {
+			m_state.set(false);
+			m_light_backup  = m_light_target; // save last target value to resume later on
+			m_light_current = (led){ 0, 0, 0 };
+			send_current_light();
+		}
+	}
 }
 
 void light::setColor(uint8_t r, uint8_t g, uint8_t b){
-	//uint32_t c=(uint32_t)r<<8+(uint32_t)g<<4+b;
-	Serial.println("call");
-	//Serial.printf
-	m_light_color.set(r+g+b);
-	m_light_current.r = r;
-	m_light_current.g = g;
-	m_light_current.b = b;
-	send_current_light();
-	Serial.println("fin");
+	uint32_t c=(uint32_t)r<<8+(uint32_t)g<<4+b;
+	if(m_state.get_value()){
+		m_light_color.set(c);
+		m_light_current.r = r;
+		m_light_current.g = g;
+		m_light_current.b = b;
+		send_current_light();
+	} else {
+		m_light_backup.r = r;
+		m_light_backup.g = g;
+		m_light_backup.b = b;
+	}
 	return;
 }
 
@@ -66,6 +105,7 @@ void light::toggle(){
 bool light::loop(){
 	// // dimming active?  ////
 	if (timer_dimmer_end) { // we are dimming as long as this is non-zero
+		Serial.print(".");
 		if (millis() >= timer_dimmer + m_pwm_dimm_time) {
 			// Serial.print("DIMMER ");
 			timer_dimmer = millis(); // save for next round
@@ -78,11 +118,11 @@ bool light::loop(){
 				m_light_current.r = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.r, m_light_target.r);
 				m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
 				m_light_current.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.b, m_light_target.b);
-				m_light_current.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
-				m_light_current.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
-				m_light_current.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
+				//m_light_current.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
+				//m_light_current.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
+				//m_light_current.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
 			}
-			// Serial.println(m_light_target.r);
+			Serial.println(m_light_target.r);
 			send_current_light();
 		}
 		return true; // muy importante .. request uninterrupted execution
@@ -117,27 +157,21 @@ bool light::loop(){
 					((NeoStrip *) provider)->show();
 					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
-			} else if (type == T_BOne) {
+			} else if (type == T_PWM || type == T_BOne || type == T_AI) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
-					((BOne *) provider)->setColor(Wheel(m_animation_pos & 255).R, Wheel(m_animation_pos & 255).G,
-					  Wheel(m_animation_pos & 255).B);                          // last two: warm white, cold white
+					RgbColor w = Wheel(m_animation_pos & 255);
+					if(type == T_PWM){
+						((PWM *) provider)->setColor(w.R, w.G, w.B);                          // last two: warm white, cold white
+					} else if (type == T_BOne) {
+						((BOne *) provider)->setColor(w.R, w.G, w.B);                          // last two: warm white, cold white
+					} else if (type == T_AI) {
+						((AI *) provider)->setColor(w.R, w.G,
+								  w.B);                          // last two: warm white, cold white
+					}
 					m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
 					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
 				}
-			} else if (type == T_AI) {
-				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
-					((AI *) provider)->setColor(Wheel(m_animation_pos & 255).R, Wheel(m_animation_pos & 255).G,
-					  Wheel(m_animation_pos & 255).B);                          // last two: warm white, cold white
-					m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
-					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
-
-					/*
-					 *   m_animation_pos=(m_animation_pos+1)%sizeof(hb);  // move wheel by one, will overrun and therefore cycle
-					 *   _my9291.setColor((my9291_color_t) { intens[hb[m_animation_pos]], 0, 0, 0, 0 }); // last two: warm white, cold white
-					 * m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME;                  // schedule update
-					 */
-				}
-			} // AI
+			}
 		} // timer
 	}  // if active
 	   // // RGB circle ////
@@ -149,43 +183,53 @@ bool light::intervall_update(uint8_t slot){  return false; }
 bool light::subscribe(){
 	client.subscribe(build_topic(MQTT_LIGHT_COMMAND_TOPIC)); // on off
 	client.loop();
-	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC), COLOR_GREEN);
+	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_COMMAND_TOPIC), COLOR_GREEN);
 
 	if (type > T_SL) { // pwm, neo, b1, AI
-		client.subscribe(build_topic(MQTT_DIMM_COLOR_COMMAND_TOPIC)); // color topic, subscribe this before brightness topic
+		////////////////// color topic, ////////////////////////////////
+		//subscribe this before brightness topic
+		client.subscribe(build_topic(MQTT_LIGHT_COLOR_COMMAND_TOPIC));
 		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_DIMM_COLOR_COMMAND_TOPIC), COLOR_GREEN);
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_COLOR_COMMAND_TOPIC), COLOR_GREEN);
 
-		client.subscribe(build_topic(MQTT_DIMM_BRIGHTNESS_COMMAND_TOPIC)); // dimm bright, subscribe this before the on off!
+		client.subscribe(build_topic(MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC));
 		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_DIMM_BRIGHTNESS_COMMAND_TOPIC), COLOR_GREEN);
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC), COLOR_GREEN);
 
-		client.subscribe(build_topic(MQTT_DIMM_COMMAND_TOPIC)); // dimm on
-		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_DIMM_COMMAND_TOPIC), COLOR_GREEN);
-
-		client.subscribe(build_topic(MQTT_DIMM_DELAY_COMMAND_TOPIC));
-		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_DIMM_DELAY_COMMAND_TOPIC), COLOR_GREEN);
-
-		client.subscribe(build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC)); // direct bright, subscribe this before the on off!
+		////////////////// brightness topic, ////////////////////////////////
+		//subscribe this before the on off!
+		client.subscribe(build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC));
 		client.loop();
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC), COLOR_GREEN);
+
+		client.subscribe(build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC));
+		client.loop();
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC), COLOR_GREEN);
+
+		////////////////// dimm topic, ////////////////////////////////
+		// on /off topics
+		client.subscribe(build_topic(MQTT_LIGHT_DIMM_COMMAND_TOPIC)); // dimm on
+		client.loop();
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_COMMAND_TOPIC), COLOR_GREEN);
+
+		client.subscribe(build_topic(MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC));
+		client.loop();
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC), COLOR_GREEN);
 	}
 	if (type > T_PWM) { // neo, b1, ai
-		client.subscribe(build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
+		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_COMMAND_TOPIC)); // simple rainbow  topic
 		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
 	}
 
 	if (type == T_NEO) {
-		client.subscribe(build_topic(MQTT_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
+		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_COMMAND_TOPIC)); // rainbow  topic
 		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_COMMAND_TOPIC), COLOR_GREEN);
 
-		client.subscribe(build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
+		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_COMMAND_TOPIC)); // color WIPE topic
 		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC), COLOR_GREEN);
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_COMMAND_TOPIC), COLOR_GREEN);
 	}
 
 	return true;
@@ -195,7 +239,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	// dimm to given PWM value
 	if ( (!strcmp((const char *) p_topic,
 	    build_topic(MQTT_LIGHT_COMMAND_TOPIC))) ||
-	  (!strcmp((const char *) p_topic, build_topic(MQTT_SIMPLE_LIGHT_COMMAND_TOPIC)))  ) {
+	  (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_COMMAND_TOPIC)))  ) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 			if (m_state.get_value() != true) {
@@ -209,9 +253,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_light_current = m_light_backup;
 				send_current_light();
 				// Home Assistant will assume that the pwm light is 100%, once we "turn it on"
-				// but it should return to whatever the m_light_brithness is, so lets set the published
-				// version to something != the actual brightness. This will trigger the publishing
-				m_light_brightness.set(m_light_target.r + 1);
+				// but it should return to whatever the m_light_brithness is
+				m_light_brightness.outdated();
 			} else {
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				m_state.outdated();
@@ -229,7 +272,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 		}
 	}
 	// dimm to given PWM value
-	else if (!strcmp((const char *) p_topic, build_topic(MQTT_DIMM_COMMAND_TOPIC))) { // on / off with dimming
+	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_COMMAND_TOPIC))) { // on / off with dimming
 		logger.println(TOPIC_MQTT, F(" received dimm command"));
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
@@ -263,7 +306,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	}
 	// //////////////////////// SET RAINBOW /////////////////
 	// simply switch GPIO ON/OFF
-	else if (!strcmp((const char *) p_topic, build_topic(MQTT_RAINBOW_COMMAND_TOPIC))) {
+	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL); // triggers also the publishing
@@ -279,7 +322,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	// //////////////////////// SET RAINBOW /////////////////
 	// //////////////////////// SET SIMPLE RAINBOW /////////////////
 	// simply switch GPIO ON/OFF
-	else if (!strcmp((const char *) p_topic, build_topic(MQTT_SIMPLE_RAINBOW_COMMAND_TOPIC))) {
+	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
@@ -295,7 +338,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	// //////////////////////// SET SIMPLE RAINBOW /////////////////
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// simply switch GPIO ON/OFF
-	else if (!strcmp((const char *) p_topic, build_topic(MQTT_COLOR_WIPE_COMMAND_TOPIC))) {
+	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_COMMAND_TOPIC))) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_COLOR_WIPE);
@@ -312,13 +355,14 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 		m_light_current.r = atoi((const char *) p_payload);                                          // das regelt die helligkeit
 		m_light_current.g = atoi((const char *) p_payload);                                          // das regelt die helligkeit
 		m_light_current.b = atoi((const char *) p_payload);                                          // das regelt die helligkeit
+		m_light_target = m_light_current;
 		if (m_light_current.r) {
 			m_state.set(true); // simply set, will trigger a publish
 		} else {
 			m_state.set(false); // simply set, will trigger a publish
 		}
 		send_current_light();
-	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
 		Serial.print(F("pwm dimm input "));
 		Serial.println(t);
@@ -328,7 +372,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			m_state.set(false); // simply set, will trigger a publish
 		}
 		DimmTo((led){ t, t, t });
-	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
 		Serial.println(F("set input hard"));
 
 		uint8_t color[3] = { 0, 0, 0 };
@@ -353,7 +397,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			m_state.set(false); // simply set, will trigger a publish
 		}
 		send_current_light();
-	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_DIMM_COLOR_COMMAND_TOPIC))) { // smoothly dimm to rgb value
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC))) { // smoothly dimm to rgb value
 		Serial.println(F("color dimm input"));
 
 		uint8_t color[3] = { 0, 0, 0 };
@@ -377,7 +421,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 		   (uint8_t) map(color[1], 0, 255, 0, 99),
 		   (uint8_t) map(color[2], 0, 255, 0, 99)
 				});
-	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
 		m_pwm_dimm_time = atoi((const char *) p_payload);
 		// Serial.print("Setting dimm time to: ");
 		// Serial.println(m_pwm_dimm_time);
@@ -400,7 +444,7 @@ bool light::publishLightState(){
 	if (m_state.get_outdated()) {
 		boolean ret = false;
 
-		logger.print(TOPIC_MQTT_PUBLISH, F("PWM state "), COLOR_GREEN);
+		logger.print(TOPIC_MQTT_PUBLISH, F("light state "), COLOR_GREEN);
 		if (m_state.get_value()) {
 			Serial.println(STATE_ON);
 			ret = client.publish(build_topic(MQTT_LIGHT_STATE_TOPIC), STATE_ON, true);
@@ -420,7 +464,7 @@ bool light::publishLightState(){
 bool light::publishLightBrightness(){
 	if (m_light_brightness.get_outdated()) {
 		boolean ret = false;
-		logger.print(TOPIC_MQTT_PUBLISH, F("PWM brightness "), COLOR_GREEN);
+		logger.print(TOPIC_MQTT_PUBLISH, F("light brightness "), COLOR_GREEN);
 		Serial.println(m_light_target.r);
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_target.r);
 		ret = client.publish(build_topic(MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
@@ -436,10 +480,10 @@ bool light::publishLightBrightness(){
 bool light::publishRGBColor(){
 	if (m_light_color.get_outdated()) {
 		boolean ret = false;
-		logger.print(TOPIC_MQTT_PUBLISH, F("PWM color "), COLOR_GREEN);
+		logger.print(TOPIC_MQTT_PUBLISH, F("light color "), COLOR_GREEN);
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_target.r, m_light_target.g, m_light_target.b);
 		Serial.println(m_msg_buffer);
-		ret = client.publish(build_topic(MQTT_DIMM_COLOR_STATE_TOPIC), m_msg_buffer, true);
+		ret = client.publish(build_topic(MQTT_LIGHT_COLOR_STATE_TOPIC), m_msg_buffer, true);
 		if (ret) {
 			m_light_color.outdated(false);
 		}
@@ -497,7 +541,9 @@ void light::setAnimationType(int type){
 	m_animation_type.set(type);
 	// switch off
 	if (m_animation_type.get_value() == ANIMATION_OFF) {
-		if (type == T_NEO) {
+		if (type == T_PWM) {
+			((PWM *) provider)->setColor(0, 0, 0);
+		} else if (type == T_NEO) {
 			((NeoStrip *) provider)->setColor(0, 0, 0);
 		} else if (type == T_BOne) {
 			((BOne *) provider)->setColor(0, 0, 0);

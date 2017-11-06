@@ -26,7 +26,7 @@ bool NeoStrip::loop(){																					return false; }// i did nothing
 bool NeoStrip::intervall_update(uint8_t slot){									return false; }
 bool NeoStrip::subscribe(){																			return true;  }
 bool NeoStrip::receive(uint8_t* p_topic, uint8_t* p_payload){		return false; }// not for me
-bool NeoStrip::publish(){																				return true;  }
+bool NeoStrip::publish(){																				return false; } // noting to say
 void NeoStrip::interrupt(){};
 uint8_t NeoStrip::count_intervall_update(){											return 0;		 	};
 
