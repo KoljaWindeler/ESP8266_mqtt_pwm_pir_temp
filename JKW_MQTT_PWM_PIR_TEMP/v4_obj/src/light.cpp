@@ -68,9 +68,9 @@ void light::setState(bool state){
 		if (m_state.get_value() != false) {
 			m_state.set(false);
 			m_light_backup  = m_light_target; // save last target value to resume later on
-			m_light_current = (led){ 0, 0, 0 };
-			send_current_light();
 		}
+		m_light_current = (led){ 0, 0, 0 };
+		send_current_light();
 	}
 }
 
@@ -105,24 +105,21 @@ void light::toggle(){
 bool light::loop(){
 	// // dimming active?  ////
 	if (timer_dimmer_end) { // we are dimming as long as this is non-zero
-		Serial.print(".");
+		//Serial.print(".");
 		if (millis() >= timer_dimmer + m_pwm_dimm_time) {
 			// Serial.print("DIMMER ");
 			timer_dimmer = millis(); // save for next round
 
 			// set new value
 			if (timer_dimmer + m_pwm_dimm_time > timer_dimmer_end) {
-				m_light_current  = m_light_target;
+				m_light_current = m_light_target;
 				timer_dimmer_end = 0; // last step, stop dimming
 			} else {
 				m_light_current.r = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.r, m_light_target.r);
 				m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
 				m_light_current.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.b, m_light_target.b);
-				//m_light_current.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
-				//m_light_current.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
-				//m_light_current.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
 			}
-			Serial.println(m_light_target.r);
+			//Serial.println(m_light_current.r);
 			send_current_light();
 		}
 		return true; // muy importante .. request uninterrupted execution
@@ -384,7 +381,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				color[s] = color[s] * 10 + p_payload[i] - '0';
 			}
 		}
-
+		// HA is sending color as 0-255 where as we want it 0-99
 		m_light_current = (led){
 			(uint8_t) map(color[0], 0, 255, 0, 99),
 			(uint8_t) map(color[1], 0, 255, 0, 99),
@@ -554,16 +551,20 @@ void light::setAnimationType(int type){
 }
 
 void light::send_current_light(){
+	led temp;
+	temp.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
+	temp.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
+	temp.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
 	if (type == T_SL) {
-		((simple_light *) provider)->setColor(m_light_current.r, m_light_current.g, m_light_current.b);
+		((simple_light *) provider)->setColor(temp.r, temp.g, temp.b);
 	} else if (type == T_PWM) {
-		((PWM *) provider)->setColor(m_light_current.r, m_light_current.g, m_light_current.b);
+		((PWM *) provider)->setColor(temp.r, temp.g, temp.b);
 	} else if (type == T_NEO) {
-		((NeoStrip *) provider)->setColor(m_light_current.r, m_light_current.g, m_light_current.b);
+		((NeoStrip *) provider)->setColor(temp.r, temp.g, temp.b);
 	} else if (type == T_BOne) {
-		((BOne *) provider)->setColor(m_light_current.r, m_light_current.g, m_light_current.b);
+		((BOne *) provider)->setColor(temp.r, temp.g, temp.b);
 	} else if (type == T_AI) {
-		((AI *) provider)->setColor(m_light_current.r, m_light_current.g, m_light_current.b);
+		((AI *) provider)->setColor(temp.r, temp.g, temp.b);
 	}
 }
 
