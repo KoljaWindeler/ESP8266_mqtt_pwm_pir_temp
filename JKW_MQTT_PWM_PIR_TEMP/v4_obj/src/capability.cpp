@@ -11,6 +11,7 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	uint8_t p=0;
 	uint8_t len = 0;
 	uint8_t temp[10];
+	unsigned char * p_input=input;
 
 	// add trainig comma
 	while(input[p]){
@@ -30,28 +31,32 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 			//Serial.printf("parsing. input: %s vs. key %s\r\n",temp,key);
 			if(!strcmp((const char*)key,(const char*)temp)){
 				if(strcmp((const char*)dep,(const char*)"")){
-					if(ensure_dep(input,dep)){
+					if(ensure_dep(p_input,dep)){
 						logger.print(TOPIC_GENERIC_INFO, F(""),COLOR_PURPLE);
 						logger.addColor(COLOR_PURPLE);
 						Serial.printf("%s added dependency %s\r\n",key,dep);
 						logger.remColor(COLOR_PURPLE);
 					}
 				}
+				//Serial.println("parse return true");
 				return true;
 			}
 			p=0;
 		}
 		input++;
 	}
+	//Serial.println("parse return false");
 	return false;
 }
 
 bool capability::parse(unsigned char * input, uint8_t* key){
-	parse(input,key,(uint8_t*)"");
+	return parse(input,key,(uint8_t*)"");
 }
 
 bool capability::ensure_dep(unsigned char* input, uint8_t* dep){
+	//Serial.printf("ensure parsing. input: %s vs. dep %s\r\n",input,dep);
 	if(parse(input,dep)){
+		//Serial.println("ensure return false");
 		return false;
 	} else {
 		// make sure there is a trailing comma
@@ -65,6 +70,7 @@ bool capability::ensure_dep(unsigned char* input, uint8_t* dep){
 		}
 
 		sprintf((char*)input,"%s%s",input,dep);
+		//Serial.println("ensure return true");
 		return true;
 	}
 }
