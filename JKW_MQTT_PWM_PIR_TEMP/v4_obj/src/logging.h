@@ -37,4 +37,6 @@ class logging {
 	private:
 };
 
+extern logging logger;
+
 #endif
