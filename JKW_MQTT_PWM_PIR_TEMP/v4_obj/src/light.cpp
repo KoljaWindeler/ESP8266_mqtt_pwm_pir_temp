@@ -239,7 +239,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	  (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_COMMAND_TOPIC)))  ) {
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
-			if (m_state.get_value() != true) {
+			if (m_state.get_value() != true || m_animation_type.get_value()) {
 				// we don't want to keep running the animation if brightness was submitted
 				if (m_animation_type.get_value()) { // if there is an animation, switch it off
 					setAnimationType(ANIMATION_OFF);
@@ -257,7 +257,12 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_state.outdated();
 			}
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
-			if (m_state.get_value() != false) {
+			if (m_state.get_value() != false  || m_animation_type.get_value()) {
+				// we don't want to keep running the animation if brightness was submitted
+				if (m_animation_type.get_value()) { // if there is an animation, switch it off
+					setAnimationType(ANIMATION_OFF);
+				}
+
 				m_state.set(false);
 				m_light_backup  = m_light_target; // save last target value to resume later on
 				m_light_current = (led){ 0, 0, 0 };
@@ -270,10 +275,10 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	}
 	// dimm to given PWM value
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_COMMAND_TOPIC))) { // on / off with dimming
-		logger.println(TOPIC_MQTT, F(" received dimm command"));
+		logger.println(TOPIC_MQTT, F("received dimm command"),COLOR_PURPLE);
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
-			if (m_state.get_value() != true) {
+			if (m_state.get_value() != true || m_animation_type.get_value()) {
 				// we don't want to keep running the animation if brightness was submitted
 				if (m_animation_type.get_value()) {
 					setAnimationType(ANIMATION_OFF);
@@ -288,7 +293,11 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_state.outdated();
 			}
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
-			if (m_state.get_value() != false) {
+			if (m_state.get_value() != false || m_animation_type.get_value()) {
+				// we don't want to keep running the animation if brightness was submitted
+				if (m_animation_type.get_value()) {
+					setAnimationType(ANIMATION_OFF);
+				}
 				// Serial.println("light was on");
 				m_state.set(false);
 				m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
@@ -349,29 +358,42 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC))) { // directly set the color, hard
-		m_light_current.r = atoi((const char *) p_payload);                                          // das regelt die helligkeit
-		m_light_current.g = atoi((const char *) p_payload);                                          // das regelt die helligkeit
-		m_light_current.b = atoi((const char *) p_payload);                                          // das regelt die helligkeit
-		m_light_target = m_light_current;
-		if (m_light_current.r) {
-			m_state.set(true); // simply set, will trigger a publish
-		} else {
-			m_state.set(false); // simply set, will trigger a publish
-		}
-		send_current_light();
-	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
+
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
-		Serial.print(F("pwm dimm input "));
-		Serial.println(t);
-		if (t) {
-			m_state.set(true); // simply set, will trigger a publish
+
+		if(m_state.get_value()){
+			// we don't want to keep running the animation if brightness was submitted
+			if (m_animation_type.get_value()) { // if there is an animation, switch it off
+				setAnimationType(ANIMATION_OFF);
+			}
+			m_light_current.r = t;                                          // das regelt die helligkeit
+			m_light_current.g = t;                                          // das regelt die helligkeit
+			m_light_current.b = t;                                          // das regelt die helligkeit
+			m_light_target = m_light_current;
+			send_current_light();
 		} else {
-			m_state.set(false); // simply set, will trigger a publish
+			m_light_backup.r = t;                                          // das regelt die helligkeit
+			m_light_backup.g = t;                                          // das regelt die helligkeit
+			m_light_backup.b = t;                                          // das regelt die helligkeit
 		}
-		DimmTo((led){ t, t, t });
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC))) { // smooth dimming of pwm
+
+		uint8_t t = (uint8_t) atoi((const char *) p_payload);
+
+		if(m_state.get_value()){
+			// we don't want to keep running the animation if brightness was submitted
+			if (m_animation_type.get_value()) { // if there is an animation, switch it off
+				setAnimationType(ANIMATION_OFF);
+			}
+			logger.println(TOPIC_MQTT, F("dimm brightness command"),COLOR_PURPLE);
+			Serial.println(t);
+			DimmTo((led){ t, t, t });
+		} else {
+			m_light_backup.r = t;                                          // das regelt die helligkeit
+			m_light_backup.g = t;                                          // das regelt die helligkeit
+			m_light_backup.b = t;                                          // das regelt die helligkeit
+		}
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_COLOR_COMMAND_TOPIC))) { // directly set rgb, hard
-		Serial.println(F("set input hard"));
-
 		uint8_t color[3] = { 0, 0, 0 };
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
@@ -381,22 +403,29 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				color[s] = color[s] * 10 + p_payload[i] - '0';
 			}
 		}
-		// HA is sending color as 0-255 where as we want it 0-99
-		m_light_current = (led){
-			(uint8_t) map(color[0], 0, 255, 0, 99),
-			(uint8_t) map(color[1], 0, 255, 0, 99),
-			(uint8_t) map(color[2], 0, 255, 0, 99)
-		};
-		m_light_target = m_light_current;
-		if (m_light_current.r + m_light_current.g + m_light_current.b > 0) {
-			m_state.set(true); // simply set, will trigger a publish
+		if(m_state.get_value()){
+			// we don't want to keep running the animation if brightness was submitted
+			if (m_animation_type.get_value()) { // if there is an animation, switch it off
+				setAnimationType(ANIMATION_OFF);
+			}
+
+			logger.println(TOPIC_MQTT, F("hard color command"),COLOR_PURPLE);
+			// HA is sending color as 0-255 where as we want it 0-99
+			m_light_current = (led){
+				(uint8_t) map(color[0], 0, 255, 0, 99),
+				(uint8_t) map(color[1], 0, 255, 0, 99),
+				(uint8_t) map(color[2], 0, 255, 0, 99)
+			};
+			m_light_target = m_light_current;
+			send_current_light();
 		} else {
-			m_state.set(false); // simply set, will trigger a publish
+			m_light_backup = (led){
+				(uint8_t) map(color[0], 0, 255, 0, 99),
+				(uint8_t) map(color[1], 0, 255, 0, 99),
+				(uint8_t) map(color[2], 0, 255, 0, 99)
+			};
 		}
-		send_current_light();
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC))) { // smoothly dimm to rgb value
-		Serial.println(F("color dimm input"));
-
 		uint8_t color[3] = { 0, 0, 0 };
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
@@ -407,17 +436,25 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			}
 		}
 
-		if (color[0] + color[1] + color[2] > 0) {
-			m_state.set(true); // simply set, will trigger a publish
+		if(m_state.get_value()){
+			// we don't want to keep running the animation if brightness was submitted
+			if (m_animation_type.get_value()) { // if there is an animation, switch it off
+				setAnimationType(ANIMATION_OFF);
+			}
+			logger.println(TOPIC_MQTT, F("color dimm command"),COLOR_PURPLE);
+			// input color values are 888rgb .. DimmTo needs precentage which it will convert it into half log brighness
+			DimmTo((led){
+			   (uint8_t) map(color[0], 0, 255, 0, 99),
+			   (uint8_t) map(color[1], 0, 255, 0, 99),
+			   (uint8_t) map(color[2], 0, 255, 0, 99)
+					});
 		} else {
-			m_state.set(false); // simply set, will trigger a publish
+			m_light_backup = (led){
+				(uint8_t) map(color[0], 0, 255, 0, 99),
+				(uint8_t) map(color[1], 0, 255, 0, 99),
+				(uint8_t) map(color[2], 0, 255, 0, 99)
+			};
 		}
-		// input color values are 888rgb .. DimmTo needs precentage which it will convert it into half log brighness
-		DimmTo((led){
-		   (uint8_t) map(color[0], 0, 255, 0, 99),
-		   (uint8_t) map(color[1], 0, 255, 0, 99),
-		   (uint8_t) map(color[2], 0, 255, 0, 99)
-				});
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
 		m_pwm_dimm_time = atoi((const char *) p_payload);
 		// Serial.print("Setting dimm time to: ");
@@ -490,7 +527,7 @@ bool light::publishRGBColor(){
 }
 
 void light::DimmTo(led dimm_to){
-	Serial.print(F("DimmTo: "));
+	logger.print(TOPIC_GENERIC_INFO, F("DimmTo "), COLOR_PURPLE);
 	Serial.print(dimm_to.r);
 	Serial.print(",");
 	Serial.print(dimm_to.g);
