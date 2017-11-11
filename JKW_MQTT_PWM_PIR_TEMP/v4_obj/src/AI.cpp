@@ -10,7 +10,7 @@ AI::~AI(){
 void AI::interrupt(){};
 
 bool AI::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }
 
 my92x1* AI::getmy929x1(){

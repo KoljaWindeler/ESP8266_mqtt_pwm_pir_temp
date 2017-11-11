@@ -12,7 +12,7 @@ uint8_t* PWM::get_key(){
 }
 
 bool PWM::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }
 
 bool PWM::init(){

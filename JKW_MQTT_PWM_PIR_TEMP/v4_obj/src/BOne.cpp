@@ -10,7 +10,7 @@ BOne::~BOne(){
 void BOne::interrupt(){};
 
 bool BOne::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }
 
 bool BOne::init(){

@@ -13,7 +13,7 @@ uint8_t* NeoStrip::get_key(){
 }
 
 bool NeoStrip::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }
 
 bool NeoStrip::init(){
