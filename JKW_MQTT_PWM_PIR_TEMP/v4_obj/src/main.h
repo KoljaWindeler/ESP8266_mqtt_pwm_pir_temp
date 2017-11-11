@@ -229,7 +229,7 @@ public:
 	static constexpr char MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC[] = "/s/light/brightness"; // set value 0-99 will switch hard to the value
 	// ligth dimm
 	static constexpr char MQTT_LIGHT_DIMM_COMMAND_TOPIC[] = "/s/light/dimm";                      // get ON/OFF command here
-	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC[] = "/s/light/dimm/brigtness"; // set value, will dimm towards the new value
+	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC[] = "/s/light/dimm/brightness"; // set value, will dimm towards the new value
 	static constexpr char MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC[]      = "/s/light/dimm/delay";     // set value, will dimm towards the new value
 	static constexpr char MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC[]      = "/s/light/dimm/color";     // set value "0-99,0-99,0-99", will dimm towards the new value
 	// animation command
