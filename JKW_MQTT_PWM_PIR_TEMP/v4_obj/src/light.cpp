@@ -245,13 +245,14 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 					setAnimationType(ANIMATION_OFF);
 				}
 
-				m_state.set(true);
 				// bei diesem topic hartes einschalten
 				m_light_current = m_light_backup;
 				send_current_light();
 				// Home Assistant will assume that the pwm light is 100%, once we "turn it on"
 				// but it should return to whatever the m_light_brithness is
+				m_state.set(true);
 				m_light_brightness.outdated();
+				m_light_color.outdated(); // set this to publish that we've left the color
 			} else {
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				m_state.outdated();
@@ -285,7 +286,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				}
 				// Serial.println("light was off");
 				m_state.set(true);
-				m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
+				m_light_brightness.outdated();
+				m_light_color.outdated(); // set this to publish that we've left the color
 				// bei diesem topic ein dimmen
 				DimmTo(m_light_backup);
 			} else {
@@ -300,7 +302,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				}
 				// Serial.println("light was on");
 				m_state.set(false);
-				m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
+				//m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
 				// remember the current target value to resume to this value once we receive a 'dimm on 'command
 				m_light_backup = m_light_target; // target instead off current (just in case we are currently dimming)
 				DimmTo((led){ 0, 0, 0 });        // dimm off
@@ -370,6 +372,11 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			m_light_current.g = t;                                          // das regelt die helligkeit
 			m_light_current.b = t;                                          // das regelt die helligkeit
 			m_light_target = m_light_current;
+
+			// publish
+			m_light_brightness.set(t, true);
+			m_light_color.outdated(); // needed to update HA symbol
+
 			send_current_light();
 		} else {
 			m_light_backup.r = t;                                          // das regelt die helligkeit
@@ -385,8 +392,12 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			if (m_animation_type.get_value()) { // if there is an animation, switch it off
 				setAnimationType(ANIMATION_OFF);
 			}
-			logger.println(TOPIC_MQTT, F("dimm brightness command"),COLOR_PURPLE);
+			logger.print(TOPIC_MQTT, F("dimm brightness command "),COLOR_PURPLE);
 			Serial.println(t);
+			// publish
+			m_light_brightness.set(t, true);
+			m_light_color.outdated(); // needed to update HA symbol
+
 			DimmTo((led){ t, t, t });
 		} else {
 			m_light_backup.r = t;                                          // das regelt die helligkeit
@@ -410,6 +421,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			}
 
 			logger.println(TOPIC_MQTT, F("hard color command"),COLOR_PURPLE);
+			m_light_color.outdated(); // color will be used directly
+			m_light_brightness.outdated();
 			// HA is sending color as 0-255 where as we want it 0-99
 			m_light_current = (led){
 				(uint8_t) map(color[0], 0, 255, 0, 99),
@@ -442,6 +455,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				setAnimationType(ANIMATION_OFF);
 			}
 			logger.println(TOPIC_MQTT, F("color dimm command"),COLOR_PURPLE);
+			m_light_color.outdated(); // color will be used directly
+			m_light_brightness.outdated();
 			// input color values are 888rgb .. DimmTo needs precentage which it will convert it into half log brighness
 			DimmTo((led){
 			   (uint8_t) map(color[0], 0, 255, 0, 99),
@@ -465,8 +480,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 
 bool light::publish(){
 	if (!publishLightState()) {
-		if (!publishLightBrightness()) {
-			if (!publishRGBColor()) {
+		if (!publishRGBColor()) {
+			if (!publishLightBrightness()) {
 				return false;
 			}
 		}
@@ -498,12 +513,16 @@ bool light::publishLightState(){
 bool light::publishLightBrightness(){
 	if (m_light_brightness.get_outdated()) {
 		boolean ret = false;
+		uint8_t v = 0;
+		if(m_light_target.r == m_light_target.g && m_light_target.r==m_light_target.b){
+			v=m_light_target.r;
+		}
 		logger.print(TOPIC_MQTT_PUBLISH, F("light brightness "), COLOR_GREEN);
-		Serial.println(m_light_target.r);
-		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_light_target.r);
+		Serial.println(v);
+		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", v);
 		ret = client.publish(build_topic(MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
 		if (ret) {
-			m_light_brightness.set(m_light_target.r, false); // required?
+			m_light_brightness.set(v, false); // required?
 		}
 		return ret;
 	}
@@ -515,7 +534,7 @@ bool light::publishRGBColor(){
 	if (m_light_color.get_outdated()) {
 		boolean ret = false;
 		logger.print(TOPIC_MQTT_PUBLISH, F("light color "), COLOR_GREEN);
-		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", m_light_target.r, m_light_target.g, m_light_target.b);
+		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", (uint8_t) map(m_light_target.r, 0, 99, 0, 255),(uint8_t) map(m_light_target.g, 0, 99, 0, 255), (uint8_t) map(m_light_target.b, 0, 99, 0, 255));
 		Serial.println(m_msg_buffer);
 		ret = client.publish(build_topic(MQTT_LIGHT_COLOR_STATE_TOPIC), m_msg_buffer, true);
 		if (ret) {
