@@ -12,7 +12,7 @@ uint8_t* simple_light::get_key(){
 }
 
 bool simple_light::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }
 
 bool simple_light::init(){
