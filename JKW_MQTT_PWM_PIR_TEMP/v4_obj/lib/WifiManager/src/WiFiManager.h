@@ -46,9 +46,21 @@ const char HTTP_UPDATE_SUC[] PROGMEM      = "Update Success! Rebooting...";
 
 #define WIFI_MANAGER_MAX_PARAMS 10
 #define CHK_FORMAT_V2       0x22
+#define CHK_FORMAT_V3       0x33
 
 // Buffer to hold data from the WiFi manager for mqtt login
-struct mqtt_data { //80 byte
+struct mqtt_data { //140 byte
+  char login[16];
+  char pw[16];
+  char dev_short[6];
+  char server_ip[16];
+  char server_port[6];
+  char nw_ssid[16];
+  char nw_pw[16];
+	char cap[62]; // capability
+};
+
+struct mqtt_data_v2 { //80 byte
   char login[16];
   char pw[16];
   char dev_short[6];
@@ -145,6 +157,7 @@ class WiFiManager
     // set mqtt storage
     void          setMqtt(mqtt_data *mqtt);
 		int           connectWifi(String ssid, String pass);
+		int           getRSSIasQuality(int RSSI);
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
@@ -201,11 +214,14 @@ class WiFiManager
     void          handle204();
     boolean       captivePortal();
 
+		boolean       storeMqttStruct_v3(char* temp,uint8_t size);
+    boolean       loadMqttStruct_v3(char* temp,uint8_t size);
+		boolean       loadMqttStruct_v2(char* temp,uint8_t size);
+
     // DNS server
     const byte    DNS_PORT = 53;
 
     //helpers
-    int           getRSSIasQuality(int RSSI);
     boolean       isIp(String str);
     String        toStringIp(IPAddress ip);
 

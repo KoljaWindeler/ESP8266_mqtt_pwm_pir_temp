@@ -422,9 +422,17 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 	return WiFi.status() == WL_CONNECTED;
 } // startConfigPortal
 
+// default entry points
 boolean WiFiManager::storeMqttStruct(char * temp, uint8_t size){
-	uint8_t checksum = CHK_FORMAT_V2;
+	storeMqttStruct_v3(temp, size);
+}
+boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
+	loadMqttStruct_v3(temp, size);
+}
 
+boolean WiFiManager::storeMqttStruct_v3(char * temp, uint8_t size){
+	uint8_t checksum = CHK_FORMAT_V3;
+	//return true; // debug first
 	for (int i = 0; i < size; i++) {
 		EEPROM.write(i, *temp);
 		// Serial.print(int(*temp));
@@ -436,10 +444,10 @@ boolean WiFiManager::storeMqttStruct(char * temp, uint8_t size){
 	return true;
 }
 
-boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
-	char* temp2=temp;
+boolean WiFiManager::loadMqttStruct_v3(char * temp, uint8_t size){
 	EEPROM.begin(512); // can be up to 4096
-	uint8_t checksum = CHK_FORMAT_V2;
+	uint8_t checksum = CHK_FORMAT_V3;
+	char* temp2=temp;
 	for (int i = 0; i < size; i++) {
 		*temp = EEPROM.read(i);
 		//Serial.printf(" (%i)",i);
@@ -452,40 +460,72 @@ boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
-		Serial.println("EEfail");
+		temp=temp2; // rewind
+		Serial.println(F("///////////////////////"));
+		Serial.println(F("EEPROM read failed, try legacy"));
+		bool ret = loadMqttStruct_v2(temp,94); // 94 hardcoded is size of v2
+		explainFullMqttStruct((mqtt_data*)temp);
+		Serial.println(F("saving to EEPROM with new struct"));
+		Serial.println(F("///////////////////////"));
+		storeMqttStruct_v3(temp, size);
+	}
+}
+
+boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
+	mqtt_data_v2 v2; // object that we are filling
+	char* v2_p = (char*)&v2;	//	will be used as pointer to the v2 obj
+	EEPROM.begin(512); // can be up to 4096
+	uint8_t checksum = CHK_FORMAT_V2;
+	for (int i = 0; i < size; i++) {
+		*v2_p = EEPROM.read(i);
+		//Serial.printf(" (%i)",i);
+		//Serial.print(char(*temp));
+		checksum ^= *v2_p;
+		v2_p++;
+	}
+	checksum ^= EEPROM.read(size);
+	if (checksum == 0x00) {
+		Serial.println(F("v2 checksum ok"));
+	} else {
+		Serial.println(F("v2 checksum failed"));
 
 		// try legacy V1 to v2 conversion
-		temp = temp2;        // rewind
+		v2_p = (char*)&v2; // rewind
 		for(int i=0;i<(16+16+6+20+16+6);i++){
 			//Serial.printf(" (%i)",i);
 			//Serial.print(char(*temp));
 			if(i<16+16+6){
-				*temp = EEPROM.read(i);
-				temp++;
+				*v2_p = EEPROM.read(i);
+				v2_p++;
 			} else if(i == 16+16+6){
-				*temp = '0';         // write cap
-				temp++;
-				*temp= 0;
-				temp++;
+				*v2_p = '0';         // write cap
+				v2_p++;
+				*v2_p= 0;
+				v2_p++;
 			} else if(i >= 16+16+6+20){
-				*temp = EEPROM.read(i);
-				temp++;
+				*v2_p = EEPROM.read(i);
+				v2_p++;
 			}
 		}
-		temp = temp2;        // rewind
-		Serial.println(F("///////////////////////"));
-		Serial.println(F("EEPROM read failed, try legacy"));
-		explainFullMqttStruct((mqtt_data*)temp);
-		Serial.println(F("saving to EEPROM with new struct"));
-		Serial.println(F("///////////////////////"));
-
-		storeMqttStruct(temp, size);
+		v2_p = (char*)&v2; // rewind
 		// try legacy V1 to v2 conversion
 	}
+	memcpy(((mqtt_data*)v3)->login, v2.login, sizeof(v2.login));
+	memcpy(((mqtt_data*)v3)->pw, v2.pw, sizeof(v2.pw));
+	memcpy(((mqtt_data*)v3)->dev_short, v2.dev_short, sizeof(v2.dev_short));
+	memcpy(((mqtt_data*)v3)->server_ip, v2.server_ip, sizeof(v2.server_ip));
+	memcpy(((mqtt_data*)v3)->server_port, v2.server_port, sizeof(v2.server_port));
+	memcpy(((mqtt_data*)v3)->cap, v2.cap, sizeof(v2.cap));
 	return false;
 }
 
 void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
+	for(uint8_t i=0; i<sizeof(mqtt->cap);i++){
+		if((mqtt->cap[i]<'A' || mqtt->cap[i]>'z') && mqtt->cap[i]!=',' && (mqtt->cap[i]<'0' || mqtt->cap[i]>'9')){
+			//Serial.printf("Replacing %c\r\n",mqtt->cap[i]);
+			mqtt->cap[i]=0x00;
+		}
+	}
 	explainMqttStruct(0, false);
 	Serial.println(mqtt->login);
 	explainMqttStruct(1, false);
@@ -493,11 +533,11 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 	explainMqttStruct(2, false);
 	Serial.println(mqtt->dev_short);
 	explainMqttStruct(3, false);
-	Serial.println(mqtt->cap);
-	explainMqttStruct(4, false);
 	Serial.println(mqtt->server_ip);
-	explainMqttStruct(5, false);
+	explainMqttStruct(4, false);
 	Serial.println(mqtt->server_port);
+	explainMqttStruct(5, false);
+	Serial.println(mqtt->cap);
 }
 
 void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
@@ -511,11 +551,11 @@ void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
 	} else if (i == 2) {
 		Serial.print(F("MQTT dev_short: "));
 	} else if (i == 3) {
-		Serial.print(F("MQTT Capability: "));
-	} else if (i == 4) {
 		Serial.print(F("MQTT server IP: "));
-	} else if (i == 5) {
+	} else if (i == 4) {
 		Serial.print(F("MQTT server port: "));
+	} else if (i == 5) {
+		Serial.print(F("MQTT Capability: "));
 	} else if (i == 6) {
 		Serial.print(F("Network SSID: "));
 	} else if (i == 7) {
