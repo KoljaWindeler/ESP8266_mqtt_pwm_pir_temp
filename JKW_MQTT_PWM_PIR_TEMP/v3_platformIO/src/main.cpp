@@ -2,7 +2,7 @@
 // ////////////////////////////////////////////////// globals //////////////////////////////////////////////
 
 DHT dht(DHT_PIN, DHT22);                                                                          // DHT22
-OneWire ds(DS_PIN);                                                                               // on digital pin DHT_DS_PIN
+OneWire ds(DS_PIN);	                                                                               // on digital pin DHT_DS_PIN
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, PWM_LIGHT_PIN2); // this version only works on gpio3 / D9 (RX)
 my9291 _my9291 = my9291(MY9291_DI_PIN, MY9291_DCKI_PIN, MY9291_COMMAND_DEFAULT,
   MY9291_CHANNELS);

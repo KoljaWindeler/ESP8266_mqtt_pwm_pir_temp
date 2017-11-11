@@ -47,9 +47,8 @@ bool J_DHT22::intervall_update(uint8_t slot){
 			return false;
 		}
 
-		logger.print(TOPIC_MQTT_PUBLISH, F(""));
 		dtostrf(temp, 3, 2, m_msg_buffer);
-		Serial.print(F("DHT temp "));
+		logger.print(TOPIC_MQTT_PUBLISH, F("DHT temp "), COLOR_GREEN);
 		Serial.println(m_msg_buffer);
 		return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 	}
