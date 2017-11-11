@@ -103,7 +103,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171102"
+	#define VERSION               "20171111"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -193,6 +193,8 @@ public:
 	#define ANIMATION_RAINBOW_SIMPLE 2
 	#define ANIMATION_COLOR_WIPE     3
 
+	#define MAX_PERIPHERALS 20
+
 
 	struct led {
 		uint8_t r;
@@ -251,6 +253,7 @@ public:
 	static constexpr char MQTT_ADC_STATE_TOPIC[]     = "/r/adc";         // publish
 
 	static constexpr char MQTT_SETUP_TOPIC[] = "/sr/setup"; // subscribe
+	static constexpr char MQTT_CAPABILITY_TOPIC[] = "/sr/capability"; // subscribe
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";
@@ -260,8 +263,6 @@ public:
 	extern WiFiManager wifiManager;
 	extern PubSubClient client;
 	extern mqtt_data mqtt;
-	extern capability cap;
-	extern logging logger;
 	extern char m_topic_buffer[TOPIC_BUFFER_SIZE];
 	extern char m_msg_buffer[MSG_BUFFER_SIZE];
 	extern peripheral * p_adc;
@@ -281,8 +282,6 @@ public:
 	extern peripheral * p_neo;
 	extern peripheral * p_light;
 	extern const uint8_t intens[100];
-
-	#define MAX_PERIPHERALS 20
 
 
 #include "ADC.h"

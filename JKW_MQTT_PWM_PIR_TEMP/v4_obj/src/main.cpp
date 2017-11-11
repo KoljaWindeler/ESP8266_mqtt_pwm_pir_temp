@@ -41,8 +41,10 @@ peripheral **active_intervall_p[MAX_PERIPHERALS];
 // /////////////////// function called when a MQTT message arrived /////////////////////
 void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	p_payload[p_length] = 0x00;
+	logger.addColor(COLOR_PURPLE);
 	logger.topic(TOPIC_MQTT_IN);
 	Serial.printf("%s --> %s\r\n", p_topic, p_payload);
+	logger.remColor(COLOR_PURPLE);
 
 	/// will find the right component and execute the input
 	for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
@@ -54,7 +56,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC))) {
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
-			logger.println(TOPIC_MQTT, F(" Go to setup"));
+			logger.println(TOPIC_MQTT, F("Go to setup"));
 			delay(500);
 			//TODO if (neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 				Serial.end();
@@ -89,7 +91,27 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			ESP.restart();
 		}
 	}
-	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
+	// //////////////////////// SET CAPABILITYS ////////////////////////
+	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC))) {
+		if(strcmp((const char*)mqtt.cap ,(const char*)p_payload)!=0){
+			logger.print(TOPIC_MQTT, F("Capability update, new config:"));
+			memcpy(mqtt.cap,p_payload,_min(sizeof(mqtt.cap),strlen((const char*)p_payload)));
+			mqtt.cap[_min(sizeof(mqtt.cap),strlen((const char*)p_payload))]=0x00; // ensure that at least there is room for 1 more comma
+			Serial.println((const char*)mqtt.cap);
+			//wifiManager.explainFullMqttStruct(&mqtt);
+			wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
+			// unload
+			for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
+				delete (*active_p[i]);
+				*active_p[i]=0x00;
+				active_p[i]=0x00;
+			}
+			// reload
+			loadPheripherals((uint8_t*)mqtt.cap);
+			logger.print(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"),COLOR_PURPLE);
+			client.disconnect();
+		}
+	}
 } // callback
 
 // /////////////////////////////////////////////////////////////////////////////////////
@@ -126,26 +148,18 @@ void reconnect(){
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC), COLOR_GREEN);
 
+				client.subscribe(build_topic(MQTT_CAPABILITY_TOPIC)); // capability topic
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC), COLOR_GREEN);
+
 				for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
 					(*active_p[i])->subscribe();
 				}
 
-				logger.println(TOPIC_MQTT, F("subscribing finished"));
-
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 				client.publish(build_topic("/INFO"), m_msg_buffer, true);
-
-				client.loop();
-
-				// CAPability publishing
-/* todo				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "my92x1 %i, neo %i pwm %i, %0x", cap.m_use_my92x1_as_rgb.active,
-				  cap.m_use_neo_as_rgb.active,
-				  cap.m_use_pwm_as_rgb.active,
-				  mqtt.cap[0]);
-	*/
-				client.publish(build_topic("/CAP"), m_msg_buffer, true);
 				client.loop();
 
 				// WIFI publishing
@@ -159,6 +173,8 @@ void reconnect(){
 				  bssid[0]);
 				client.publish(build_topic("/BSSID"), m_msg_buffer, true);
 				client.loop();
+
+				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
 				timer_connected_start = millis();
 			} // if MQTT client.connect ok
@@ -297,22 +313,26 @@ void loadConfig(){
 	}
 	Serial.println(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
-
+	mqtt.cap[sizeof(mqtt.cap)-2]=0x00; // sure to make sure he string is determine
 	loadPheripherals((uint8_t*)mqtt.cap);
 	Serial.println(F("=== End of parameters ==="));
 } // loadConfig
 
 void loadPheripherals(uint8_t* peripherals){
 	// capabilities
+	logger.println(TOPIC_GENERIC_INFO, F("creating peripherals"), COLOR_PURPLE);
 	// erase
 	for(uint8_t i = 0; i<MAX_PERIPHERALS ; i++){
 		if(all_p[i]){
 			delete *all_p[i];
 			all_p[i] = 0x00;
+			active_p[i] = 0x00;
 		}
 	}
 	active_p_pointer=0;
 
+	//Serial.print("RAM before creating objects ");
+	//Serial.println(system_get_free_heap_size());
 	// create objects
 	p_adc = new ADC();
 	p_button = new button();
@@ -326,6 +346,9 @@ void loadPheripherals(uint8_t* peripherals){
 	p_bOne = new BOne();
 	p_neo = new NeoStrip();
 	p_light = new light();
+
+	//Serial.print("RAM after creating objects ");
+	//Serial.println(system_get_free_heap_size());
 
 	// register
 	all_p[active_p_pointer]=&p_pwm;
@@ -356,12 +379,13 @@ void loadPheripherals(uint8_t* peripherals){
 	active_p_pointer=0;
 	active_p_intervall_counter = 0;
 	// remove me
-	uint8_t p_string[40];
+	//uint8_t p_string[40];
 	//sprintf((char*)p_string,"ADC,SL,PIR,PWM,R,B,DHT,DS,LIG,NEO");
-	sprintf((char*)p_string,"ADC,PIR,R,B,DHT,DS,LIG,NEO");
+	//sprintf((char*)p_string,"ADC,PIR,R,B,DHT,DS,LIG,NEO");
+	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
 
 	for(uint8_t i = 0; all_p[i]!=0x00 ; i++){
-		if((*all_p[i])->parse(p_string)){ // true = obj active
+		if((*all_p[i])->parse(peripherals)){ // true = obj active
 			(*all_p[i])->init();
 			// store object in active peripheral list
 			active_p[active_p_pointer]=all_p[i];
@@ -377,6 +401,11 @@ void loadPheripherals(uint8_t* peripherals){
 			all_p[i]=0x00;
 		}
 	}
+
+	//Serial.print("RAM after init objects ");
+	//Serial.println(system_get_free_heap_size());
+
+	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
 	// set one provider
 	if(p_simple_light){
 		((light*)p_light)->reg_provider(p_simple_light,T_SL);
@@ -389,6 +418,8 @@ void loadPheripherals(uint8_t* peripherals){
 	} else if(p_ai){
 		((light*)p_light)->reg_provider(p_ai,T_PWM);
 	}
+
+	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
 }
 
 // build topics with device id on the fly
@@ -448,15 +479,17 @@ void setup(){
 	// load all paramters!
 	loadConfig();
 	// get reset reason
-	if (ESP.getResetInfoPtr()->reason == REASON_DEFAULT_RST) {
-		// set some light on regular power up
-		logger.println(TOPIC_GENERIC_INFO, F("PowerUp. Set all lights on"), COLOR_PURPLE);
-		((light*)p_light)->setColor(255,255,255);
-		((light*)p_light)->setState(true);
-	} else {
-		Serial.println();
-		logger.println(TOPIC_GENERIC_INFO, F("WatchDog Reset. Set all lights off"), COLOR_PURPLE);
-		((light*)p_light)->setState(false);
+	if(p_light){
+		if (ESP.getResetInfoPtr()->reason == REASON_DEFAULT_RST) {
+			// set some light on regular power up
+			logger.println(TOPIC_GENERIC_INFO, F("PowerUp. Set all lights on"), COLOR_PURPLE);
+			((light*)p_light)->setColor(255,255,255);
+			((light*)p_light)->setState(true);
+		} else {
+			Serial.println();
+			logger.println(TOPIC_GENERIC_INFO, F("WatchDog Reset. Set all lights off"), COLOR_PURPLE);
+			((light*)p_light)->setState(false);
+		}
 	}
 
 	// //// start wifi manager
@@ -485,7 +518,6 @@ void loop(){
 	}
 	client.loop();
 	// // dimming end ////
-
 	uninterrupted = false;
 	for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
 		if((*active_p[i])->loop()){ // uninterrupted loop request ... don't execute others
@@ -506,12 +538,13 @@ void loop(){
 			}
 		}
 
-
 		// // send periodic updates ////
-		if (millis() - updateFastValuesTimer > (60000UL/active_p_intervall_counter) && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			updateFastValuesTimer = millis();
-			(*active_intervall_p[periodic_slot])->intervall_update(periodic_slot);
-			periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
+		if(active_p_intervall_counter>0){
+			if (millis() - updateFastValuesTimer > (60000UL/active_p_intervall_counter) && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+				updateFastValuesTimer = millis();
+				(*active_intervall_p[periodic_slot])->intervall_update(periodic_slot);
+				periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
+			}
 		}
 	}
 	// // send periodic updates ////
