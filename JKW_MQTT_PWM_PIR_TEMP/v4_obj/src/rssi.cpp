@@ -12,7 +12,7 @@ uint8_t* rssi::get_key(){
 }
 
 bool rssi::init(){
-	logger.println(TOPIC_GENERIC_INFO, F("ADC init"), COLOR_GREEN);
+	logger.println(TOPIC_GENERIC_INFO, F("RSSI init"), COLOR_GREEN);
 }
 
 bool rssi::parse(uint8_t* config){
@@ -28,7 +28,8 @@ uint8_t rssi::count_intervall_update(){
 }
 
 bool rssi::intervall_update(uint8_t slot){
-	float rssi = WiFi.RSSI();
+	float rssi = wifiManager.getRSSIasQuality((int)WiFi.RSSI());
+	//float rssi = WiFi.RSSI();
 	logger.print(TOPIC_MQTT_PUBLISH, F("rssi "), COLOR_GREEN);
 	// this is needed to avoid reporting the same value over and over
 	// home assistant will show us as "not updated for xx Minutes" if the RSSSI stays the same
