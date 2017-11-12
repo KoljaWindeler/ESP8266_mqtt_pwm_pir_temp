@@ -20,6 +20,8 @@
 #define COLOR_PURPLE	4
 
 #define LOGGING_BUFFER_SIZE 1500
+#define EXCEPT_BUFFER_WASTING 0.03
+#define MAX_MQTT_MSG 100
 
 
 class logging {
@@ -47,12 +49,13 @@ class logging {
 		uint8_t* loop();
 		void addChar(uint8_t c);
 		void addChar(String S);
-		uint16_t available();
+		void set_active(bool in);
 	private:
 		uint8_t buffer[LOGGING_BUFFER_SIZE];
 		uint16_t head;
 		uint16_t tail;
 		uint8_t msg_c;
+		bool active;
 };
 
 extern logging logger;

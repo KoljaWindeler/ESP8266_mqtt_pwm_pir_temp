@@ -10,6 +10,7 @@ void logging::init(){
 	head=0;
 	tail=0;
 	msg_c=0;
+	active=false;
 };
 
 void logging::print(uint8_t TOPIC, const __FlashStringHelper* text, uint8_t color){
@@ -40,6 +41,10 @@ void logging::print(uint8_t TOPIC, char * text, uint8_t color){
 	remColor(color);
 };
 
+
+void logging::set_active(bool in){
+	active=in;
+}
 
 void logging::addColor(uint8_t color){
 	/*
@@ -146,13 +151,42 @@ void logging::addChar(uint8_t c){
 		Serial.print((char)c);
 	}
 
+	if(!active){
+		return;
+	}
+
 	buffer[(tail)%(LOGGING_BUFFER_SIZE-1)]=c;
 	tail=(tail+1)%(LOGGING_BUFFER_SIZE-1); // 0..498
 	buffer[(tail)%(LOGGING_BUFFER_SIZE-1)]=0x00;
 
-	//if(tail==0){
-	//	Serial.print("\r\nwrap\r\n");
-	//}
+	// tail = pointer auf die 0x00 hinter dem string
+	// head = pointer auf das erste byte das noch zu senden ist
+
+	if(tail==0){
+		//Serial.print("\r\nwrap\r\n");
+		uint16_t lnb=LOGGING_BUFFER_SIZE;
+		for(uint8_t i=1; i<EXCEPT_BUFFER_WASTING*LOGGING_BUFFER_SIZE; i++){
+			if(buffer[LOGGING_BUFFER_SIZE-1-i]==0x00){
+				lnb=LOGGING_BUFFER_SIZE-i; //-1+1
+				break;
+			}
+		}
+		//Serial.printf("lnb eos2=%i\r\n",lnb);
+		//Serial.println((char*)(buffer+lnb));
+
+		if(lnb<LOGGING_BUFFER_SIZE){ // aka there was another 0x00 before the end
+			//Serial.printf("cpy/set\r\n");
+			memcpy(buffer, (uint8_t*)(buffer+lnb), LOGGING_BUFFER_SIZE-lnb-1);
+			//Serial.println((char*)buffer);
+			memset((uint8_t*)(buffer+lnb), 0x00, LOGGING_BUFFER_SIZE-lnb);
+			tail=LOGGING_BUFFER_SIZE-lnb-1;
+			// tail wraped now, is now >0. Head should be somewhere in the middle
+			// except we just wrapped .. at that poin the head < tail
+			if(head<=tail){
+				head=tail+1;// -1+1
+			}
+		}
+	}
 
 	if(tail==head){
 		head=(tail+1)%(LOGGING_BUFFER_SIZE-1); // 0..498
@@ -161,7 +195,7 @@ void logging::addChar(uint8_t c){
 	msg_c++;
 	if(c==0x00){
 		msg_c=0;
-	} else if(msg_c>100){
+	} else if(msg_c>MAX_MQTT_MSG){
 		msg_c=0;
 		addChar(0x00);
 		addChar('$');
@@ -169,27 +203,30 @@ void logging::addChar(uint8_t c){
 	}
 }
 
-uint16_t logging::available(){
-	if(head==tail){
-		return 0;
-	} else if(head<tail){
-		return tail-head;
-	} else {
-		return LOGGING_BUFFER_SIZE-head+tail;
-	}
-}
 
 uint8_t* logging::loop(){
+	if(!active){
+		return 0;
+	}
 	uint32_t ret;
 	if(head!=tail){
-		//LOGGING_BUFFER_SIZE
-		//uint8_t b[100];
 		ret = (uint32_t)buffer + head;
+		//Serial.printf("h %i t %i: %s[$] %i\r\n",head,tail,(char*)(ret),*((uint8_t*)ret));
+
+		// assume buffer ist KOLJA[0x00], head is pointing to "K" strlen will return 5
+		// head + 5 points to the 0x00 behind kolja, thus add one to get behind it
 		head = (head+strlen((const char*)ret)+1)%LOGGING_BUFFER_SIZE;
+		// but if the tail was pointing to the 0x00 marker we've just passed we'll have head = tail+1
+		// and loop to buffer again, that must be stopped
 		if(head==tail+1){
 			tail=head;
 		}
-		//Serial.printf("h %i t %i\r\n",head,tail);
+		//Serial.printf("A h:%i\r\n",head);
+		// is the string on this buffer is directly followed by another 0x00
+		// simply skip this buffer (return 0 will avoid sending)
+		if(strlen((char*)(ret))==0){
+			return 0;
+		}
 		return (uint8_t*)ret;
 	}
 	return 0;

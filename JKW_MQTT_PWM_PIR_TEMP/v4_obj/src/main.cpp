@@ -32,6 +32,7 @@ uint8_t active_p_intervall_counter=0;
 peripheral **all_p[MAX_PERIPHERALS];
 peripheral **active_p[MAX_PERIPHERALS];
 peripheral **active_intervall_p[MAX_PERIPHERALS];
+char* p_trace;
 
 //bool (*intervall_p[MAX_PERIPHERALS]);
 
@@ -43,7 +44,9 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	p_payload[p_length] = 0x00;
 	logger.addColor(COLOR_PURPLE);
 	logger.topic(TOPIC_MQTT_IN);
-	Serial.printf("%s --> %s\r\n", p_topic, p_payload);
+	sprintf(m_msg_buffer,"%s --> %s\r\n", p_topic, p_payload);
+	logger.p(m_msg_buffer);
+	//Serial.printf("%s --> %s\r\n", p_topic, p_payload);
 	logger.remColor(COLOR_PURPLE);
 
 	/// will find the right component and execute the input
@@ -68,8 +71,8 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			// debug
 			WiFi.printDiag(Serial);
 		} else if (!strncmp_P((const char *) p_payload, "http", 4)) { // update
-			Serial.print(F("Update command with url found, trying to update from "));
-			Serial.println((char*)p_payload);
+			logger.p(F("Update command with url found, trying to update from "));
+			logger.pln((char*)p_payload);
 			// have to create a copy, whenever we publish we'll override the current buffer
 			char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
 			strcpy(copy_buffer,(const char*)p_payload);
@@ -80,24 +83,29 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
 			if (res == HTTP_UPDATE_OK) {
 				client.publish(build_topic("/INFO"), "rebooting...", true);
-				Serial.println(F("Update OK, rebooting"));
+				logger.pln(F("Update OK, rebooting"));
 				ESP.restart();
 			} else {
 				client.publish(build_topic("/INFO"), "update failed", true);
-				Serial.println(F("Update failed"));
+				logger.pln(F("Update failed"));
 			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
-			Serial.print(F("Received reset command"));
+			logger.p(F("Received reset command"));
 			ESP.restart();
 		}
 	}
 	// //////////////////////// SET CAPABILITYS ////////////////////////
 	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC))) {
+		wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
+		//logger.pln("compare:");
+		//logger.pln((const char*)mqtt.cap);
+		//logger.pln((const char*)p_payload);
+
 		if(strcmp((const char*)mqtt.cap ,(const char*)p_payload)!=0){
 			logger.print(TOPIC_MQTT, F("Capability update, new config:"));
 			memcpy(mqtt.cap,p_payload,_min(sizeof(mqtt.cap),strlen((const char*)p_payload)));
 			mqtt.cap[_min(sizeof(mqtt.cap),strlen((const char*)p_payload))]=0x00; // ensure that at least there is room for 1 more comma
-			Serial.println((const char*)mqtt.cap);
+			logger.pln(mqtt.cap);
 			//wifiManager.explainFullMqttStruct(&mqtt);
 			wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
 			// unload
@@ -108,8 +116,17 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			}
 			// reload
 			loadPheripherals((uint8_t*)mqtt.cap);
-			logger.print(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"),COLOR_PURPLE);
+			logger.println(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"),COLOR_PURPLE);
 			client.disconnect();
+		}
+	}
+	////////////////////// trace /////////////////////////////
+	else if(!strcmp(p_topic, build_topic(MQTT_TRACE_COMMAND_TOPIC))){
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
+			logger.set_active(true);
+			logger.println(TOPIC_MQTT, F("=== Trace activated ==="),COLOR_PURPLE);
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) { // switch off
+			logger.set_active(false);
 		}
 	}
 } // callback
@@ -121,7 +138,7 @@ void reconnect(){
 	if (timer_connected_stop < timer_connected_start) {
 		timer_connected_stop = millis();
 	}
-	Serial.println("\r\n");
+	logger.pln(F("\r\n"));
 
 	// first check wifi
 	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
@@ -139,11 +156,15 @@ void reconnect(){
 		if (WiFi.status() == WL_CONNECTED) {
 			// Attempt to connect
 			logger.print(TOPIC_MQTT, F("connecting with id: "));
-			Serial.println(mqtt.dev_short);
+			logger.pln(mqtt.dev_short);
 			if (client.connect(mqtt.dev_short, mqtt.login, mqtt.pw)) {
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
 				// ... and resubscribe
+				client.subscribe(build_topic(MQTT_TRACE_COMMAND_TOPIC)); // MQTT_TRACE_COMMAND_TOPIC topic
+				client.loop();
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_COMMAND_TOPIC), COLOR_GREEN);
+
 				client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // setup topic
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC), COLOR_GREEN);
@@ -190,14 +211,15 @@ void reconnect(){
 			  _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
 
 			logger.addColor(COLOR_PURPLE);
-			Serial.printf(
+			sprintf(m_msg_buffer,
 			  "MQTT was previously connected %i sec\r\nMQTT is disconnected for %i sec\r\nMax time before starting AP mode %i sec\r\n",
 			  time_connected, time_not_connected, time_max_reconnect);
+			logger.p(m_msg_buffer);
 			logger.remColor(COLOR_PURPLE);
 
 			if (time_not_connected > time_max_reconnect) {
 				// time to start the AP
-				Serial.println(F("Can't connect, starting AP"));
+				logger.pln(F("Can't connect, starting AP"));
 				if(p_neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 					Serial.end();
 					delay(500);
@@ -206,15 +228,15 @@ void reconnect(){
 				wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 				timer_connected_stop  = millis();           // resets timer
 				timer_connected_start = millis();
-				Serial.println(F("Config AP closed"));
+				logger.pln(F("Config AP closed"));
 				// debug
 				WiFi.printDiag(Serial);
 			}
 			// not yet time to access point, wait 5 sec
 			else {
 				logger.print(TOPIC_WIFI, F("connect failed, "));
-				Serial.print(client.state());
-				Serial.println(F(", try again in 5 seconds "));
+				logger.p(client.state());
+				logger.pln(F(", try again in 5 seconds "));
 				// Serial.printf("%i/%i\r\n", tries, max_tries);
 
 				// only wait if the MQTT broker was not available,
@@ -242,7 +264,7 @@ void configModeCallback(WiFiManager * myWiFiManager){
 	wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
 	// prepare wifimanager variables
 	wifiManager.setAPStaticIPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 255), IPAddress(255, 255, 255, 0));
-	Serial.println(F("Entered config mode"));
+	logger.pln(F("Entered config mode"));
 }
 
 // this is a callback so we can toggle the lights via the wifimanager and identify the light
@@ -276,11 +298,11 @@ void saveConfigCallback(){
 	}
 	mqtt.cap[0] += '0';
 
-	Serial.println(F("=== Saving parameters: ==="));
+	logger.pln(F("=== Saving parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
-	Serial.println(F("=== End of parameters ==="));
+	logger.pln(F("=== End of parameters ==="));
 	wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
-	Serial.println(F("Configuration saved, restarting"));
+	logger.pln(F("Configuration saved, restarting"));
 	delay(2000);
 	ESP.reset(); // eigentlich muss das gehen so, .. // we can't change from AP mode to client mode, thus: reboot
 } // saveConfigCallback
@@ -311,11 +333,11 @@ void loadConfig(){
 	} else {
 		wifiManager.setCustomIdElement("");
 	}
-	Serial.println(F("=== Loaded parameters: ==="));
+	logger.pln(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
 	mqtt.cap[sizeof(mqtt.cap)-2]=0x00; // sure to make sure he string is determine
 	loadPheripherals((uint8_t*)mqtt.cap);
-	Serial.println(F("=== End of parameters ==="));
+	logger.pln(F("=== End of parameters ==="));
 } // loadConfig
 
 void loadPheripherals(uint8_t* peripherals){
@@ -331,8 +353,8 @@ void loadPheripherals(uint8_t* peripherals){
 	}
 	active_p_pointer=0;
 
-	//Serial.print("RAM before creating objects ");
-	//Serial.println(system_get_free_heap_size());
+	//logger.p("RAM before creating objects ");
+	//logger.pln(system_get_free_heap_size());
 	// create objects
 	p_adc = new ADC();
 	p_button = new button();
@@ -347,8 +369,8 @@ void loadPheripherals(uint8_t* peripherals){
 	p_neo = new NeoStrip();
 	p_light = new light();
 
-	//Serial.print("RAM after creating objects ");
-	//Serial.println(system_get_free_heap_size());
+	//logger.p("RAM after creating objects ");
+	//logger.pln(system_get_free_heap_size());
 
 	// register
 	all_p[active_p_pointer]=&p_pwm;
@@ -402,8 +424,8 @@ void loadPheripherals(uint8_t* peripherals){
 		}
 	}
 
-	//Serial.print("RAM after init objects ");
-	//Serial.println(system_get_free_heap_size());
+	//logger.p("RAM after init objects ");
+	//logger.pln(system_get_free_heap_size());
 
 	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
 	// set one provider
@@ -414,9 +436,9 @@ void loadPheripherals(uint8_t* peripherals){
 	} else if(p_neo){
 		((light*)p_light)->reg_provider(p_neo,T_NEO);
 	} else if(p_bOne){
-		((light*)p_light)->reg_provider(p_bOne,T_PWM);
+		((light*)p_light)->reg_provider(p_bOne,T_BOne);
 	} else if(p_ai){
-		((light*)p_light)->reg_provider(p_ai,T_PWM);
+		((light*)p_light)->reg_provider(p_ai,T_AI);
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
@@ -436,37 +458,38 @@ char * build_topic(const char * topic){
 void setup(){
 	// /// init the serial and print debug /////
 	Serial.begin(115200);
+	logger.init();
 	for (uint8_t i = 0; i < 10; i++) {
-		Serial.print(i);
-		Serial.print(F(".. "));
+		logger.p(i);
+		logger.p(F(".. "));
 		delay(500);
 	}
-	Serial.println("");
-	Serial.println("");
-	Serial.println(F("========== INFO ========== "));
-	Serial.print(F("Startup v"));
-	Serial.println(F(VERSION));
-	Serial.print(F("Pinout "));
-	Serial.println(F(PINOUT));
-	Serial.println(F("+ Flash:"));
+	logger.pln(F(""));
+	logger.pln(F(""));
+	logger.pln(F("========== INFO ========== "));
+	logger.p(F("Startup v"));
+	logger.pln(F(VERSION));
+	logger.p(F("Pinout "));
+	logger.pln(F(PINOUT));
+	logger.pln(F("+ Flash:"));
 	if (ESP.getFlashChipRealSize() != ESP.getFlashChipSize()) {
 		if (ESP.getFlashChipRealSize() > ESP.getFlashChipSize()) {
-			Serial.print(F("  warning"));
+			logger.p(F("  warning"));
 		} else {
-			Serial.print(F("  CRITICAL"));
+			logger.p(F("  CRITICAL"));
 		}
-		Serial.println(F(", wrong flash config"));
-		Serial.print(F("  Dev has "));
-		Serial.print(ESP.getFlashChipRealSize());
-		Serial.print(F(" but is configured with size "));
-		Serial.println(ESP.getFlashChipSize());
+		logger.pln(F(", wrong flash config"));
+		logger.p(F("  Dev has "));
+		logger.p(ESP.getFlashChipRealSize());
+		logger.p(F(" but is configured with size "));
+		logger.pln(ESP.getFlashChipSize());
 	} else {
-		Serial.println(F("  Flash config correct"));
+		logger.pln(F("  Flash config correct"));
 	}
-	Serial.println(F("+ RAM:"));
-	Serial.print(F("  available "));
-	Serial.println(system_get_free_heap_size());
-	Serial.println(F("========== INFO ========== "));
+	logger.pln(F("+ RAM:"));
+	logger.p(F("  available "));
+	logger.pln(system_get_free_heap_size());
+	logger.pln(F("========== INFO ========== "));
 	// /// init the serial and print debug /////
 
 	// /// init the led /////
@@ -486,7 +509,7 @@ void setup(){
 			((light*)p_light)->setColor(255,255,255);
 			((light*)p_light)->setState(true);
 		} else {
-			Serial.println();
+			logger.pln(F(""));
 			logger.println(TOPIC_GENERIC_INFO, F("WatchDog Reset. Set all lights off"), COLOR_PURPLE);
 			((light*)p_light)->setState(false);
 		}
@@ -546,8 +569,20 @@ void loop(){
 				periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
 			}
 		}
+
+	// // trace ////
+		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+			p_trace=(char *)logger.loop();
+			if(p_trace){
+				//Serial.printf("total %i, end %i,%i,%i\r\n",strlen(t),t[strlen(t)-1],t[strlen(t)-2],t[strlen(t)-3]);
+				//if(t[strlen(t)-2]==13 && t[strlen(t)-1]==10){
+				//	t[strlen(t)-2]=0x00;
+				//}
+				client.publish(build_topic(MQTT_TRACE_STATUS_TOPIC), p_trace);
+				timer_last_publish    = millis();
+			}
+		}
 	}
-	// // send periodic updates ////
 
 } // loop
 

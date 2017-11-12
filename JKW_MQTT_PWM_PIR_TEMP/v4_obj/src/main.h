@@ -103,7 +103,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171111"
+	#define VERSION               "20171111_2"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -254,6 +254,8 @@ public:
 
 	static constexpr char MQTT_SETUP_TOPIC[] = "/sr/setup"; // subscribe
 	static constexpr char MQTT_CAPABILITY_TOPIC[] = "/sr/capability"; // subscribe
+	static constexpr char MQTT_TRACE_COMMAND_TOPIC[] = "/s/trace"; // subscribe
+	static constexpr char MQTT_TRACE_STATUS_TOPIC[] = "/r/trace"; // publish
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";
