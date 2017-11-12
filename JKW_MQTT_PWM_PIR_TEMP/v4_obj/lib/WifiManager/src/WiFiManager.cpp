@@ -431,6 +431,7 @@ boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
 }
 
 boolean WiFiManager::storeMqttStruct_v3(char * temp, uint8_t size){
+	EEPROM.begin(512); // can be up to 4096
 	uint8_t checksum = CHK_FORMAT_V3;
 	//return true; // debug first
 	for (int i = 0; i < size; i++) {
