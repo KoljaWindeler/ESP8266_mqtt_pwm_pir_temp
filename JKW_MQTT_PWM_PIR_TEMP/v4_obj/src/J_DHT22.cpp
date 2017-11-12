@@ -39,17 +39,17 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
 			logger.print(TOPIC_MQTT, F("no publish temp, "), COLOR_YELLOW);
 			if (isnan(temp)) {
-				Serial.println(F("nan"));
+				logger.pln(F("nan"));
 			} else {
-				Serial.print(temp);
-				Serial.println(F(" >TEMP_MAX"));
+				logger.p(temp);
+				logger.pln(F(" >TEMP_MAX"));
 			}
 			return false;
 		}
 
 		dtostrf(temp, 3, 2, m_msg_buffer);
 		logger.print(TOPIC_MQTT_PUBLISH, F("DHT temp "), COLOR_GREEN);
-		Serial.println(m_msg_buffer);
+		logger.pln(m_msg_buffer);
 		return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 	}
 	else if(slot%count_intervall_update()==1){
@@ -60,7 +60,7 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		}
 		logger.print(TOPIC_MQTT_PUBLISH, F("humidiy "), COLOR_GREEN);
 		dtostrf(hum, 3, 2, m_msg_buffer);
-		Serial.println(m_msg_buffer);
+		logger.pln(m_msg_buffer);
 		return client.publish(build_topic(MQTT_HUMIDITY_TOPIC), m_msg_buffer, true);
 	}
 	return false;

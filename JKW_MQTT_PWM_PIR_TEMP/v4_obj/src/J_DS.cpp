@@ -33,18 +33,18 @@ bool J_DS::intervall_update(uint8_t slot){
 	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
 		logger.print(TOPIC_MQTT, F("no publish temp, "), COLOR_YELLOW);
 		if (isnan(temp)) {
-			Serial.println(F("nan"));
+			logger.pln(F("nan"));
 		} else {
-			Serial.print(temp);
-			Serial.println(F(" >TEMP_MAX"));
+			logger.p(temp);
+			logger.pln(F(" >TEMP_MAX"));
 		}
 		return false;
 	}
 
 	logger.print(TOPIC_MQTT_PUBLISH, F(""));
 	dtostrf(temp, 3, 2, m_msg_buffer);
-	Serial.print(F("DS temp "));
-	Serial.println(m_msg_buffer);
+	logger.p(F("DS temp "));
+	logger.pln(m_msg_buffer);
 	return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
 }
 
@@ -78,12 +78,12 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 	}
 
 	if (OneWire::crc8(addr, 7) != addr[7]) {
-		Serial.println(F("CRC is not valid!"));
+		logger.pln(F("CRC is not valid!"));
 		return -888;
 	}
 
 	if (addr[0] != 0x10 && addr[0] != 0x28) {
-		Serial.print(F("Device is not recognized"));
+		logger.p(F("Device is not recognized"));
 		return -777;
 	}
 

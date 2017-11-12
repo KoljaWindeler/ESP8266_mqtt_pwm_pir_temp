@@ -35,7 +35,7 @@ bool rssi::intervall_update(uint8_t slot){
 	// home assistant will show us as "not updated for xx Minutes" if the RSSSI stays the same
 	rssi += ((float) random(10)) / 100;
 	dtostrf(rssi, 3, 2, m_msg_buffer);
-	Serial.println(m_msg_buffer);
+	logger.pln(m_msg_buffer);
 	return client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
 }
 

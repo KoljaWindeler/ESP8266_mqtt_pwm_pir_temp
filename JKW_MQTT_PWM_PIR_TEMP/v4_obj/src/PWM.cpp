@@ -66,13 +66,11 @@ void PWM::setColor(uint8_t r, uint8_t g, uint8_t b){
 	//if (m_state.get_value() && r == 0) {
 	//	r = sizeof(intens) - 1;
 	//}
-
-
 	analogWrite(PWM_LIGHT_PIN1, r);
 	analogWrite(PWM_LIGHT_PIN2, g);
 	analogWrite(PWM_LIGHT_PIN3, b);
 
 	logger.print(TOPIC_INFO_PWM, F("PWM: "));
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", r, g, b);
-	Serial.println(m_msg_buffer);
+	logger.pln(m_msg_buffer);
 } // setState

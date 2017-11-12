@@ -36,18 +36,18 @@ bool light::reg_provider(peripheral * p, uint8_t t){
 	provider = p;
 	logger.print(TOPIC_GENERIC_INFO, F("light registered provider: "), COLOR_GREEN);
 	if(t==T_SL){
-		Serial.println(F("simple light"));
+		logger.pln(F("simple light"));
 	} else if(t==T_PWM){
-		Serial.println(F("PWM light"));
+		logger.pln(F("PWM light"));
 	} else if(t==T_NEO){
-		Serial.println(F("neostrip light"));
+		logger.pln(F("neostrip light"));
 	} else if(t==T_BOne){
-		Serial.println(F("B1 light"));
+		logger.pln(F("B1 light"));
 	} else if(t==T_AI){
-		Serial.println(F("AI light"));
+		logger.pln(F("AI light"));
 	} else {
-		Serial.println(F("UNKNOWN "));
-		Serial.println(t);
+		logger.pln(F("UNKNOWN "));
+		logger.pln(t);
 	}
 
 }
@@ -105,9 +105,9 @@ void light::toggle(){
 bool light::loop(){
 	// // dimming active?  ////
 	if (timer_dimmer_end) { // we are dimming as long as this is non-zero
-		//Serial.print(".");
+		//logger.p(".");
 		if (millis() >= timer_dimmer + m_pwm_dimm_time) {
-			// Serial.print("DIMMER ");
+			// logger.p("DIMMER ");
 			timer_dimmer = millis(); // save for next round
 
 			// set new value
@@ -119,7 +119,7 @@ bool light::loop(){
 				m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
 				m_light_current.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.b, m_light_target.b);
 			}
-			//Serial.println(m_light_current.r);
+			//logger.pln(m_light_current.r);
 			send_current_light();
 		}
 		return true; // muy importante .. request uninterrupted execution
@@ -284,7 +284,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				if (m_animation_type.get_value()) {
 					setAnimationType(ANIMATION_OFF);
 				}
-				// Serial.println("light was off");
+				// logger.pln("light was off");
 				m_state.set(true);
 				m_light_brightness.outdated();
 				m_light_color.outdated(); // set this to publish that we've left the color
@@ -300,7 +300,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				if (m_animation_type.get_value()) {
 					setAnimationType(ANIMATION_OFF);
 				}
-				// Serial.println("light was on");
+				// logger.pln("light was on");
 				m_state.set(false);
 				//m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
 				// remember the current target value to resume to this value once we receive a 'dimm on 'command
@@ -393,7 +393,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				setAnimationType(ANIMATION_OFF);
 			}
 			logger.print(TOPIC_MQTT, F("dimm brightness command "),COLOR_PURPLE);
-			Serial.println(t);
+			logger.pln(t);
 			// publish
 			m_light_brightness.set(t, true);
 			m_light_color.outdated(); // needed to update HA symbol
@@ -472,8 +472,8 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 		}
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC))) { // adjust dimmer delay
 		m_pwm_dimm_time = atoi((const char *) p_payload);
-		// Serial.print("Setting dimm time to: ");
-		// Serial.println(m_pwm_dimm_time);
+		// logger.p("Setting dimm time to: ");
+		// logger.pln(m_pwm_dimm_time);
 	}
 	return false; // not for me
 } // receive
@@ -495,10 +495,10 @@ bool light::publishLightState(){
 
 		logger.print(TOPIC_MQTT_PUBLISH, F("light state "), COLOR_GREEN);
 		if (m_state.get_value()) {
-			Serial.println(STATE_ON);
+			logger.pln((char*)STATE_ON);
 			ret = client.publish(build_topic(MQTT_LIGHT_STATE_TOPIC), STATE_ON, true);
 		} else {
-			Serial.println(STATE_OFF);
+			logger.pln((char*)STATE_OFF);
 			ret = client.publish(build_topic(MQTT_LIGHT_STATE_TOPIC), STATE_OFF, true);
 		}
 		if (ret) {
@@ -518,7 +518,7 @@ bool light::publishLightBrightness(){
 			v=m_light_target.r;
 		}
 		logger.print(TOPIC_MQTT_PUBLISH, F("light brightness "), COLOR_GREEN);
-		Serial.println(v);
+		logger.pln(v);
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", v);
 		ret = client.publish(build_topic(MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC), m_msg_buffer, true);
 		if (ret) {
@@ -535,7 +535,7 @@ bool light::publishRGBColor(){
 		boolean ret = false;
 		logger.print(TOPIC_MQTT_PUBLISH, F("light color "), COLOR_GREEN);
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", (uint8_t) map(m_light_target.r, 0, 99, 0, 255),(uint8_t) map(m_light_target.g, 0, 99, 0, 255), (uint8_t) map(m_light_target.b, 0, 99, 0, 255));
-		Serial.println(m_msg_buffer);
+		logger.pln(m_msg_buffer);
 		ret = client.publish(build_topic(MQTT_LIGHT_COLOR_STATE_TOPIC), m_msg_buffer, true);
 		if (ret) {
 			m_light_color.outdated(false);
@@ -547,11 +547,11 @@ bool light::publishRGBColor(){
 
 void light::DimmTo(led dimm_to){
 	logger.print(TOPIC_GENERIC_INFO, F("DimmTo "), COLOR_PURPLE);
-	Serial.print(dimm_to.r);
-	Serial.print(",");
-	Serial.print(dimm_to.g);
-	Serial.print(",");
-	Serial.println(dimm_to.b);
+	logger.p(dimm_to.r);
+	logger.p(F(","));
+	logger.p(dimm_to.g);
+	logger.p(F(","));
+	logger.pln(dimm_to.b);
 	// find biggest difference for end time calucation
 	m_light_target = dimm_to;
 
@@ -573,8 +573,8 @@ void light::DimmTo(led dimm_to){
 	timer_dimmer_start = millis();
 	timer_dimmer_end   = timer_dimmer_start + biggest_delta * m_pwm_dimm_time;
 
-	// Serial.print("Enabled dimming, timing: ");
-	// Serial.println(m_pwm_dimm_time);
+	// logger.p("Enabled dimming, timing: ");
+	// logger.pln(m_pwm_dimm_time);
 }
 
 // set rainbow start point .. thats pretty much it
