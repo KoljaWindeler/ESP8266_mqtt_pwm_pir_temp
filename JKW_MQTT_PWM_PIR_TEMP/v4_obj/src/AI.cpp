@@ -68,5 +68,5 @@ bool AI::receive(uint8_t* p_topic, uint8_t* p_payload){
 
 
 bool AI::publish(){
-	return true;
+	return false; // i did notihgin
 }
