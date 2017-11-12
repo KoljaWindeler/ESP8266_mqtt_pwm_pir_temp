@@ -19,10 +19,13 @@
 #define COLOR_YELLOW	3
 #define COLOR_PURPLE	4
 
+#define LOGGING_BUFFER_SIZE 1500
+
 
 class logging {
 	public:
 		logging();
+		void init();
 		void print(uint8_t TOPIC,const __FlashStringHelper* text);
 		void print(uint8_t TOPIC, char * text);
 		void println(uint8_t TOPIC,const __FlashStringHelper* text);
@@ -34,7 +37,22 @@ class logging {
 		void topic(uint8_t TOPIC);
 		void addColor(uint8_t color);
 		void remColor(uint8_t color);
+		// print and println
+		void p(char* t);
+		void pln(char * t);
+		void p(uint8_t i);
+		void pln(uint8_t i);
+		void p(const __FlashStringHelper* t);
+		void pln(const __FlashStringHelper* t);
+		uint8_t* loop();
+		void addChar(uint8_t c);
+		void addChar(String S);
+		uint16_t available();
 	private:
+		uint8_t buffer[LOGGING_BUFFER_SIZE];
+		uint16_t head;
+		uint16_t tail;
+		uint8_t msg_c;
 };
 
 extern logging logger;

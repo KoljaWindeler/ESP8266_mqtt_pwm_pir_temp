@@ -2,40 +2,44 @@
 
 //342094
 // 341550
-logging::logging(){};
+logging::logging(){
+	init();
+};
+
+void logging::init(){
+	head=0;
+	tail=0;
+	msg_c=0;
+};
 
 void logging::print(uint8_t TOPIC, const __FlashStringHelper* text, uint8_t color){
 	addColor(color);
 	topic(TOPIC);
-	Serial.print(text);
+	p(text);
 	remColor(color);
 }
 
 void logging::println(uint8_t TOPIC, const __FlashStringHelper* text, uint8_t color){
 	addColor(color);
 	topic(TOPIC);
-	Serial.println(text);
+	pln(text);
 	remColor(color);
 }
 
 void logging::println(uint8_t TOPIC, char * text, uint8_t color){
 	addColor(color);
 	topic(TOPIC);
-	Serial.println(text);
+	pln(text);
 	remColor(color);
 };
 
 void logging::print(uint8_t TOPIC, char * text, uint8_t color){
 	addColor(color);
 	topic(TOPIC);
-	Serial.print(text);
+	p(text);
 	remColor(color);
 };
 
-void logging::print(uint8_t TOPIC, const __FlashStringHelper* text){ print(TOPIC,text,0); }
-void logging::println(uint8_t TOPIC, const __FlashStringHelper* text){ println(TOPIC,text,0);}
-void logging::println(uint8_t TOPIC, char * text){ println(TOPIC,text,0); };
-void logging::print(uint8_t TOPIC, char * text){	print(TOPIC,text,0); };
 
 void logging::addColor(uint8_t color){
 	/*
@@ -51,43 +55,142 @@ void logging::addColor(uint8_t color){
 	Light Gray   0;37     White         1;37
 	*/
 	if(color==COLOR_RED){
-		Serial.print("\033[0;31m");
+		p((char*)"\033[0;31m");
 	} else if(color==COLOR_GREEN){
-		Serial.print("\033[0;32m");
+		p((char*)"\033[0;32m");
 	} else if(color==COLOR_YELLOW){
-		Serial.print("\033[0;33m");
+		p((char*)"\033[0;33m");
 	} else if(color==COLOR_PURPLE){
-		Serial.print("\033[0;35m");
+		p((char*)"\033[0;35m");
 	}
 
 }
 void logging::remColor(uint8_t color){
 	if(color!=COLOR_NONE){
-		Serial.print("\033[0m");
+		p((char*)"\033[0m");
 	}
 }
 
 
 void logging::topic(uint8_t TOPIC){
 	if(TOPIC==TOPIC_MQTT){
-		Serial.print(F("[MQTT]              "));
+		p(F("[MQTT]              "));
 	} else if(TOPIC==TOPIC_MQTT_CONNECTED){
-		Serial.print(F("[MQTT CONNECTED]    "));
+		p(F("[MQTT CONNECTED]    "));
 	} else if(TOPIC==TOPIC_MQTT_SUBSCIBED){
-		Serial.print(F("[MQTT subscribed]   "));
+		p(F("[MQTT subscribed]   "));
 	} else if(TOPIC==TOPIC_MQTT_PUBLISH){
-		Serial.print(F("[MQTT publish]      "));
+		p(F("[MQTT publish]      "));
 	} else if(TOPIC==TOPIC_WIFI){
-		Serial.print(F("[WiFi]              "));
+		p(F("[WiFi]              "));
 	} else if(TOPIC==TOPIC_MQTT_IN){
-		Serial.print(F("[MQTT in]           "));
+		p(F("[MQTT in]           "));
 	} else if(TOPIC==TOPIC_INFO_PWM){
-		Serial.print(F("[INFO PWM]          "));
+		p(F("[INFO PWM]          "));
 	} else if(TOPIC==TOPIC_INFO_SL){
-		Serial.print(F("[INFO SL]           "));
+		p(F("[INFO SL]           "));
 	} else if(TOPIC==TOPIC_BUTTON){
-		Serial.print(F("[BUTTON]            "));
+		p(F("[BUTTON]            "));
 	} else if(TOPIC==TOPIC_GENERIC_INFO){
-		Serial.print(F("[GENERIC]           "));
+		p(F("[GENERIC]           "));
 	}
+}
+
+void logging::print(uint8_t TOPIC, const __FlashStringHelper* text){ print(TOPIC,text,0); }
+void logging::println(uint8_t TOPIC, const __FlashStringHelper* text){ println(TOPIC,text,0);}
+void logging::println(uint8_t TOPIC, char * text){ println(TOPIC,text,0); };
+void logging::print(uint8_t TOPIC, char * text){	print(TOPIC,text,0); };
+
+/////////////////////////////////////////////////////////////////
+void logging::p(const __FlashStringHelper* t){
+	addChar(String(t));
+}
+
+void logging::p(char * t){
+	addChar(String(t));
+};
+
+void logging::p(uint8_t t){
+	addChar(String(t));
+};
+
+void logging::pln(uint8_t t){
+	addChar(String(t));
+	addChar('\n');
+};
+
+void logging::pln(char * t){
+	addChar(String(t));
+	addChar('\n');
+};
+
+void logging::pln(const __FlashStringHelper* t){
+	addChar(String(t));
+	addChar('\n');
+
+}
+/////////////////////////////////////////////////////////////////
+void logging::addChar(String S){
+	for(uint16_t i=0; i<S.length(); i++){
+		addChar(S.charAt(i));
+	}
+}
+
+void logging::addChar(uint8_t c){
+	if(c=='\r'){
+		return;
+	} else if(c=='\n'){
+		Serial.println("");
+		c=0x00;
+	} else if(c!=0x00){
+		Serial.print((char)c);
+	}
+
+	buffer[(tail)%(LOGGING_BUFFER_SIZE-1)]=c;
+	tail=(tail+1)%(LOGGING_BUFFER_SIZE-1); // 0..498
+	buffer[(tail)%(LOGGING_BUFFER_SIZE-1)]=0x00;
+
+	//if(tail==0){
+	//	Serial.print("\r\nwrap\r\n");
+	//}
+
+	if(tail==head){
+		head=(tail+1)%(LOGGING_BUFFER_SIZE-1); // 0..498
+	}
+	// search last 0x00
+	msg_c++;
+	if(c==0x00){
+		msg_c=0;
+	} else if(msg_c>100){
+		msg_c=0;
+		addChar(0x00);
+		addChar('$');
+		addChar('$');
+	}
+}
+
+uint16_t logging::available(){
+	if(head==tail){
+		return 0;
+	} else if(head<tail){
+		return tail-head;
+	} else {
+		return LOGGING_BUFFER_SIZE-head+tail;
+	}
+}
+
+uint8_t* logging::loop(){
+	uint32_t ret;
+	if(head!=tail){
+		//LOGGING_BUFFER_SIZE
+		//uint8_t b[100];
+		ret = (uint32_t)buffer + head;
+		head = (head+strlen((const char*)ret)+1)%LOGGING_BUFFER_SIZE;
+		if(head==tail+1){
+			tail=head;
+		}
+		//Serial.printf("h %i t %i\r\n",head,tail);
+		return (uint8_t*)ret;
+	}
+	return 0;
 }
