@@ -190,6 +190,9 @@ void logging::addChar(uint8_t c){
 
 	if(tail==head){
 		head=(tail+1)%(LOGGING_BUFFER_SIZE-1); // 0..498
+		// visulize buffer overrun with 2x#
+		buffer[head]='#';
+		buffer[(head+1)%(LOGGING_BUFFER_SIZE-1)]='#';
 	}
 	// search last 0x00
 	msg_c++;
