@@ -107,11 +107,11 @@
     hide_entity: False
     trigger:
 #      - platform: mqtt
-#        topic: "dev3/button"
+#        topic: "dev3/r/button"
       - platform: mqtt
-        topic: "dev16/button"
+        topic: "dev16/r/button"
       - platform: mqtt
-        topic: "dev20/button"
+        topic: "dev20/r/button"
     action:
       service: light.toggle
       entity_id: light.joiner_bedroom
@@ -146,12 +146,12 @@
           - light.dev3
           - light.dev16  
 # ----------------------------------------------------------
-  - alias: dev3_toggle_dev12_and_dev20 # dev3 can toggle 20 and 12 but keep them sync
+  - alias: dev3_toggle_and_dev20 # dev3 can toggle 20 and 12 but keep them sync
     initial_state: True
     hide_entity: False
     trigger:
       - platform: mqtt
-        topic: "dev3/button"
+        topic: "dev3/r/button"
     condition: 
       - condition: state
         entity_id: light.joiner_bedroom
@@ -160,14 +160,13 @@
       - service: light.turn_off
         entity_id: 
           - light.joiner_bedroom
-          - light.dev12
 # ----------------------------------------------------------
-  - alias: dev3_toggle_dev12_and_dev20_2 #dev3 can toggle 20 and 12 but keep them in sync
+  - alias: dev3_toggle_and_dev20_2 #dev3 can toggle 20 and 12 but keep them in sync
     initial_state: True
     hide_entity: False
     trigger:
       - platform: mqtt
-        topic: "dev3/button"
+        topic: "dev3/r/button"
     condition: 
       - condition: state
         entity_id: light.joiner_bedroom
@@ -176,21 +175,6 @@
       - service: light.turn_on
         entity_id: 
           - light.joiner_bedroom
-          - light.dev12
-# ----------------------------------------------------------
-  - alias: dev16_turnoff_dev12 # dev 16 can only turn off dev 12, but toggle joiner (above)
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev16/button"
-    condition: # make sure that BOTH sensors show off
-      - condition: state
-        entity_id: light.dev12
-        state: 'on'
-    action:
-      - service: light.turn_off
-        entity_id: light.dev12
 # ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: joiner_kitchen_in

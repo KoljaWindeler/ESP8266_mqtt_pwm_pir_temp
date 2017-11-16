@@ -37,17 +37,17 @@
 # --------------------------------------------------
   - platform: mqtt ### ball living room
     name: "dev1"
-    state_topic: "dev1/simple_light/status"
-    command_topic: "dev1/simple_light/switch"
+    command_topic: "dev1/s/light"
+    state_topic: "dev1/r/light"
     qos: 0
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
-  - platform: mqtt ### tower dinning
+  - platform: mqtt ### 
     name: "dev2"
-    state_topic: "dev2/simple_light/status"
-    command_topic: "dev2/simple_light/switch"
+    state_topic: "dev2/r/light"
+    command_topic: "dev2/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -56,8 +56,8 @@
 # --------------------------------------------------
   - platform: mqtt ### bed room touch switch
     name: "dev3"
-    state_topic: "dev3/simple_light/status"
-    command_topic: "dev3/simple_light/switch"
+    state_topic: "dev3/r/light"
+    command_topic: "dev3/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -66,8 +66,8 @@
 # --------------------------------------------------
   - platform: mqtt ### sonoff 1, kitchen rack
     name: "dev4"
-    state_topic: "dev4/simple_light/status"
-    command_topic: "dev4/simple_light/switch"
+    state_topic: "dev4/r/light"
+    command_topic: "dev4/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -86,8 +86,8 @@
 # --------------------------------------------------
   - platform: mqtt ### tower dinning
     name: "dev7"
-    state_topic: "dev7/simple_light/status"
-    command_topic: "dev7/simple_light/switch"
+    command_topic: "dev7/s/light"
+    state_topic: "dev7/r/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -95,8 +95,8 @@
 # --------------------------------------------------
   - platform: mqtt ### vac
     name: "dev9"
-    state_topic: "dev9/simple_light/status"
-    command_topic: "dev9/simple_light/switch"
+    state_topic: "dev9/r/light"
+    command_topic: "dev9/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -104,8 +104,8 @@
 # --------------------------------------------------
   - platform: mqtt ### museum flur
     name: "dev10"
-    state_topic: "dev10/simple_light/status"
-    command_topic: "dev10/simple_light/switch"
+    state_topic: "dev10/r/light"
+    command_topic: "dev10/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -113,8 +113,8 @@
 # --------------------------------------------------
   - platform: mqtt ### tower living
     name: "dev11"
-    state_topic: "dev11/simple_light/status"
-    command_topic: "dev11/simple_light/switch"
+    command_topic: "dev11/s/light"
+    state_topic: "dev11/r/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -122,12 +122,12 @@
 # --------------------------------------------------
   - platform: mqtt ### b1
     name: "dev12"
-    state_topic: "dev12/PWM_light/status"
-    command_topic: "dev12/PWM_dimm/switch"
-    rgb_state_topic: 'dev12/PWM_RGB_dimm/color'
-    rgb_command_topic: 'dev12/PWM_RGB_dimm/color/set'
-    brightness_state_topic: 'dev12/PWM_light/brightness'
-    brightness_command_topic: 'dev12/PWM_dimm/brightness/set'
+    state_topic: "dev12/r/light"
+    command_topic: "dev12/s/light/dimm"
+    rgb_state_topic: 'dev12/r/light/dimm/color'
+    rgb_command_topic: 'dev12/s/light/dimm/color'
+    brightness_state_topic: 'dev12/r/light/brightness'
+    brightness_command_topic: 'dev12/s/light/brightness'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -136,18 +136,18 @@
     brightness_scale: 99
   - platform: mqtt ### b1
     name: "dev12_simple_rainbow"
-    state_topic: "dev12/simple_rainbow/status"
-    command_topic: "dev12/simple_rainbow/switch"
+    state_topic: "dev12/r/light/animation/simple_rainbow"
+    command_topic: "dev12/s/light/animation/simple_rainbow"
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
   - platform: mqtt ### dimmer bett
     name: "dev13"
-    state_topic: "dev13/PWM_light/status"
-    command_topic: "dev13/PWM_dimm/switch"
-    brightness_state_topic: 'dev13/PWM_light/brightness'
-    brightness_command_topic: 'dev13/PWM_dimm/brightness/set'
+    state_topic: "dev13/r/light"
+    command_topic: "dev13/s/light/dimm"
+    brightness_state_topic: 'dev13/r/light/brightness'
+    brightness_command_topic: 'dev13/s/light/brightness'
     qos: 0
     retain: True
     payload_on: "ON"
@@ -157,8 +157,8 @@
 # --------------------------------------------------
   - platform: mqtt ### kitchen drawer
     name: "dev14"
-    state_topic: "dev14/simple_light/status"
-    command_topic: "dev14/simple_light/switch"
+    state_topic: "dev14/r/light"
+    command_topic: "dev14/s/light"
     retain: True
     qos: 0
     payload_on: "ON"
@@ -166,10 +166,10 @@
 # --------------------------------------------------
   - platform: mqtt ### dimmer treppe
     name: "dev15"
-    state_topic: "dev15/PWM_light/status"
-    command_topic: "dev15/PWM_dimm/switch"
-    brightness_state_topic: 'dev15/PWM_light/brightness'
-    brightness_command_topic: 'dev15/PWM_dimm/brightness/set'
+    state_topic: "dev15/r/light"
+    command_topic: "dev15/s/light/dimm"
+    brightness_state_topic: 'dev15/r/light/brightness'
+    brightness_command_topic: 'dev15/s/light/brightness'
     qos: 0
     retain: True
     payload_on: "ON"
@@ -179,8 +179,8 @@
 # --------------------------------------------------
   - platform: mqtt ### dimmer bedroom
     name: "dev16"
-    state_topic: "dev16/simple_light/status"
-    command_topic: "dev16/simple_light/switch"
+    state_topic: "dev16/r/light"
+    command_topic: "dev16/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -188,10 +188,10 @@
 # --------------------------------------------------
   - platform: mqtt ### testing
     name: "dev19"
-    state_topic: "dev19/PWM_light/status"
-    command_topic: "dev19/PWM_dimm/switch"
-    rgb_state_topic: 'dev19/PWM_RGB_dimm/color/set'
-    rgb_command_topic: 'dev19/PWM_RGB_dimm/color/set'
+    state_topic: "dev19/r/light"
+    command_topic: "dev19/s/light/dimm"
+    rgb_state_topic: 'dev19/r/light/dimm/color'
+    rgb_command_topic: 'dev19/s/light/dimm/color'
     qos: 0
     retain: True
     payload_on: "ON"
@@ -201,8 +201,8 @@
 # --------------------------------------------------
   - platform: mqtt ### slamper livingroom
     name: "dev21"
-    state_topic: "dev21/simple_light/status"
-    command_topic: "dev21/simple_light/switch"
+    state_topic: "dev21/r/light"
+    command_topic: "dev21/s/light"
     retain: True
     qos: 0
     payload_on: "ON"
@@ -210,10 +210,10 @@
 # --------------------------------------------------
   - platform: mqtt ### carlo lampinions
     name: "dev55"
-    state_topic: "dev55/PWM_light/status"
-    command_topic: "dev55/PWM_dimm/switch"
-    brightness_state_topic: 'dev55/PWM_light/brightness'
-    brightness_command_topic: 'dev55/PWM_dimm/brightness/set'
+    state_topic: "dev55/r/light"
+    command_topic: "dev55/s/light/dimm"
+    brightness_state_topic: 'dev55/r/light/brightness'
+    brightness_command_topic: 'dev55/s/light/brightness'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -223,10 +223,10 @@
 # --------------------------------------------------
   - platform: mqtt ### helle lampinions
     name: "dev56"
-    state_topic: "dev56/PWM_light/status"
-    command_topic: "dev56/PWM_dimm/switch"
-    brightness_state_topic: 'dev56/PWM_light/brightness'
-    brightness_command_topic: 'dev56/PWM_dimm/brightness/set'
+    state_topic: "dev56/r/light"
+    command_topic: "dev56/s/light/dimm"
+    brightness_state_topic: 'dev56/r/light/brightness'
+    brightness_command_topic: 'dev56/s/light/brightness'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -236,10 +236,10 @@
 # --------------------------------------------------
   - platform: mqtt ### cam illumino 101
     name: "dev101"
-    state_topic: "128480595098010/PWM_light/status"
-    command_topic: "128480595098010/PWM_dimm/switch"
-    rgb_state_topic: '128480595098010/PWM_RGB_dimm/color'
-    rgb_command_topic: '128480595098010/PWM_RGB_dimm/color/set'
+    state_topic: "128480595098010/r/light"
+    command_topic: "128480595098010/s/light/dimm"
+    rgb_state_topic: '128480595098010/r/light/dimm/color'
+    rgb_command_topic: '128480595098010/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -249,10 +249,10 @@
 # --------------------------------------------------
   - platform: mqtt ### cam illumino 102
     name: "dev102"
-    state_topic: "255726482140298/PWM_light/status"
-    command_topic: "255726482140298/PWM_dimm/switch"
-    rgb_state_topic: '255726482140298/PWM_RGB_dimm/color'
-    rgb_command_topic: '255726482140298/PWM_RGB_dimm/color/set'
+    state_topic: "255726482140298/r/light"
+    command_topic: "255726482140298/s/light/dimm"
+    rgb_state_topic: '255726482140298/r/light/dimm/color'
+    rgb_command_topic: '255726482140298/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -262,10 +262,10 @@
 # --------------------------------------------------
   - platform: mqtt ### cam illumino 103
     name: "dev103"
-    state_topic: "128480595098001/PWM_light/status"
-    command_topic: "128480595098001/PWM_dimm/switch"
-    rgb_state_topic: '128480595098001/PWM_RGB_dimm/color'
-    rgb_command_topic: '128480595098001/PWM_RGB_dimm/color/set'
+    state_topic: "128480595098001/r/light"
+    command_topic: "128480595098001/s/light/dimm"
+    rgb_state_topic: '128480595098001/r/light/dimm/color'
+    rgb_command_topic: '128480595098001/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -275,10 +275,10 @@
 # --------------------------------------------------
   - platform: mqtt ### cam illumino 106
     name: "dev106"
-    state_topic: "137291054495417/PWM_light/status"
-    command_topic: "137291054495417/PWM_dimm/switch"
-    rgb_state_topic: '137291054495417/PWM_RGB_dimm/color'
-    rgb_command_topic: '137291054495417/PWM_RGB_dimm/color/set'
+    state_topic: "137291054495417/r/light"
+    command_topic: "137291054495417/s/light/dimm"
+    rgb_state_topic: '137291054495417/r/light/dimm/color'
+    rgb_command_topic: '137291054495417/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -288,25 +288,21 @@
 # --------------------------------------------------
   - platform: mqtt ### switch for dimmer bedroom
     name: "dev20"
-    state_topic: "dev20/PWM_light/status"
-    command_topic: "dev20/PWM_dimm/switch"
-#    command_topic: "dev20/PWM_light/switch"
-    brightness_state_topic: 'dev20/PWM_light/brightness'
-#    brightness_command_topic: 'dev20/PWM_dimm/brightness/set'
-    brightness_command_topic: 'dev20/PWM_light/brightness/set'
+    state_topic: "dev20/r/light"
+    command_topic: "dev20/s/light/dimm"
+    brightness_state_topic: 'dev20/r/light/brightness'
+    brightness_command_topic: 'dev20/s/light/brightness'
     retain: True
-#    qos: 0
     payload_on: "ON"
     payload_off: "OFF"
-#    optimistic: false
     brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### template
     name: "dev99"
-    state_topic: "dev99/PWM_light/status"
-    command_topic: "dev99/PWM_dimm/switch"
-    brightness_state_topic: 'dev99/PWM_light/brightness'
-    brightness_command_topic: 'dev99/PWM_dimm/brightness/set'
+    state_topic: "dev99/r/light"
+    command_topic: "dev99/s/light/dimm"
+    brightness_state_topic: 'dev99/r/light/brightness'
+    brightness_command_topic: 'dev99/s/light/brightness'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -317,16 +313,15 @@
 # --------------------------------------------------
   - platform: mqtt ### testing
     name: "dev98"
-    state_topic: "dev98/PWM_light/status"
-    command_topic: "dev98/PWM_dimm/switch"
-#    brightness_state_topic: 'dev98/PWM_light/brightness'
-    rgb_state_topic: 'dev98/PWM_RGB_dimm/color/set'
-#   use the lines below for dimming
-#    brightness_command_topic: 'dev98/PWM_RGB_dimm/brightness/set'
-    rgb_command_topic: 'dev98/PWM_RGB_dimm/color/set'
-#   use the lines below for setting
-#   brightness_command_topic: 'dev98/PWM_light/brightness/set'
-#   rgb_command_topic: 'dev98/PWM_RGB_light/color/set'
+    state_topic: "dev98/r/light"
+    command_topic: "dev98/s/light/dimm"
+
+    rgb_state_topic: 'dev98/r/light/color'
+    rgb_command_topic: 'dev98/s/light/dimm/color'
+
+    brightness_state_topic: 'dev98/r/light/brightness'
+    brightness_command_topic: 'dev98/s/light/dimm/brightness'
+
     retain: True
     qos: 0
     payload_on: "ON"
@@ -336,10 +331,10 @@
 # --------------------------------------------------
   - platform: mqtt ### testing
     name: "dev42"
-    state_topic: "dev42/PWM_light/status"
-    command_topic: "dev42/PWM_dimm/switch"
-    rgb_state_topic: 'dev42/PWM_RGB_dimm/color/set'
-    rgb_command_topic: 'dev42/PWM_RGB_dimm/color/set'
+    state_topic: "dev42/r/light"
+    command_topic: "dev42/s/light/dimm"
+    rgb_state_topic: 'dev42/r/light/dimm/color'
+    rgb_command_topic: 'dev42/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -349,10 +344,10 @@
 # --------------------------------------------------
   - platform: mqtt ### carlo
     name: "dev77"
-    state_topic: "dev77/PWM_light/status"
-    command_topic: "dev77/PWM_dimm/switch"
-    rgb_state_topic: 'dev77/PWM_RGB_dimm/color/set'
-    rgb_command_topic: 'dev77/PWM_RGB_dimm/color/set'
+    state_topic: "dev77/r/light"
+    command_topic: "dev77/s/light/dimm"
+    rgb_state_topic: 'dev77/r/light/dimm/color'
+    rgb_command_topic: 'dev77/s/light/dimm/color'
     retain: True
     qos: 0
     payload_on: "ON"
@@ -361,22 +356,22 @@
     brightness_scale: 99
   - platform: mqtt ### carlo
     name: "dev77_rainbow"
-    state_topic: "dev77/rainbow/status"
-    command_topic: "dev77/rainbow/switch"
+    state_topic: "dev77/r/light/animation/rainbow"
+    command_topic: "dev77/s/light/animation/rainbow"
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
   - platform: mqtt ### carlo
     name: "dev77_simple_rainbow"
-    state_topic: "dev77/simple_rainbow/status"
-    command_topic: "dev77/simple_rainbow/switch"
+    state_topic: "dev77/r/light/animation/simple_rainbow"
+    command_topic: "dev77/s/light/animation/simple_rainbow"
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
   - platform: mqtt ### carlo
     name: "dev77_color_wipe"
-    state_topic: "dev77/color_wipe/status"
-    command_topic: "dev77/color_wipe/switch"
+    state_topic: "dev77/r/light/animation/color_wipe"
+    command_topic: "dev77/s/light/animation/color_wipe"
     retain: True
     payload_on: "ON"
     payload_off: "OFF"

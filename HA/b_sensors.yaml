@@ -58,115 +58,115 @@
 # -------------- templates ----------------------
 
   - platform: mqtt
-    state_topic: "dev2/motion/status"
+    state_topic: "dev2/r/motion"
     name: "dev2_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev1/motion/status"
+    state_topic: "dev1/r/motion"
     name: "dev1_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev3/motion/status"
+    state_topic: "dev3/r/motion"
     name: "dev3_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev4/motion/status"
+    state_topic: "dev4/r/motion"
     name: "dev4_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev6/motion/status"
+    state_topic: "dev6/r/motion"
     name: "dev6_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev8/motion/status"
+    state_topic: "dev8/r/motion"
     name: "dev8_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev10/motion/status"
+    state_topic: "dev10/r/motion"
     name: "dev10_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev12/motion/status"
+    state_topic: "dev12/r/motion"
     name: "dev12_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev13/motion/status"
+    state_topic: "dev13/r/motion"
     name: "dev13_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev14/motion/status"
+    state_topic: "dev14/r/motion"
     name: "dev14_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev15/motion/status"
+    state_topic: "dev15/r/motion"
     name: "dev15_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev16/motion/status"
+    state_topic: "dev16/r/motion"
     name: "dev16_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev17/motion/status"
+    state_topic: "dev17/r/motion"
     name: "dev17_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev42/motion/status"
+    state_topic: "dev42/r/motion"
     name: "dev42_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "128480595098010/motion/status"
+    state_topic: "128480595098010/r/motion"
     name: "dev101_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "255726482140298/motion/status"
+    state_topic: "255726482140298/r/motion"
     name: "dev102_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "128480595098001/motion/status"
+    state_topic: "128480595098001/r/motion"
     name: "dev103_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "137291054495417/motion/status"
+    state_topic: "137291054495417/r/motion"
     name: "dev106_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev77/motion/status"
+    state_topic: "dev77/r/motion"
     name: "dev77_motion"
     device_class: motion
 
 
 
   - platform: mqtt
-    state_topic: "dev98/motion/status"
+    state_topic: "dev98/r/motion"
     name: "dev98_motion"
     device_class: motion
 
   - platform: mqtt
-    state_topic: "dev99/motion/status"
+    state_topic: "dev99/r/motion"
     name: "dev99_motion"
     device_class: motion
     
     
   - platform: mqtt
-    state_topic: "illuminum/motion/status"
+    state_topic: "illuminum/r/motion"
     name: "illuminum_motion"
     device_class: motion
 

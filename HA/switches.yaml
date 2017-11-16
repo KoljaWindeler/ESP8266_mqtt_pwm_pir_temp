@@ -39,3 +39,82 @@
         turn_off: 
           service: script.turn_on
           entity_id: script.the_buzz
+
+      five_down:
+        value_template: off
+        turn_on: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: VolumeDown
+            device: 47580278
+            num_repeats: 10
+            delay_secs: 0.0
+        turn_off: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: VolumeDown
+            device: 47580278
+            num_repeats: 10
+            delay_secs: 0.0
+
+
+      ten_down:
+        value_template: off
+        turn_on: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: VolumeDown
+            device: 47580278
+            num_repeats: 20
+            delay_secs: 0.0
+        turn_off: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: VolumeDown
+            device: 47580278
+            num_repeats: 20
+            delay_secs: 0.0
+
+      five_up:
+        value_template: off
+        turn_on: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: Volumeup
+            device: 47580278
+            num_repeats: 10
+            delay_secs: 0.0
+        turn_off: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: Volumeup
+            device: 47580278
+            num_repeats: 10
+            delay_secs: 0.0
+
+
+      ten_up:
+        value_template: off
+        turn_on: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: Volumeup
+            device: 47580278
+            num_repeats: 20
+            delay_secs: 0.0
+        turn_off: 
+          service: remote.send_command
+          entity_id: remote.tvhub
+          data:
+            command: Volumeup
+            device: 47580278
+            num_repeats: 20
+            delay_secs: 0.0
+

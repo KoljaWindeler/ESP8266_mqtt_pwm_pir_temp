@@ -37,22 +37,22 @@
   - platform: template
     sensors:
       dev1_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev1_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev1.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev1/#"
+    state_topic: "dev1/r/#"
     name: "dev1"
 
   - platform: mqtt
-    state_topic: "dev1/temperature_DS"
+    state_topic: "dev1/r/temperature"
     name: "dev1_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev1/rssi"
+    state_topic: "dev1/r/rssi"
     name: "dev1_rssi"
     unit_of_measurement: "dbm"
 
@@ -67,26 +67,30 @@
   - platform: mqtt
     state_topic: "dev1/INFO"
     name: "dev1_info"
+
+  - platform: mqtt
+    state_topic: "dev1/sr/capability"
+    name: "dev1_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev2_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev2_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev2.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev2/#"
+    state_topic: "dev2/r/#"
     name: "dev2"
 
   - platform: mqtt
-    state_topic: "dev2/temperature_DS"
+    state_topic: "dev2/r/temperature"
     name: "dev2_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev2/rssi"
+    state_topic: "dev2/r/rssi"
     name: "dev2_rssi"
     unit_of_measurement: "dbm"
 
@@ -101,31 +105,35 @@
   - platform: mqtt
     state_topic: "dev2/INFO"
     name: "dev2_info"
+
+  - platform: mqtt
+    state_topic: "dev2/sr/capability"
+    name: "dev2_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev3_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev3_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev3.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev3/#"
+    state_topic: "dev3/r/#"
     name: "dev3"
 
   - platform: mqtt
-    state_topic: "dev3/temperature_DHT"
+    state_topic: "dev3/r/temperature"
     name: "dev3_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev3/humidity_DHT"
+    state_topic: "dev3/humidity"
     name: "dev3_humidity"
     unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev3/rssi"
+    state_topic: "dev3/r/rssi"
     name: "dev3_rssi"
     unit_of_measurement: "dbm"
 
@@ -140,27 +148,31 @@
   - platform: mqtt
     state_topic: "dev3/INFO"
     name: "dev3_info"
+
+  - platform: mqtt
+    state_topic: "dev3/sr/capability"
+    name: "dev3_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev4_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev4_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev4.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev4/#"
+    state_topic: "dev4/r/#"
     name: "dev4"
 
   - platform: mqtt
-    state_topic: "dev4/temperature_DS"
+    state_topic: "dev4/r/temperature"
     name: "dev4_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev4/rssi"
+    state_topic: "dev4/r/rssi"
     name: "dev4_rssi"
     unit_of_measurement: "dbm"
 
@@ -175,6 +187,10 @@
   - platform: mqtt
     state_topic: "dev4/INFO"
     name: "dev4_info"
+
+  - platform: mqtt
+    state_topic: "dev4/sr/capability"
+    name: "dev4_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
@@ -204,27 +220,31 @@
   - platform: mqtt
     state_topic: "dev5/INFO"
     name: "dev5_info"
+
+  - platform: mqtt
+    state_topic: "dev5/sr/capability"
+    name: "dev5_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev6_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev6_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev6.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev6/#"
+    state_topic: "dev6/r/#"
     name: "dev6"
 
   - platform: mqtt
-    state_topic: "dev6/temperature_DS"
+    state_topic: "dev6/r/temperature"
     name: "dev6_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev6/rssi"
+    state_topic: "dev6/r/rssi"
     name: "dev6_rssi"
     unit_of_measurement: "dbm"
 
@@ -239,26 +259,30 @@
   - platform: mqtt
     state_topic: "dev6/INFO"
     name: "dev6_info"
+
+  - platform: mqtt
+    state_topic: "dev6/sr/capability"
+    name: "dev6_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev7_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev7_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev7.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev7/#"
+    state_topic: "dev7/r/#"
     name: "dev7"
 
   - platform: mqtt
-    state_topic: "dev7/temperature_DS"
+    state_topic: "dev7/r/temperature"
     name: "dev7_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev7/rssi"
+    state_topic: "dev7/r/rssi"
     name: "dev7_rssi"
     unit_of_measurement: "dbm"
 
@@ -273,21 +297,25 @@
   - platform: mqtt
     state_topic: "dev7/INFO"
     name: "dev7_info"
+
+  - platform: mqtt
+    state_topic: "dev7/sr/capability"
+    name: "dev7_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev8_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev8_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev8.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev8/#"
+    state_topic: "dev8/r/#"
     name: "dev8"
 
   - platform: mqtt
-    state_topic: "dev8/rssi"
+    state_topic: "dev8/r/rssi"
     name: "dev8_rssi"
     unit_of_measurement: "dbm"
 
@@ -303,36 +331,34 @@
     state_topic: "dev8/INFO"
     name: "dev8_info"
 
+  - platform: mqtt
+    state_topic: "dev8/sr/capability"
+    name: "dev8_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev9_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev9_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev9.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev9/#"
+    state_topic: "dev9/r/#"
     name: "dev9"
 
   - platform: mqtt
-    state_topic: "dev9/temperature_DS"
+    state_topic: "dev9/r/temperature"
     name: "dev9_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev9/humidity_DHT"
-    name: "dev9_humidity_DHT"
+    state_topic: "dev9/humidity"
+    name: "dev9_humidity"
     unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev9/temperature_DHT"
-    name: "dev9_temperature_DHT"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev9/rssi"
+    state_topic: "dev9/r/rssi"
     name: "dev9_rssi"
     unit_of_measurement: "dbm"
 
@@ -347,26 +373,30 @@
   - platform: mqtt
     state_topic: "dev9/INFO"
     name: "dev9_info"
+
+  - platform: mqtt
+    state_topic: "dev9/sr/capability"
+    name: "dev9_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev10_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev10_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev10.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev10/#"
+    state_topic: "dev10/r/#"
     name: "dev10"
 
   - platform: mqtt
-    state_topic: "dev10/temperature_DS"
+    state_topic: "dev10/r/temperature"
     name: "dev10_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev10/rssi"
+    state_topic: "dev10/r/rssi"
     name: "dev10_rssi"
     unit_of_measurement: "dbm"
 
@@ -381,26 +411,30 @@
   - platform: mqtt
     state_topic: "dev10/INFO"
     name: "dev10_info"
+
+  - platform: mqtt
+    state_topic: "dev10/sr/capability"
+    name: "dev10_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev11_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev11_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev11.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev11/#"
+    state_topic: "dev11/r/#"
     name: "dev11"
 
   - platform: mqtt
-    state_topic: "dev11/temperature_DS"
+    state_topic: "dev11/r/temperature"
     name: "dev11_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev11/rssi"
+    state_topic: "dev11/r/rssi"
     name: "dev11_rssi"
     unit_of_measurement: "dbm"
 
@@ -415,21 +449,25 @@
   - platform: mqtt
     state_topic: "dev11/INFO"
     name: "dev11_info"
+
+  - platform: mqtt
+    state_topic: "dev11/sr/capability"
+    name: "dev11_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev12_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev12_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev12.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev12/#"
+    state_topic: "dev12/r/#"
     name: "dev12"
 
   - platform: mqtt
-    state_topic: "dev12/rssi"
+    state_topic: "dev12/r/rssi"
     name: "dev12_rssi"
     unit_of_measurement: "dbm"
 
@@ -444,31 +482,35 @@
   - platform: mqtt
     state_topic: "dev12/INFO"
     name: "dev12_info"
+
+  - platform: mqtt
+    state_topic: "dev12/sr/capability"
+    name: "dev12_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev13_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev13_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev13.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev13/#"
+    state_topic: "dev13/r/#"
     name: "dev13"
 
   - platform: mqtt
-    state_topic: "dev13/temperature_DS"
+    state_topic: "dev13/r/temperature"
     name: "dev13_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev13/rssi"
+    state_topic: "dev13/r/rssi"
     name: "dev13_rssi"
     unit_of_measurement: "dbm"
 
   - platform: mqtt
-    state_topic: "dev13/adc"
+    state_topic: "dev13/r/adc"
     name: "dev13_adc"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
@@ -484,21 +526,25 @@
   - platform: mqtt
     state_topic: "dev13/INFO"
     name: "dev13_info"
+
+  - platform: mqtt
+    state_topic: "dev13/sr/capability"
+    name: "dev13_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev14_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev14_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev14.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev14/#"
+    state_topic: "dev14/r/#"
     name: "dev14"
 
   - platform: mqtt
-    state_topic: "dev14/rssi"
+    state_topic: "dev14/r/rssi"
     name: "dev14_rssi"
     unit_of_measurement: "dbm"
 
@@ -513,21 +559,25 @@
   - platform: mqtt
     state_topic: "dev14/INFO"
     name: "dev14_info"
+
+  - platform: mqtt
+    state_topic: "dev14/sr/capability"
+    name: "dev14_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev15_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev15_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev15.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev15/#"
+    state_topic: "dev15/r/#"
     name: "dev15"
 
   - platform: mqtt
-    state_topic: "dev15/rssi"
+    state_topic: "dev15/r/rssi"
     name: "dev15_rssi"
     unit_of_measurement: "dbm"
 
@@ -542,26 +592,30 @@
   - platform: mqtt
     state_topic: "dev15/INFO"
     name: "dev15_info"
+
+  - platform: mqtt
+    state_topic: "dev15/sr/capability"
+    name: "dev15_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev16_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev16_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev16.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev16/#"
+    state_topic: "dev16/r/#"
     name: "dev16"
 
   - platform: mqtt
-    state_topic: "dev16/temperature_DS"
+    state_topic: "dev16/r/temperature"
     name: "dev16_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev16/rssi"
+    state_topic: "dev16/r/rssi"
     name: "dev16_rssi"
     unit_of_measurement: "dbm"
 
@@ -576,21 +630,25 @@
   - platform: mqtt
     state_topic: "dev16/INFO"
     name: "dev16_info"
+
+  - platform: mqtt
+    state_topic: "dev16/sr/capability"
+    name: "dev16_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev17_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev17_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev17.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev17/#"
+    state_topic: "dev17/r/#"
     name: "dev17"
 
   - platform: mqtt
-    state_topic: "dev17/rssi"
+    state_topic: "dev17/r/rssi"
     name: "dev17_rssi"
     unit_of_measurement: "dbm"
 
@@ -605,21 +663,25 @@
   - platform: mqtt
     state_topic: "dev17/INFO"
     name: "dev17_info"
+
+  - platform: mqtt
+    state_topic: "dev17/sr/capability"
+    name: "dev17_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev18_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev18_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev18.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev18/#"
+    state_topic: "dev18/r/#"
     name: "dev18"
 
   - platform: mqtt
-    state_topic: "dev18/rssi"
+    state_topic: "dev18/r/rssi"
     name: "dev18_rssi"
     unit_of_measurement: "dbm"
 
@@ -634,21 +696,25 @@
   - platform: mqtt
     state_topic: "dev18/INFO"
     name: "dev18_info"
+
+  - platform: mqtt
+    state_topic: "dev18/sr/capability"
+    name: "dev18_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev20_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev20_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev20.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev20/#"
+    state_topic: "dev20/r/#"
     name: "dev20"
 
   - platform: mqtt
-    state_topic: "dev20/rssi"
+    state_topic: "dev20/r/rssi"
     name: "dev20_rssi"
     unit_of_measurement: "dbm"
 
@@ -663,21 +729,25 @@
   - platform: mqtt
     state_topic: "dev20/INFO"
     name: "dev20_info"
+
+  - platform: mqtt
+    state_topic: "dev20/sr/capability"
+    name: "dev20_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev21_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev21_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev21.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev21/#"
+    state_topic: "dev21/r/#"
     name: "dev21"
 
   - platform: mqtt
-    state_topic: "dev21/rssi"
+    state_topic: "dev21/r/rssi"
     name: "dev21_rssi"
     unit_of_measurement: "dbm"
 
@@ -692,14 +762,18 @@
   - platform: mqtt
     state_topic: "dev21/INFO"
     name: "dev21_info"
+
+  - platform: mqtt
+    state_topic: "dev21/sr/capability"
+    name: "dev21_capability"
 # -----------------------------------------------------------
   - platform: mqtt
-    state_topic: "dev42/temperature_DS"
+    state_topic: "dev42/r/temperature"
     name: "dev42_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev42/rssi"
+    state_topic: "dev42/r/rssi"
     name: "dev42_rssi"
     unit_of_measurement: "dbm"
 
@@ -714,21 +788,25 @@
   - platform: mqtt
     state_topic: "dev42/INFO"
     name: "dev42_info"
+
+  - platform: mqtt
+    state_topic: "dev42/sr/capability"
+    name: "dev42_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev55_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev55_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev55.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev55/#"
+    state_topic: "dev55/r/#"
     name: "dev55"
 
   - platform: mqtt
-    state_topic: "dev55/rssi"
+    state_topic: "dev55/r/rssi"
     name: "dev55_rssi"
     unit_of_measurement: "dbm"
 
@@ -743,21 +821,25 @@
   - platform: mqtt
     state_topic: "dev55/INFO"
     name: "dev55_info"
+
+  - platform: mqtt
+    state_topic: "dev55/sr/capability"
+    name: "dev55_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev56_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev56_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev56.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev56/#"
+    state_topic: "dev56/r/#"
     name: "dev56"
 
   - platform: mqtt
-    state_topic: "dev56/rssi"
+    state_topic: "dev56/r/rssi"
     name: "dev56_rssi"
     unit_of_measurement: "dbm"
 
@@ -772,31 +854,35 @@
   - platform: mqtt
     state_topic: "dev56/INFO"
     name: "dev56_info"
+
+  - platform: mqtt
+    state_topic: "dev56/sr/capability"
+    name: "dev56_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
       dev77_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev77_rssi.last_updated)) //60) | int }}'
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev77.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
 
   - platform: mqtt
-    state_topic: "dev77/#"
+    state_topic: "dev77/r/#"
     name: "dev77"
 
   - platform: mqtt
-    state_topic: "dev77/temperature_DHT"
-    name: "dev77_temperature_dht"
+    state_topic: "dev77/r/temperature"
+    name: "dev77_temperature"
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev77/humidity_DHT"
-    name: "dev77_humidity_dht"
+    state_topic: "dev77/humidity"
+    name: "dev77_humidity"
     unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev77/rssi"
+    state_topic: "dev77/r/rssi"
     name: "dev77_rssi"
     unit_of_measurement: "dbm"
 
@@ -811,9 +897,13 @@
   - platform: mqtt
     state_topic: "dev77/INFO"
     name: "dev77_info"
+
+  - platform: mqtt
+    state_topic: "dev77/sr/capability"
+    name: "dev77_capability"
 # -----------------------------------------------------------
   - platform: mqtt
-    state_topic: "dev99/temperature_DS"
+    state_topic: "dev99/r/temperature"
     name: "dev99_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"

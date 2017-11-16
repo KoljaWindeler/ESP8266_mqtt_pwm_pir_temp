@@ -21,6 +21,11 @@
       - switch.fernseher
       - switch.the_buzz
       - switch.next_track
+      - switch.five_up
+      - switch.ten_up
+      - switch.five_down
+      - switch.ten_down
+
 
   room_carlo:
     name: Carlo
@@ -201,6 +206,8 @@
      - group.all_bssid
      - group.all_ssid
      - group.all_info
+     - group.all_capability
+
 
   all_info:
     name: Info
@@ -288,6 +295,35 @@
       - sensor.dev77_ssid
       # - sensor.dev18_ssid
       # - sensor.dev42_ssid
+
+  all_capability:
+    name: capability
+    control: hidden
+    view: no
+    entities:
+      - sensor.dev1_capability
+      - sensor.dev2_capability
+      - sensor.dev3_capability
+      - sensor.dev4_capability
+      - sensor.dev5_capability
+      - sensor.dev6_capability
+      - sensor.dev7_capability
+      - sensor.dev8_capability
+      - sensor.dev9_capability
+      - sensor.dev10_capability
+      - sensor.dev11_capability
+      - sensor.dev12_capability
+      # - sensor.dev13_capability
+      - sensor.dev14_capability
+      - sensor.dev15_capability
+      - sensor.dev16_capability
+      - sensor.dev20_capability
+      - sensor.dev21_capability
+      - sensor.dev55_capability
+      - sensor.dev56_capability
+      - sensor.dev77_capability
+      # - sensor.dev18_capability
+      # - sensor.dev42_capability
 
 
   all_rssi:
