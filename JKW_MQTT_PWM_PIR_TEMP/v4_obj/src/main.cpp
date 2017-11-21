@@ -29,7 +29,6 @@ const uint8_t hb[34] = { 27, 27, 27, 27, 27, 27, 17, 27, 37, 21, 27, 27, 27, 27,
 
 uint8_t active_p_pointer=0;
 uint8_t active_p_intervall_counter=0;
-peripheral **all_p[MAX_PERIPHERALS];
 peripheral **active_p[MAX_PERIPHERALS];
 peripheral **active_intervall_p[MAX_PERIPHERALS];
 char* p_trace;
@@ -108,12 +107,6 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			logger.pln(mqtt.cap);
 			//wifiManager.explainFullMqttStruct(&mqtt);
 			wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
-			// unload
-			for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-				delete (*active_p[i]);
-				*active_p[i]=0x00;
-				active_p[i]=0x00;
-			}
 			// reload
 			loadPheripherals((uint8_t*)mqtt.cap);
 			logger.println(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"),COLOR_PURPLE);
@@ -340,89 +333,34 @@ void loadConfig(){
 	logger.pln(F("=== End of parameters ==="));
 } // loadConfig
 
-void loadPheripherals(uint8_t* peripherals){
-	// capabilities
-	logger.println(TOPIC_GENERIC_INFO, F("creating peripherals"), COLOR_PURPLE);
+void loadPheripherals(uint8_t* config){
 	// erase
 	for(uint8_t i = 0; i<MAX_PERIPHERALS ; i++){
-		if(all_p[i]){
-			delete *all_p[i];
-			all_p[i] = 0x00;
+		if(active_p[i]){
+			delete *active_p[i];
 			active_p[i] = 0x00;
 		}
 	}
+	// activate
 	active_p_pointer=0;
+	active_p_intervall_counter = 0;
+	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
 
 	//logger.p("RAM before creating objects ");
 	//logger.pln(system_get_free_heap_size());
 	// create objects
-	p_adc = new ADC();
-	p_button = new button();
-	p_pir = new PIR();
-	p_simple_light = new simple_light();
-	p_rssi = new rssi();
-	p_pwm = new PWM();
-	p_dht = new J_DHT22();
-	p_ds = new J_DS();
-	p_ai = new AI();
-	p_bOne = new BOne();
-	p_neo = new NeoStrip();
-	p_light = new light();
-
-	//logger.p("RAM after creating objects ");
-	//logger.pln(system_get_free_heap_size());
-
-	// register
-	all_p[active_p_pointer]=&p_pwm;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_adc;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_button;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_pir;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_simple_light;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_rssi;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_dht;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_ds;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_ai;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_bOne;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_neo;
-	active_p_pointer++;
-	all_p[active_p_pointer]=&p_light;
-	active_p_pointer++;
-	// activate
-	active_p_pointer=0;
-	active_p_intervall_counter = 0;
-	// remove me
-	//uint8_t p_string[40];
-	//sprintf((char*)p_string,"ADC,SL,PIR,PWM,R,B,DHT,DS,LIG,NEO");
-	//sprintf((char*)p_string,"ADC,PIR,R,B,DHT,DS,LIG,NEO");
-	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
-
-	for(uint8_t i = 0; all_p[i]!=0x00 ; i++){
-		if((*all_p[i])->parse(peripherals)){ // true = obj active
-			(*all_p[i])->init();
-			// store object in active peripheral list
-			active_p[active_p_pointer]=all_p[i];
-			active_p_pointer++;
-			// get the amount of intervall updates and store a pointer to the object
-			for(uint8_t ii = 0; ii<(*all_p[i])->count_intervall_update(); ii++){
-				active_intervall_p[active_p_intervall_counter] = &(*(all_p[i]));
-				active_p_intervall_counter++;
-			}
-		} else {
-			delete (*all_p[i]);
-			*all_p[i]=0x00;
-			all_p[i]=0x00;
-		}
-	}
+	bake(new ADC(), &p_adc, config);
+	bake(new button(), &p_button, config);
+	bake(new PIR(), &p_pir, config);
+	bake(new simple_light(), &p_simple_light, config);
+	bake(new rssi(), &p_rssi, config);
+	bake(new PWM(), &p_pwm, config);
+	bake(new J_DHT22(), &p_dht, config);
+	bake(new J_DS(), &p_ds, config);
+	bake(new AI(), &p_ai, config);
+	bake(new BOne(), &p_bOne, config);
+	bake(new NeoStrip(), &p_neo, config);
+	bake(new light(), &p_light, config);
 
 	//logger.p("RAM after init objects ");
 	//logger.pln(system_get_free_heap_size());
@@ -479,23 +417,18 @@ void setup(){
 			logger.p(F("  CRITICAL"));
 		}
 		logger.pln(F(", wrong flash config"));
-		logger.p(F("  Dev has "));
-		logger.p(ESP.getFlashChipRealSize());
-		logger.p(F(" but is configured with size "));
-		logger.pln(ESP.getFlashChipSize());
+		sprintf_P(m_msg_buffer, (const char*)F("  Dev has %i but is configured with size %i"), ESP.getFlashChipRealSize(), ESP.getFlashChipSize());
+		logger.pln(m_msg_buffer);
 	} else {
 		logger.pln(F("  Flash config correct"));
 	}
 	logger.pln(F("+ RAM:"));
-	logger.p(F("  available "));
-	logger.pln(system_get_free_heap_size());
+	sprintf_P(m_msg_buffer, (const char*)F("  available  %i"), system_get_free_heap_size());
+	logger.pln(m_msg_buffer);
 	logger.pln(F("========== INFO ========== "));
 	// /// init the serial and print debug /////
 
 	// /// init the led /////
-	for(uint8_t i = 0; i<MAX_PERIPHERALS; i++){
-		all_p[i]=0x00;
-	}
 	for(uint8_t i = 0; i<MAX_PERIPHERALS; i++){
 		active_intervall_p[i]=0x00;
 	}
@@ -543,7 +476,7 @@ void loop(){
 	// // dimming end ////
 	uninterrupted = false;
 	for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-		if((*active_p[i])->loop()){ // uninterrupted loop request ... don't execute others
+			if((*active_p[i])->loop()){ // uninterrupted loop request ... don't execute others
 			uninterrupted=true;
 			break;
 		}
@@ -588,3 +521,22 @@ void loop(){
 
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////
+bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config){
+	if(p_obj->parse(config)){ // true = obj active
+		*p_handle = p_obj;
+		(*p_handle)->init();
+		// store object in active peripheral list
+		active_p[active_p_pointer]=p_handle;
+		active_p_pointer++;
+		// get the amount of intervall updates and store a pointer to the object
+		for(uint8_t ii = 0; ii<p_obj->count_intervall_update(); ii++){
+			active_intervall_p[active_p_intervall_counter] = p_handle;
+			active_p_intervall_counter++;
+		}
+		return true;
+	} else {
+		delete p_obj;
+		*p_handle = 0x00;
+	}
+	return false;
+}

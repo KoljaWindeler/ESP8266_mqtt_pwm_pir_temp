@@ -1,3 +1,16 @@
+20171111
+	- readded config via serial to mqtt struct v3
+	- added 2nd adc slot to remove delay
+	- added factory pattern to init obj
+	- fixed flash/ram display
+20171115
+	- fixed reporting of animation status
+20171114
+	-	fixed button directly toggle light
+20171111
+	- trace added
+20171108
+	- v4 ready
 20171102
 	- improve topic subscription order
 	- subscribe color before brightness

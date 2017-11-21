@@ -103,7 +103,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171111_2"
+	#define VERSION               "20171119"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -211,6 +211,7 @@ public:
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
+	bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config);
 
 
 	/*mqtt_parameter_8 m_simple_light_state;
