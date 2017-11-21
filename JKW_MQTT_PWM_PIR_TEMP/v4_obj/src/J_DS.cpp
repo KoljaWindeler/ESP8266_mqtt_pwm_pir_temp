@@ -35,7 +35,8 @@ bool J_DS::intervall_update(uint8_t slot){
 		if (isnan(temp)) {
 			logger.pln(F("nan"));
 		} else {
-			logger.p(temp);
+			dtostrf(temp, 3, 2, m_msg_buffer);
+			logger.p(m_msg_buffer);
 			logger.pln(F(" >TEMP_MAX"));
 		}
 		return false;
