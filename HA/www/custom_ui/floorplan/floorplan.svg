@@ -8,6 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    style="background: #62717b"
+   width="1400"
+   height="900"
    id="svg3430"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -53,38 +55,108 @@
   <polygon
      points="700,145 400,145 400,10 700,10 "
      id="entrance"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="695,445 405,445 405,155 695,155 "
      id="flurunten"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="395,695 105,695 105,355 395,355 "
      id="kitchen"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="595,475 610,475 610,455 855,455 855,155 1095,155 1095,695 405,695 405,455 595,455 "
      id="wz"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="845,445 705,445 705,155 845,155 "
      id="bastelzimmer"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="205,345 205,155 395,155 395,345 "
      id="bad_unten"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
      points="195,345 105,345 105,155 195,155 "
      id="abstellkammer"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="120,355 175,355 175,345 120,345 "
+     id="tuer1"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="700,30 700,115 710,115 710,30"
+     id="tuer2"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="525,145 525,155 595,155 595,145"
+     id="tuer2"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="395,175 395,245 405,245 405,175"
+     id="tuer3"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="395,365 395,435 405,435 405,365"
+     id="tuer4"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="395,610 395,680 405,680 405,610"
+     id="tuer5"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="695,365 695,435 705,435 705,365"
+     id="tuer6"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="615,445 685,445 685,455 615,455"
+     id="tuer7"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="515,445 585,445 585,455 515,455"
+     id="tuer7"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+
+  <line x1="625" y1="222" x2="625" y2="155" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="627" y1="222" x2="655" y2="155" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="630" y1="224" x2="695" y2="155" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 	 
+  <line x1="630" y1="226" x2="695" y2="190" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="630" y1="228" x2="695" y2="210" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		
+  <line x1="630" y1="230" x2="695" y2="230" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="250" x2="695" y2="250" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="270" x2="695" y2="270" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="290" x2="695" y2="290" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="310" x2="695" y2="310" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="330" x2="695" y2="330" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="222" x2="630" y2="330" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="625" y1="222" x2="630" y2="222" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+
+	 
   <path
      d="m 191.15964,47.917761 120,30 a 90,90 0 0 0 0,-58.2 z"
      id="binary_sensor.dev6_motion"
@@ -138,35 +210,80 @@
      style="fill:#37464f;stroke:#000000;stroke-width:2;fill-opacity:1;stroke-opacity:1"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="700,1050 400,1050 400,800 700,800 "
+     points="695,1045 405,1045 405,805 695,805"
      id="bad2"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="700,1400 400,1400 400,1050 700,1050 "
+     points="695,1395 405,1395 405,1055 695,1055"
      id="fluroben"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="300,1200 400,1200 400,1400 100,1400 100,1050 300,1050 "
+     points="295,1205 395,1205 395,1395 105,1395 105,1055 295,1055 "
      id="carlo"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="900,1050 1100,1050 1100,1400 700,1400 700,1200 900,1200 "
+     points="905,1055 1095,1055 1095,1395 705,1395 705,1205 905,1205"
      id="sclaf"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="900,1200 700,1200 700,1050 900,1050 "
+     points="895,1195 705,1195 705,1055 895,1055 "
      id="gadrobe"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
   <polygon
-     points="300,1200 300,1050 400,1050 400,1200 "
+     points="305,1195 305,1055 395,1055 395,1195 "
      id="heizung"
-     style="fill:#e0e0e0;stroke:#660000;stroke-width:2"
+     style="fill:#e0e0e0;stroke:#111111;stroke-width:2"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+
+  <polygon
+     points="515,1045 585,1045 585,1055 515,1055"
+     id="tuer_O1"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
      transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="395,1105 395,1175 405,1175 405,1105"
+     id="tuer_O2"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="695,1255 695,1325 705,1325 705,1255"
+     id="tuer_O3"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="395,1255 395,1325 405,1325 405,1255"
+     id="tuer_O4"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <polygon
+     points="895,1105 895,1175 905,1175 905,1105"
+     id="tuer_O5"
+     style="fill:#ffffff;stroke:#111111;stroke-width:0"
+     transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" />
+	 
+  <line x1="625" y1="1122" x2="625" y2="1055" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="627" y1="1122" x2="655" y2="1055" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="630" y1="1124" x2="695" y2="1055" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 	 
+  <line x1="630" y1="1126" x2="695" y2="1090" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="630" y1="1128" x2="695" y2="1110" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		
+  <line x1="630" y1="1130" x2="695" y2="1130" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1150" x2="695" y2="1150" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1170" x2="695" y2="1170" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1190" x2="695" y2="1190" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1210" x2="695" y2="1210" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1230" x2="695" y2="1230" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  <line x1="630" y1="1122" x2="630" y2="1230" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 		 
+  <line x1="625" y1="1122" x2="630" y2="1122" style="stroke:rgb(0,0,0);stroke-width:2" transform="matrix(0.6,0,0,0.6,-48.840359,2.9177609)" /> 
+  
   <path
      d="m 11.159641,782.91776 149.999999,60 a 90,90 0 0 0 0,-90 z"
      id="binary_sensor.dev8_motion"
