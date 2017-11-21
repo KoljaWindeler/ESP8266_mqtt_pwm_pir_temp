@@ -87,18 +87,9 @@ void button::interrupt(){
 			// button down
 			m_state.set(!m_state.get_value());
 			// toggle status of both lights
-/*TODO TODO
-			m_simple_light_state.set(!m_simple_light_state.get_value());
-			setSimpleLightState();
-
-			// Home Assistant will assume that the pwm light is 100%, once we report toggle to on
-			// but it should return to whatever the m_light_brithness is, so lets set the published
-			// version to update_required. This will trigger the publishing
-			m_pwm_light_state.set(!m_pwm_light_state.get_value());
-			setPWMLightState();
-			m_light_brightness.outdated();
-*/
-			// toggle status of both lights
+			if(p_light){
+				((light*)p_light)->toggle();
+			}
 
 			if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
 				m_counter++;
