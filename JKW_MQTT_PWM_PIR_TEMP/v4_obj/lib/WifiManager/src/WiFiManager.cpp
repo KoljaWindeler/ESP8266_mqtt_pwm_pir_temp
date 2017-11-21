@@ -242,11 +242,11 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 	m_mqtt_sizes[0] = sizeof(m_mqtt->login);
 	m_mqtt_sizes[1] = sizeof(m_mqtt->pw);
 	m_mqtt_sizes[2] = sizeof(m_mqtt->dev_short);
-	m_mqtt_sizes[3] = sizeof(m_mqtt->cap);
-	m_mqtt_sizes[4] = sizeof(m_mqtt->server_ip);
-	m_mqtt_sizes[5] = sizeof(m_mqtt->server_port);
-	m_mqtt_sizes[6] = sizeof(m_mqtt->nw_ssid);
-	m_mqtt_sizes[7] = sizeof(m_mqtt->nw_pw);
+	m_mqtt_sizes[3] = sizeof(m_mqtt->server_ip);
+	m_mqtt_sizes[4] = sizeof(m_mqtt->server_port);
+	m_mqtt_sizes[5] = sizeof(m_mqtt->nw_ssid);
+	m_mqtt_sizes[6] = sizeof(m_mqtt->nw_pw);
+	m_mqtt_sizes[7] = sizeof(m_mqtt->cap);
 
 	f_p = 0;                  // pointer in dem struct
 	p   = (uint8_t *) m_mqtt; // copy location
@@ -537,7 +537,7 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 	Serial.println(mqtt->server_ip);
 	explainMqttStruct(4, false);
 	Serial.println(mqtt->server_port);
-	explainMqttStruct(5, false);
+	explainMqttStruct(7, false);
 	Serial.println(mqtt->cap);
 }
 
@@ -556,11 +556,11 @@ void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
 	} else if (i == 4) {
 		Serial.print(F("MQTT server port: "));
 	} else if (i == 5) {
-		Serial.print(F("MQTT Capability: "));
-	} else if (i == 6) {
 		Serial.print(F("Network SSID: "));
-	} else if (i == 7) {
+	} else if (i == 6) {
 		Serial.print(F("Network PW: "));
+	} else if (i == 7) {
+		Serial.print(F("MQTT Capability: "));
 	} else {
 		Serial.print(F("ERROR 404 "));
 	}
