@@ -482,7 +482,9 @@ bool light::publish(){
 	if (!publishLightState()) {
 		if (!publishRGBColor()) {
 			if (!publishLightBrightness()) {
-				return false;
+				if(!publishAnimationType()){
+					return false;
+				}
 			}
 		}
 	}
@@ -544,6 +546,45 @@ bool light::publishRGBColor(){
 	}
 	return false;
 }
+
+bool light::publishAnimationType(){
+	if (m_animation_type.get_outdated()) {
+		boolean ret = true;
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("rainbow state "), COLOR_GREEN);
+		if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
+			Serial.println(STATE_ON);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_STATUS_TOPIC), STATE_ON, true);
+		} else {
+			Serial.println(STATE_OFF);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_STATUS_TOPIC), STATE_OFF, true);
+		}
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("simple rainbow state "), COLOR_GREEN);
+		if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
+			Serial.println(STATE_ON);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_STATUS_TOPIC), STATE_ON, true);
+		} else {
+			Serial.println(STATE_OFF);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_STATUS_TOPIC), STATE_OFF, true);
+		}
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("color WIPE state "), COLOR_GREEN);
+		if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
+			Serial.println(STATE_ON);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_STATUS_TOPIC), STATE_ON, true);
+		} else {
+			Serial.println(STATE_OFF);
+			ret &= client.publish(build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_STATUS_TOPIC), STATE_OFF, true);
+		}
+
+		if (ret) {
+			m_animation_type.outdated(false);
+		}
+		return ret;
+	}
+	return false;
+} // publishAnimationType
 
 void light::DimmTo(led dimm_to){
 	logger.print(TOPIC_GENERIC_INFO, F("DimmTo "), COLOR_PURPLE);

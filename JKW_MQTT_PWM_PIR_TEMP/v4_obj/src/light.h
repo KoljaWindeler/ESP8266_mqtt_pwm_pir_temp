@@ -49,6 +49,8 @@ class light : public peripheral {
 		bool publishRGBColor();
 		bool publishLightBrightness();
 		bool publishLightState();
+		bool publishAnimationType();	
+
 		void setAnimationType(int type);
 		void DimmTo(led dimm_to);
 		RgbColor Wheel(byte WheelPos);
