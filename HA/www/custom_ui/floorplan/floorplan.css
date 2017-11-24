@@ -97,6 +97,8 @@ svg, svg * {
 }
 
 .light-on {
+  stroke: #111111 !important;
+  stroke-width: 1px !important;
   fill: #fd5605 !important;
 }
 
