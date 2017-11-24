@@ -56,7 +56,7 @@
       - light.dev103
       - light.dev106
       - sensor.dev11_temperature
-      - sensor.dev7_temperature
+      #- sensor.dev7_temperature
       - sensor.dev1_temperature
       - binary_sensor.dev101_motion
       - binary_sensor.dev103_motion
@@ -193,6 +193,7 @@
     view: yes
     entities:
       - sensor.dev9_temperature
+      - sensor.dev13_adc
       - light.dev9
 
   rssi:
@@ -226,7 +227,7 @@
       - sensor.dev10_info
       - sensor.dev11_info
       - sensor.dev12_info
-      # - sensor.dev13_info
+      - sensor.dev13_info
       - sensor.dev14_info
       - sensor.dev15_info
       - sensor.dev16_info
@@ -255,7 +256,7 @@
       - sensor.dev10_bssid
       - sensor.dev11_bssid
       - sensor.dev12_bssid
-      # - sensor.dev13_bssid
+      - sensor.dev13_bssid
       - sensor.dev14_bssid
       - sensor.dev15_bssid
       - sensor.dev16_bssid
@@ -284,7 +285,7 @@
       - sensor.dev10_ssid
       - sensor.dev11_ssid
       - sensor.dev12_ssid
-      # - sensor.dev13_ssid
+      - sensor.dev13_ssid
       - sensor.dev14_ssid
       - sensor.dev15_ssid
       - sensor.dev16_ssid
@@ -313,7 +314,7 @@
       - sensor.dev10_capability
       - sensor.dev11_capability
       - sensor.dev12_capability
-      # - sensor.dev13_capability
+      - sensor.dev13_capability
       - sensor.dev14_capability
       - sensor.dev15_capability
       - sensor.dev16_capability
@@ -343,7 +344,7 @@
       - sensor.dev10_rssi
       - sensor.dev11_rssi
       - sensor.dev12_rssi
-      # - sensor.dev13_rssi
+      - sensor.dev13_rssi
       - sensor.dev14_rssi
       - sensor.dev15_rssi
       - sensor.dev16_rssi
@@ -372,6 +373,7 @@
       - sensor.dev10_update
       - sensor.dev11_update
       - sensor.dev12_update
+      - sensor.dev13_update
       - sensor.dev14_update
       - sensor.dev15_update
       - sensor.dev16_update
@@ -398,6 +400,7 @@
       - sensor.dev10
       - sensor.dev11
       - sensor.dev12
+      - sensor.dev13
       - sensor.dev14
       - sensor.dev15
       - sensor.dev16

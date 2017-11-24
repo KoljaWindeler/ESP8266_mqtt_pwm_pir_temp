@@ -54,7 +54,7 @@
   - platform: mqtt
     state_topic: "dev1/r/rssi"
     name: "dev1_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev1/BSSID"
@@ -92,7 +92,7 @@
   - platform: mqtt
     state_topic: "dev2/r/rssi"
     name: "dev2_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev2/BSSID"
@@ -135,7 +135,7 @@
   - platform: mqtt
     state_topic: "dev3/r/rssi"
     name: "dev3_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev3/BSSID"
@@ -174,7 +174,7 @@
   - platform: mqtt
     state_topic: "dev4/r/rssi"
     name: "dev4_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev4/BSSID"
@@ -207,7 +207,7 @@
   - platform: mqtt
     state_topic: "dev5/rssi"
     name: "dev5_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev5/BSSID"
@@ -246,7 +246,7 @@
   - platform: mqtt
     state_topic: "dev6/r/rssi"
     name: "dev6_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev6/BSSID"
@@ -284,7 +284,7 @@
   - platform: mqtt
     state_topic: "dev7/r/rssi"
     name: "dev7_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev7/BSSID"
@@ -317,7 +317,7 @@
   - platform: mqtt
     state_topic: "dev8/r/rssi"
     name: "dev8_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev8/BSSID"
@@ -360,7 +360,7 @@
   - platform: mqtt
     state_topic: "dev9/r/rssi"
     name: "dev9_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev9/BSSID"
@@ -398,7 +398,7 @@
   - platform: mqtt
     state_topic: "dev10/r/rssi"
     name: "dev10_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev10/BSSID"
@@ -436,7 +436,7 @@
   - platform: mqtt
     state_topic: "dev11/r/rssi"
     name: "dev11_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev11/BSSID"
@@ -469,7 +469,7 @@
   - platform: mqtt
     state_topic: "dev12/r/rssi"
     name: "dev12_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev12/BSSID"
@@ -507,7 +507,7 @@
   - platform: mqtt
     state_topic: "dev13/r/rssi"
     name: "dev13_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev13/r/adc"
@@ -546,7 +546,7 @@
   - platform: mqtt
     state_topic: "dev14/r/rssi"
     name: "dev14_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev14/BSSID"
@@ -579,7 +579,7 @@
   - platform: mqtt
     state_topic: "dev15/r/rssi"
     name: "dev15_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev15/BSSID"
@@ -617,7 +617,7 @@
   - platform: mqtt
     state_topic: "dev16/r/rssi"
     name: "dev16_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev16/BSSID"
@@ -650,7 +650,7 @@
   - platform: mqtt
     state_topic: "dev17/r/rssi"
     name: "dev17_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev17/BSSID"
@@ -683,7 +683,7 @@
   - platform: mqtt
     state_topic: "dev18/r/rssi"
     name: "dev18_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev18/BSSID"
@@ -716,7 +716,7 @@
   - platform: mqtt
     state_topic: "dev20/r/rssi"
     name: "dev20_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev20/BSSID"
@@ -749,7 +749,7 @@
   - platform: mqtt
     state_topic: "dev21/r/rssi"
     name: "dev21_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev21/BSSID"
@@ -775,7 +775,7 @@
   - platform: mqtt
     state_topic: "dev42/r/rssi"
     name: "dev42_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev42/BSSID"
@@ -808,7 +808,7 @@
   - platform: mqtt
     state_topic: "dev55/r/rssi"
     name: "dev55_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev55/BSSID"
@@ -841,7 +841,7 @@
   - platform: mqtt
     state_topic: "dev56/r/rssi"
     name: "dev56_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev56/BSSID"
@@ -884,7 +884,7 @@
   - platform: mqtt
     state_topic: "dev77/r/rssi"
     name: "dev77_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev77/BSSID"
