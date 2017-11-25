@@ -321,6 +321,8 @@
       icon: "mdi:traffic-light"
       friendly_name: "B1 Simple Rainbow"
 # -----------------------------------------------
+    sensor.dev13_adc:
+      friendly_name: "13 Leakage"
     sensor.dev13_update:
       friendly_name: "13 Leakage"
       icon: "mdi:timer-sand"

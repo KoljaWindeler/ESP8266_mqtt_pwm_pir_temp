@@ -726,7 +726,7 @@
     initial_state: 'on'
     trigger:
      - platform: numeric_state
-       entity_id: sensors.dev13_adc
+       entity_id: sensor.dev13_adc
        below: 500
     action:
      service: notify.pb
