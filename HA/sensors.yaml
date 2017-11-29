@@ -54,22 +54,22 @@
   - platform: mqtt
     state_topic: "dev1/r/rssi"
     name: "dev1_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev1/BSSID"
+    state_topic: "dev1/r/BSSID"
     name: "dev1_bssid"
 
   - platform: mqtt
-    state_topic: "dev1/SSID"
+    state_topic: "dev1/r/SSID"
     name: "dev1_ssid"
 
   - platform: mqtt
-    state_topic: "dev1/INFO"
+    state_topic: "dev1/r/INFO"
     name: "dev1_info"
 
   - platform: mqtt
-    state_topic: "dev1/sr/capability"
+    state_topic: "dev1/r/capability"
     name: "dev1_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -92,22 +92,22 @@
   - platform: mqtt
     state_topic: "dev2/r/rssi"
     name: "dev2_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev2/BSSID"
+    state_topic: "dev2/r/BSSID"
     name: "dev2_bssid"
 
   - platform: mqtt
-    state_topic: "dev2/SSID"
+    state_topic: "dev2/r/SSID"
     name: "dev2_ssid"
 
   - platform: mqtt
-    state_topic: "dev2/INFO"
+    state_topic: "dev2/r/INFO"
     name: "dev2_info"
 
   - platform: mqtt
-    state_topic: "dev2/sr/capability"
+    state_topic: "dev2/r/capability"
     name: "dev2_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -135,22 +135,22 @@
   - platform: mqtt
     state_topic: "dev3/r/rssi"
     name: "dev3_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev3/BSSID"
+    state_topic: "dev3/r/BSSID"
     name: "dev3_bssid"
 
   - platform: mqtt
-    state_topic: "dev3/SSID"
+    state_topic: "dev3/r/SSID"
     name: "dev3_ssid"
 
   - platform: mqtt
-    state_topic: "dev3/INFO"
+    state_topic: "dev3/r/INFO"
     name: "dev3_info"
 
   - platform: mqtt
-    state_topic: "dev3/sr/capability"
+    state_topic: "dev3/r/capability"
     name: "dev3_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -174,22 +174,22 @@
   - platform: mqtt
     state_topic: "dev4/r/rssi"
     name: "dev4_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev4/BSSID"
+    state_topic: "dev4/r/BSSID"
     name: "dev4_bssid"
 
   - platform: mqtt
-    state_topic: "dev4/SSID"
+    state_topic: "dev4/r/SSID"
     name: "dev4_ssid"
 
   - platform: mqtt
-    state_topic: "dev4/INFO"
+    state_topic: "dev4/r/INFO"
     name: "dev4_info"
 
   - platform: mqtt
-    state_topic: "dev4/sr/capability"
+    state_topic: "dev4/r/capability"
     name: "dev4_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -207,22 +207,22 @@
   - platform: mqtt
     state_topic: "dev5/rssi"
     name: "dev5_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev5/BSSID"
+    state_topic: "dev5/r/BSSID"
     name: "dev5_bssid"
 
   - platform: mqtt
-    state_topic: "dev5/SSID"
+    state_topic: "dev5/r/SSID"
     name: "dev5_ssid"
 
   - platform: mqtt
-    state_topic: "dev5/INFO"
+    state_topic: "dev5/r/INFO"
     name: "dev5_info"
 
   - platform: mqtt
-    state_topic: "dev5/sr/capability"
+    state_topic: "dev5/r/capability"
     name: "dev5_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -246,22 +246,22 @@
   - platform: mqtt
     state_topic: "dev6/r/rssi"
     name: "dev6_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev6/BSSID"
+    state_topic: "dev6/r/BSSID"
     name: "dev6_bssid"
 
   - platform: mqtt
-    state_topic: "dev6/SSID"
+    state_topic: "dev6/r/SSID"
     name: "dev6_ssid"
 
   - platform: mqtt
-    state_topic: "dev6/INFO"
+    state_topic: "dev6/r/INFO"
     name: "dev6_info"
 
   - platform: mqtt
-    state_topic: "dev6/sr/capability"
+    state_topic: "dev6/r/capability"
     name: "dev6_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -284,22 +284,22 @@
   - platform: mqtt
     state_topic: "dev7/r/rssi"
     name: "dev7_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev7/BSSID"
+    state_topic: "dev7/r/BSSID"
     name: "dev7_bssid"
 
   - platform: mqtt
-    state_topic: "dev7/SSID"
+    state_topic: "dev7/r/SSID"
     name: "dev7_ssid"
 
   - platform: mqtt
-    state_topic: "dev7/INFO"
+    state_topic: "dev7/r/INFO"
     name: "dev7_info"
 
   - platform: mqtt
-    state_topic: "dev7/sr/capability"
+    state_topic: "dev7/r/capability"
     name: "dev7_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -317,22 +317,22 @@
   - platform: mqtt
     state_topic: "dev8/r/rssi"
     name: "dev8_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev8/BSSID"
+    state_topic: "dev8/r/BSSID"
     name: "dev8_bssid"
 
   - platform: mqtt
-    state_topic: "dev8/SSID"
+    state_topic: "dev8/r/SSID"
     name: "dev8_ssid"
 
   - platform: mqtt
-    state_topic: "dev8/INFO"
+    state_topic: "dev8/r/INFO"
     name: "dev8_info"
 
   - platform: mqtt
-    state_topic: "dev8/sr/capability"
+    state_topic: "dev8/r/capability"
     name: "dev8_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -360,22 +360,22 @@
   - platform: mqtt
     state_topic: "dev9/r/rssi"
     name: "dev9_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev9/BSSID"
+    state_topic: "dev9/r/BSSID"
     name: "dev9_bssid"
 
   - platform: mqtt
-    state_topic: "dev9/SSID"
+    state_topic: "dev9/r/SSID"
     name: "dev9_ssid"
 
   - platform: mqtt
-    state_topic: "dev9/INFO"
+    state_topic: "dev9/r/INFO"
     name: "dev9_info"
 
   - platform: mqtt
-    state_topic: "dev9/sr/capability"
+    state_topic: "dev9/r/capability"
     name: "dev9_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -398,22 +398,22 @@
   - platform: mqtt
     state_topic: "dev10/r/rssi"
     name: "dev10_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev10/BSSID"
+    state_topic: "dev10/r/BSSID"
     name: "dev10_bssid"
 
   - platform: mqtt
-    state_topic: "dev10/SSID"
+    state_topic: "dev10/r/SSID"
     name: "dev10_ssid"
 
   - platform: mqtt
-    state_topic: "dev10/INFO"
+    state_topic: "dev10/r/INFO"
     name: "dev10_info"
 
   - platform: mqtt
-    state_topic: "dev10/sr/capability"
+    state_topic: "dev10/r/capability"
     name: "dev10_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -436,22 +436,22 @@
   - platform: mqtt
     state_topic: "dev11/r/rssi"
     name: "dev11_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev11/BSSID"
+    state_topic: "dev11/r/BSSID"
     name: "dev11_bssid"
 
   - platform: mqtt
-    state_topic: "dev11/SSID"
+    state_topic: "dev11/r/SSID"
     name: "dev11_ssid"
 
   - platform: mqtt
-    state_topic: "dev11/INFO"
+    state_topic: "dev11/r/INFO"
     name: "dev11_info"
 
   - platform: mqtt
-    state_topic: "dev11/sr/capability"
+    state_topic: "dev11/r/capability"
     name: "dev11_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -469,22 +469,22 @@
   - platform: mqtt
     state_topic: "dev12/r/rssi"
     name: "dev12_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev12/BSSID"
+    state_topic: "dev12/r/BSSID"
     name: "dev12_bssid"
 
   - platform: mqtt
-    state_topic: "dev12/SSID"
+    state_topic: "dev12/r/SSID"
     name: "dev12_ssid"
 
   - platform: mqtt
-    state_topic: "dev12/INFO"
+    state_topic: "dev12/r/INFO"
     name: "dev12_info"
 
   - platform: mqtt
-    state_topic: "dev12/sr/capability"
+    state_topic: "dev12/r/capability"
     name: "dev12_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -507,7 +507,7 @@
   - platform: mqtt
     state_topic: "dev13/r/rssi"
     name: "dev13_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
     state_topic: "dev13/r/adc"
@@ -516,19 +516,19 @@
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev13/BSSID"
+    state_topic: "dev13/r/BSSID"
     name: "dev13_bssid"
 
   - platform: mqtt
-    state_topic: "dev13/SSID"
+    state_topic: "dev13/r/SSID"
     name: "dev13_ssid"
 
   - platform: mqtt
-    state_topic: "dev13/INFO"
+    state_topic: "dev13/r/INFO"
     name: "dev13_info"
 
   - platform: mqtt
-    state_topic: "dev13/sr/capability"
+    state_topic: "dev13/r/capability"
     name: "dev13_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -546,22 +546,22 @@
   - platform: mqtt
     state_topic: "dev14/r/rssi"
     name: "dev14_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev14/BSSID"
+    state_topic: "dev14/r/BSSID"
     name: "dev14_bssid"
 
   - platform: mqtt
-    state_topic: "dev14/SSID"
+    state_topic: "dev14/r/SSID"
     name: "dev14_ssid"
 
   - platform: mqtt
-    state_topic: "dev14/INFO"
+    state_topic: "dev14/r/INFO"
     name: "dev14_info"
 
   - platform: mqtt
-    state_topic: "dev14/sr/capability"
+    state_topic: "dev14/r/capability"
     name: "dev14_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -579,22 +579,22 @@
   - platform: mqtt
     state_topic: "dev15/r/rssi"
     name: "dev15_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev15/BSSID"
+    state_topic: "dev15/r/BSSID"
     name: "dev15_bssid"
 
   - platform: mqtt
-    state_topic: "dev15/SSID"
+    state_topic: "dev15/r/SSID"
     name: "dev15_ssid"
 
   - platform: mqtt
-    state_topic: "dev15/INFO"
+    state_topic: "dev15/r/INFO"
     name: "dev15_info"
 
   - platform: mqtt
-    state_topic: "dev15/sr/capability"
+    state_topic: "dev15/r/capability"
     name: "dev15_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -617,22 +617,22 @@
   - platform: mqtt
     state_topic: "dev16/r/rssi"
     name: "dev16_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev16/BSSID"
+    state_topic: "dev16/r/BSSID"
     name: "dev16_bssid"
 
   - platform: mqtt
-    state_topic: "dev16/SSID"
+    state_topic: "dev16/r/SSID"
     name: "dev16_ssid"
 
   - platform: mqtt
-    state_topic: "dev16/INFO"
+    state_topic: "dev16/r/INFO"
     name: "dev16_info"
 
   - platform: mqtt
-    state_topic: "dev16/sr/capability"
+    state_topic: "dev16/r/capability"
     name: "dev16_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -650,22 +650,22 @@
   - platform: mqtt
     state_topic: "dev17/r/rssi"
     name: "dev17_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev17/BSSID"
+    state_topic: "dev17/r/BSSID"
     name: "dev17_bssid"
 
   - platform: mqtt
-    state_topic: "dev17/SSID"
+    state_topic: "dev17/r/SSID"
     name: "dev17_ssid"
 
   - platform: mqtt
-    state_topic: "dev17/INFO"
+    state_topic: "dev17/r/INFO"
     name: "dev17_info"
 
   - platform: mqtt
-    state_topic: "dev17/sr/capability"
+    state_topic: "dev17/r/capability"
     name: "dev17_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -683,22 +683,22 @@
   - platform: mqtt
     state_topic: "dev18/r/rssi"
     name: "dev18_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev18/BSSID"
+    state_topic: "dev18/r/BSSID"
     name: "dev18_bssid"
 
   - platform: mqtt
-    state_topic: "dev18/SSID"
+    state_topic: "dev18/r/SSID"
     name: "dev18_ssid"
 
   - platform: mqtt
-    state_topic: "dev18/INFO"
+    state_topic: "dev18/r/INFO"
     name: "dev18_info"
 
   - platform: mqtt
-    state_topic: "dev18/sr/capability"
+    state_topic: "dev18/r/capability"
     name: "dev18_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -716,22 +716,22 @@
   - platform: mqtt
     state_topic: "dev20/r/rssi"
     name: "dev20_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev20/BSSID"
+    state_topic: "dev20/r/BSSID"
     name: "dev20_bssid"
 
   - platform: mqtt
-    state_topic: "dev20/SSID"
+    state_topic: "dev20/r/SSID"
     name: "dev20_ssid"
 
   - platform: mqtt
-    state_topic: "dev20/INFO"
+    state_topic: "dev20/r/INFO"
     name: "dev20_info"
 
   - platform: mqtt
-    state_topic: "dev20/sr/capability"
+    state_topic: "dev20/r/capability"
     name: "dev20_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -749,22 +749,22 @@
   - platform: mqtt
     state_topic: "dev21/r/rssi"
     name: "dev21_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev21/BSSID"
+    state_topic: "dev21/r/BSSID"
     name: "dev21_bssid"
 
   - platform: mqtt
-    state_topic: "dev21/SSID"
+    state_topic: "dev21/r/SSID"
     name: "dev21_ssid"
 
   - platform: mqtt
-    state_topic: "dev21/INFO"
+    state_topic: "dev21/r/INFO"
     name: "dev21_info"
 
   - platform: mqtt
-    state_topic: "dev21/sr/capability"
+    state_topic: "dev21/r/capability"
     name: "dev21_capability"
 # -----------------------------------------------------------
   - platform: mqtt
@@ -775,22 +775,22 @@
   - platform: mqtt
     state_topic: "dev42/r/rssi"
     name: "dev42_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev42/BSSID"
+    state_topic: "dev42/r/BSSID"
     name: "dev42_bssid"
 
   - platform: mqtt
-    state_topic: "dev42/SSID"
+    state_topic: "dev42/r/SSID"
     name: "dev42_ssid"
 
   - platform: mqtt
-    state_topic: "dev42/INFO"
+    state_topic: "dev42/r/INFO"
     name: "dev42_info"
 
   - platform: mqtt
-    state_topic: "dev42/sr/capability"
+    state_topic: "dev42/r/capability"
     name: "dev42_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -808,22 +808,22 @@
   - platform: mqtt
     state_topic: "dev55/r/rssi"
     name: "dev55_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev55/BSSID"
+    state_topic: "dev55/r/BSSID"
     name: "dev55_bssid"
 
   - platform: mqtt
-    state_topic: "dev55/SSID"
+    state_topic: "dev55/r/SSID"
     name: "dev55_ssid"
 
   - platform: mqtt
-    state_topic: "dev55/INFO"
+    state_topic: "dev55/r/INFO"
     name: "dev55_info"
 
   - platform: mqtt
-    state_topic: "dev55/sr/capability"
+    state_topic: "dev55/r/capability"
     name: "dev55_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -841,22 +841,22 @@
   - platform: mqtt
     state_topic: "dev56/r/rssi"
     name: "dev56_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev56/BSSID"
+    state_topic: "dev56/r/BSSID"
     name: "dev56_bssid"
 
   - platform: mqtt
-    state_topic: "dev56/SSID"
+    state_topic: "dev56/r/SSID"
     name: "dev56_ssid"
 
   - platform: mqtt
-    state_topic: "dev56/INFO"
+    state_topic: "dev56/r/INFO"
     name: "dev56_info"
 
   - platform: mqtt
-    state_topic: "dev56/sr/capability"
+    state_topic: "dev56/r/capability"
     name: "dev56_capability"
 # -----------------------------------------------------------
   - platform: template
@@ -884,22 +884,22 @@
   - platform: mqtt
     state_topic: "dev77/r/rssi"
     name: "dev77_rssi"
-    unit_of_measurement: "dbm"
+    unit_of_measurement: "%"
 
   - platform: mqtt
-    state_topic: "dev77/BSSID"
+    state_topic: "dev77/r/BSSID"
     name: "dev77_bssid"
 
   - platform: mqtt
-    state_topic: "dev77/SSID"
+    state_topic: "dev77/r/SSID"
     name: "dev77_ssid"
 
   - platform: mqtt
-    state_topic: "dev77/INFO"
+    state_topic: "dev77/r/INFO"
     name: "dev77_info"
 
   - platform: mqtt
-    state_topic: "dev77/sr/capability"
+    state_topic: "dev77/r/capability"
     name: "dev77_capability"
 # -----------------------------------------------------------
   - platform: mqtt

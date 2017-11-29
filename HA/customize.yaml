@@ -321,21 +321,24 @@
       icon: "mdi:traffic-light"
       friendly_name: "B1 Simple Rainbow"
 # -----------------------------------------------
+    sensor.dev13_adc:
+      friendly_name: "13 Leakage"
+    sensor.dev13_update:
+      friendly_name: "13 Leakage"
+      icon: "mdi:timer-sand"
     light.dev13:
-      friendly_name: "Sideboard"
+      friendly_name: "Leakage"
     sensor.dev13_rssi:
-      friendly_name: "13 Sideboard"
+      friendly_name: "13 Leakage"
+      icon: "mdi:signal-variant"
     sensor.dev13_info:
       icon: "mdi:information-outline"
-      friendly_name: "13 Sideboard"
+      friendly_name: "13 Leakage"
     sensor.dev13_temperature:
       icon: "mdi:thermometer"
-      friendly_name: "Sideboard"
-#    sensor.dev13_humidity:
-#      friendly_name: "Sideboard"66
-#      icon: "mdi:water-percent"
+      friendly_name: "Leakage"
     binary_sensor.dev13_motion:
-      friendly_name: "Sideboard"
+      friendly_name: "Leakage"
 # -----------------------------------------------
     sensor.dev14_update:
       friendly_name: "14 Kitchen Cabinet"

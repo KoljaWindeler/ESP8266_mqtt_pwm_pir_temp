@@ -88,7 +88,6 @@ media_player:
  - platform: cast
    host: 192.168.2.134
 emulated_hue:
- listen_port: 80
 
 # Weather Prediction
 sensor: !include sensors.yaml
