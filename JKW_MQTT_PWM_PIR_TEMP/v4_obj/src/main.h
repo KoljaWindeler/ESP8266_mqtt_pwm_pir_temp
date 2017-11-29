@@ -9,13 +9,13 @@
  #######  single CHANNEL ###################
  ###################################- platform: mqtt ### tower living
  ###################################name: "dev1"
- ###################################state_topic: "dev1/PWM_light/status"
- ###################################command_topic: "dev1/PWM_dimm/switch"
- ###################################brightness_state_topic: 'dev1/PWM_light/brightness'
+ ###################################TOPIC: "dev1/PWM_light/status"
+ ###################################TOPIC: "dev1/PWM_dimm/switch"
+ ###################################brightness_TOPIC: 'dev1/PWM_light/brightness'
  ## use the line below for dimming
- ############brightness_command_topic: 'dev1/PWM_dimm/brightness/set'
+ ##################brightness_TOPIC: 'dev1/PWM_dimm/brightness/set'
  ## use the line below for setting hard
- # brightness_command_topic: 'dev1/PWM_light/brightness/set'
+ # brightness_TOPIC: 'dev1/PWM_light/brightness/set'
  # qos: 0
  # payload_on: "ON"
  # payload_off: "OFF"
@@ -25,13 +25,13 @@
  #######  rgb CHANNEL ###################
  ###################################- platform: mqtt ### tower living
  ###################################name: "dev1"
- ###################################state_topic: "dev1/PWM_light/status"
- ###################################command_topic: "dev1/PWM_dimm/switch"
- ###################################rgb_state_topic: 'dev1/PWM_RGB_dimm/color/set'
+ ###################################TOPIC: "dev1/PWM_light/status"
+ ###################################TOPIC: "dev1/PWM_dimm/switch"
+ ###################################rgb_TOPIC: 'dev1/PWM_RGB_dimm/color/set'
  # use the lines below for rgb dimming
- # rgb_command_topic: 'dev1/PWM_RGB_dimm/color/set'
+ # rgb_TOPIC: 'dev1/PWM_RGB_dimm/color/set'
  # use the lines below for setting
- # rgb_command_topic: 'dev1/PWM_RGB_light/color/set'
+ # rgb_TOPIC: 'dev1/PWM_RGB_light/color/set'
  # qos: 0
  # payload_on: "ON"
  # payload_off: "OFF"
@@ -103,7 +103,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171119"
+	#define VERSION               "20171125"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -193,7 +193,7 @@ public:
 	#define ANIMATION_RAINBOW_SIMPLE 2
 	#define ANIMATION_COLOR_WIPE     3
 
-	#define MAX_PERIPHERALS 20
+	#define MAX_PERIPHERALS          20
 
 
 	struct led {
@@ -207,11 +207,11 @@ public:
 	void configModeCallback(WiFiManager * myWiFiManager);
 	void saveConfigCallback();
 	void loadConfig();
-	char * build_topic(const char * topic);
+	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S);
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
-	bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config);
+	bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config);
 
 
 	/*mqtt_parameter_8 m_simple_light_state;
@@ -224,42 +224,36 @@ public:
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
+	// all topics are used with /r/ or /s/ as prefix by the build_topic function
+	// where /s/ topics are send fro, the PC and received here, and /r/ the otherway around
 	// light direct
-	static constexpr char MQTT_LIGHT_COMMAND_TOPIC[]            = "/s/light";            // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_COLOR_COMMAND_TOPIC[]      = "/s/light/color";      // set value "0-99,0-99,0-99"  will switch hard to the value
-	static constexpr char MQTT_LIGHT_BRIGHTNESS_COMMAND_TOPIC[] = "/s/light/brightness"; // set value 0-99 will switch hard to the value
-	// ligth dimm
-	static constexpr char MQTT_LIGHT_DIMM_COMMAND_TOPIC[] = "/s/light/dimm";                      // get ON/OFF command here
-	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_COMMAND_TOPIC[] = "/s/light/dimm/brightness"; // set value, will dimm towards the new value
-	static constexpr char MQTT_LIGHT_DIMM_DELAY_COMMAND_TOPIC[]      = "/s/light/dimm/delay";     // set value, will dimm towards the new value
-	static constexpr char MQTT_LIGHT_DIMM_COLOR_COMMAND_TOPIC[]      = "/s/light/dimm/color";     // set value "0-99,0-99,0-99", will dimm towards the new value
-	// animation command
-	static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_COMMAND_TOPIC[]        = "/s/light/animation/rainbow";        // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_COMMAND_TOPIC[] = "/s/light/animation/simple_rainbow"; // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_COMMAND_TOPIC[]     = "/s/light/animation/color_wipe";     // get command here ON / OFF
-	// light states
-	static constexpr char MQTT_LIGHT_STATE_TOPIC[]            = "/r/light";            // publish state here ON / OFF
-	static constexpr char MQTT_LIGHT_COLOR_STATE_TOPIC[]      = "/r/light/color";      // publish value "0-99,0-99,0-99"
-	static constexpr char MQTT_LIGHT_BRIGHTNESS_STATE_TOPIC[] = "/r/light/brightness"; // publish 0-99
-	// animation states
-	static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_STATUS_TOPIC[]        = "/r/light/animation/rainbow";        // publish state here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_STATUS_TOPIC[] = "/r/light/animation/simple_rainbow"; // publish state here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_STATUS_TOPIC[]     = "/r/light/animation/color_wipe";     // publish state here ON / OFF
+	static constexpr char MQTT_LIGHT_TOPIC[]                          = "light";                          // get command here ON / OFF
+	static constexpr char MQTT_LIGHT_COLOR_TOPIC[]                    = "light/color";                    // set value "0-99,0-99,0-99"  will switch hard to the value
+	static constexpr char MQTT_LIGHT_BRIGHTNESS_TOPIC[]               = "light/brightness";               // set value 0-99 will switch hard to the value
+	static constexpr char MQTT_LIGHT_DIMM_TOPIC[]                     = "light/dimm";                     // get ON/OFF command here
+	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_TOPIC[]          = "light/dimm/brightness";          // set value, will dimm towards the new value
+	static constexpr char MQTT_LIGHT_DIMM_DELAY_TOPIC[]               = "light/dimm/delay";               // set value, will dimm towards the new value
+	static constexpr char MQTT_LIGHT_DIMM_COLOR_TOPIC[]               = "light/dimm/color";               // set value "0-99,0-99,0-99", will dimm towards the new value
+	static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC[]        = "light/animation/rainbow";        // get command here ON / OFF
+	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
+	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
 	// misc
-	static constexpr char MQTT_MOTION_STATUS_TOPIC[] = "/r/motion";      // publish
-	static constexpr char MQTT_TEMPARATURE_TOPIC[]   = "/r/temperature"; // publish
-	static constexpr char MQTT_HUMIDITY_TOPIC[]      = "/r/humidity";    // publish
-	static constexpr char MQTT_BUTTON_TOPIC[]        = "/r/button";      // publish
-	static constexpr char MQTT_RSSI_STATE_TOPIC[]    = "/r/rssi";        // publish
-	static constexpr char MQTT_ADC_STATE_TOPIC[]     = "/r/adc";         // publish
+	static constexpr char MQTT_MOTION_TOPIC[]      = "motion";      // publish
+	static constexpr char MQTT_TEMPARATURE_TOPIC[] = "temperature"; // publish
+	static constexpr char MQTT_HUMIDITY_TOPIC[]    = "humidity";    // publish
+	static constexpr char MQTT_BUTTON_TOPIC[]      = "button";      // publish
+	static constexpr char MQTT_RSSI_TOPIC[]        = "rssi";        // publish
+	static constexpr char MQTT_ADC_TOPIC[]         = "adc";         // publish
 
-	static constexpr char MQTT_SETUP_TOPIC[] = "/sr/setup"; // subscribe
-	static constexpr char MQTT_CAPABILITY_TOPIC[] = "/sr/capability"; // subscribe
-	static constexpr char MQTT_TRACE_COMMAND_TOPIC[] = "/s/trace"; // subscribe
-	static constexpr char MQTT_TRACE_STATUS_TOPIC[] = "/r/trace"; // publish
+	static constexpr char MQTT_SETUP_TOPIC[]      = "setup";      // subscribe
+	static constexpr char MQTT_CAPABILITY_TOPIC[] = "capability"; // subscribe
+	static constexpr char MQTT_TRACE_TOPIC[]      = "trace";      // subscribe
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";
+
+	#define UNIT_TO_PC 'r'
+	#define PC_TO_UNIT 's'
 
 
 	extern WiFiClient wifiClient;
