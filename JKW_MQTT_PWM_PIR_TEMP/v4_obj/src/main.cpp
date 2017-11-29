@@ -56,7 +56,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	}
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
-	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC))) {
+	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT))) {
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
 			logger.println(TOPIC_MQTT, F("Go to setup"));
 			delay(500);
@@ -65,7 +65,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 				delay(500);
 				Serial.begin(115200);
 			//}
-			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
+			client.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), "ok", true);
 			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 			// debug
 			WiFi.printDiag(Serial);
@@ -75,17 +75,17 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			// have to create a copy, whenever we publish we'll override the current buffer
 			char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
 			strcpy(copy_buffer,(const char*)p_payload);
-			client.publish(build_topic(MQTT_SETUP_TOPIC), "ok", true);
-			client.publish(build_topic("/INFO"), "updating...", true);
+			client.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), "ok", true);
+			client.publish(build_topic("INFO",UNIT_TO_PC), "updating...", true);
 
 			ESPhttpUpdate.rebootOnUpdate(false);
 			HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
 			if (res == HTTP_UPDATE_OK) {
-				client.publish(build_topic("/INFO"), "rebooting...", true);
+				client.publish(build_topic("INFO",UNIT_TO_PC), "rebooting...", true);
 				logger.pln(F("Update OK, rebooting"));
 				ESP.restart();
 			} else {
-				client.publish(build_topic("/INFO"), "update failed", true);
+				client.publish(build_topic("INFO",UNIT_TO_PC), "update failed", true);
 				logger.pln(F("Update failed"));
 			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
@@ -94,7 +94,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		}
 	}
 	// //////////////////////// SET CAPABILITYS ////////////////////////
-	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC))) {
+	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT))) {
 		wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
 		//logger.pln("compare:");
 		//logger.pln((const char*)mqtt.cap);
@@ -114,7 +114,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		}
 	}
 	////////////////////// trace /////////////////////////////
-	else if(!strcmp(p_topic, build_topic(MQTT_TRACE_COMMAND_TOPIC))){
+	else if(!strcmp(p_topic, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT))){
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
 			logger.set_active(true);
 			logger.println(TOPIC_MQTT, F("=== Trace activated ==="),COLOR_PURPLE);
@@ -154,41 +154,60 @@ void reconnect(){
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
 				// ... and resubscribe
-				client.subscribe(build_topic(MQTT_TRACE_COMMAND_TOPIC)); // MQTT_TRACE_COMMAND_TOPIC topic
+				client.subscribe(build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
 				client.loop();
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_COMMAND_TOPIC), COLOR_GREEN);
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
-				client.subscribe(build_topic(MQTT_SETUP_TOPIC)); // setup topic
+				client.subscribe(build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT)); // setup topic
 				client.loop();
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC), COLOR_GREEN);
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
-				client.subscribe(build_topic(MQTT_CAPABILITY_TOPIC)); // capability topic
+				client.subscribe(build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT)); // capability topic
 				client.loop();
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC), COLOR_GREEN);
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
 				for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
 					(*active_p[i])->subscribe();
 				}
+				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
-				client.publish(build_topic("/INFO"), m_msg_buffer, true);
+				client.publish(build_topic("INFO",UNIT_TO_PC), m_msg_buffer, true);
 				client.loop();
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO",UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char*)" -> ");
+				logger.pln(m_msg_buffer);
+
 
 				// WIFI publishing
-				client.publish(build_topic("/SSID"), WiFi.SSID().c_str(), true);
+				client.publish(build_topic("SSID",UNIT_TO_PC), WiFi.SSID().c_str(), true);
 				client.loop();
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("SSID",UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char*)" -> ");
+				logger.pln((char*)(WiFi.SSID().c_str()));
 
 				// BSSID publishing
 				uint8_t * bssid = WiFi.BSSID();
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[5], bssid[4], bssid[3], bssid[2],
 				  bssid[1],
 				  bssid[0]);
-				client.publish(build_topic("/BSSID"), m_msg_buffer, true);
+				client.publish(build_topic("BSSID",UNIT_TO_PC), m_msg_buffer, true);
 				client.loop();
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("BSSID",UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char*)" -> ");
+				logger.pln(m_msg_buffer);
 
-				logger.println(TOPIC_MQTT, F("subscribing finished"));
+				// CAP publishing
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
+				client.publish(build_topic(MQTT_CAPABILITY_TOPIC,UNIT_TO_PC), mqtt.cap, true);
+				client.loop();
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_CAPABILITY_TOPIC,UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char*)" -> ");
+				logger.pln(mqtt.cap);
+
+				logger.println(TOPIC_MQTT, F("publishing finished"));
 
 				timer_connected_start = millis();
 			} // if MQTT client.connect ok
@@ -366,6 +385,24 @@ void loadPheripherals(uint8_t* config){
 	//logger.pln(system_get_free_heap_size());
 
 	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
+
+	// make this more generic .... like ...
+	// go through all entities, check if they have a dependency if so
+	// call the dependency with this opbject
+	/*
+	for(uint8_t i=0; i<active_p_pointer; i++){
+		// check of all objects if they had a dependency
+		if(strlen(active_p[i]->get_dep())>0){
+			// if so, find the dependency and tell them that we're depending on them
+			for(uint8_t ii=0; ii<active_p_pointer; ii++){
+				if(strcmp(active_p[i]->get_dep(), active_p[ii]->get_key())){
+					// so everyone and their sister need, get_key and reg_provider?
+					((light*)active_p[ii])->reg_provider(active_p[i],active_p[i]->get_key()));
+				}
+			}
+		}
+	}
+	*/
 	// set one provider
 	if(p_simple_light){
 		((light*)p_light)->reg_provider(p_simple_light,T_SL);
@@ -380,11 +417,15 @@ void loadPheripherals(uint8_t* config){
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
+	wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
 }
 
 // build topics with device id on the fly
-char * build_topic(const char * topic){
-	sprintf(m_topic_buffer, "%s%s", mqtt.dev_short, topic);
+char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
+	if(pc_shall_R_or_S!=PC_TO_UNIT && pc_shall_R_or_S!=UNIT_TO_PC){
+		pc_shall_R_or_S=PC_TO_UNIT;
+	}
+	sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
 	return m_topic_buffer;
 }
 
@@ -460,6 +501,8 @@ void setup(){
 	client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 	client.setCallback(callback);
 	randomSeed(millis());
+	logger.pln(F("=== End of Setup ==="));
+	logger.pln(F(" "));
 } // setup
 
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
@@ -511,7 +554,7 @@ void loop(){
 				//if(t[strlen(t)-2]==13 && t[strlen(t)-1]==10){
 				//	t[strlen(t)-2]=0x00;
 				//}
-				client.publish(build_topic(MQTT_TRACE_STATUS_TOPIC), p_trace);
+				client.publish(build_topic(MQTT_TRACE_TOPIC,UNIT_TO_PC), p_trace);
 				timer_last_publish    = millis();
 			}
 		}

@@ -1,3 +1,6 @@
+20171125
+	- clear separation between PC to unit and unit to pc topics
+	- publish capability to recover on PC site
 20171111
 	- readded config via serial to mqtt struct v3
 	- added 2nd adc slot to remove delay

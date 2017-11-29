@@ -31,7 +31,7 @@ bool J_DS::intervall_update(uint8_t slot){
 	// function called to publish the brightness of the led
 	float temp = getDsTemp();
 	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
-		logger.print(TOPIC_MQTT, F("no publish temp, "), COLOR_YELLOW);
+		logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);
 		if (isnan(temp)) {
 			logger.pln(F("nan"));
 		} else {
@@ -46,7 +46,7 @@ bool J_DS::intervall_update(uint8_t slot){
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	logger.p(F("DS temp "));
 	logger.pln(m_msg_buffer);
-	return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC), m_msg_buffer, true);
+	return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 }
 
 bool J_DS::subscribe(){

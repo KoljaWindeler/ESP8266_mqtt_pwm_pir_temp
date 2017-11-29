@@ -36,7 +36,7 @@ bool rssi::intervall_update(uint8_t slot){
 	rssi += ((float) random(10)) / 100;
 	dtostrf(rssi, 3, 2, m_msg_buffer);
 	logger.pln(m_msg_buffer);
-	return client.publish(build_topic(MQTT_RSSI_STATE_TOPIC), m_msg_buffer, true);
+	return client.publish(build_topic(MQTT_RSSI_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 }
 
 bool rssi::subscribe(){

@@ -60,11 +60,11 @@ bool PIR::publish(){
 
 		logger.print(TOPIC_MQTT_PUBLISH, F("pir state "), COLOR_GREEN);
 		if (m_state.get_value()) {
-			Serial.println(F("motion"));
-			ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_ON, true);
+			logger.pln(F("motion"));
+			ret = client.publish(build_topic(MQTT_MOTION_TOPIC,UNIT_TO_PC), STATE_ON, true);
 		} else {
-			Serial.println(F("no motion"));
-			ret = client.publish(build_topic(MQTT_MOTION_STATUS_TOPIC), STATE_OFF, true);
+			logger.pln(F("no motion"));
+			ret = client.publish(build_topic(MQTT_MOTION_TOPIC,UNIT_TO_PC), STATE_OFF, true);
 		}
 		if (ret) {
 			m_state.outdated(false);

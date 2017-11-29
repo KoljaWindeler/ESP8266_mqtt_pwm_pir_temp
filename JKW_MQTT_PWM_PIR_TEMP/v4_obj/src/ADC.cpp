@@ -41,7 +41,7 @@ bool ADC::intervall_update(uint8_t slot){
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", adc);
 		logger.pln(m_msg_buffer);
 		digitalWrite(GPIO_D8, LOW);
-		return client.publish(build_topic(MQTT_ADC_STATE_TOPIC), m_msg_buffer, true);
+		return client.publish(build_topic(MQTT_ADC_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 	}
 	return false;
 }
