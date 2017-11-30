@@ -146,8 +146,8 @@
     control: hidden
     view: no
     entities:
-      - automation.rearm_alarm_system
       - input_boolean.Alarm_System
+      - automation.rearm_alarm_system
       - automation.alarm_system
       - automation.alarm_system_c101
       - automation.alarm_system_c102
