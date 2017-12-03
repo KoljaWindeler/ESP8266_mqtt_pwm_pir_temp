@@ -385,6 +385,23 @@
       friendly_name: "Bedroom SW"
       icon: "mdi:thermometer"
 # -----------------------------------------------
+    sensor.dev17_update:
+      friendly_name: "17 X-mas2"
+      icon: "mdi:timer-sand"
+    light.dev17:
+      friendly_name: "x-mas 2"
+    binary_sensor.dev17_motion:
+      friendly_name: "x-mas 2"
+    sensor.dev17_info:
+      icon: "mdi:information-outline"
+      friendly_name: "17 x-mas 2"
+    sensor.dev17_rssi:
+      friendly_name: "17 x-mas 2"
+      icon: "mdi:signal-variant"
+    sensor.dev17_temperature:
+      friendly_name: "x-mas 2"
+      icon: "mdi:thermometer"
+# -----------------------------------------------
     sensor.dev20_update:
       friendly_name: "20 Bedroom"
       icon: "mdi:timer-sand"
@@ -431,6 +448,18 @@
       friendly_name: "56 Lampinion"
     sensor.dev56_info:
       friendly_name: "56 Lampinion"
+      icon: "mdi:information-outline"
+# -----------------------------------------------
+    sensor.dev57_update:
+      friendly_name: "57 x-mas"
+      icon: "mdi:timer-sand"
+    light.dev57:
+      friendly_name: "x-mas"
+    sensor.dev57_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "57 x-mas"
+    sensor.dev57_info:
+      friendly_name: "57 x-mas"
       icon: "mdi:information-outline"
 # -----------------------------------------------
     sensor.dev77_update:

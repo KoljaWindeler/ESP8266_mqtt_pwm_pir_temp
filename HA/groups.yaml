@@ -50,17 +50,21 @@
     entities:
       #- light.dev11
       #- light.dev7
-      #- light.dev1
       - light.joiner_livingroom
+      - light.dev1
+      - light.dev21
       - light.dev101
       - light.dev103
       - light.dev106
+      - light.dev57
+      - light.dev17
       - sensor.dev11_temperature
       #- sensor.dev7_temperature
       - sensor.dev1_temperature
       - binary_sensor.dev101_motion
       - binary_sensor.dev103_motion
       - binary_sensor.dev106_motion
+      - binary_sensor.dev57_motion
 
   Kitchen:
     control: hidden
@@ -231,10 +235,12 @@
       - sensor.dev14_info
       - sensor.dev15_info
       - sensor.dev16_info
+      - sensor.dev17_info
       - sensor.dev20_info
       - sensor.dev21_info
       - sensor.dev55_info
       - sensor.dev56_info
+      - sensor.dev57_info
       - sensor.dev77_info
       # - sensor.dev18_info
       # - sensor.dev42_info
@@ -260,10 +266,12 @@
       - sensor.dev14_bssid
       - sensor.dev15_bssid
       - sensor.dev16_bssid
+      - sensor.dev17_bssid
       - sensor.dev20_bssid
       - sensor.dev21_bssid
       - sensor.dev55_bssid
       - sensor.dev56_bssid
+      - sensor.dev57_bssid
       - sensor.dev77_bssid
       # - sensor.dev18_bssid
       # - sensor.dev42_bssid
@@ -289,10 +297,12 @@
       - sensor.dev14_ssid
       - sensor.dev15_ssid
       - sensor.dev16_ssid
+      - sensor.dev17_ssid
       - sensor.dev20_ssid
       - sensor.dev21_ssid
       - sensor.dev55_ssid
       - sensor.dev56_ssid
+      - sensor.dev57_ssid
       - sensor.dev77_ssid
       # - sensor.dev18_ssid
       # - sensor.dev42_ssid
@@ -318,10 +328,12 @@
       - sensor.dev14_capability
       - sensor.dev15_capability
       - sensor.dev16_capability
+      - sensor.dev17_capability
       - sensor.dev20_capability
       - sensor.dev21_capability
       - sensor.dev55_capability
       - sensor.dev56_capability
+      - sensor.dev57_capability
       - sensor.dev77_capability
       # - sensor.dev18_capability
       # - sensor.dev42_capability
@@ -348,10 +360,12 @@
       - sensor.dev14_rssi
       - sensor.dev15_rssi
       - sensor.dev16_rssi
+      - sensor.dev17_rssi
       - sensor.dev20_rssi
       - sensor.dev21_rssi
       - sensor.dev55_rssi
       - sensor.dev56_rssi
+      - sensor.dev57_rssi
       - sensor.dev77_rssi
       # - sensor.dev18_rssi
       # - sensor.dev42_rssi
@@ -377,10 +391,12 @@
       - sensor.dev14_update
       - sensor.dev15_update
       - sensor.dev16_update
+      - sensor.dev17_update
       - sensor.dev20_update
       - sensor.dev21_update
       - sensor.dev55_update
       - sensor.dev56_update
+      - sensor.dev57_update
       - sensor.dev77_update
 
   all_status:
@@ -404,10 +420,12 @@
       - sensor.dev14
       - sensor.dev15
       - sensor.dev16
+      - sensor.dev17
       - sensor.dev20
       - sensor.dev21
       - sensor.dev55
       - sensor.dev56
+      - sensor.dev57
       - sensor.dev77
 
   mediaplayer:
@@ -459,12 +477,14 @@
       - light.dev14
       - light.dev15
       - light.dev16
+      - light.dev17
       - light.dev19
       - light.dev20
       - light.dev21
       - light.dev42
       - light.dev55
       - light.dev56
+      - light.dev57
       - light.dev77
       - light.dev98
       - light.dev99
@@ -519,4 +539,5 @@
       - binary_sensor.dev99_motion
       - light.dev12
       - input_slider.dev12_dimmer_delay
+      - sun.sun
         

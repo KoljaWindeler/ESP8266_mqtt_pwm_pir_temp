@@ -186,6 +186,15 @@
     payload_on: "ON"
     payload_off: "OFF"
 # --------------------------------------------------
+  - platform: mqtt ### steckdosen dings wohnzimmer
+    name: "dev17"
+    state_topic: "dev17/r/light"
+    command_topic: "dev17/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
   - platform: mqtt ### testing
     name: "dev19"
     state_topic: "dev19/r/light"
@@ -233,6 +242,15 @@
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
+# --------------------------------------------------
+  - platform: mqtt ### weihnachtskette
+    name: "dev57"
+    state_topic: "dev57/r/light"
+    command_topic: "dev57/s/light"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
 # --------------------------------------------------
   - platform: mqtt ### cam illumino 101
     name: "dev101"

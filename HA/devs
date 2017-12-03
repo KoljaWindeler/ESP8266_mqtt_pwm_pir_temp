@@ -3,20 +3,19 @@ DEV2  - Kitchen Hood, temperature, simple light
 DEV3  - touch bedroom
 DEV4  - Kitchen, temperature, PIR, simple light, schrank rechts
 DEV5  - outdoor 1, simple light, slampher
-DEV6 - temp / pir flur
+DEV6 - temp / pir flur unten
 DEV7 - dinng room tower, temperature, simple light
 DEV8 - PIR carlo
 DEV9  - staubsauger im shop
 DEV10 - upstairs flur, PIR, temperature, simple light
 DEV11 - living room tower, temperature, simple light
 DEV12  - b1 light bulb 1
-//DEV13 - pcb, currently used for humidity measurement in livingroom plant 
-
+DEV13 - leakage controller
 DEV14 - kitchen drawer, PIR, simple light
 DEV15 - World map, PIR dimmer
 DEV16 - switch for dev20 both bedroom
+DEV17 - steckdosending das aktuell die lichterkette im wohnzimmer schaltet
 
-//DEV17 - PCB, PIR, unused
 //DEV18 - PCB, PIR, unused
 //DEV19 - PCB, PIR, unused, rgb
 
@@ -26,4 +25,5 @@ dev21 - slampher im wohnzimmer
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused
 DEV55 - Ikea LED lampinions Carlo
 DEV56 - Ikea LED lampinions Flur
+DEV57 - xmas sonoff basic mit pir
 DEV77 - carlo flower1
