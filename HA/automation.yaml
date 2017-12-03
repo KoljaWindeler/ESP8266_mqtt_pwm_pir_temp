@@ -613,3 +613,4 @@
           {% endif %}
         entity_id: 
           - light.dev5
+# ------------------- outdoor light ------------------------

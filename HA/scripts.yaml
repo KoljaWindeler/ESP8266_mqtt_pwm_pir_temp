@@ -312,6 +312,18 @@
 
 
 # ---------------------------------------------------------
+  the_dog:
+    sequence:
+      - service: media_player.play_media
+        entity_id: media_player.jkw_cast2
+        data:
+          media_content_id: http://192.168.2.84:90/b.mp3
+          media_content_type: audio/mp3
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "28445444"
+# ---------------------------------------------------------
   test:
     sequence:
       - service: notify.pb 
