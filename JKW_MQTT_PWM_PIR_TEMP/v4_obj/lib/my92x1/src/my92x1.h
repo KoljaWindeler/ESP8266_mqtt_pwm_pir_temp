@@ -92,12 +92,12 @@ typedef struct {
 
 class my92x1 {
     public:
-        my92x1(unsigned char di, unsigned char dcki, unsigned char channels = 4);
+				my92x1();
         void setColor(my92x1_color_t color);
         my92x1_color_t getColor();
         void setState(bool state);
         bool getState();
-        void init(bool b1True_aiFalse);
+        void init(bool b1True_aiFalse,unsigned char di, unsigned char dcki, unsigned char channels);
 
     private:
 

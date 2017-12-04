@@ -197,13 +197,12 @@ void my92x1::setState(bool state){
 
 // -----------------------------------------------------------------------------
 
-my92x1::my92x1(unsigned char di, unsigned char dcki, unsigned char channels){
+my92x1::my92x1(){}
+
+void my92x1::init(bool b1True_aiFalse, unsigned char di, unsigned char dcki, unsigned char channels){
 	_pin_di   = di;
 	_pin_dcki = dcki;
 	_channels = channels;
-}
-
-void my92x1::init(bool b1True_aiFalse){
 	_b1True_aiFalse = b1True_aiFalse;
 	pinMode(_pin_di, OUTPUT);
 	pinMode(_pin_dcki, OUTPUT);

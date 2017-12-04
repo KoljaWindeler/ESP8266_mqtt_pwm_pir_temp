@@ -1,6 +1,6 @@
 #include <AI.h>
 
-my92x1 _my92x1 = my92x1(AI_DI_PIN, AI_DCKI_PIN, 4);
+
 
 
 AI::AI(){};
@@ -23,8 +23,9 @@ uint8_t* AI::get_key(){
 }
 
 bool AI::init(){
-	_my92x1.init(false); // false = AI
-	logger.println(TOPIC_GENERIC_INFO, F("Button init"), COLOR_GREEN);
+	_my92x1 = my92x1();
+	_my92x1.init(false,AI_DI_PIN, AI_DCKI_PIN, 4); // false = AI
+	logger.println(TOPIC_GENERIC_INFO, F("AI init"), COLOR_GREEN);
 }
 
 

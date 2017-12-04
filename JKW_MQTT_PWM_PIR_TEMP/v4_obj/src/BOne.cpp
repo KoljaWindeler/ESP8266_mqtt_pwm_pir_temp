@@ -1,6 +1,5 @@
 #include <BOne.h>
 
-my92x1 _my92x1_b1 = my92x1(MY9291_DI_PIN, MY9291_DCKI_PIN,6);
 
 BOne::BOne(){};
 BOne::~BOne(){
@@ -14,7 +13,7 @@ bool BOne::parse(uint8_t* config){
 }
 
 bool BOne::init(){
-	_my92x1_b1.init(true); // true = B1
+	_my92x1_b1.init(true,MY9291_DI_PIN, MY9291_DCKI_PIN,6); // true = B1
 	logger.println(TOPIC_GENERIC_INFO, F("B1 init"), COLOR_GREEN);
 }
 

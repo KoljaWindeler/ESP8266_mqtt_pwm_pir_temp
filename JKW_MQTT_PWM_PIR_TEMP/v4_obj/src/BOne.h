@@ -28,6 +28,7 @@ class BOne : public peripheral {
 		mqtt_parameter_8 m_state;
 		uint8_t key[3];
 		led m_light_current;
+		my92x1 _my92x1_b1;
 };
 
 
