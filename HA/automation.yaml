@@ -11,10 +11,10 @@
 # ------------------- autoload theme ------------------------
 
 # ------------------- entrance Room ------------------------
-  - alias: entranceR_test
+  - alias: entranceRoom
     initial_state: True
     hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
+    trigger: # trigger twice, whenever the motion sensors are off for 2 min
       - platform: state
         entity_id: binary_sensor.dev6_motion
         to: 'off'
@@ -106,12 +106,12 @@
     initial_state: True
     hide_entity: False
     trigger:
-#      - platform: mqtt
-#        topic: "dev3/r/button"
       - platform: mqtt
         topic: "dev16/r/button"
       - platform: mqtt
         topic: "dev20/r/button"
+      - platform: mqtt
+        topic: "dev3/r/button"
     action:
       service: light.toggle
       entity_id: light.joiner_bedroom
@@ -145,36 +145,6 @@
           - light.dev20
           - light.dev3
           - light.dev16  
-# ----------------------------------------------------------
-  - alias: dev3_toggle_and_dev20 # dev3 can toggle 20 and 12 but keep them sync
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev3/r/button"
-    condition: 
-      - condition: state
-        entity_id: light.joiner_bedroom
-        state: 'on'
-    action:
-      - service: light.turn_off
-        entity_id: 
-          - light.joiner_bedroom
-# ----------------------------------------------------------
-  - alias: dev3_toggle_and_dev20_2 #dev3 can toggle 20 and 12 but keep them in sync
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev3/r/button"
-    condition: 
-      - condition: state
-        entity_id: light.joiner_bedroom
-        state: 'off'
-    action:
-      - service: light.turn_on
-        entity_id: 
-          - light.joiner_bedroom
 # ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: joiner_kitchen_in
@@ -215,9 +185,17 @@
         - condition: state
           entity_id: binary_sensor.dev4_motion
           state: 'off'
+          for: 
+              hours: 0
+              minutes: 10
+              seconds: 0
         - condition: state
           entity_id: binary_sensor.dev14_motion
           state: 'off'
+          for: 
+              hours: 0
+              minutes: 10
+              seconds: 0
     action:
       service: light.turn_off
       entity_id: light.joiner_kitchen
@@ -243,62 +221,14 @@
           - light.dev14  
 # ----------------------------------------------------------
 # ----------------------------------------------------------
-  - alias: next_track_lirc
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: event
-      event_type: ir_command_received
-      event_data:
-        button_name: KEY_RIGHT
-    action:
-      service: media_player.media_next_track
-      entity_id: media_player.jkw_cast2
-# ----------------------------------------------------------
-# ----------------------------------------------------------
-# ------------------ gmusic player -------------------------
-  - alias: g_radion_on
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: switch.background
-        to: 'on'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_gradio_on
-# ----------------------------------------------------------
-  - alias: g_radion_off
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: switch.background
-        to: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_gradio_off
-# ------------------ gmusic player -------------------------
-# ----------------------------------------------------------
-
-
-# ----------------------------------------------------------
 # ------------------- couch  movement ---------------------
-  - alias: Turn_on_couch_light_when_there_is_movement
+  - alias: couch_automation
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev101_motion
         to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev101 
-# ----------------------------------------------------------
-  - alias: Turn_off_couch_lights_10min_after_movement
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
       - platform: state
         entity_id: binary_sensor.dev101_motion
         to: 'off'
@@ -307,28 +237,24 @@
           minutes: 10
           seconds: 0
     action:
-      service: homeassistant.turn_off
-      entity_id: light.dev101 
+      - service_template: >
+          {% if is_state('binary_sensor.dev101_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev101 
 # ------------------- couch  movement ---------------------
-# ----------------------------------------------------------
-
 # ----------------------------------------------------------
 # ------------------- entrance  movement -------------------
-  - alias: Turn_on_couch_light_when_there_is_movement
+  - alias: entrance_automation
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev102_motion
         to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev102 
-# ----------------------------------------------------------
-  - alias: Turn_off_entrance_lights_10min_after_movement
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
       - platform: state
         entity_id: binary_sensor.dev102_motion
         to: 'off'
@@ -337,28 +263,24 @@
           minutes: 10
           seconds: 0
     action:
-      service: homeassistant.turn_off
-      entity_id: light.dev102 
+      - service_template: >
+          {% if is_state('binary_sensor.dev102_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev102 
 # ------------------- entrace  movement -------------------
 # ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------- tv  movement ------------------------
-  - alias: Turn_on_tv_light_when_there_is_movement
+# ------------------- tv  movement -------------------
+  - alias: tv_automation
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev103_motion
         to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev103
-# ----------------------------------------------------------
-  - alias: Turn_off_tv_lights_10min_after_movement
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
       - platform: state
         entity_id: binary_sensor.dev103_motion
         to: 'off'
@@ -367,28 +289,24 @@
           minutes: 10
           seconds: 0
     action:
-      service: homeassistant.turn_off
-      entity_id: light.dev103 
-# ----------------------- tv  movement ---------------------
+      - service_template: >
+          {% if is_state('binary_sensor.dev103_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev103 
+# ------------------- tv  movement -------------------
 # ----------------------------------------------------------
-
-# ----------------------------------------------------------
-# ------------------- dragonfly  movement ------------------
-  - alias: Turn_on_dragonfly_light_when_there_is_movement
+# ------------------- dragonfly  movement -------------------
+  - alias: dragonfly_automation
     initial_state: True
     hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev106_motion
         to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.dev106 
-# ----------------------------------------------------------
-  - alias: Turn_off_dragonfly_lights_10min_after_movement
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
       - platform: state
         entity_id: binary_sensor.dev106_motion
         to: 'off'
@@ -397,11 +315,15 @@
           minutes: 10
           seconds: 0
     action:
-      service: homeassistant.turn_off
-      entity_id: light.dev106 
-# ------------------- dragonfly  movement ------------------
-# ----------------------------------------------------------
-
+      - service_template: >
+          {% if is_state('binary_sensor.dev106_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev106 
+# ------------------- dragonfly  movement -------------------
 # ----------------------------------------------------------
 # -------------------- hallway movement --------------------
 # ------ Turn_on_hallwayU_lights_when_there_is_movement ----
@@ -412,22 +334,6 @@
       - platform: state
         entity_id: binary_sensor.dev10_motion
         to: 'on'
-#    condition:
-#      condition: and
-#      conditions:
-#        - condition: time
-#          after: '06:30:00'
-#        - condition: time
-#          before: '23:30:00'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.joiner_hallwayU
-# ----------------------------------------------------------
-# -- alias: Turn_off_hallwayU_lights_10min_after_movement --
-  - alias: joiner_hallwayU_in2
-    initial_state: True
-    hide_entity: False
-    trigger:
       - platform: state
         entity_id: binary_sensor.dev10_motion
         to: 'off'
@@ -435,6 +341,24 @@
           hours: 0
           minutes: 2
           seconds: 0
+    action:
+      - service_template: >
+          {% if is_state('binary_sensor.dev10_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.joiner_hallwayU 
+# ----------------------------------------------------------
+# -- alias: Turn_off_hallwayU_lights_10min_after_movement --
+  - alias: joiner_hallwayU_in2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.joiner_bedroom
+        to: 'off'
     action:
       service: homeassistant.turn_off
       entity_id: light.joiner_hallwayU
@@ -464,15 +388,6 @@
       - platform: state
         entity_id: binary_sensor.dev15_motion
         to: 'on'
-    action:
-      service: homeassistant.turn_on
-      entity_id: light.joiner_hallwayD
-# ----------------------------------------------------------
-# -- alias: Turn_off_hallwayD_lights_10min_after_movement -
-  - alias: joiner_hallwayD_in2
-    initial_state: True
-    hide_entity: False
-    trigger:
       - platform: state
         entity_id: binary_sensor.dev15_motion
         to: 'off'
@@ -481,8 +396,14 @@
           minutes: 5
           seconds: 0
     action:
-      service: homeassistant.turn_off
-      entity_id: light.joiner_hallwayD
+      - service_template: >
+          {% if is_state('binary_sensor.dev15_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.joiner_hallwayD
 # ----------------------------------------------------------
   - alias: joiner_hallwayD_out
     initial_state: True
@@ -501,97 +422,6 @@
           - light.dev56
           - light.dev15
 # ----------------------------------------------------------
-# ----------------------------------------------------------
-
-# ------------------------ outside -------------------------
-# -------------------- outside on early ---------------------
-  - alias: wakeup_dev5
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: time
-        hours: 6
-        minutes: 30
-        seconds: 00
-    condition:
-      condition: state
-      entity_id: sun.sun
-      state: 'below_horizon'
-    action:
-      - service: homeassistant.turn_on
-        entity_id: light.dev5
-# -------------------- outside off after sunrise ---------------------
-  - alias: sunrise_dev5
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: sun
-        event: sunrise
-        offset: "+00:30:00"
-    condition:
-      condition: time
-      after: '06:30:00'
-    action:
-      - service: homeassistant.turn_off
-        entity_id: light.dev5
-# -------------------- outside on dark ---------------------
-# switch the light on, 15 min after sunset, but only if thats before 23:30
-  - alias: sunset_dev5
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: sun
-      event: sunset
-      offset: "+00:15:00"
-    condition:
-      condition: time
-      before: '23:30:00'
-    action:
-      - service: homeassistant.turn_on
-        entity_id: light.dev5
-# ----------------------------------------------------------
-# turn the lights off if both of us are at home for at least 10min and it is after 22:00
-  - alias: all_home_dev5
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.everyone_is_home
-        to: 'on'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: time
-        hours: 22
-        minutes: 00
-        seconds: 10
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.everyone_is_home
-          state: 'on'
-        - condition: time
-          after: '22:00:00'
-    action:
-      - service: homeassistant.turn_off
-        entity_id: light.dev5
-# ----------------------------------------------------------
-# turn the lights of at 23:30
-  - alias: midnight_dev5
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: time
-      hours: 23
-      minutes: 30
-      seconds: 00
-    action:
-      - service: homeassistant.turn_off
-        entity_id: light.dev5
-# -------------------- outside on dark ---------------------
-# ------------------------ outside -------------------------
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
@@ -735,17 +565,52 @@
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------------------
 
-# --------- playground --------
-  - alias: set_dimmer
-    initial_state: False
+# ------------------- outdoor light ------------------------
+  - alias: outdoor_light2
+    initial_state: True
     hide_entity: False
     trigger:
-      platform: state
-      entity_id: input_slider.dev12_dimmer_delay
+      - platform: time          # on at 6:30
+        hours: 6
+        minutes: 30
+        seconds: 00
+      - platform: sun           # off 30 min after sunrise
+        event: sunrise
+        offset: "+00:30:00"
+      - platform: sun           # on 15 min after sunset
+        event: sunset
+        offset: "+00:15:00"
+      - platform: state         # off when everyone is home after 22:00, triggered by presents (if that happens after 22:00)
+        entity_id: binary_sensor.everyone_is_home
+        to: 'on'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+      - platform: time          # off when everyone is home after 22:00, triggered by time (if everyone was home already)
+        hours: 22
+        minutes: 00
+        seconds: 10
+      - platform: time          # off for sure after 23:00
+        hours: 23
+        minutes: 00
+        seconds: 01
     action:
-      service: mqtt.publish
-      data_template:
-        topic: "dev12/PWM_dimm/delay/set"
-        retain: true
-        payload: '{{ states.input_slider.dev12_dimmer_delay.state | int }}'
-
+          # sun below horizon and time>23:00: off
+          # sun below horizon and time>22:00 and everyone home: off
+          # sun below horizon and time<22:00 on no matter who is home
+          # time>6:30 and sun still below horizon: on
+          #
+      - service_template: >
+          {% if now().hour==23 %} 
+            light.turn_off
+          {% elif is_state('sun.sun','below_horizon') and now().hour>=22 and is_state('binary_sensor.everyone_is_home','on') %} 
+            light.turn_off                
+          {% elif is_state('sun.sun','below_horizon') %}
+            light.turn_on 
+          {% else %} 
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev5
+# ------------------- outdoor light ------------------------

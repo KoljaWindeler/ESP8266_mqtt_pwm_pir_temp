@@ -58,13 +58,13 @@
       icon: "mdi:television-classic"
 # -----------------------------------------------
     sensor.dark_sky_apparent_temperature:
-      friendly_name: "Apparent Temp"
+      friendly_name: "Outside Apparent Temp"
     sensor.dark_sky_cloud_coverage:
       friendly_name: "Cloud coverage"
     sensor.dark_sky_daily_high_temperature:
-      friendly_name: "Max today"
+      friendly_name: "Outside max today"
     sensor.dark_sky_daily_low_temperature:
-      friendly_name: "Min today"
+      friendly_name: "Outside min today"
     sensor.dark_sky_precip_intensity:
       friendly_name: "Rain intensity"
     sensor.dark_sky_precip_probability:
@@ -118,9 +118,17 @@
     group.bed_room:            
       friendly_name: "Bedroom"
 # -----------------------------------------------
-    sensor.dev1_info:
-      icon: "mdi:information-outline"
+    sensor.dev1:        
       friendly_name: "01 Ball"
+    sensor.dev1_bssid:  
+      friendly_name: "01 Ball"
+    sensor.dev1_ssid:   
+      friendly_name: "01 Ball"
+    sensor.dev1_capability:
+      friendly_name: "01 Ball"
+    sensor.dev1_info:
+      friendly_name: "01 Ball"
+      icon: "mdi:information-outline"
     sensor.dev1_update:
       friendly_name: "01 Ball"
       icon: "mdi:timer-sand"
@@ -128,7 +136,7 @@
       friendly_name: "Ball"
       icon: "mdi:lamp"
     sensor.dev1_temperature:
-      friendly_name: "Ball"
+      friendly_name: "Livingroom Ball"
       icon: "mdi:thermometer"
     binary_sensor.dev1_motion:
       friendly_name: "Ball"
@@ -145,7 +153,7 @@
     light.dev2:
       friendly_name: "Hood"
     sensor.dev2_temperature:
-      friendly_name: "Hood"
+      friendly_name: "Kitchen Hood"
       icon: "mdi:thermometer"
     binary_sensor.dev2_motion:
       friendly_name: "Hood"
@@ -177,7 +185,7 @@
       friendly_name: "Rack"
       emulated_hue_name: "Kueche"
     sensor.dev4_temperature:
-      friendly_name: "Rack"
+      friendly_name: "Kitchen Rack"
       icon: "mdi:thermometer"
     binary_sensor.dev4_motion:
       friendly_name: "Rack"
@@ -260,7 +268,7 @@
     light.dev9:
       friendly_name: "Vac"
     sensor.dev9_temperature:
-      friendly_name: "Vac"
+      friendly_name: "Shop VAC"
       icon: "mdi:thermometer"
     sensor.dev9_info:
       icon: "mdi:information-outline"
@@ -276,7 +284,7 @@
       friendly_name: "HallwayU"
       emulated_hue_name: "Kueche"
     sensor.dev10_temperature:
-      friendly_name: "HallwayU"
+      friendly_name: "Hallway Upstairs"
       icon: "mdi:thermometer"
     binary_sensor.dev10_motion:
       friendly_name: "HallwayU"
@@ -294,7 +302,7 @@
       friendly_name: "TowerE"
       icon: "mdi:lamp"
     sensor.dev11_temperature:
-      friendly_name: "TowerE"
+      friendly_name: "Livingroom TowerE"
       icon: "mdi:thermometer"
     binary_sensor.dev11_motion:
       friendly_name: "TowerE"
@@ -385,6 +393,23 @@
       friendly_name: "Bedroom SW"
       icon: "mdi:thermometer"
 # -----------------------------------------------
+    sensor.dev17_update:
+      friendly_name: "17 X-mas2"
+      icon: "mdi:timer-sand"
+    light.dev17:
+      friendly_name: "x-mas 2"
+    binary_sensor.dev17_motion:
+      friendly_name: "x-mas 2"
+    sensor.dev17_info:
+      icon: "mdi:information-outline"
+      friendly_name: "17 x-mas 2"
+    sensor.dev17_rssi:
+      friendly_name: "17 x-mas 2"
+      icon: "mdi:signal-variant"
+    sensor.dev17_temperature:
+      friendly_name: "x-mas 2"
+      icon: "mdi:thermometer"
+# -----------------------------------------------
     sensor.dev20_update:
       friendly_name: "20 Bedroom"
       icon: "mdi:timer-sand"
@@ -432,6 +457,20 @@
     sensor.dev56_info:
       friendly_name: "56 Lampinion"
       icon: "mdi:information-outline"
+# -----------------------------------------------
+    sensor.dev57_update:
+      friendly_name: "57 x-mas"
+      icon: "mdi:timer-sand"
+    light.dev57:
+      friendly_name: "x-mas"
+    sensor.dev57_rssi:
+      icon: "mdi:signal-variant"
+      friendly_name: "57 x-mas"
+    sensor.dev57_info:
+      friendly_name: "57 x-mas"
+      icon: "mdi:information-outline"
+    binary_sensor.dev57_motion:
+      friendly_name: "x-mas"
 # -----------------------------------------------
     sensor.dev77_update:
       friendly_name: "77 Carlo"

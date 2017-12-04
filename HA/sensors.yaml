@@ -512,8 +512,6 @@
   - platform: mqtt
     state_topic: "dev13/r/adc"
     name: "dev13_adc"
-    sensor_class: "temperature"
-    unit_of_measurement: "ºC"
 
   - platform: mqtt
     state_topic: "dev13/r/BSSID"
@@ -646,6 +644,11 @@
   - platform: mqtt
     state_topic: "dev17/r/#"
     name: "dev17"
+
+  - platform: mqtt
+    state_topic: "dev17/r/temperature"
+    name: "dev17_temperature"
+    unit_of_measurement: "ºC"
 
   - platform: mqtt
     state_topic: "dev17/r/rssi"
@@ -858,6 +861,39 @@
   - platform: mqtt
     state_topic: "dev56/r/capability"
     name: "dev56_capability"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
+      dev57_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev57.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev57/r/#"
+    name: "dev57"
+
+  - platform: mqtt
+    state_topic: "dev57/r/rssi"
+    name: "dev57_rssi"
+    unit_of_measurement: "%"
+
+  - platform: mqtt
+    state_topic: "dev57/r/BSSID"
+    name: "dev57_bssid"
+
+  - platform: mqtt
+    state_topic: "dev57/r/SSID"
+    name: "dev57_ssid"
+
+  - platform: mqtt
+    state_topic: "dev57/r/INFO"
+    name: "dev57_info"
+
+  - platform: mqtt
+    state_topic: "dev57/r/capability"
+    name: "dev57_capability"
 # -----------------------------------------------------------
   - platform: template
     sensors:
