@@ -42,6 +42,7 @@
      # - sensor.dev77_temperature_dht
      # - sensor.dev77_humidity_dht
       - light.dev55
+      - light.dev18
       - binary_sensor.dev8_motion
 
   living_room:
@@ -255,6 +256,8 @@
       - sensor.dev15_info
       - sensor.dev16_info
       - sensor.dev17_info
+      - sensor.dev18_info
+      - sensor.dev19_info
       - sensor.dev20_info
       - sensor.dev21_info
       - sensor.dev55_info
@@ -286,6 +289,8 @@
       - sensor.dev15_bssid
       - sensor.dev16_bssid
       - sensor.dev17_bssid
+      - sensor.dev18_bssid
+      - sensor.dev19_bssid
       - sensor.dev20_bssid
       - sensor.dev21_bssid
       - sensor.dev55_bssid
@@ -317,6 +322,8 @@
       - sensor.dev15_ssid
       - sensor.dev16_ssid
       - sensor.dev17_ssid
+      - sensor.dev18_ssid
+      - sensor.dev19_ssid
       - sensor.dev20_ssid
       - sensor.dev21_ssid
       - sensor.dev55_ssid
@@ -348,6 +355,8 @@
       - sensor.dev15_capability
       - sensor.dev16_capability
       - sensor.dev17_capability
+      - sensor.dev18_capability
+      - sensor.dev19_capability
       - sensor.dev20_capability
       - sensor.dev21_capability
       - sensor.dev55_capability
@@ -380,6 +389,8 @@
       - sensor.dev15_rssi
       - sensor.dev16_rssi
       - sensor.dev17_rssi
+      - sensor.dev18_rssi
+      - sensor.dev19_rssi
       - sensor.dev20_rssi
       - sensor.dev21_rssi
       - sensor.dev55_rssi
@@ -411,6 +422,8 @@
       - sensor.dev15_update
       - sensor.dev16_update
       - sensor.dev17_update
+      - sensor.dev18_update
+      - sensor.dev19_update
       - sensor.dev20_update
       - sensor.dev21_update
       - sensor.dev55_update
@@ -440,6 +453,8 @@
       - sensor.dev15
       - sensor.dev16
       - sensor.dev17
+      - sensor.dev18
+      - sensor.dev19
       - sensor.dev20
       - sensor.dev21
       - sensor.dev55
@@ -497,7 +512,10 @@
       - light.dev15
       - light.dev16
       - light.dev17
+      - light.dev18
+      - light.dev18_simple_rainbow
       - light.dev19
+      - light.dev19_simple_rainbow
       - light.dev20
       - light.dev21
       - light.dev42

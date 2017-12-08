@@ -59,6 +59,7 @@
           {% endif %}
         entity_id: 
           - light.dev55
+          - light.dev18
 # ------------------- carlo --------------------------------
 # ------------------- living room sunset -------------------
   - alias: joiner_livingroom_in2

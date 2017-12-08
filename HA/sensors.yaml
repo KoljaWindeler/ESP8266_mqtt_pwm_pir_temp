@@ -706,6 +706,39 @@
 # -----------------------------------------------------------
   - platform: template
     sensors:
+      dev19_update:
+        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev19.last_updated)) //60) | int }}'
+        unit_of_measurement: 'min'
+        entity_id:
+         - sensor.time
+
+  - platform: mqtt
+    state_topic: "dev19/r/#"
+    name: "dev19"
+
+  - platform: mqtt
+    state_topic: "dev19/r/rssi"
+    name: "dev19_rssi"
+    unit_of_measurement: "%"
+
+  - platform: mqtt
+    state_topic: "dev19/r/BSSID"
+    name: "dev19_bssid"
+
+  - platform: mqtt
+    state_topic: "dev19/r/SSID"
+    name: "dev19_ssid"
+
+  - platform: mqtt
+    state_topic: "dev19/r/INFO"
+    name: "dev19_info"
+
+  - platform: mqtt
+    state_topic: "dev19/r/capability"
+    name: "dev19_capability"
+# -----------------------------------------------------------
+  - platform: template
+    sensors:
       dev20_update:
         value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev20.last_updated)) //60) | int }}'
         unit_of_measurement: 'min'

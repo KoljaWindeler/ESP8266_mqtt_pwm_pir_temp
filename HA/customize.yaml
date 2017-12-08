@@ -410,6 +410,44 @@
       friendly_name: "x-mas 2"
       icon: "mdi:thermometer"
 # -----------------------------------------------
+    sensor.dev18_update:
+      friendly_name: "18 Carlo AI"
+      icon: "mdi:timer-sand"
+    light.dev18:
+      friendly_name: "18 Carlo AI"
+    light.dev18_simple_rainbow:
+      friendly_name: "18 Carlo AI Rainbow"
+    binary_sensor.dev18_motion:
+      friendly_name: "Carlo AI"
+    sensor.dev18_info:
+      icon: "mdi:information-outline"
+      friendly_name: "18 Carlo AI"
+    sensor.dev18_rssi:
+      friendly_name: "18 Carlo AI"
+      icon: "mdi:signal-variant"
+    sensor.dev18_temperature:
+      friendly_name: "Carlo AI"
+      icon: "mdi:thermometer"
+# -----------------------------------------------
+    sensor.dev19_update:
+      friendly_name: "19 AI"
+      icon: "mdi:timer-sand"
+    light.dev19:
+      friendly_name: "19 AI"
+    light.dev19_simple_rainbow:
+      friendly_name: "19 AI Rainbow"
+    binary_sensor.dev19_motion:
+      friendly_name: "19 AI"
+    sensor.dev19_info:
+      icon: "mdi:information-outline"
+      friendly_name: "19 AI"
+    sensor.dev19_rssi:
+      friendly_name: "19 AI"
+      icon: "mdi:signal-variant"
+    sensor.dev19_temperature:
+      friendly_name: "19 AI"
+      icon: "mdi:thermometer"
+# -----------------------------------------------
     sensor.dev20_update:
       friendly_name: "20 Bedroom"
       icon: "mdi:timer-sand"

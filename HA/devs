@@ -16,8 +16,8 @@ DEV15 - World map, PIR dimmer
 DEV16 - switch for dev20 both bedroom
 DEV17 - steckdosending das aktuell die lichterkette im wohnzimmer schaltet
 
-//DEV18 - PCB, PIR, unused
-//DEV19 - PCB, PIR, unused, rgb
+DEV18 - AI light 1
+DEV19 - AI light 2
 
 DEV20 - Bedroom, PIR, PWM led streifen, DS18B20
 dev21 - slampher im wohnzimmer

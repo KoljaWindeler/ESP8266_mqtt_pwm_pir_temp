@@ -194,8 +194,31 @@
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
 # --------------------------------------------------
-  - platform: mqtt ### testing
+  - platform: mqtt ### ai light carlo
+    name: "dev18"
+    state_topic: "dev18/r/light"
+    command_topic: "dev18/s/light/dimm"
+    rgb_state_topic: 'dev18/r/light/dimm/color'
+    rgb_command_topic: 'dev18/s/light/dimm/color'
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+  - platform: mqtt 
+    name: "dev18_simple_rainbow"
+    state_topic: "dev18/r/light/animation/simple_rainbow"
+    command_topic: "dev18/s/light/animation/simple_rainbow"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### ai light unused
     name: "dev19"
     state_topic: "dev19/r/light"
     command_topic: "dev19/s/light/dimm"
@@ -207,6 +230,14 @@
     payload_off: "OFF"
     optimistic: false
     brightness_scale: 99
+
+  - platform: mqtt 
+    name: "dev19_simple_rainbow"
+    state_topic: "dev19/r/light/animation/simple_rainbow"
+    command_topic: "dev19/s/light/animation/simple_rainbow"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
 # --------------------------------------------------
   - platform: mqtt ### slamper livingroom
     name: "dev21"
