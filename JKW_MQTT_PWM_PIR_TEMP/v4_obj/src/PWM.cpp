@@ -1,26 +1,39 @@
 #include <PWM.h>
 
-PWM::PWM(){};
+PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2){
+	m_pin0 = pin0;
+	m_pin1 = pin1;
+	m_pin2 = pin2;
+	sprintf((char*)key,(char*)k);
+};
+
 PWM::~PWM(){
-	logger.println(TOPIC_GENERIC_INFO, F("PWM deleted"), COLOR_YELLOW);
+	uint8_t buffer[15];
+	sprintf((char*)buffer,"%s deleted",get_key());
+	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
 };
 void PWM::interrupt(){};
 
 uint8_t* PWM::get_key(){
-	sprintf((char*)key,"PWM");
 	return key;
 }
 
+uint8_t* PWM::get_dep(){
+	sprintf((char*)dep,"LIG");
+	return dep;
+}
+
 bool PWM::parse(uint8_t* config){
-	return cap.parse(config,get_key(),(uint8_t*)"LIG");
+	return cap.parse(config,get_key(),get_dep());
 }
 
 bool PWM::init(){
-	pinMode(PWM_LIGHT_PIN1, OUTPUT);
-	pinMode(PWM_LIGHT_PIN2, OUTPUT);
-	pinMode(PWM_LIGHT_PIN3, OUTPUT);
+	pinMode(m_pin0, OUTPUT);
+	pinMode(m_pin1, OUTPUT);
+	pinMode(m_pin2, OUTPUT);
 	analogWriteRange(255);
-	logger.println(TOPIC_GENERIC_INFO, F("PWM init"), COLOR_GREEN);
+	sprintf(m_msg_buffer,"%s init, pin config %i,%i,%i",get_key(),m_pin0,m_pin1,m_pin2);
+	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 }
 
 
@@ -66,9 +79,9 @@ void PWM::setColor(uint8_t r, uint8_t g, uint8_t b){
 	//if (m_state.get_value() && r == 0) {
 	//	r = sizeof(intens) - 1;
 	//}
-	analogWrite(PWM_LIGHT_PIN1, r);
-	analogWrite(PWM_LIGHT_PIN2, g);
-	analogWrite(PWM_LIGHT_PIN3, b);
+	analogWrite(m_pin0, r);
+	analogWrite(m_pin1, g);
+	analogWrite(m_pin2, b);
 
 	logger.print(TOPIC_INFO_PWM, F("PWM: "));
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", r, g, b);

@@ -1,13 +1,19 @@
 #include <PIR.h>
 
-PIR::PIR(){};
+PIR::PIR(uint8_t* k,uint8_t pin){
+	m_pin = pin;
+	sprintf((char*)key,(char*)k);
+};
+
 PIR::~PIR(){
-	logger.println(TOPIC_GENERIC_INFO, F("PIR deleted"), COLOR_YELLOW);
+	detachInterrupt(digitalPinToInterrupt(m_pin));
+	uint8_t buffer[15];
+	sprintf((char*)buffer,"%s deleted",get_key());
+	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
 };
 
 
 uint8_t* PIR::get_key(){
-	sprintf((char*)key,"PIR");
 	return key;
 }
 
@@ -18,18 +24,21 @@ bool PIR::parse(uint8_t* config){
 void fooPIR(){
 	if(p_pir){
 		p_pir->interrupt();
+	} else if(p_pir2){
+		p_pir2->interrupt();
 	}
 }
 
 bool PIR::init(){
-	pinMode(PIR_PIN, INPUT);
-	digitalWrite(PIR_PIN, HIGH); // pull up to avoid interrupts without sensor
-	attachInterrupt(digitalPinToInterrupt(PIR_PIN), fooPIR, CHANGE);
-	logger.println(TOPIC_GENERIC_INFO, F("PIR init"), COLOR_GREEN);
+	pinMode(m_pin, INPUT);
+	digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
+	attachInterrupt(digitalPinToInterrupt(m_pin), fooPIR, CHANGE);
+	sprintf(m_msg_buffer,"%s init, pin config %i",get_key(),m_pin);
+	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 }
 
 void PIR::interrupt(){
-	m_state.check_set(digitalRead(PIR_PIN));
+	m_state.check_set(digitalRead(m_pin));
 }
 
 bool PIR::loop(){
