@@ -2,6 +2,7 @@
 #define simple_light_h
 
 #include "main.h"
+#define SIMPLE_LIGHT_PIN 12 // D6
 
 class simple_light : public peripheral {
 	public:

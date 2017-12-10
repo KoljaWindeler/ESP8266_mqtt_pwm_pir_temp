@@ -4,6 +4,7 @@
 #include "main.h"
 #include <OneWire.h>
 #include <Wire.h>
+#define DS_PIN           13 // D7
 
 class J_DS : public peripheral {
 	public:

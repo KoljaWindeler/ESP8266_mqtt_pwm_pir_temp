@@ -3,6 +3,7 @@
 
 
 #include "main.h"
+#define BUTTON_INPUT_PIN 0  // D3
 
 class button : public peripheral {
 	public:

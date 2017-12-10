@@ -5,7 +5,7 @@
 
 class PWM : public peripheral {
 	public:
-		PWM();
+		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2);
 		~PWM();
 		bool init();
 		bool loop();
@@ -16,6 +16,7 @@ class PWM : public peripheral {
 		void interrupt();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
+		uint8_t* get_dep();
 		bool publish();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 
@@ -30,7 +31,11 @@ class PWM : public peripheral {
 		mqtt_parameter_8 m_light_brightness;
 		mqtt_parameter_8 m_light_color;
 		uint8_t key[4];
+		uint8_t dep[4];
 		led m_light_current;
+		uint8_t m_pin0;
+		uint8_t m_pin1;
+		uint8_t m_pin2;
 	};
 
 

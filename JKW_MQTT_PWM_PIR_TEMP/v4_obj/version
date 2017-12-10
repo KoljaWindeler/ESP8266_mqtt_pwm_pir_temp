@@ -1,3 +1,8 @@
+20171211
+	-	moved all pins to the objects
+	- live support for Kolja_v2 and sonoff at once
+20171210
+	- added brightness scale for animation
 2017104
 	- fixed AI light pinout
 20171125

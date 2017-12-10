@@ -5,7 +5,7 @@
 
 class PIR : public peripheral {
 	public:
-		PIR();
+		PIR(uint8_t* k,uint8_t pin);
 		~PIR();
 		bool init();
 		bool loop();
@@ -20,6 +20,7 @@ class PIR : public peripheral {
 		bool publish();
 		mqtt_parameter_8 m_state;
 		uint8_t key[4];
+		uint8_t m_pin;
 
 };
 

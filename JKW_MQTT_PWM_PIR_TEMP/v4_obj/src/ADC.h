@@ -2,6 +2,7 @@
 #define ADC_h
 
 #include "main.h"
+#define GPIO_D8          15 // D8
 
 class ADC : public peripheral
 {

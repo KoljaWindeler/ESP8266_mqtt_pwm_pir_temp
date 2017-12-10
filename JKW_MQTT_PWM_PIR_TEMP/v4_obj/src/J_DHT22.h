@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include <DHT.h>
+#define DHT_PIN          2  // D4
 
 class J_DHT22 : public peripheral {
 	public:

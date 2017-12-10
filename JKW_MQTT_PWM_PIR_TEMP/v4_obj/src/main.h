@@ -103,7 +103,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171204"
+	#define VERSION               "20171211"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -129,49 +129,8 @@ public:
 	#define T_BOne 4
 	#define T_AI   5
 
-	// pins
-	#define PINOUT_SONOFF 1 // set this to "#define" for the sonoff and pcb v3 but not v2
-	// #define PINOUT_KOLJA_TINY 1
-	// #define PINOUT_KOLJA_V2         // set this to "#define" for the pcb firmware .. incosistent pinout
-	// D8 war nicht so gut ... startet nicht mehr
-#ifdef PINOUT_SONOFF
-		# define PINOUT           "SONOFF"
-		# define SIMPLE_LIGHT_PIN 12 // D6
-		# define DS_PIN           13 // D7
-		# define PIR_PIN          14 // D5
-		# define PWM_LIGHT_PIN1   4  // D2
-		# define PWM_LIGHT_PIN2   5  // D1
-		# define PWM_LIGHT_PIN3   16 // D0
-		# define BUTTON_INPUT_PIN 0  // D3
-		# define DHT_PIN          2  // D4
-		# define GPIO_D8          15 // D8
-#endif // ifdef PINOUT_SONOFF
-#ifdef PINOUT_KOLJA_V2
-		# define PINOUT           "Kolja_v2"
-		# define SIMPLE_LIGHT_PIN 13 // D7
-		# define DS_PIN           12 // D6
-		# define PIR_PIN          5  // D1
-		# define PWM_LIGHT_PIN1   4  // D2
-		# define PWM_LIGHT_PIN2   4  // D1
-		# define PWM_LIGHT_PIN3   4  // D0
-		# define BUTTON_INPUT_PIN 0  // D3
-		# define DHT_PIN          2  // D4
-		# define GPIO_D8          15 // D8
-#endif // ifdef PINOUT_KOLJA_V2
-#ifdef PINOUT_KOLJA_TINY
-		# define PINOUT           "TINY"
-		# define SIMPLE_LIGHT_PIN 12
-		# define DS_PIN           14
-		# define PIR_PIN          13
-		# define PWM_LIGHT_PIN1   4
-		# define PWM_LIGHT_PIN2   5
-		# define PWM_LIGHT_PIN3   16
-		# define BUTTON_INPUT_PIN 0
-		# define DHT_PIN          2
-		# define GPIO_D8          15
-#endif // ifdef PINOUT_KOLJA_TINY
 
-
+	#define PINOUT                "SONOFF"
 	#define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
 	#define MSG_BUFFER_SIZE        60   // mqtt messages max char size
@@ -234,6 +193,7 @@ public:
 	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_TOPIC[]          = "light/dimm/brightness";          // set value, will dimm towards the new value
 	static constexpr char MQTT_LIGHT_DIMM_DELAY_TOPIC[]               = "light/dimm/delay";               // set value, will dimm towards the new value
 	static constexpr char MQTT_LIGHT_DIMM_COLOR_TOPIC[]               = "light/dimm/color";               // set value "0-99,0-99,0-99", will dimm towards the new value
+	static constexpr char MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC[]     = "light/animation/brightness";     // 0..99
 	static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC[]        = "light/animation/rainbow";        // get command here ON / OFF
 	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
 	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
@@ -269,7 +229,10 @@ public:
 	extern peripheral * p_dimmer;
 	extern peripheral * p_neo;
 	extern peripheral * p_pir;
+	extern peripheral * p_pir2;
 	extern peripheral * p_pwm;
+	extern peripheral * p_pwm2;
+	extern peripheral * p_pwm3;
 	extern peripheral * p_rssi;
 	extern peripheral * p_simple_light;
 	extern peripheral * p_dht;
