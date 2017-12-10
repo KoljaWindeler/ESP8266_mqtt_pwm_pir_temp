@@ -57,6 +57,10 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT))) {
+		// the setup topic is versital, Message is checked:
+		// can be ON -> go to setup
+		// can be http:// ... url for update
+		// can be "reset" which will restart the unit
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
 			logger.println(TOPIC_MQTT, F("Go to setup"));
 			delay(500);
@@ -168,6 +172,7 @@ void reconnect(){
 
 				for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
+					//delay(500);
 					(*active_p[i])->subscribe();
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
@@ -322,6 +327,7 @@ void saveConfigCallback(){
 void loadConfig(){
 	// fill the mqtt element with all the data from eeprom
 	if (wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt))) {
+		logger.pln(F("Config load passed"));
 		// set identifier for SSID and menu
 		wifiManager.setCustomIdElement(mqtt.dev_short);
 		// resuract eeprom values instead of defaults
@@ -344,6 +350,8 @@ void loadConfig(){
 		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);
 	} else {
 		wifiManager.setCustomIdElement("");
+		logger.pln(F("Config load failed"));
+		sprintf(mqtt.dev_short,"new");
 	}
 	logger.pln(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
@@ -370,10 +378,13 @@ void loadPheripherals(uint8_t* config){
 	// create objects
 	bake(new ADC(), &p_adc, config);
 	bake(new button(), &p_button, config);
-	bake(new PIR(), &p_pir, config);
 	bake(new simple_light(), &p_simple_light, config);
 	bake(new rssi(), &p_rssi, config);
-	bake(new PWM(), &p_pwm, config);
+	bake(new PWM(((uint8_t*)"PWM"),4,5,16), &p_pwm, config); // SONOFF PWM
+	bake(new PWM(((uint8_t*)"PW2"),4,4,4), &p_pwm2, config); // kolja 2
+	bake(new PWM(((uint8_t*)"PW3"),14,12,13), &p_pwm3, config); // H801 module
+	bake(new PIR(((uint8_t*)"PIR"),14), &p_pir, config); // SONOFF PIR
+	bake(new PIR(((uint8_t*)"PI2"),5), &p_pir2, config); // Kolja_v2
 	bake(new J_DHT22(), &p_dht, config);
 	bake(new J_DS(), &p_ds, config);
 	bake(new AI(), &p_ai, config);
@@ -408,6 +419,10 @@ void loadPheripherals(uint8_t* config){
 		((light*)p_light)->reg_provider(p_simple_light,T_SL);
 	} else if(p_pwm){
 		((light*)p_light)->reg_provider(p_pwm,T_PWM);
+	} else if(p_pwm2){
+		((light*)p_light)->reg_provider(p_pwm2,T_PWM);
+	} else if(p_pwm3){
+		((light*)p_light)->reg_provider(p_pwm3,T_PWM);
 	} else if(p_neo){
 		((light*)p_light)->reg_provider(p_neo,T_NEO);
 	} else if(p_bOne){
