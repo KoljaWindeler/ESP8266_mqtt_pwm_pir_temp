@@ -424,10 +424,10 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 
 // default entry points
 boolean WiFiManager::storeMqttStruct(char * temp, uint8_t size){
-	storeMqttStruct_v3(temp, size);
+	return storeMqttStruct_v3(temp, size);
 }
 boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
-	loadMqttStruct_v3(temp, size);
+	return loadMqttStruct_v3(temp, size);
 }
 
 boolean WiFiManager::storeMqttStruct_v3(char * temp, uint8_t size){
@@ -466,9 +466,12 @@ boolean WiFiManager::loadMqttStruct_v3(char * temp, uint8_t size){
 		Serial.println(F("EEPROM read failed, try legacy"));
 		bool ret = loadMqttStruct_v2(temp,94); // 94 hardcoded is size of v2
 		explainFullMqttStruct((mqtt_data*)temp);
-		Serial.println(F("saving to EEPROM with new struct"));
-		Serial.println(F("///////////////////////"));
-		storeMqttStruct_v3(temp, size);
+		if(ret){
+			Serial.println(F("saving to EEPROM with new struct"));
+			Serial.println(F("///////////////////////"));
+			storeMqttStruct_v3(temp, size);
+		}
+		return ret;
 	}
 }
 
