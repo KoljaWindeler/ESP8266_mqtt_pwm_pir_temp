@@ -25,6 +25,8 @@ bool light::init(){
 	timer_dimmer_start = 0;
 	timer_dimmer_end   = 0;
 	type = 0;
+	m_light_brightness.set(99,false); // init values, will be overwirtten by MQTT commands
+	m_animation_brightness.set(99,false);
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
 }
 
@@ -119,7 +121,7 @@ bool light::loop(){
 				m_light_current.g = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.g, m_light_target.g);
 				m_light_current.b = map(timer_dimmer, timer_dimmer_start, timer_dimmer_end, m_light_start.b, m_light_target.b);
 			}
-			//logger.pln(m_light_current.r);
+			//logger.pln(m_light_current.r);``
 			send_current_light();
 		}
 		return true; // muy importante .. request uninterrupted execution
@@ -132,6 +134,9 @@ bool light::loop(){
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 						RgbColor c = Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255);
+						c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+						c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+						c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
 						((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, i);
 					}
 					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
@@ -139,6 +144,9 @@ bool light::loop(){
 					m_animation_dimm_time = millis() + ANIMATION_STEP_TIME; // schedule update
 				} else if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 					RgbColor c = Wheel(m_animation_pos & 255);
+					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
 						((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, i);
 					}
@@ -148,6 +156,9 @@ bool light::loop(){
 				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
 					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
 					RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
+					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
 					((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, m_animation_pos % NEOPIXEL_LED_COUNT);
 					// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
 					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
@@ -156,17 +167,37 @@ bool light::loop(){
 				}
 			} else if (type == T_PWM || type == T_BOne || type == T_AI) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
-					RgbColor w = Wheel(m_animation_pos & 255);
+					RgbColor c = Wheel(m_animation_pos & 255);
+					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
 					if(type == T_PWM){
-						((PWM *) provider)->setColor(w.R, w.G, w.B);                          // last two: warm white, cold white
+						((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
 					} else if (type == T_BOne) {
-						((BOne *) provider)->setColor(w.R, w.G, w.B);                          // last two: warm white, cold white
+						((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
 					} else if (type == T_AI) {
-						((AI *) provider)->setColor(w.R, w.G,
-								  w.B);                          // last two: warm white, cold white
+						((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
 					}
 					m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
 					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
+				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
+					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
+					RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
+					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+					if(m_animation_pos % NEOPIXEL_LED_COUNT == 0){
+						if(type == T_PWM){
+							((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
+						} else if (type == T_BOne) {
+							((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
+						} else if (type == T_AI) {
+							((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
+						}
+					}
+					// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
+					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
 			}
 		} // timer
@@ -214,19 +245,23 @@ bool light::subscribe(){
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_DELAY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
 	if (type > T_PWM) { // neo, b1, ai
+		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT)); // animation brightness topic
+		client.loop();
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+
 		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
 		client.loop();
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+
+		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT)); // color WIPE topic
+		client.loop();
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
 
 	if (type == T_NEO) {
 		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC,PC_TO_UNIT)); // rainbow  topic
 		client.loop();
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC,PC_TO_UNIT), COLOR_GREEN);
-
-		client.subscribe(build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT)); // color WIPE topic
-		client.loop();
-		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
 
 	return true;
@@ -359,7 +394,13 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	}
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
-	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // directly set the color, hard
+	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // directly set the color, hard
+		uint8_t t = (uint8_t) atoi((const char *) p_payload);
+		if(t>=100){
+			t=99;
+		}
+		m_animation_brightness.check_set(t); // will also eventually trigger publish
+	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // directly set the color, hard
 
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
 
@@ -483,7 +524,9 @@ bool light::publish(){
 		if (!publishRGBColor()) {
 			if (!publishLightBrightness()) {
 				if(!publishAnimationType()){
-					return false;
+					if(!publishAnimationBrightness()){
+						return false;
+					}
 				}
 			}
 		}
@@ -494,7 +537,6 @@ bool light::publish(){
 bool light::publishLightState(){
 	if (m_state.get_outdated()) {
 		boolean ret = false;
-
 		logger.print(TOPIC_MQTT_PUBLISH, F("light state "), COLOR_GREEN);
 		if (m_state.get_value()) {
 			logger.pln((char*)STATE_ON);
@@ -525,6 +567,22 @@ bool light::publishLightBrightness(){
 		ret = client.publish(build_topic(MQTT_LIGHT_BRIGHTNESS_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 		if (ret) {
 			m_light_brightness.set(v, false); // required?
+		}
+		return ret;
+	}
+	return false;
+}
+
+// function called to publish the brightness of the led
+bool light::publishAnimationBrightness(){
+	if (m_animation_brightness.get_outdated()) {
+		boolean ret = false;
+		logger.print(TOPIC_MQTT_PUBLISH, F("animation brightness "), COLOR_GREEN);
+		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", m_animation_brightness.get_value());
+		logger.pln(m_msg_buffer);
+		ret = client.publish(build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
+		if (ret) {
+			m_animation_brightness.outdated(false);
 		}
 		return ret;
 	}

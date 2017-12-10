@@ -27,8 +27,9 @@ class light : public peripheral {
 	private:
 		mqtt_parameter_8 m_state;							// on / off
 		mqtt_parameter_32 m_light_color; 			// r,g,b code
-		mqtt_parameter_8 m_animation_type; 		// type 1 = rainbow wheel, 2 = simple rainbow .. see define above
 		mqtt_parameter_8 m_light_brightness;	// placebo :)
+		mqtt_parameter_8 m_animation_type; 		// type 1 = rainbow wheel, 2 = simple rainbow .. see define above
+		mqtt_parameter_8 m_animation_brightness;	// placebo :)
 
 		uint32_t timer_dimmer;
 		uint32_t timer_dimmer_start;
@@ -49,7 +50,8 @@ class light : public peripheral {
 		bool publishRGBColor();
 		bool publishLightBrightness();
 		bool publishLightState();
-		bool publishAnimationType();	
+		bool publishAnimationType();
+		bool publishAnimationBrightness();
 
 		void setAnimationType(int type);
 		void DimmTo(led dimm_to);
