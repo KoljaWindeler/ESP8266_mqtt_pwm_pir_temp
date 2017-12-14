@@ -214,6 +214,9 @@
     name: "dev18_simple_rainbow"
     state_topic: "dev18/r/light/animation/simple_rainbow"
     command_topic: "dev18/s/light/animation/simple_rainbow"
+    brightness_state_topic: 'dev18/r/light/animation/brightness'
+    brightness_command_topic: 'dev18/s/light/animation/brightness'
+    brightness_scale: 99
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
@@ -243,6 +246,24 @@
     name: "dev21"
     state_topic: "dev21/r/light"
     command_topic: "dev21/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### touch livingroom
+    name: "dev23"
+    state_topic: "dev23/r/light"
+    command_topic: "dev23/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### touch not working?
+    name: "dev25"
+    state_topic: "dev25/r/light"
+    command_topic: "dev25/s/light"
     retain: True
     qos: 0
     payload_on: "ON"

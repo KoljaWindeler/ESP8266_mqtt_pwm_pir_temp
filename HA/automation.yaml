@@ -59,9 +59,19 @@
           {% endif %}
         entity_id: 
           - light.dev55
-          - light.dev18
+          - light.dev18_simple_rainbow
 # ------------------- carlo --------------------------------
 # ------------------- living room sunset -------------------
+  - alias: joiner_livingroom_in
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev23/r/button"
+    action:
+      service: light.toggle
+      entity_id: light.joiner_livingroom
+# ----------------------------------------------------------
   - alias: joiner_livingroom_in2
     initial_state: True
     hide_entity: False
@@ -100,6 +110,7 @@
           - light.dev1
           - light.dev7
           - light.dev11
+          - light.dev17
           - light.dev21  
 # ----------------------------------------------------------
 # ----------------------------------------------------------

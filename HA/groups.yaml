@@ -58,7 +58,7 @@
       #- light.dev101
       #- light.dev103
       #- light.dev106
-      - light.dev57
+      #- light.dev57
       - light.dev17
       #- sensor.dev11_temperature
       #- sensor.dev7_temperature
@@ -260,6 +260,8 @@
       - sensor.dev19_info
       - sensor.dev20_info
       - sensor.dev21_info
+      - sensor.dev23_info
+      - sensor.dev25_info
       - sensor.dev55_info
       - sensor.dev56_info
       - sensor.dev57_info
@@ -293,6 +295,8 @@
       - sensor.dev19_bssid
       - sensor.dev20_bssid
       - sensor.dev21_bssid
+      - sensor.dev23_bssid
+      - sensor.dev25_bssid
       - sensor.dev55_bssid
       - sensor.dev56_bssid
       - sensor.dev57_bssid
@@ -326,6 +330,8 @@
       - sensor.dev19_ssid
       - sensor.dev20_ssid
       - sensor.dev21_ssid
+      - sensor.dev23_ssid
+      - sensor.dev25_ssid
       - sensor.dev55_ssid
       - sensor.dev56_ssid
       - sensor.dev57_ssid
@@ -359,6 +365,8 @@
       - sensor.dev19_capability
       - sensor.dev20_capability
       - sensor.dev21_capability
+      - sensor.dev23_capability
+      - sensor.dev25_capability
       - sensor.dev55_capability
       - sensor.dev56_capability
       - sensor.dev57_capability
@@ -393,6 +401,8 @@
       - sensor.dev19_rssi
       - sensor.dev20_rssi
       - sensor.dev21_rssi
+      - sensor.dev23_rssi
+      - sensor.dev25_rssi
       - sensor.dev55_rssi
       - sensor.dev56_rssi
       - sensor.dev57_rssi
@@ -426,6 +436,8 @@
       - sensor.dev19_update
       - sensor.dev20_update
       - sensor.dev21_update
+      - sensor.dev23_update
+      - sensor.dev25_update
       - sensor.dev55_update
       - sensor.dev56_update
       - sensor.dev57_update
@@ -457,6 +469,8 @@
       - sensor.dev19
       - sensor.dev20
       - sensor.dev21
+      - sensor.dev23
+      - sensor.dev25
       - sensor.dev55
       - sensor.dev56
       - sensor.dev57
@@ -518,6 +532,7 @@
       - light.dev19_simple_rainbow
       - light.dev20
       - light.dev21
+      - light.dev25
       - light.dev42
       - light.dev55
       - light.dev56

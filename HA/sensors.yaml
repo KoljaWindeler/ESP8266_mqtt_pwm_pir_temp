@@ -34,93 +34,27 @@
 # -----------------------------------------------------------
 # --------------- MQTT --------------------------------------
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev1_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev1.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev1/r/#"
+  - platform: mqtt_jkw
     name: "dev1"
+    fname: "01 Ball"
 
   - platform: mqtt
     state_topic: "dev1/r/temperature"
     name: "dev1_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev1/r/rssi"
-    name: "dev1_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev1/r/BSSID"
-    name: "dev1_bssid"
-
-  - platform: mqtt
-    state_topic: "dev1/r/SSID"
-    name: "dev1_ssid"
-
-  - platform: mqtt
-    state_topic: "dev1/r/INFO"
-    name: "dev1_info"
-
-  - platform: mqtt
-    state_topic: "dev1/r/capability"
-    name: "dev1_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev2_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev2.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev2/r/#"
+  - platform: mqtt_jkw
     name: "dev2"
+    fname: "02 Hood"
 
   - platform: mqtt
     state_topic: "dev2/r/temperature"
     name: "dev2_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev2/r/rssi"
-    name: "dev2_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev2/r/BSSID"
-    name: "dev2_bssid"
-
-  - platform: mqtt
-    state_topic: "dev2/r/SSID"
-    name: "dev2_ssid"
-
-  - platform: mqtt
-    state_topic: "dev2/r/INFO"
-    name: "dev2_info"
-
-  - platform: mqtt
-    state_topic: "dev2/r/capability"
-    name: "dev2_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev3_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev3.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev3/r/#"
+  - platform: mqtt_jkw
     name: "dev3"
+    fname: "03 Bedroom Touch"
 
   - platform: mqtt
     state_topic: "dev3/r/temperature"
@@ -131,221 +65,47 @@
     state_topic: "dev3/humidity"
     name: "dev3_humidity"
     unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev3/r/rssi"
-    name: "dev3_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev3/r/BSSID"
-    name: "dev3_bssid"
-
-  - platform: mqtt
-    state_topic: "dev3/r/SSID"
-    name: "dev3_ssid"
-
-  - platform: mqtt
-    state_topic: "dev3/r/INFO"
-    name: "dev3_info"
-
-  - platform: mqtt
-    state_topic: "dev3/r/capability"
-    name: "dev3_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev4_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev4.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev4/r/#"
+  - platform: mqtt_jkw
     name: "dev4"
+    fname: "04 Kitchen Rack"
 
   - platform: mqtt
     state_topic: "dev4/r/temperature"
     name: "dev4_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev4/r/rssi"
-    name: "dev4_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev4/r/BSSID"
-    name: "dev4_bssid"
-
-  - platform: mqtt
-    state_topic: "dev4/r/SSID"
-    name: "dev4_ssid"
-
-  - platform: mqtt
-    state_topic: "dev4/r/INFO"
-    name: "dev4_info"
-
-  - platform: mqtt
-    state_topic: "dev4/r/capability"
-    name: "dev4_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev5_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev5_rssi.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev5/#"
+  - platform: mqtt_jkw
     name: "dev5"
-
-  - platform: mqtt
-    state_topic: "dev5/rssi"
-    name: "dev5_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev5/r/BSSID"
-    name: "dev5_bssid"
-
-  - platform: mqtt
-    state_topic: "dev5/r/SSID"
-    name: "dev5_ssid"
-
-  - platform: mqtt
-    state_topic: "dev5/r/INFO"
-    name: "dev5_info"
-
-  - platform: mqtt
-    state_topic: "dev5/r/capability"
-    name: "dev5_capability"
+    fname: "05 Front Door"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev6_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev6.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev6/r/#"
+  - platform: mqtt_jkw
     name: "dev6"
+    fname: "06 Entrance"
 
   - platform: mqtt
     state_topic: "dev6/r/temperature"
     name: "dev6_temperature"
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev6/r/rssi"
-    name: "dev6_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev6/r/BSSID"
-    name: "dev6_bssid"
-
-  - platform: mqtt
-    state_topic: "dev6/r/SSID"
-    name: "dev6_ssid"
-
-  - platform: mqtt
-    state_topic: "dev6/r/INFO"
-    name: "dev6_info"
-
-  - platform: mqtt
-    state_topic: "dev6/r/capability"
-    name: "dev6_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev7_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev7.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev7/r/#"
+  - platform: mqtt_jkw
     name: "dev7"
+    fname: "07 TowerW"
 
   - platform: mqtt
     state_topic: "dev7/r/temperature"
     name: "dev7_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev7/r/rssi"
-    name: "dev7_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev7/r/BSSID"
-    name: "dev7_bssid"
-
-  - platform: mqtt
-    state_topic: "dev7/r/SSID"
-    name: "dev7_ssid"
-
-  - platform: mqtt
-    state_topic: "dev7/r/INFO"
-    name: "dev7_info"
-
-  - platform: mqtt
-    state_topic: "dev7/r/capability"
-    name: "dev7_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev8_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev8.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev8/r/#"
+  - platform: mqtt_jkw
     name: "dev8"
-
-  - platform: mqtt
-    state_topic: "dev8/r/rssi"
-    name: "dev8_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev8/r/BSSID"
-    name: "dev8_bssid"
-
-  - platform: mqtt
-    state_topic: "dev8/r/SSID"
-    name: "dev8_ssid"
-
-  - platform: mqtt
-    state_topic: "dev8/r/INFO"
-    name: "dev8_info"
-
-  - platform: mqtt
-    state_topic: "dev8/r/capability"
-    name: "dev8_capability"
+    fname: "08 CarloPIR"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev9_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev9.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev9/r/#"
+  - platform: mqtt_jkw
     name: "dev9"
+    fname: "09 VAC"
 
   - platform: mqtt
     state_topic: "dev9/r/temperature"
@@ -356,148 +116,32 @@
     state_topic: "dev9/humidity"
     name: "dev9_humidity"
     unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev9/r/rssi"
-    name: "dev9_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev9/r/BSSID"
-    name: "dev9_bssid"
-
-  - platform: mqtt
-    state_topic: "dev9/r/SSID"
-    name: "dev9_ssid"
-
-  - platform: mqtt
-    state_topic: "dev9/r/INFO"
-    name: "dev9_info"
-
-  - platform: mqtt
-    state_topic: "dev9/r/capability"
-    name: "dev9_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev10_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev10.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev10/r/#"
+  - platform: mqtt_jkw
     name: "dev10"
+    fname: "10 HallwayU"
 
   - platform: mqtt
     state_topic: "dev10/r/temperature"
     name: "dev10_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev10/r/rssi"
-    name: "dev10_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev10/r/BSSID"
-    name: "dev10_bssid"
-
-  - platform: mqtt
-    state_topic: "dev10/r/SSID"
-    name: "dev10_ssid"
-
-  - platform: mqtt
-    state_topic: "dev10/r/INFO"
-    name: "dev10_info"
-
-  - platform: mqtt
-    state_topic: "dev10/r/capability"
-    name: "dev10_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev11_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev11.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev11/r/#"
+  - platform: mqtt_jkw
     name: "dev11"
+    fname: "11 TowerE"
 
   - platform: mqtt
     state_topic: "dev11/r/temperature"
     name: "dev11_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev11/r/rssi"
-    name: "dev11_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev11/r/BSSID"
-    name: "dev11_bssid"
-
-  - platform: mqtt
-    state_topic: "dev11/r/SSID"
-    name: "dev11_ssid"
-
-  - platform: mqtt
-    state_topic: "dev11/r/INFO"
-    name: "dev11_info"
-
-  - platform: mqtt
-    state_topic: "dev11/r/capability"
-    name: "dev11_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev12_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev12.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev12/r/#"
+  - platform: mqtt_jkw
     name: "dev12"
-
-  - platform: mqtt
-    state_topic: "dev12/r/rssi"
-    name: "dev12_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev12/r/BSSID"
-    name: "dev12_bssid"
-
-  - platform: mqtt
-    state_topic: "dev12/r/SSID"
-    name: "dev12_ssid"
-
-  - platform: mqtt
-    state_topic: "dev12/r/INFO"
-    name: "dev12_info"
-
-  - platform: mqtt
-    state_topic: "dev12/r/capability"
-    name: "dev12_capability"
+    fname: "12 EntranceB1"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev13_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev13.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev13/r/#"
+  - platform: mqtt_jkw
     name: "dev13"
+    fname: "13 Leakage"
 
   - platform: mqtt
     state_topic: "dev13/r/temperature"
@@ -505,471 +149,69 @@
     unit_of_measurement: "ºC"
 
   - platform: mqtt
-    state_topic: "dev13/r/rssi"
-    name: "dev13_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
     state_topic: "dev13/r/adc"
     name: "dev13_adc"
-
-  - platform: mqtt
-    state_topic: "dev13/r/BSSID"
-    name: "dev13_bssid"
-
-  - platform: mqtt
-    state_topic: "dev13/r/SSID"
-    name: "dev13_ssid"
-
-  - platform: mqtt
-    state_topic: "dev13/r/INFO"
-    name: "dev13_info"
-
-  - platform: mqtt
-    state_topic: "dev13/r/capability"
-    name: "dev13_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev14_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev14.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev14/r/#"
+  - platform: mqtt_jkw
     name: "dev14"
-
-  - platform: mqtt
-    state_topic: "dev14/r/rssi"
-    name: "dev14_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev14/r/BSSID"
-    name: "dev14_bssid"
-
-  - platform: mqtt
-    state_topic: "dev14/r/SSID"
-    name: "dev14_ssid"
-
-  - platform: mqtt
-    state_topic: "dev14/r/INFO"
-    name: "dev14_info"
-
-  - platform: mqtt
-    state_topic: "dev14/r/capability"
-    name: "dev14_capability"
+    fname: "14 Kitchen Cabinet"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev15_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev15.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev15/r/#"
+  - platform: mqtt_jkw
     name: "dev15"
-
-  - platform: mqtt
-    state_topic: "dev15/r/rssi"
-    name: "dev15_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev15/r/BSSID"
-    name: "dev15_bssid"
-
-  - platform: mqtt
-    state_topic: "dev15/r/SSID"
-    name: "dev15_ssid"
-
-  - platform: mqtt
-    state_topic: "dev15/r/INFO"
-    name: "dev15_info"
-
-  - platform: mqtt
-    state_topic: "dev15/r/capability"
-    name: "dev15_capability"
+    fname: "15 HallwayD"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev16_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev16.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev16/r/#"
+  - platform: mqtt_jkw
     name: "dev16"
-
-  - platform: mqtt
-    state_topic: "dev16/r/temperature"
-    name: "dev16_temperature"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev16/r/rssi"
-    name: "dev16_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev16/r/BSSID"
-    name: "dev16_bssid"
-
-  - platform: mqtt
-    state_topic: "dev16/r/SSID"
-    name: "dev16_ssid"
-
-  - platform: mqtt
-    state_topic: "dev16/r/INFO"
-    name: "dev16_info"
-
-  - platform: mqtt
-    state_topic: "dev16/r/capability"
-    name: "dev16_capability"
+    fname: "16 BedroomSW"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev17_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev17.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev17/r/#"
+  - platform: mqtt_jkw
     name: "dev17"
+    fname: "17 X-mas2"
 
   - platform: mqtt
     state_topic: "dev17/r/temperature"
     name: "dev17_temperature"
     unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev17/r/rssi"
-    name: "dev17_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev17/r/BSSID"
-    name: "dev17_bssid"
-
-  - platform: mqtt
-    state_topic: "dev17/r/SSID"
-    name: "dev17_ssid"
-
-  - platform: mqtt
-    state_topic: "dev17/r/INFO"
-    name: "dev17_info"
-
-  - platform: mqtt
-    state_topic: "dev17/r/capability"
-    name: "dev17_capability"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev18_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev18.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev18/r/#"
+  - platform: mqtt_jkw
     name: "dev18"
-
-  - platform: mqtt
-    state_topic: "dev18/r/rssi"
-    name: "dev18_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev18/r/BSSID"
-    name: "dev18_bssid"
-
-  - platform: mqtt
-    state_topic: "dev18/r/SSID"
-    name: "dev18_ssid"
-
-  - platform: mqtt
-    state_topic: "dev18/r/INFO"
-    name: "dev18_info"
-
-  - platform: mqtt
-    state_topic: "dev18/r/capability"
-    name: "dev18_capability"
+    fname: "18 Carlo AI"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev19_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev19.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev19/r/#"
+  - platform: mqtt_jkw
     name: "dev19"
-
-  - platform: mqtt
-    state_topic: "dev19/r/rssi"
-    name: "dev19_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev19/r/BSSID"
-    name: "dev19_bssid"
-
-  - platform: mqtt
-    state_topic: "dev19/r/SSID"
-    name: "dev19_ssid"
-
-  - platform: mqtt
-    state_topic: "dev19/r/INFO"
-    name: "dev19_info"
-
-  - platform: mqtt
-    state_topic: "dev19/r/capability"
-    name: "dev19_capability"
+    fname: "19 AI unused"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev20_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev20.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev20/r/#"
+  - platform: mqtt_jkw
     name: "dev20"
-
-  - platform: mqtt
-    state_topic: "dev20/r/rssi"
-    name: "dev20_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev20/r/BSSID"
-    name: "dev20_bssid"
-
-  - platform: mqtt
-    state_topic: "dev20/r/SSID"
-    name: "dev20_ssid"
-
-  - platform: mqtt
-    state_topic: "dev20/r/INFO"
-    name: "dev20_info"
-
-  - platform: mqtt
-    state_topic: "dev20/r/capability"
-    name: "dev20_capability"
+    fname: "20 Bedroom"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev21_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev21.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev21/r/#"
+  - platform: mqtt_jkw
     name: "dev21"
-
-  - platform: mqtt
-    state_topic: "dev21/r/rssi"
-    name: "dev21_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev21/r/BSSID"
-    name: "dev21_bssid"
-
-  - platform: mqtt
-    state_topic: "dev21/r/SSID"
-    name: "dev21_ssid"
-
-  - platform: mqtt
-    state_topic: "dev21/r/INFO"
-    name: "dev21_info"
-
-  - platform: mqtt
-    state_topic: "dev21/r/capability"
-    name: "dev21_capability"
+    fname: "21 SL Livingroom"
 # -----------------------------------------------------------
-  - platform: mqtt
-    state_topic: "dev42/r/temperature"
-    name: "dev42_temperature"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev42/r/rssi"
-    name: "dev42_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev42/r/BSSID"
-    name: "dev42_bssid"
-
-  - platform: mqtt
-    state_topic: "dev42/r/SSID"
-    name: "dev42_ssid"
-
-  - platform: mqtt
-    state_topic: "dev42/r/INFO"
-    name: "dev42_info"
-
-  - platform: mqtt
-    state_topic: "dev42/r/capability"
-    name: "dev42_capability"
+  - platform: mqtt_jkw
+    name: "dev23"
+    fname: "23 Livingroom Touch"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev55_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev55.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev55/r/#"
+  - platform: mqtt_jkw
+    name: "dev25"
+    fname: "25 unused Touch"
+# -----------------------------------------------------------
+  - platform: mqtt_jkw
     name: "dev55"
-
-  - platform: mqtt
-    state_topic: "dev55/r/rssi"
-    name: "dev55_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev55/r/BSSID"
-    name: "dev55_bssid"
-
-  - platform: mqtt
-    state_topic: "dev55/r/SSID"
-    name: "dev55_ssid"
-
-  - platform: mqtt
-    state_topic: "dev55/r/INFO"
-    name: "dev55_info"
-
-  - platform: mqtt
-    state_topic: "dev55/r/capability"
-    name: "dev55_capability"
+    fname: "55 Lampinions C"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev56_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev56.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev56/r/#"
+  - platform: mqtt_jkw
     name: "dev56"
-
-  - platform: mqtt
-    state_topic: "dev56/r/rssi"
-    name: "dev56_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev56/r/BSSID"
-    name: "dev56_bssid"
-
-  - platform: mqtt
-    state_topic: "dev56/r/SSID"
-    name: "dev56_ssid"
-
-  - platform: mqtt
-    state_topic: "dev56/r/INFO"
-    name: "dev56_info"
-
-  - platform: mqtt
-    state_topic: "dev56/r/capability"
-    name: "dev56_capability"
+    fname: "56 Lampinions"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev57_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev57.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev57/r/#"
+  - platform: mqtt_jkw
     name: "dev57"
-
-  - platform: mqtt
-    state_topic: "dev57/r/rssi"
-    name: "dev57_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev57/r/BSSID"
-    name: "dev57_bssid"
-
-  - platform: mqtt
-    state_topic: "dev57/r/SSID"
-    name: "dev57_ssid"
-
-  - platform: mqtt
-    state_topic: "dev57/r/INFO"
-    name: "dev57_info"
-
-  - platform: mqtt
-    state_topic: "dev57/r/capability"
-    name: "dev57_capability"
+    fname: "57 x-mas tree"
 # -----------------------------------------------------------
-  - platform: template
-    sensors:
-      dev77_update:
-        value_template: '{{ (( as_timestamp(now()) - as_timestamp(states.sensor.dev77.last_updated)) //60) | int }}'
-        unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
-
-  - platform: mqtt
-    state_topic: "dev77/r/#"
+  - platform: mqtt_jkw
     name: "dev77"
-
-  - platform: mqtt
-    state_topic: "dev77/r/temperature"
-    name: "dev77_temperature"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev77/humidity"
-    name: "dev77_humidity"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev77/r/rssi"
-    name: "dev77_rssi"
-    unit_of_measurement: "%"
-
-  - platform: mqtt
-    state_topic: "dev77/r/BSSID"
-    name: "dev77_bssid"
-
-  - platform: mqtt
-    state_topic: "dev77/r/SSID"
-    name: "dev77_ssid"
-
-  - platform: mqtt
-    state_topic: "dev77/r/INFO"
-    name: "dev77_info"
-
-  - platform: mqtt
-    state_topic: "dev77/r/capability"
-    name: "dev77_capability"
+    fname: "77 Flower"
 # -----------------------------------------------------------
   - platform: mqtt
     state_topic: "dev99/r/temperature"

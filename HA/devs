@@ -15,12 +15,15 @@ DEV14 - kitchen drawer, PIR, simple light
 DEV15 - World map, PIR dimmer
 DEV16 - switch for dev20 both bedroom
 DEV17 - steckdosending das aktuell die lichterkette im wohnzimmer schaltet
-
-DEV18 - AI light 1
+DEV18 - AI light 1 carlo
 DEV19 - AI light 2
-
 DEV20 - Bedroom, PIR, PWM led streifen, DS18B20
-dev21 - slampher im wohnzimmer
+DEV21 - slampher im wohnzimmer
+DEV22 - RGB Transistor dimmer
+
+DEV23 - SonOff Touch livingroom
+DEV24 - SonOff Touch unused
+DEV25 - SonOff Touch unused
 
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused
 DEV55 - Ikea LED lampinions Carlo
