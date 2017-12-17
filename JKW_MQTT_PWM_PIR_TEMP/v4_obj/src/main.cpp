@@ -391,6 +391,7 @@ void loadPheripherals(uint8_t* config){
 	bake(new BOne(), &p_bOne, config);
 	bake(new NeoStrip(), &p_neo, config);
 	bake(new light(), &p_light, config);
+	bake(new J_hlw8012(), &p_hlw, config);
 
 	//logger.p("RAM after init objects ");
 	//logger.pln(system_get_free_heap_size());
@@ -556,7 +557,21 @@ void loop(){
 		if(active_p_intervall_counter>0){
 			if (millis() - updateFastValuesTimer > (60000UL/active_p_intervall_counter) && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 				updateFastValuesTimer = millis();
-				(*active_intervall_p[periodic_slot])->intervall_update(periodic_slot);
+				// make sure that every entrie receives its own 0,1,2,3 slots
+				uint8_t user_slot=0;
+				if(periodic_slot>0){
+					for(user_slot=periodic_slot-1; user_slot>=0; user_slot--){
+						if(active_intervall_p[periodic_slot]!=active_intervall_p[user_slot]){
+							/* assuming	[0] = pir, [1] = adc, [2] = dht, [3] = dht
+							frist dht call: periodic_slot = 2, user slot = 1, adc != dht --> 2-1-1 = 0
+							second dht call: periodic_slot = 3, user slot = 2, dht == dht, user_slot = 1, adc != dht --> 3-1-1 = 1
+							*/
+							user_slot= periodic_slot-user_slot-1;
+							break;
+						}
+					}
+				}
+				(*active_intervall_p[periodic_slot])->intervall_update(user_slot);
 				periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
 			}
 		}

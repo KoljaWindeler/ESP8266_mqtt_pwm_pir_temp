@@ -1,3 +1,7 @@
+20171217
+	-	added support for hlw8012, power IC from SONOFF POW
+	- each entity will receive slot count 0-based
+	- text size 352942
 20171211
 	-	moved all pins to the objects
 	- live support for Kolja_v2 and sonoff at once
@@ -25,12 +29,12 @@
 	- improve topic subscription order
 	- subscribe color before brightness
 20171031
-	fixed URL upload
+	- fixed URL upload
 20171030
-	reconnect time based on previously connection time
+	- reconnect time based on previously connection time
 		up to 20min reconnect
 20171029
-	OTA working
-	no wifi communication during dimming
-	supports sonoff b1
-	colorized serial outout for screen
+	- OTA working
+	- no wifi communication during dimming
+	- supports sonoff b1
+	- colorized serial outout for screen

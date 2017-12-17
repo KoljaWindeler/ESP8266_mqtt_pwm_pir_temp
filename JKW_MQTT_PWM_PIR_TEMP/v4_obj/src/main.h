@@ -1,64 +1,17 @@
 /*
- * Highly based on a combination of different version of
- * https://github.com/mertenats/Open-Home-Automation/tree/master/ha_mqtt_binary_sensor_pir
- * Also using https://github.com/tzapu/WiFiManager
+ * for sonoff touch modules:
+ * generic 8266
+ * DOUT flash mode!
+ * flash 40 mhz, cpu 80mhz
+ * flash size 1mb, 64k filesystem
  *
- * Configuration (HA) :
- * light:
+ * QIO > QOUT > DIO > DOUT.
  *
- #######  single CHANNEL ###################
- ###################################- platform: mqtt ### tower living
- ###################################name: "dev1"
- ###################################TOPIC: "dev1/PWM_light/status"
- ###################################TOPIC: "dev1/PWM_dimm/switch"
- ###################################brightness_TOPIC: 'dev1/PWM_light/brightness'
- ## use the line below for dimming
- ##################brightness_TOPIC: 'dev1/PWM_dimm/brightness/set'
- ## use the line below for setting hard
- # brightness_TOPIC: 'dev1/PWM_light/brightness/set'
- # qos: 0
- # payload_on: "ON"
- # payload_off: "OFF"
- # optimistic: false
- # brightness_scale: 99
- #######  single CHANNEL ###################
- #######  rgb CHANNEL ###################
- ###################################- platform: mqtt ### tower living
- ###################################name: "dev1"
- ###################################TOPIC: "dev1/PWM_light/status"
- ###################################TOPIC: "dev1/PWM_dimm/switch"
- ###################################rgb_TOPIC: 'dev1/PWM_RGB_dimm/color/set'
- # use the lines below for rgb dimming
- # rgb_TOPIC: 'dev1/PWM_RGB_dimm/color/set'
- # use the lines below for setting
- # rgb_TOPIC: 'dev1/PWM_RGB_light/color/set'
- # qos: 0
- # payload_on: "ON"
- # payload_off: "OFF"
- # optimistic: false
- #######  rgb CHANNEL ###################
- #######
- #######
- ###################################config for sonoff modules:
- ###################################generic 8266
- ###################################DIO flash mode
- ###################################flash 40 mhz, cpu 80mhz
- ###################################flash size 1mb, 64k filesystem
- #######
- ###################################config for sonoff touch modules:
- ###################################generic 8266
- ###################################DOUT flash mode!
- ###################################flash 40 mhz, cpu 80mhz
- ###################################flash size 1mb, 64k filesystem
- #######
- ###################################QIO > QOUT > DIO > DOUT.
- #######
- ###################################This sketch (2017/01/21): 333k (Basic wifi sketch 230k)
- #######
- ###################################requires arduino libs:
- ###################################- adafruit unified sensor
- ###################################- adafruit dht22
- ###################################- onewire
+ * Pin1 = 3.3V
+ * Pin2 = RxD
+ * Pin3 = TxD
+ * Pin4 = Masse
+ * Pin5 = vorbereitet für GPIO
  */
 
 #ifndef main_h
@@ -92,7 +45,6 @@ public:
 		virtual bool receive(uint8_t * p_topic, uint8_t * p_payload) = 0;
 		virtual bool parse(uint8_t * config) = 0;
 		virtual uint8_t * get_key() = 0;
-		virtual void interrupt()    = 0;
 		virtual bool publish()      = 0;
 	};
 
@@ -130,7 +82,7 @@ public:
 	#define T_AI   5
 
 
-	#define PINOUT                "SONOFF"
+	#define PINOUT                 "SONOFF"
 	#define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
 	#define MSG_BUFFER_SIZE        60   // mqtt messages max char size
@@ -198,12 +150,16 @@ public:
 	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
 	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
 	// misc
-	static constexpr char MQTT_MOTION_TOPIC[]      = "motion";      // publish
-	static constexpr char MQTT_TEMPARATURE_TOPIC[] = "temperature"; // publish
-	static constexpr char MQTT_HUMIDITY_TOPIC[]    = "humidity";    // publish
-	static constexpr char MQTT_BUTTON_TOPIC[]      = "button";      // publish
-	static constexpr char MQTT_RSSI_TOPIC[]        = "rssi";        // publish
-	static constexpr char MQTT_ADC_TOPIC[]         = "adc";         // publish
+	static constexpr char MQTT_MOTION_TOPIC[]        = "motion";      // publish
+	static constexpr char MQTT_TEMPARATURE_TOPIC[]   = "temperature"; // publish
+	static constexpr char MQTT_HUMIDITY_TOPIC[]      = "humidity";    // publish
+	static constexpr char MQTT_BUTTON_TOPIC[]        = "button";      // publish
+	static constexpr char MQTT_RSSI_TOPIC[]          = "rssi";        // publish
+	static constexpr char MQTT_ADC_TOPIC[]           = "adc";         // publish
+	static constexpr char MQTT_HLW_CALIBRATE_TOPIC[] = "calibration";
+	static constexpr char MQTT_HLW_CURRENT_TOPIC[]   = "current";
+	static constexpr char MQTT_HLW_VOLTAGE_TOPIC[]   = "voltage";
+	static constexpr char MQTT_HLW_POWER_TOPIC[]     = "power";
 
 	static constexpr char MQTT_SETUP_TOPIC[]      = "setup";      // subscribe
 	static constexpr char MQTT_CAPABILITY_TOPIC[] = "capability"; // subscribe
@@ -241,6 +197,7 @@ public:
 	extern peripheral * p_bOne;
 	extern peripheral * p_neo;
 	extern peripheral * p_light;
+	extern peripheral * p_hlw;
 	extern const uint8_t intens[100];
 
 
@@ -252,6 +209,7 @@ public:
 #include "PWM.h"
 #include "J_DHT22.h"
 #include "J_DS.h"
+#include "J_hlw8012.h"
 #include "AI.h"
 #include "BOne.h"
 #include "NeoStrip.h"
