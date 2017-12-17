@@ -12,8 +12,6 @@ uint8_t* J_DHT22::get_key(){
 	return key;
 }
 
-void J_DHT22::interrupt(){};
-
 bool J_DHT22::init(){
 	// dht
 	dht.begin();
@@ -34,7 +32,7 @@ bool J_DHT22::loop(){
 }
 
 bool J_DHT22::intervall_update(uint8_t slot){
-	if(slot%count_intervall_update()==0){
+	if(slot==0){
 		float temp = dht.readTemperature();
 		if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
 			logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);
@@ -52,7 +50,7 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		logger.pln(m_msg_buffer);
 		return client.publish(build_topic(MQTT_TEMPARATURE_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 	}
-	else if(slot%count_intervall_update()==1){
+	else if(slot==1){
 		float hum = dht.readHumidity();
 		if (isnan(hum)) {
 			logger.println(TOPIC_GENERIC_INFO, F("no publish humidiy"), COLOR_YELLOW);

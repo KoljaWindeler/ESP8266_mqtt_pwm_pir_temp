@@ -4,7 +4,6 @@ simple_light::simple_light(){};
 simple_light::~simple_light(){
 	logger.println(TOPIC_GENERIC_INFO, F("Simple light deleted"), COLOR_YELLOW);
 };
-void simple_light::interrupt(){};
 
 uint8_t* simple_light::get_key(){
 	sprintf((char*)key,"SL");

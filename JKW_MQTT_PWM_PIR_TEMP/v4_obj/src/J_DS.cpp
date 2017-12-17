@@ -6,8 +6,6 @@ J_DS::J_DS(){};
 J_DS::~J_DS(){
 	logger.println(TOPIC_GENERIC_INFO, F("DS deleted"), COLOR_YELLOW);
 };
-void J_DS::interrupt(){};
-
 
 uint8_t* J_DS::get_key(){
 	sprintf((char*)key,"DS");

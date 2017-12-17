@@ -14,11 +14,8 @@ bool ADC::init(){
 	// output for the analogmeasurement
 	pinMode(GPIO_D8, OUTPUT);
 	logger.println(TOPIC_GENERIC_INFO, F("ADC init"), COLOR_GREEN);
-	min_slot=255;
 	return true;
 }
-
-void ADC::interrupt(){};
 
 bool ADC::loop(){
 	return false; // i did nothing
@@ -29,11 +26,7 @@ uint8_t ADC::count_intervall_update(){
 }
 
 bool ADC::intervall_update(uint8_t slot){
-	if(min_slot==255){ // remember  first slot id
-		min_slot = slot;
-	}
-
-	if(slot==min_slot){
+	if(slot==0){
 			digitalWrite(GPIO_D8, HIGH);
 	} else {
 		uint16_t adc = analogRead(A0);

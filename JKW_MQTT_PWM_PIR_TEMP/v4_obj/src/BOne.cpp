@@ -6,8 +6,6 @@ BOne::~BOne(){
 	logger.println(TOPIC_GENERIC_INFO, F("B1 deleted"), COLOR_YELLOW);
 };
 
-void BOne::interrupt(){};
-
 bool BOne::parse(uint8_t* config){
 	return cap.parse(config,get_key(),(uint8_t*)"LIG");
 }

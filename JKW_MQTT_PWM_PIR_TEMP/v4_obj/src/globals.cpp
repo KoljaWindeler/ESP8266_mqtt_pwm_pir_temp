@@ -18,6 +18,8 @@ peripheral *p_dht;
 peripheral *p_ds;
 peripheral *p_ai;
 peripheral *p_light;
+peripheral *p_hlw;
+
 
 WiFiClient wifiClient;
 WiFiManager wifiManager;

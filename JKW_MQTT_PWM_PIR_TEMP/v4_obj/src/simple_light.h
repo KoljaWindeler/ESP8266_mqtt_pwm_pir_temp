@@ -14,7 +14,6 @@ class simple_light : public peripheral {
 		bool subscribe();
 		bool parse(uint8_t* config);
 		uint8_t count_intervall_update();
-		void interrupt();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
 		bool publish();

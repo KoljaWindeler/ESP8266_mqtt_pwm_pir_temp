@@ -13,7 +13,6 @@ class PWM : public peripheral {
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t* config);
-		void interrupt();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
 		uint8_t* get_dep();

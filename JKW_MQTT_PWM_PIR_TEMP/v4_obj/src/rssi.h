@@ -13,7 +13,6 @@ class rssi : public peripheral {
 		bool subscribe();
 		uint8_t count_intervall_update();
 		bool parse(uint8_t* config);
-		void interrupt();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
 		bool publish();

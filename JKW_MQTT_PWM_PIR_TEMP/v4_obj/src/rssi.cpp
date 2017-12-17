@@ -4,7 +4,6 @@ rssi::rssi(){};
 rssi::~rssi(){
 	logger.println(TOPIC_GENERIC_INFO, F("RSSI deleted"), COLOR_YELLOW);
 };
-void rssi::interrupt(){};
 
 uint8_t* rssi::get_key(){
 	sprintf((char*)key,"R");

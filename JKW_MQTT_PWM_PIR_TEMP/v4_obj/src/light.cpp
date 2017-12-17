@@ -30,7 +30,6 @@ bool light::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
 }
 
-void light::interrupt(){};
 uint8_t light::count_intervall_update(){	return 0;	};
 
 bool light::reg_provider(peripheral * p, uint8_t t){

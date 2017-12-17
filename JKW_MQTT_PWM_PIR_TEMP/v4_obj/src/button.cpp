@@ -20,7 +20,7 @@ uint8_t* button::get_key(){
 
 void fooButton(){
 	if(p_button){
-		p_button->interrupt();
+		((button*)p_button)->interrupt();
 	}
 }
 

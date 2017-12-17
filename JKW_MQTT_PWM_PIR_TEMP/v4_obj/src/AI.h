@@ -16,7 +16,6 @@ class AI : public peripheral {
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t* config);
-		void interrupt();
 		uint8_t count_intervall_update();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		bool publish();

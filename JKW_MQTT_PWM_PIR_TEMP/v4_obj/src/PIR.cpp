@@ -23,9 +23,9 @@ bool PIR::parse(uint8_t* config){
 
 void fooPIR(){
 	if(p_pir){
-		p_pir->interrupt();
+		((PIR*)p_pir)->interrupt();
 	} else if(p_pir2){
-		p_pir2->interrupt();
+		((PIR*)p_pir2)->interrupt();
 	}
 }
 

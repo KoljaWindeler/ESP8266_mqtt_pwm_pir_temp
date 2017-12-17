@@ -12,7 +12,6 @@ PWM::~PWM(){
 	sprintf((char*)buffer,"%s deleted",get_key());
 	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
 };
-void PWM::interrupt(){};
 
 uint8_t* PWM::get_key(){
 	return key;

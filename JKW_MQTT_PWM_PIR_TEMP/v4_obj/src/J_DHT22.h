@@ -18,7 +18,6 @@ class J_DHT22 : public peripheral {
 		bool parse(uint8_t* config);
 		uint8_t* get_key();
 		bool publish();
-		void interrupt();
 	private:
 		uint8_t key[4];
 };

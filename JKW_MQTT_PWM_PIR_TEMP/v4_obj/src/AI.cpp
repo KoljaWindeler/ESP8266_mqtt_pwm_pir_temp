@@ -7,7 +7,6 @@ AI::AI(){};
 AI::~AI(){
 	logger.println(TOPIC_GENERIC_INFO, F("AI deleted"), COLOR_YELLOW);
 };
-void AI::interrupt(){};
 
 bool AI::parse(uint8_t* config){
 	return cap.parse(config,get_key(),(uint8_t*)"LIG");
