@@ -1,3 +1,6 @@
+20171220
+	- fixed h801 pinout
+	- added support for 5 PWMs
 20171217
 	-	added support for hlw8012, power IC from SONOFF POW
 	- each entity will receive slot count 0-based
