@@ -1,9 +1,15 @@
 #include <PWM.h>
 
 PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2){
-	m_pin0 = pin0;
-	m_pin1 = pin1;
-	m_pin2 = pin2;
+	PWM(k,pin0,pin1,pin2,0,0);
+};
+
+PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4){
+	m_pins[0] = pin0;
+	m_pins[1] = pin1;
+	m_pins[2] = pin2;
+	m_pins[3] = pin3;
+	m_pins[4] = pin4;
 	sprintf((char*)key,(char*)k);
 };
 
@@ -27,11 +33,17 @@ bool PWM::parse(uint8_t* config){
 }
 
 bool PWM::init(){
-	pinMode(m_pin0, OUTPUT);
-	pinMode(m_pin1, OUTPUT);
-	pinMode(m_pin2, OUTPUT);
+	pinMode(m_pins[0], OUTPUT);
+	pinMode(m_pins[1], OUTPUT);
+	pinMode(m_pins[2], OUTPUT);
+	if(m_pins[3]){
+		pinMode(m_pins[3], OUTPUT);
+	}
+	if(m_pins[4]){
+		pinMode(m_pins[4], OUTPUT);
+	}
 	analogWriteRange(255);
-	sprintf(m_msg_buffer,"%s init, pin config %i,%i,%i",get_key(),m_pin0,m_pin1,m_pin2);
+	sprintf(m_msg_buffer,"%s init, pin config %i,%i,%i,%i,%i",get_key(),m_pins[0],m_pins[1],m_pins[2],m_pins[3],m_pins[4]);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 }
 
@@ -78,9 +90,16 @@ void PWM::setColor(uint8_t r, uint8_t g, uint8_t b){
 	//if (m_state.get_value() && r == 0) {
 	//	r = sizeof(intens) - 1;
 	//}
-	analogWrite(m_pin0, r);
-	analogWrite(m_pin1, g);
-	analogWrite(m_pin2, b);
+	analogWrite(m_pins[0], r);
+	analogWrite(m_pins[1], g);
+	analogWrite(m_pins[2], b);
+
+	if(m_pins[3]){
+		analogWrite(m_pins[3], r);
+	}
+	if(m_pins[4]){
+		analogWrite(m_pins[4], r);
+	}
 
 	logger.print(TOPIC_INFO_PWM, F("PWM: "));
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", r, g, b);

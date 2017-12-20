@@ -6,6 +6,7 @@
 class PWM : public peripheral {
 	public:
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2);
+		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
 		~PWM();
 		bool init();
 		bool loop();
@@ -32,9 +33,7 @@ class PWM : public peripheral {
 		uint8_t key[4];
 		uint8_t dep[4];
 		led m_light_current;
-		uint8_t m_pin0;
-		uint8_t m_pin1;
-		uint8_t m_pin2;
+		uint8_t m_pins[4];
 	};
 
 
