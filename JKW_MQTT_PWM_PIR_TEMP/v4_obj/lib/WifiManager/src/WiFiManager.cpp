@@ -250,6 +250,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 
 	f_p = 0;                  // pointer in dem struct
 	p   = (uint8_t *) m_mqtt; // copy location
+	uint8_t skip_last = 1; // skip capability
 
 	while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
 		// ////////////// kolja serial config code ////////////
@@ -274,7 +275,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 			if (char_buffer == 13) {
 				// Serial.print("#");
 				f_start = 0;
-				for (int i = 0; i <= sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 1.2.3.4.5.6.7
+				for (int i = 0; i <= sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 1.2.3.4.5.6.7
 					if (i > 0) {
 						f_start += m_mqtt_sizes[i - 1];
 					}
@@ -291,9 +292,9 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							Serial.print(F("\r\n\r\nStart readig config"));
 						}
 						;
-						if (i >= 0 && i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0])) {
+						if (i >= 0 && i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) {
 							explainMqttStruct(i, true);
-						} else if (i == sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0])) { // last segement .. save and reboot
+						} else if (i == sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) { // last segement .. save and reboot
 							// fill the buffer
 							Serial.print(F("\r\n==========\r\nConfig stored\r\n"));
 							explainFullMqttStruct(m_mqtt);
@@ -305,6 +306,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							}
 							storeMqttStruct((char *) m_mqtt, f_start);
 							delay(1000);
+
 							// what about the wifi?
 							Serial.print(F("Disconnect.\r\n"));
 							WiFi.disconnect(false);
@@ -328,7 +330,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 			} else if (char_buffer == 127) { // backspace
 				// search lowerlimit of this field
 				f_start = 0;
-				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 0.1.2.3.4.5.6.7
+				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
 					// Serial.print("+");
 					if (f_start + m_mqtt_sizes[i] > f_p) { // seach for the field that starts closes to our current pos
 						break;
@@ -345,7 +347,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 				// Serial.print("&");
 				// calc next segment
 				f_start = 0;
-				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 0.1.2.3.4.5.6.7
+				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
 					// Serial.print("+");
 					f_start += m_mqtt_sizes[i];
 					if (f_p < f_start) {  // seach for the field that starts closes to our current pos
@@ -540,6 +542,10 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 	Serial.println(mqtt->server_ip);
 	explainMqttStruct(4, false);
 	Serial.println(mqtt->server_port);
+	explainMqttStruct(5, false);
+	Serial.println(mqtt->nw_ssid);
+	explainMqttStruct(6, false);
+	Serial.println(mqtt->nw_pw);
 	explainMqttStruct(7, false);
 	Serial.println(mqtt->cap);
 }
@@ -575,7 +581,11 @@ void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
 int WiFiManager::connectWifi(String ssid, String pass){
 	//DEBUG_WM(F("Connecting as wifi client..."));
 	Serial.print(F("*WM: Connecting to "));
-	Serial.println(WiFi.SSID());
+	if(ssid != ""){
+		Serial.println(ssid);
+	} else if (WiFi.SSID()) {
+		Serial.println(WiFi.SSID());
+	};
 
 	// check if we've got static_ip settings, if we do, use those.
 	if (_sta_static_ip) {

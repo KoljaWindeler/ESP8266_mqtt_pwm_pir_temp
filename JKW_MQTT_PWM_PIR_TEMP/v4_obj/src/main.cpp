@@ -12,11 +12,12 @@ uint32_t m_animation_dimm_time = 0;
 // prepare wifimanager variables
 WiFiManagerParameter WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
-WiFiManagerParameter WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", 0, 2, true);       // length must be at least tw0 .. why? // Capability Bit0 = PWM LEDs connected
+WiFiManagerParameter WiFiManager_mqtt_capability("capability", "capability", "", 60);
+/*WiFiManagerParameter WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", 0, 2, true);       // length must be at least tw0 .. why? // Capability Bit0 = PWM LEDs connected
 WiFiManagerParameter WiFiManager_mqtt_capability_b1("cap_1", "Neopixel", 0, 2, true);       // Bit1 = Neopixel,
 WiFiManagerParameter WiFiManager_mqtt_capability_b2("cap_2", "Avoid relay", 0, 2, true);    // Bit2 = Avoid relay
 WiFiManagerParameter WiFiManager_mqtt_capability_b3("cap_3", "Sonoff B1", 0, 2, true);      // Bit3 = sonoff b1
-WiFiManagerParameter WiFiManager_mqtt_capability_b4("cap_4", "AiTinker light", 0, 2, true); // Bit4 = aitinker
+WiFiManagerParameter WiFiManager_mqtt_capability_b4("cap_4", "AiTinker light", 0, 2, true); // Bit4 = aitinker */
 WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -95,6 +96,15 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			logger.p(F("Received reset command"));
 			ESP.restart();
+		} else if (!strncmp_P((const char *) p_payload, "set", 3)) { // set parameter
+				if (!strncmp_P( ((const char *)p_payload)+3, "S", 1)) { // set SSID
+					strcpy(mqtt.nw_ssid,((const char *)p_payload)+4);
+				} else if (!strncmp_P( ((const char *)p_payload)+3, "P", 1)) { // set SSID
+					strcpy(mqtt.nw_pw,((const char *)p_payload)+4);
+					WiFi.disconnect();
+				};
+				wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
+				wifiManager.explainFullMqttStruct(&mqtt);
 		}
 	}
 	// //////////////////////// SET CAPABILITYS ////////////////////////
@@ -145,7 +155,7 @@ void reconnect(){
 		if (WiFi.status() != WL_CONNECTED) {
 			logger.println(TOPIC_WIFI, F("Currently not connected, initiate new connection ..."), COLOR_RED);
 			// mqtt.nw_ssid, mqtt.nw_pw or autoconnect?
-			wifiManager.connectWifi("", "");
+			wifiManager.connectWifi(mqtt.nw_ssid, mqtt.nw_pw);
 		} else {
 			logger.println(TOPIC_WIFI, F("online"), COLOR_GREEN);
 		}
@@ -271,11 +281,12 @@ void reconnect(){
 void configModeCallback(WiFiManager * myWiFiManager){
 	wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_port);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b0);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b1);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b2);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b3);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b4);
+	wifiManager.addParameter(&WiFiManager_mqtt_capability);
+	/*wifiManager.addParameter(&WiFiManager_mqtt_capability_b0);
+	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b1);
+	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b2);
+	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b3);
+	wifiManager.addParameter(&WiFiManager_mqtt_capability_b4);*/
 	wifiManager.addParameter(&WiFiManager_mqtt_client_short);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_login);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
@@ -296,8 +307,9 @@ void saveConfigCallback(){
 	sprintf(mqtt.pw, "%s", WiFiManager_mqtt_server_pw.getValue());
 	sprintf(mqtt.server_port, "%s", WiFiManager_mqtt_server_port.getValue());
 	sprintf(mqtt.dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
+	sprintf(mqtt.cap, "%s", WiFiManager_mqtt_capability.getValue());
 	// collect capability
-	mqtt.cap[0] = 0x00; // reset to start clean, add bits, shift to ascii
+	/*mqtt.cap[0] = 0x00; // reset to start clean, add bits, shift to ascii
 	if (WiFiManager_mqtt_capability_b0.getValue()[0] == '1') {
 		mqtt.cap[0] |= RGB_PWM_BITMASK;
 	}
@@ -313,7 +325,7 @@ void saveConfigCallback(){
 	if (WiFiManager_mqtt_capability_b4.getValue()[0] == '1') {
 		mqtt.cap[0] = AITINKER_BITMASK; // hard set
 	}
-	mqtt.cap[0] += '0';
+	mqtt.cap[0] += '0';*/
 
 	logger.pln(F("=== Saving parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
@@ -331,6 +343,7 @@ void loadConfig(){
 		// set identifier for SSID and menu
 		wifiManager.setCustomIdElement(mqtt.dev_short);
 		// resuract eeprom values instead of defaults
+		WiFiManager_mqtt_capability.setValue(mqtt.cap);
 		WiFiManager_mqtt_server_ip.setValue(mqtt.server_ip);
 		WiFiManager_mqtt_server_port.setValue(mqtt.server_port);
 		WiFiManager_mqtt_client_short.setValue(mqtt.dev_short);
@@ -338,7 +351,7 @@ void loadConfig(){
 		WiFiManager_mqtt_server_pw.setValue(mqtt.pw);
 		// technically wrong, as the value will be 1,2,4,8,... and not 0/1
 		// but still works as the test is value!=0
-		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
+		/*sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
 		WiFiManager_mqtt_capability_b0.setValue(m_msg_buffer);
 		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK));
 		WiFiManager_mqtt_capability_b1.setValue(m_msg_buffer);
@@ -347,7 +360,7 @@ void loadConfig(){
 		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK));
 		WiFiManager_mqtt_capability_b3.setValue(m_msg_buffer);
 		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
-		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);
+		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);*/
 	} else {
 		wifiManager.setCustomIdElement("");
 		logger.pln(F("Config load failed"));
@@ -380,8 +393,8 @@ void loadPheripherals(uint8_t* config){
 	bake(new button(), &p_button, config);
 	bake(new simple_light(), &p_simple_light, config);
 	bake(new rssi(), &p_rssi, config);
-	bake(new PWM(((uint8_t*)"PWM"),4,5,16), &p_pwm, config); // SONOFF PWM
-	bake(new PWM(((uint8_t*)"PW2"),4,4,4), &p_pwm2, config); // kolja 2
+	bake(new PWM(((uint8_t*)"PWM"),4,5,16,0,0), &p_pwm, config); // SONOFF PWM TODO: THIS IS LIKELY NOT WORKING AS EXPECTED
+	bake(new PWM(((uint8_t*)"PW2"),4,4,4,0,0), &p_pwm2, config); // kolja 2
 	bake(new PWM(((uint8_t*)"PW3"),15,13,12,14,4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
 	bake(new PIR(((uint8_t*)"PIR"),14), &p_pir, config); // SONOFF PIR
 	bake(new PIR(((uint8_t*)"PI2"),5), &p_pir2, config); // Kolja_v2
@@ -459,6 +472,7 @@ void setup(){
 		logger.p(F(".. "));
 		delay(500);
 	}
+
 	logger.pln(F(""));
 	logger.pln(F(""));
 	logger.pln(F("========== INFO ========== "));
