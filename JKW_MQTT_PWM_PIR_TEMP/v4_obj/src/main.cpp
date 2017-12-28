@@ -13,11 +13,6 @@ uint32_t m_animation_dimm_time = 0;
 WiFiManagerParameter WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
 WiFiManagerParameter WiFiManager_mqtt_capability("capability", "capability", "", 60);
-/*WiFiManagerParameter WiFiManager_mqtt_capability_b0("cap_0", "PWM Leds", 0, 2, true);       // length must be at least tw0 .. why? // Capability Bit0 = PWM LEDs connected
-WiFiManagerParameter WiFiManager_mqtt_capability_b1("cap_1", "Neopixel", 0, 2, true);       // Bit1 = Neopixel,
-WiFiManagerParameter WiFiManager_mqtt_capability_b2("cap_2", "Avoid relay", 0, 2, true);    // Bit2 = Avoid relay
-WiFiManagerParameter WiFiManager_mqtt_capability_b3("cap_3", "Sonoff B1", 0, 2, true);      // Bit3 = sonoff b1
-WiFiManagerParameter WiFiManager_mqtt_capability_b4("cap_4", "AiTinker light", 0, 2, true); // Bit4 = aitinker */
 WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
@@ -279,14 +274,10 @@ void reconnect(){
 }  // reconnect
 
 void configModeCallback(WiFiManager * myWiFiManager){
-	wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
+	wifiManager.resetParameter();
 	wifiManager.addParameter(&WiFiManager_mqtt_server_port);
 	wifiManager.addParameter(&WiFiManager_mqtt_capability);
-	/*wifiManager.addParameter(&WiFiManager_mqtt_capability_b0);
-	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b1);
-	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b2);
-	//wifiManager.addParameter(&WiFiManager_mqtt_capability_b3);
-	wifiManager.addParameter(&WiFiManager_mqtt_capability_b4);*/
+	wifiManager.addParameter(&WiFiManager_mqtt_server_ip);
 	wifiManager.addParameter(&WiFiManager_mqtt_client_short);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_login);
 	wifiManager.addParameter(&WiFiManager_mqtt_server_pw);
@@ -308,25 +299,6 @@ void saveConfigCallback(){
 	sprintf(mqtt.server_port, "%s", WiFiManager_mqtt_server_port.getValue());
 	sprintf(mqtt.dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
 	sprintf(mqtt.cap, "%s", WiFiManager_mqtt_capability.getValue());
-	// collect capability
-	/*mqtt.cap[0] = 0x00; // reset to start clean, add bits, shift to ascii
-	if (WiFiManager_mqtt_capability_b0.getValue()[0] == '1') {
-		mqtt.cap[0] |= RGB_PWM_BITMASK;
-	}
-	if (WiFiManager_mqtt_capability_b1.getValue()[0] == '1') {
-		mqtt.cap[0] |= NEOPIXEL_BITMASK;
-	}
-	if (WiFiManager_mqtt_capability_b2.getValue()[0] == '1') {
-		mqtt.cap[0] |= AVOID_RELAY_BITMASK;
-	}
-	if (WiFiManager_mqtt_capability_b3.getValue()[0] == '1') {
-		mqtt.cap[0] = SONOFF_B1_BITMASK; // hard set
-	}
-	if (WiFiManager_mqtt_capability_b4.getValue()[0] == '1') {
-		mqtt.cap[0] = AITINKER_BITMASK; // hard set
-	}
-	mqtt.cap[0] += '0';*/
-
 	logger.pln(F("=== Saving parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
 	logger.pln(F("=== End of parameters ==="));
@@ -349,18 +321,6 @@ void loadConfig(){
 		WiFiManager_mqtt_client_short.setValue(mqtt.dev_short);
 		WiFiManager_mqtt_server_login.setValue(mqtt.login);
 		WiFiManager_mqtt_server_pw.setValue(mqtt.pw);
-		// technically wrong, as the value will be 1,2,4,8,... and not 0/1
-		// but still works as the test is value!=0
-		/*sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & RGB_PWM_BITMASK));
-		WiFiManager_mqtt_capability_b0.setValue(m_msg_buffer);
-		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & NEOPIXEL_BITMASK));
-		WiFiManager_mqtt_capability_b1.setValue(m_msg_buffer);
-		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & AVOID_RELAY_BITMASK));
-		WiFiManager_mqtt_capability_b2.setValue(m_msg_buffer);
-		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & SONOFF_B1_BITMASK));
-		WiFiManager_mqtt_capability_b3.setValue(m_msg_buffer);
-		sprintf(m_msg_buffer, "%i", (((uint8_t) (mqtt.cap[0]) - '0') & AITINKER_BITMASK));
-		WiFiManager_mqtt_capability_b4.setValue(m_msg_buffer);*/
 	} else {
 		wifiManager.setCustomIdElement("");
 		logger.pln(F("Config load failed"));

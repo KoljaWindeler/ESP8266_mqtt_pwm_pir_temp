@@ -144,6 +144,7 @@ class WiFiManager
     void          setLightToggleCallback( void (*func)(void) );
     //adds a custom parameter
     void          addParameter(WiFiManagerParameter *p);
+		void 					resetParameter();
     //if this is set, it will exit after config, even if connection is unsucessful.
     void          setBreakAfterConfig(boolean shouldBreak);
     //if this is set, try WPS setup when starting (this will delay config portal for up to 2 mins)

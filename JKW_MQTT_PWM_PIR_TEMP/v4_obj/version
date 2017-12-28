@@ -1,3 +1,9 @@
+20171229
+	- Fixed bug that crashed WifiManager after 2nd call
+20171227
+	- Removed checkboxes from WiFiManager
+	- readded capability string to GUI
+	- skipped capability reading from config console
 20171220
 	- fixed h801 pinout
 	- added support for 5 PWMs

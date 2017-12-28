@@ -93,9 +93,13 @@ WiFiManager::WiFiManager(){
 	_customIdElement = "";
 }
 
+void WiFiManager::resetParameter(){
+	_paramsCount=0;
+}
+
 void WiFiManager::addParameter(WiFiManagerParameter * p){
 	_params[_paramsCount] = p;
-	_paramsCount++;
+	_paramsCount=(_paramsCount+1)%WIFI_MANAGER_MAX_PARAMS;
 	Serial.print(F("Adding parameter: "));
 	Serial.print(p->getID());
 	Serial.print(F(" -> "));
