@@ -55,7 +55,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20171229"
+	#define VERSION               "20180106"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -82,20 +82,12 @@ public:
 	#define T_AI   5
 
 
-	#define PINOUT                 "SONOFF"
-	#define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
-	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
-	#define MSG_BUFFER_SIZE        60   // mqtt messages max char size
-	#define TOPIC_BUFFER_SIZE      64   // mqtt topic buffer
-	#define REPUBISH_AVOID_TIMEOUT 2000 // if the device was switched off, it will pubish its new state (and thats good)
-	                                    // that can retrigger another "switch off" to the same device if it's in group.
-	                                    // We have to avoid that we send our state again to break this loop
-	                                    // so we're going to suppress further status reports during this timeout
-
-	#define TOTAL_PERIODIC_SLOTS     5                            // 5 sensors: adc, rssi, dht_hum, dht_temp, ds18b20
-	#define UPDATE_PERIODIC          60000 / TOTAL_PERIODIC_SLOTS // update temperature once per minute .. but with 5 sensors we have to be faster
-	#define PUBLISH_TIME_OFFSET      200                          // ms timeout between two publishes
-	#define UPDATE_PIR               900000L                      // ms timeout between two publishes of the pir .. needed?
+	#define PINOUT                   "SONOFF"
+	#define BUTTON_TIMEOUT           1500 // max 1500ms timeout between each button press to count up (start of config)
+	#define BUTTON_DEBOUNCE          400  // ms debouncing for the botton
+	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
+	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
+	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
 
 	#define ANIMATION_STEP_TIME      15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
 	#define NEOPIXEL_LED_COUNT       24
@@ -216,3 +208,42 @@ public:
 #include "light.h"
 
 #endif // ifndef main_h
+
+
+/*
+ * 01	VDDA			Analog Power 3.0 V ~ 3.6V
+ * 02	LNA				RF Antenna Interface Chip Output Impedance = 50 Ω No matching required. It is suggested to retain the π-type matching network to match the antenna.
+ * 03	VDD3P3		Amplifier power: 3.0 V ~ 3.6 V
+ * 04	VDD3P3		Amplifier power:3.0 V ~ 3.6 V
+ * 05	VDD_RTC		NC (1.1 V)
+ * 06	TOUT	I		ADC pin. It can be used to test the power-supply voltage of VDD3P3 (Pin3 and Pin4) and the input power voltage of TOUT (Pin 6). However, these two functions cannot be used simultaneously
+ * 07	CHIP_EN		Chip Enable, High: On, chip works properly, Low: Off, small current consumed
+ * 08	GPIO16		D0,XPD_DCDC, Deep-sleep wakeup (need to be connected to EXT_RSTB;
+ *
+ * 09	GPIO14		D5; MTMSl; HSPI_CLK
+ * 10	GPIO12		D6; MTDI; HSPI_MISO
+ * 11	VDDPST		P	Digital / IO power supply (1.8 V ~ 3.3 V)
+ * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS
+ * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS
+ * 14	GPIO02		D4; UART Tx during flash programming;
+ * 15	GPIO00		D3; SPI_CS2
+ * 16	GPIO04		D2
+ *
+ * 17	VDDPST		Digital / IO power supply (1.8 V ~ 3.3 V)
+ * 18	GPIO09		SDIO_DATA_2; Connect to SD_D2 (Series R: 200 Ω); SPIHD; HSPIHD
+ * 19	GPIO10		SDIO_DATA_3; Connect to SD_D3 (Series R: 200 Ω); SPIWP; HSPIWP
+ * 20	GPIO11		SDIO_CMD;	Connect to SD_CMD (Series R: 200 Ω); SPI_CS0;
+ * 21	GPIO06		SDIO_CLK; Connect to SD_CLK (Series R: 200 Ω); SPI_CLK;
+ * 22	GPIO07		SDIO_DATA_0; Connect to SD_D0 (Series R: 200 Ω); SPI_MSIO;
+ * 23	GPIO08		SDIO_DATA_1; Connect to SD_D1 (Series R: 200 Ω); SPI_MOSI;
+ * 24	GPIO05		D1
+ *
+ * 25 GPIO03		D9; U0RXD; UART Rx during flash programming;
+ * 26	GPIO01		D10; U0TXD; UART Tx during flash programming; SPI_CS1
+ * 27	XTAL_OUT	Connect to crystal oscillator output,	can be used to provide BT clock input
+ * 28	XTAL_IN		Connect to crystal oscillator input
+ * 29	VDDD			Analog power 3.0 V ~ 6 V
+ * 30	VDDA			Analog power 3.0 V ~ 3.6 V
+ * 31	RES12K		Serial connection with a 12 kΩ resistor to the ground
+ * 32	EXT_RSTB	External reset signal (Low voltage level: Active)
+ */

@@ -45,7 +45,7 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	logger.remColor(COLOR_PURPLE);
 
 	/// will find the right component and execute the input
-	for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
+	for(uint8_t i = 0; active_p[i]!=0x00 && i<MAX_PERIPHERALS-1; i++){
 		if((*active_p[i])->receive((uint8_t*)p_topic, p_payload)){
 			return;
 		}
@@ -175,7 +175,7 @@ void reconnect(){
 				client.loop();
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
-				for(uint8_t i = 0; active_p[i]!=0x00 ; i++){
+				for(uint8_t i = 0; active_p[i]!=0x00 && i<MAX_PERIPHERALS-1; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
 					//delay(500);
 					(*active_p[i])->subscribe();
@@ -574,11 +574,15 @@ bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config){
 		(*p_handle)->init();
 		// store object in active peripheral list
 		active_p[active_p_pointer]=p_handle;
-		active_p_pointer++;
+		if(active_p_pointer<MAX_PERIPHERALS-1){
+			active_p_pointer++;
+		}
 		// get the amount of intervall updates and store a pointer to the object
 		for(uint8_t ii = 0; ii<p_obj->count_intervall_update(); ii++){
 			active_intervall_p[active_p_intervall_counter] = p_handle;
-			active_p_intervall_counter++;
+			if(active_p_intervall_counter<MAX_PERIPHERALS-1){
+				active_p_intervall_counter++;
+			}
 		}
 		return true;
 	} else {
