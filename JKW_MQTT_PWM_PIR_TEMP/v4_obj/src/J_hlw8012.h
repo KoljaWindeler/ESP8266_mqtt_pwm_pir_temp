@@ -19,7 +19,7 @@
 
 // These are the nominal values for the resistors in the circuit
 #define CURRENT_RESISTOR                0.001
-#define VOLTAGE_RESISTOR_UPSTREAM       ( 5 * 470000 ) // Real: 2280k
+#define VOLTAGE_RESISTOR_UPSTREAM       ( 5 * 509000 ) // Real: 2280k
 #define VOLTAGE_RESISTOR_DOWNSTREAM     ( 1000 ) // Real 1.009k
 
 class J_hlw8012 : public peripheral {
