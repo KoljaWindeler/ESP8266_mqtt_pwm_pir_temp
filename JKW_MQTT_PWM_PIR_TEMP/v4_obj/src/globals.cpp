@@ -19,6 +19,7 @@ peripheral *p_ds;
 peripheral *p_ai;
 peripheral *p_light;
 peripheral *p_hlw;
+peripheral * p_nl;
 
 
 WiFiClient wifiClient;

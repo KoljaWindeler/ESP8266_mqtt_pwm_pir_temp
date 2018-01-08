@@ -55,7 +55,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180106"
+	#define VERSION               "20180108"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -111,6 +111,7 @@ public:
 	void saveConfigCallback();
 	void loadConfig();
 	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S);
+	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S,bool with_dev);
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
@@ -153,9 +154,11 @@ public:
 	static constexpr char MQTT_HLW_VOLTAGE_TOPIC[]   = "voltage";
 	static constexpr char MQTT_HLW_POWER_TOPIC[]     = "power";
 
-	static constexpr char MQTT_SETUP_TOPIC[]      = "setup";      // subscribe
-	static constexpr char MQTT_CAPABILITY_TOPIC[] = "capability"; // subscribe
-	static constexpr char MQTT_TRACE_TOPIC[]      = "trace";      // subscribe
+	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";      // subscribe
+	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability"; // subscribe
+	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";      // subscribe
+	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";      // subscribe
+
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";
@@ -190,6 +193,7 @@ public:
 	extern peripheral * p_neo;
 	extern peripheral * p_light;
 	extern peripheral * p_hlw;
+	extern peripheral * p_nl;
 	extern const uint8_t intens[100];
 
 
@@ -206,6 +210,7 @@ public:
 #include "BOne.h"
 #include "NeoStrip.h"
 #include "light.h"
+#include "night_light.h"
 
 #endif // ifndef main_h
 

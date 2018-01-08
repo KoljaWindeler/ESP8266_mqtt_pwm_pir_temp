@@ -1,3 +1,6 @@
+20180108
+	- Added Nightlight class for sonoff touch, broadcast topic
+	- Fixed resistor value a bit to match expected voltage without calibration
 20171229
 	- Fixed bug that crashed WifiManager after 2nd call
 20171227
