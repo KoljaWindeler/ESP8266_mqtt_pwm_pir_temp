@@ -16,6 +16,18 @@
         unit_of_measurement: 'min'
         entity_id:
          - sensor.time
+# ---------------------------------------------------------
+# --- 200 min timeout for owntrack changes
+      owntracks_kolja_t:
+        value_template: >-
+          {%- if ((( as_timestamp(now()) - as_timestamp(states.device_tracker.illuminum_kolja.last_updated)) //60) | int) > 200 -%}
+            1 
+          {%- else -%}
+            0
+          {%- endif -%}
+        unit_of_measurement: ''
+        entity_id:
+         - sensor.time
 # -----------------------------------------------------------
 # -------------- TRAVELTIME ---------------------------------
 # -----------------------------------------------------------
@@ -163,6 +175,11 @@
   - platform: mqtt_jkw
     name: "dev16"
     fname: "16 BedroomSW"
+
+  - platform: mqtt
+    state_topic: "dev16/r/temperature"
+    name: "dev16_temperature"
+    unit_of_measurement: "ºC"
 # -----------------------------------------------------------
   - platform: mqtt_jkw
     name: "dev17"
@@ -196,6 +213,15 @@
   - platform: mqtt_jkw
     name: "dev25"
     fname: "25 unused Touch"
+# -----------------------------------------------------------
+  - platform: mqtt_jkw
+    name: "dev26"
+    fname: "26 pow"
+
+  - platform: mqtt
+    state_topic: "dev26/r/power"
+    name: "dev26_power"
+    unit_of_measurement: "W"
 # -----------------------------------------------------------
   - platform: mqtt_jkw
     name: "dev55"

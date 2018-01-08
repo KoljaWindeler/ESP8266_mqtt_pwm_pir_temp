@@ -112,6 +112,7 @@
           - light.dev11
           - light.dev17
           - light.dev21  
+          - light.dev23
 # ----------------------------------------------------------
 # ----------------------------------------------------------
   - alias: joiner_bedroom_in
@@ -368,9 +369,12 @@
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: state
+      - platform: mqtt
+        topic: "dev16/r/button"
+    condition:
+      - condition: state
         entity_id: light.joiner_bedroom
-        to: 'off'
+        state: 'on'
     action:
       service: homeassistant.turn_off
       entity_id: light.joiner_hallwayU
@@ -451,6 +455,71 @@
       - service: homeassistant.turn_on
         entity_id: input_boolean.alarm_System
 # --------------------- rearm ------------------------------
+# ----------------------------------------------------------
+
+# ------------------- value trigger for leakage ------------
+  - alias: 'leakage'
+    initial_state: 'on'
+    trigger:
+     - platform: numeric_state
+       entity_id: sensor.dev13_adc
+       below: 500
+    action:
+     service: notify.pb
+     data:
+       title: "Leakage detected"
+       message: "Leakage triggered"
+# ------------------- value trigger for leakage ------------
+# ------------------- outdoor light ------------------------
+  - alias: outdoor_light2
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: time          # on at 6:30
+        hours: 6
+        minutes: 30
+        seconds: 00
+      - platform: sun           # off 30 min after sunrise
+        event: sunrise
+        offset: "+00:30:00"
+      - platform: sun           # on 15 min after sunset
+        event: sunset
+        offset: "+00:15:00"
+      - platform: state         # off when everyone is home after 22:00, triggered by presents (if that happens after 22:00)
+        entity_id: binary_sensor.everyone_is_home
+        to: 'on'
+        for: 
+          hours: 0
+          minutes: 10
+          seconds: 0
+      - platform: time          # off when everyone is home after 22:00, triggered by time (if everyone was home already)
+        hours: 22
+        minutes: 00
+        seconds: 10
+      - platform: time          # off for sure after 23:00
+        hours: 23
+        minutes: 00
+        seconds: 01
+    action:
+          # sun below horizon and time>23:00: off
+          # sun below horizon and time>22:00 and everyone home: off
+          # sun below horizon and time<22:00 on no matter who is home
+          # time>6:30 and sun still below horizon: on
+          #
+      - service_template: >
+          {% if now().hour==23 %} 
+            light.turn_off
+          {% elif is_state('sun.sun','below_horizon') and now().hour>=22 and is_state('binary_sensor.everyone_is_home','on') %} 
+            light.turn_off                
+          {% elif is_state('sun.sun','below_horizon') %}
+            light.turn_on 
+          {% else %} 
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev5
+# ------------------- outdoor light ------------------------
+# -------------------- alarm system ------------------------
 # ----------------------------------------------------------
 # --------------------- gmotion ----------------------------
 # send message as soon as there is movement and nobody is home
@@ -577,52 +646,36 @@
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------------------
 
-# ------------------- outdoor light ------------------------
-  - alias: outdoor_light2
+# ------------------- owntracks kolja ----------------------
+  - alias: inform_owntracks_kolja
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: time          # on at 6:30
-        hours: 6
+      platform: state
+      entity_id: sensor.owntracks_kolja_t
+      to: '1'
+    action:
+     service: notify.pb
+     data:
+       title: "owntracks offline"
+       message: "please restart"
+# ------------------- owntracks kolja ----------------------
+# ------------------- drivetime kolja ----------------------
+  - alias: inform_tavel_kolja
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: time
+        hours: 7
         minutes: 30
         seconds: 00
-      - platform: sun           # off 30 min after sunrise
-        event: sunrise
-        offset: "+00:30:00"
-      - platform: sun           # on 15 min after sunset
-        event: sunset
-        offset: "+00:15:00"
-      - platform: state         # off when everyone is home after 22:00, triggered by presents (if that happens after 22:00)
-        entity_id: binary_sensor.everyone_is_home
-        to: 'on'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: time          # off when everyone is home after 22:00, triggered by time (if everyone was home already)
-        hours: 22
-        minutes: 00
-        seconds: 10
-      - platform: time          # off for sure after 23:00
-        hours: 23
-        minutes: 00
-        seconds: 01
+    condition: # make sure that BOTH sensors show off
+      - condition: numeric_state
+        entity_id: sensor.to_baker
+        above: 17
     action:
-          # sun below horizon and time>23:00: off
-          # sun below horizon and time>22:00 and everyone home: off
-          # sun below horizon and time<22:00 on no matter who is home
-          # time>6:30 and sun still below horizon: on
-          #
-      - service_template: >
-          {% if now().hour==23 %} 
-            light.turn_off
-          {% elif is_state('sun.sun','below_horizon') and now().hour>=22 and is_state('binary_sensor.everyone_is_home','on') %} 
-            light.turn_off                
-          {% elif is_state('sun.sun','below_horizon') %}
-            light.turn_on 
-          {% else %} 
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev5
-# ------------------- outdoor light ------------------------
+     service: notify.pb
+     data_template:
+       title: "Long traveltime"
+       message: "Currently {{ states.sensor.to_baker.state }} min traveltime"
+# ------------------- drivetime kolja ----------------------

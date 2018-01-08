@@ -59,14 +59,14 @@
       #- light.dev103
       #- light.dev106
       #- light.dev57
-      - light.dev17
+      #- light.dev17
       #- sensor.dev11_temperature
       #- sensor.dev7_temperature
       #- sensor.dev1_temperature
       #- binary_sensor.dev101_motion
       #- binary_sensor.dev103_motion
       #- binary_sensor.dev106_motion
-      - binary_sensor.dev57_motion
+      #- binary_sensor.dev57_motion
 
   Temperature:
     control: hidden
@@ -227,9 +227,9 @@
     entities:
      - group.all_rssi
      - group.all_update
-     - group.all_status
-     - group.all_bssid
      - group.all_ssid
+     - group.all_bssid
+     - group.all_status
      - group.all_info
      - group.all_capability
 
@@ -340,7 +340,7 @@
       # - sensor.dev42_ssid
 
   all_capability:
-    name: capability
+    name: Capability
     control: hidden
     view: no
     entities:
@@ -583,6 +583,7 @@
       - sensor.dev13_adc
       - sensor.dev9_humidity_DHT
       - sensor.dev9_temperature_DHT
+      - sensor.dev26_power
       - light.dev19
       - light.dev42
       - light.dev98

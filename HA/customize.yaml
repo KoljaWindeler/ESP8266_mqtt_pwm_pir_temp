@@ -15,28 +15,32 @@
     light.joiner_bedroom:
       assumed_state: false
       emulated_hue_name: "Bedroom"
+      icon: "mdi:account-multiple"
       friendly_name: "Bedroom"
 
     light.joiner_livingroom:
       assumed_state: false
       emulated_hue_name: "Joiner Livingroom"
-      icon: "mdi:lamp"
-      friendly_name: "(J) Livingroom"
+      icon: "mdi:account-multiple"
+      friendly_name: "Livingroom"
 
     light.joiner_kitchen:
       assumed_state: false
+      icon: "mdi:account-multiple"
       emulated_hue_name: "Joiner Kitchen"
-      friendly_name: "(J) Kitchen"
+      friendly_name: "Kitchen"
 
     light.joiner_hallwayU:
       assumed_state: false
       emulated_hue_name: "Joiner HallwayU"
-      friendly_name: "(J) Hallway U"
+      icon: "mdi:account-multiple"
+      friendly_name: "Hallway U"
 
     light.joiner_hallwayD:
       assumed_state: false
+      icon: "mdi:account-multiple"
       emulated_hue_name: "Joiner HallwayD"
-      friendly_name: "(J) HallwayD"
+      friendly_name: "HallwayD"
 # -----------------------------------------------
     switch.next_track:
       assumed_state: false
@@ -45,7 +49,7 @@
     switch.the_buzz:
       assumed_state: false
       emulated_hue_name: "bus"
-      friendly_name: "The Buzz"
+      friendly_name: "Bus"
       icon: mdi:youtube-play
     switch.background:
       emulated_hue_name: "Background"

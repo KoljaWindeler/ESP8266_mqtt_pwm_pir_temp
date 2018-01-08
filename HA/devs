@@ -20,10 +20,10 @@ DEV19 - AI light 2
 DEV20 - Bedroom, PIR, PWM led streifen, DS18B20
 DEV21 - slampher im wohnzimmer
 DEV22 - RGB Transistor dimmer
-
 DEV23 - SonOff Touch livingroom
 DEV24 - SonOff Touch unused
 DEV25 - SonOff Touch unused
+DEV26 - POW
 
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused
 DEV55 - Ikea LED lampinions Carlo
