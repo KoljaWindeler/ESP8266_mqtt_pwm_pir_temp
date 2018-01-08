@@ -365,6 +365,7 @@ void loadPheripherals(uint8_t* config){
 	bake(new NeoStrip(), &p_neo, config);
 	bake(new light(), &p_light, config);
 	bake(new J_hlw8012(), &p_hlw, config);
+	bake(new night_light(), &p_nl, config);
 
 	//logger.p("RAM after init objects ");
 	//logger.pln(system_get_free_heap_size());
@@ -410,12 +411,19 @@ void loadPheripherals(uint8_t* config){
 }
 
 // build topics with device id on the fly
-char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
+char * build_topic(const char * topic, uint8_t pc_shall_R_or_S,bool with_dev){
 	if(pc_shall_R_or_S!=PC_TO_UNIT && pc_shall_R_or_S!=UNIT_TO_PC){
 		pc_shall_R_or_S=PC_TO_UNIT;
 	}
-	sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
+	if(with_dev){
+		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
+	} else {
+		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, topic);
+	}
 	return m_topic_buffer;
+}
+char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
+	return build_topic(topic,pc_shall_R_or_S,true);
 }
 
 // //////////////////////////////// network function ///////////////////////////////////
