@@ -22,6 +22,12 @@
 #define VOLTAGE_RESISTOR_UPSTREAM       ( 5 * 509000 ) // Real: 2280k
 #define VOLTAGE_RESISTOR_DOWNSTREAM     ( 1000 ) // Real 1.009k
 
+static constexpr char MQTT_HLW_CALIBRATE_TOPIC[] = "calibration";
+static constexpr char MQTT_HLW_CURRENT_TOPIC[]   = "current";
+static constexpr char MQTT_HLW_VOLTAGE_TOPIC[]   = "voltage";
+static constexpr char MQTT_HLW_POWER_TOPIC[]     = "power";
+
+
 class J_hlw8012 : public peripheral {
 	public:
 		J_hlw8012();

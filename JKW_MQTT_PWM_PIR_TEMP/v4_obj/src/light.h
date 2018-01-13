@@ -4,6 +4,18 @@
 #include "main.h"
 #include "../lib/NeoPixelBus/src/internal/RgbColor.h"
 
+static constexpr char MQTT_LIGHT_TOPIC[]                          = "light";                          // get command here ON / OFF
+static constexpr char MQTT_LIGHT_COLOR_TOPIC[]                    = "light/color";                    // set value "0-99,0-99,0-99"  will switch hard to the value
+static constexpr char MQTT_LIGHT_BRIGHTNESS_TOPIC[]               = "light/brightness";               // set value 0-99 will switch hard to the value
+static constexpr char MQTT_LIGHT_DIMM_TOPIC[]                     = "light/dimm";                     // get ON/OFF command here
+static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_TOPIC[]          = "light/dimm/brightness";          // set value, will dimm towards the new value
+static constexpr char MQTT_LIGHT_DIMM_DELAY_TOPIC[]               = "light/dimm/delay";               // set value, will dimm towards the new value
+static constexpr char MQTT_LIGHT_DIMM_COLOR_TOPIC[]               = "light/dimm/color";               // set value "0-99,0-99,0-99", will dimm towards the new value
+static constexpr char MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC[]     = "light/animation/brightness";     // 0..99
+static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC[]        = "light/animation/rainbow";        // get command here ON / OFF
+static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
+static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
+ 
 class light : public peripheral {
 	public:
 		light();

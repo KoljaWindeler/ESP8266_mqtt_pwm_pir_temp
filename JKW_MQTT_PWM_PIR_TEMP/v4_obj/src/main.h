@@ -55,7 +55,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180108"
+	#define VERSION               "20180113"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -131,34 +131,14 @@ public:
 	// all topics are used with /r/ or /s/ as prefix by the build_topic function
 	// where /s/ topics are send fro, the PC and received here, and /r/ the otherway around
 	// light direct
-	static constexpr char MQTT_LIGHT_TOPIC[]                          = "light";                          // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_COLOR_TOPIC[]                    = "light/color";                    // set value "0-99,0-99,0-99"  will switch hard to the value
-	static constexpr char MQTT_LIGHT_BRIGHTNESS_TOPIC[]               = "light/brightness";               // set value 0-99 will switch hard to the value
-	static constexpr char MQTT_LIGHT_DIMM_TOPIC[]                     = "light/dimm";                     // get ON/OFF command here
-	static constexpr char MQTT_LIGHT_DIMM_BRIGHTNESS_TOPIC[]          = "light/dimm/brightness";          // set value, will dimm towards the new value
-	static constexpr char MQTT_LIGHT_DIMM_DELAY_TOPIC[]               = "light/dimm/delay";               // set value, will dimm towards the new value
-	static constexpr char MQTT_LIGHT_DIMM_COLOR_TOPIC[]               = "light/dimm/color";               // set value "0-99,0-99,0-99", will dimm towards the new value
-	static constexpr char MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC[]     = "light/animation/brightness";     // 0..99
-	static constexpr char MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC[]        = "light/animation/rainbow";        // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
-	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
+
 	// misc
-	static constexpr char MQTT_MOTION_TOPIC[]        = "motion";      // publish
 	static constexpr char MQTT_TEMPARATURE_TOPIC[]   = "temperature"; // publish
 	static constexpr char MQTT_HUMIDITY_TOPIC[]      = "humidity";    // publish
-	static constexpr char MQTT_BUTTON_TOPIC[]        = "button";      // publish
-	static constexpr char MQTT_RSSI_TOPIC[]          = "rssi";        // publish
-	static constexpr char MQTT_ADC_TOPIC[]           = "adc";         // publish
-	static constexpr char MQTT_HLW_CALIBRATE_TOPIC[] = "calibration";
-	static constexpr char MQTT_HLW_CURRENT_TOPIC[]   = "current";
-	static constexpr char MQTT_HLW_VOLTAGE_TOPIC[]   = "voltage";
-	static constexpr char MQTT_HLW_POWER_TOPIC[]     = "power";
-
 	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";      // subscribe
 	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability"; // subscribe
 	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";      // subscribe
 	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";      // subscribe
-
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";

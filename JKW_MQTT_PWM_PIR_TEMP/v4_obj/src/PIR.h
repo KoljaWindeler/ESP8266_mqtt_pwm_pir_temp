@@ -2,6 +2,8 @@
 #define PIR_h
 
 #include "main.h"
+static constexpr char MQTT_MOTION_TOPIC[]        = "motion";      // publish
+
 
 class PIR : public peripheral {
 	public:

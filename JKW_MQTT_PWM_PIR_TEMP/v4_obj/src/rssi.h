@@ -2,6 +2,7 @@
 #define rssi_h
 
 #include "main.h"
+static constexpr char MQTT_RSSI_TOPIC[]          = "rssi";        // publish
 
 class rssi : public peripheral {
 	public:

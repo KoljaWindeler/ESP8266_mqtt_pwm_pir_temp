@@ -3,6 +3,7 @@
 
 #include "main.h"
 #define GPIO_D8          15 // D8
+static constexpr char MQTT_ADC_TOPIC[]           = "adc";         // publish
 
 class ADC : public peripheral
 {
