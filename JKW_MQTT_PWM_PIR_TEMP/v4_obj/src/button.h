@@ -4,6 +4,13 @@
 
 #include "main.h"
 #define BUTTON_INPUT_PIN 0  // D3
+#define BUTTON_CHECK_INTERVALL 1000  // ms
+#define BUTTON_LONG_PUSH 1000  // ms
+
+static constexpr char MQTT_BUTTON_TOPIC_0S[]     = "button";      // publish
+static constexpr char MQTT_BUTTON_TOPIC_1S[]     = "button1s";    // publish
+static constexpr char MQTT_BUTTON_TOPIC_2S[]     = "button2s";    // publish
+static constexpr char MQTT_BUTTON_TOPIC_3S[]     = "button3s";    // publish
 
 class button : public peripheral {
 	public:
@@ -23,7 +30,9 @@ class button : public peripheral {
 		mqtt_parameter_8 m_state;
 		uint8_t m_counter;
 		uint32_t m_timer_button_down;
+		uint32_t m_timer_checked;
 		uint8_t key[2];
+
 };
 
 

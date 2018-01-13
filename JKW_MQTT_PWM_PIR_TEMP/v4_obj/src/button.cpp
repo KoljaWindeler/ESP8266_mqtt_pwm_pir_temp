@@ -34,6 +34,7 @@ bool button::init(){
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		wifiManager.startConfigPortal(CONFIG_SSID);
 	}
+	m_timer_checked=0;
 }
 
 
@@ -45,7 +46,21 @@ bool button::loop(){
 		wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 		// ESP.reset(); // reboot and switch to setup mode right after that
 	}
-	return false; // i did nothing
+
+	// check once every 1s if the button is down and if so for how long
+	if(millis()-m_timer_checked > BUTTON_CHECK_INTERVALL){
+		m_timer_checked=millis();
+		if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
+			for(int i=3;i>0;i--){
+				// if the button is down for more then n seconds, set the state accordingly
+				if(millis()-m_timer_button_down>i*BUTTON_LONG_PUSH){
+					m_state.check_set(i);
+					break;
+				}
+			}
+		}
+	}
+	return false; // i did nothing that should be none interrupted
 }
 
 uint8_t button::count_intervall_update(){
@@ -68,9 +83,19 @@ bool button::receive(uint8_t* p_topic, uint8_t* p_payload){
 bool button::publish(){
 	if (m_state.get_outdated()) {
 		boolean ret = false;
-
-		logger.println(TOPIC_MQTT_PUBLISH, F("button push"), COLOR_GREEN);
-		ret = client.publish(build_topic(MQTT_BUTTON_TOPIC,UNIT_TO_PC), "", true);
+		if(m_state.get_value()==0){ // right after push
+			logger.println(TOPIC_MQTT_PUBLISH, F("button push"), COLOR_GREEN);
+			ret = client.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), "", true);
+		} else if(m_state.get_value()==1){ // after 1 sec
+			logger.println(TOPIC_MQTT_PUBLISH, F("button push 1s"), COLOR_GREEN);
+			ret = client.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), "", true);
+		} else if(m_state.get_value()==2){ // after 2 sec
+			logger.println(TOPIC_MQTT_PUBLISH, F("button push 2s"), COLOR_GREEN);
+			ret = client.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), "", true);
+		} else if(m_state.get_value()==3){ // after 3 sec
+			logger.println(TOPIC_MQTT_PUBLISH, F("button push 3s"), COLOR_GREEN);
+			ret = client.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), "", true);
+		}
 		if (ret) {
 			m_state.outdated(false);
 		}
@@ -85,7 +110,7 @@ void button::interrupt(){
 	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
 		if (millis() - m_timer_button_down > BUTTON_DEBOUNCE) { // avoid bouncing
 			// button down
-			m_state.set(!m_state.get_value());
+			m_state.set(0);
 			// toggle status of both lights
 			if(p_light){
 				((light*)p_light)->toggle();
@@ -101,6 +126,7 @@ void button::interrupt(){
 		};
 		// Serial.print(".");
 		m_timer_button_down = millis();
-	}
-	;
+	} else {
+
+	};
 }
