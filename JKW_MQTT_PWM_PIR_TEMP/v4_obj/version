@@ -1,5 +1,7 @@
 20180120
 	- fixed getting SSID and password from WiFiManger
+	- changed WiFiManger to use timeout on initial connect
+	- text size 354206
 20180119
 	- added checksum to NW config
 20180118
