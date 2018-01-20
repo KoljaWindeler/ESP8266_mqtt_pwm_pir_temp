@@ -55,7 +55,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180113"
+	#define VERSION               "20180120"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -111,7 +111,7 @@ public:
 	void saveConfigCallback();
 	void loadConfig();
 	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S);
-	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S,bool with_dev);
+	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev);
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
@@ -133,12 +133,12 @@ public:
 	// light direct
 
 	// misc
-	static constexpr char MQTT_TEMPARATURE_TOPIC[]   = "temperature"; // publish
-	static constexpr char MQTT_HUMIDITY_TOPIC[]      = "humidity";    // publish
-	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";      // subscribe
-	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability"; // subscribe
-	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";      // subscribe
-	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";      // subscribe
+	static constexpr char MQTT_TEMPARATURE_TOPIC[] = "temperature"; // publish
+	static constexpr char MQTT_HUMIDITY_TOPIC[]    = "humidity";    // publish
+	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";       // subscribe
+	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability";  // subscribe
+	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";       // subscribe
+	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";       // subscribe
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";
@@ -231,4 +231,13 @@ public:
  * 30	VDDA			Analog power 3.0 V ~ 3.6 V
  * 31	RES12K		Serial connection with a 12 kΩ resistor to the ground
  * 32	EXT_RSTB	External reset signal (Low voltage level: Active)
+ */
+
+
+/*
+ * Four pins on all SonOff devices
+ * 1 3.3V
+ * 2 RX of the ESp (tx of pc)
+ * 3 TX of the ESP (rx of pc)
+ * 4 GND
  */

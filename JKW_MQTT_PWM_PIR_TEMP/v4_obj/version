@@ -1,3 +1,10 @@
+20180120
+	- fixed getting SSID and password from WiFiManger
+20180119
+	- added checksum to NW config
+20180118
+	- added ability to change server IP
+	- added repoting of MAC on startup
 20180113
 	- added hold button for 1s,2s,3s
 	- moved topics to connected classes

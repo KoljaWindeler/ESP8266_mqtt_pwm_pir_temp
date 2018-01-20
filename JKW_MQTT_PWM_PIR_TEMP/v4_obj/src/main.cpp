@@ -91,15 +91,63 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			logger.p(F("Received reset command"));
 			ESP.restart();
-		} else if (!strncmp_P((const char *) p_payload, "set", 3)) { // set parameter
-				if (!strncmp_P( ((const char *)p_payload)+3, "S", 1)) { // set SSID
-					strcpy(mqtt.nw_ssid,((const char *)p_payload)+4);
-				} else if (!strncmp_P( ((const char *)p_payload)+3, "P", 1)) { // set SSID
-					strcpy(mqtt.nw_pw,((const char *)p_payload)+4);
+		} else if (!strncmp_P((const char *) p_payload, "setNW", 5)) { // set parameter
+				// msg: set/SSID/PW/IP/CHK
+				uint8_t slashes=0;
+				uint8_t chk=0;
+				for(uint8_t i=5; i<p_length; i++){
+						if(p_payload[i]=='/'){ // counte slaeses
+							slashes++;
+						} else if(slashes<=3) { // xor all chars before chk: SSID, PW, IP
+							chk ^= p_payload[i];
+						} else {
+							// move it to a letter between A-Z
+							while(chk<'A'){
+								chk+='Z'-'A';
+							}
+							while(chk>'Z'){
+								chk-='Z'-'A';
+							}
+							if(p_payload[i]==chk && i==p_length-1){
+								chk=1;
+							} else {
+								logger.print(TOPIC_MQTT, F("NW update failed, CKH wrong expected: "), COLOR_RED);
+								logger.pln((char*)&chk);
+								chk=0;
+								break;
+							}
+						}
+				}
+				if(chk==1){
+					// SSID
+					uint8_t end=6;
+					uint8_t start=end;
+					for( ; p_payload[end]!='/'; end++){};
+					memset(mqtt.nw_ssid,0x00,sizeof(mqtt.nw_ssid));
+					memcpy(mqtt.nw_ssid, ((const char *)p_payload)+start, end-start);
+					// PW
+					end++;
+					start=end;
+					for( ; p_payload[end]!='/'; end++){};
+					memset(mqtt.nw_pw,0x00,sizeof(mqtt.nw_pw));
+					memcpy(mqtt.nw_pw, ((const char *)p_payload)+start, end-start);
+					// IP
+					end++;
+					start=end;
+					for( ; p_payload[end]!='/'; end++){};
+					memset(mqtt.server_ip,0x00,sizeof(mqtt.server_ip));
+					memcpy(mqtt.server_ip, ((const char *)p_payload)+start, end-start);
+
+					client.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), "NW updated", false);
+					logger.println(TOPIC_MQTT, F("NW updated"), COLOR_GREEN);
+					delay(1000); // time for transmit before disconnect
+					wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
+					wifiManager.explainFullMqttStruct(&mqtt);
 					WiFi.disconnect();
+				} else {
+					client.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), "NW update failed", false);
+					logger.println(TOPIC_MQTT, F("NW update failed"), COLOR_RED);
 				};
-				wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
-				wifiManager.explainFullMqttStruct(&mqtt);
 		}
 	}
 	// //////////////////////// SET CAPABILITYS ////////////////////////
@@ -209,6 +257,18 @@ void reconnect(){
 				logger.p((char*)" -> ");
 				logger.pln(m_msg_buffer);
 
+				// MAC publishing
+				uint8_t mac[6];
+				WiFi.macAddress(mac);
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", mac[5], mac[4], mac[3], mac[2],
+				  mac[1],
+				  mac[0]);
+				client.publish(build_topic("MAC",UNIT_TO_PC), m_msg_buffer, true);
+				client.loop();
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("MAC",UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char*)" -> ");
+				logger.pln(m_msg_buffer);
+
 				// CAP publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 				client.publish(build_topic(MQTT_CAPABILITY_TOPIC,UNIT_TO_PC), mqtt.cap, true);
@@ -299,6 +359,8 @@ void saveConfigCallback(){
 	sprintf(mqtt.server_port, "%s", WiFiManager_mqtt_server_port.getValue());
 	sprintf(mqtt.dev_short, "%s", WiFiManager_mqtt_client_short.getValue());
 	sprintf(mqtt.cap, "%s", WiFiManager_mqtt_capability.getValue());
+	sprintf(mqtt.nw_ssid, "%s", wifiManager._ssid.c_str());
+	sprintf(mqtt.nw_pw, "%s", wifiManager._pass.c_str());
 	logger.pln(F("=== Saving parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
 	logger.pln(F("=== End of parameters ==="));

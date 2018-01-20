@@ -1029,7 +1029,7 @@ void WiFiManager::handleWifiSave(){
 		}
 		// read parameter
 		String value = server->arg(_params[i]->getID()).c_str();
-		// store it in array
+		// store it from value (which is the server arg) to the _params array
 		value.toCharArray(_params[i]->_value, _params[i]->_length);
 		DEBUG_WM(F("Parameter"));
 		DEBUG_WM(_params[i]->getID());

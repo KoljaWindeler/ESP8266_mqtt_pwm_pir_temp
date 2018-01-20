@@ -159,6 +159,8 @@ class WiFiManager
     void          setMqtt(mqtt_data *mqtt);
 		int           connectWifi(String ssid, String pass);
 		int           getRSSIasQuality(int RSSI);
+		String        _ssid                   = "";
+		String        _pass                   = "";
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
@@ -174,8 +176,6 @@ class WiFiManager
 
     const char*   _apName                 = "no-net";
     const char*   _apPassword             = NULL;
-    String        _ssid                   = "";
-    String        _pass                   = "";
     unsigned long _configPortalTimeout    = 0;
     unsigned long _connectTimeout         = 0;
     unsigned long _configPortalStart      = 0;
