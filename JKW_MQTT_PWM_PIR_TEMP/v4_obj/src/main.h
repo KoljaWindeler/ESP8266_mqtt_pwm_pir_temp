@@ -55,7 +55,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180120"
+	#define VERSION               "20180206"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -174,6 +174,7 @@ public:
 	extern peripheral * p_light;
 	extern peripheral * p_hlw;
 	extern peripheral * p_nl;
+	extern peripheral * p_rfb;
 	extern const uint8_t intens[100];
 
 
@@ -191,6 +192,7 @@ public:
 #include "NeoStrip.h"
 #include "light.h"
 #include "night_light.h"
+#include "bridge.h"
 
 #endif // ifndef main_h
 

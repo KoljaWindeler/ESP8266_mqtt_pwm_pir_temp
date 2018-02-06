@@ -1,3 +1,6 @@
+20180206
+	- reverted inital connect with timeout .. init connection fails too often
+	- remove all wifi connections before connect to dedicated NW
 20180120
 	- fixed getting SSID and password from WiFiManger
 	- changed WiFiManger to use timeout on initial connect

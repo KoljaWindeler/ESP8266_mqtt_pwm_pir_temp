@@ -173,10 +173,10 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 	////////////////////// trace /////////////////////////////
 	else if(!strcmp(p_topic, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT))){
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
-			logger.set_active(true);
+			logger.enable_mqtt_trace(true);
 			logger.println(TOPIC_MQTT, F("=== Trace activated ==="),COLOR_PURPLE);
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) { // switch off
-			logger.set_active(false);
+			logger.enable_mqtt_trace(false);
 		}
 	}
 } // callback
@@ -197,7 +197,11 @@ void reconnect(){
 		// each round, check wifi first
 		if (WiFi.status() != WL_CONNECTED) {
 			logger.println(TOPIC_WIFI, F("Currently not connected, initiate new connection ..."), COLOR_RED);
+			logger.println(TOPIC_WIFI, F("Removing  all old credentials ..."), COLOR_YELLOW);
 			// mqtt.nw_ssid, mqtt.nw_pw or autoconnect?
+			WiFi.disconnect();
+			logger.print(TOPIC_WIFI, F("Connecting to: "), COLOR_YELLOW);
+			logger.pln(mqtt.nw_ssid);
 			wifiManager.connectWifi(mqtt.nw_ssid, mqtt.nw_pw);
 		} else {
 			logger.println(TOPIC_WIFI, F("online"), COLOR_GREEN);
@@ -428,10 +432,16 @@ void loadPheripherals(uint8_t* config){
 	bake(new light(), &p_light, config);
 	bake(new J_hlw8012(), &p_hlw, config);
 	bake(new night_light(), &p_nl, config);
+	bake(new bridge(), &p_rfb, config);
 
 	//logger.p("RAM after init objects ");
 	//logger.pln(system_get_free_heap_size());
 
+	// disable serial interface if rf bridge was activated
+	if(p_rfb!=0x00){
+		logger.enable_serial_trace(false);
+		logger.enable_mqtt_trace(true); // for debugging
+	}
 	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
 
 	// make this more generic .... like ...
