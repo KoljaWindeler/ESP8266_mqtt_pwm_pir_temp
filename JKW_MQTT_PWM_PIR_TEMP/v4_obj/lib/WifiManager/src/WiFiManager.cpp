@@ -317,7 +317,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							Serial.print(F("Connect.\r\n"));
 							WiFi.begin(m_mqtt->nw_ssid, m_mqtt->nw_pw);
 							Serial.print(F("checking.\r\n"));
-							if (waitForConnectResult() != WL_CONNECTED) {
+							if (WiFi.waitForConnectResult() != WL_CONNECTED) {
 								Serial.print(F("Failed to connect."));
 							} else {
 								Serial.print(F("Connect ok. Restart now"));
