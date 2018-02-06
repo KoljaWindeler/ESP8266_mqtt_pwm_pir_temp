@@ -10,7 +10,8 @@ void logging::init(){
 	head=0;
 	tail=0;
 	msg_c=0;
-	active=false;
+	mqtt_trace_active=false;
+	serial_trace_active=true;
 };
 
 void logging::print(uint8_t TOPIC, const __FlashStringHelper* text, uint8_t color){
@@ -42,8 +43,12 @@ void logging::print(uint8_t TOPIC, char * text, uint8_t color){
 };
 
 
-void logging::set_active(bool in){
-	active=in;
+void logging::enable_mqtt_trace(bool in){
+	mqtt_trace_active=in;
+}
+
+void logging::enable_serial_trace(bool in){
+	serial_trace_active=in;
 }
 
 void logging::addColor(uint8_t color){
@@ -145,13 +150,17 @@ void logging::addChar(uint8_t c){
 	if(c=='\r'){
 		return;
 	} else if(c=='\n'){
-		Serial.println("");
+		if(serial_trace_active){
+			Serial.println("");
+		}
 		c=0x00;
 	} else if(c!=0x00){
-		Serial.print((char)c);
+		if(serial_trace_active){
+			Serial.print((char)c);
+		}
 	}
 
-	if(!active){
+	if(!mqtt_trace_active){
 		return;
 	}
 
@@ -208,7 +217,7 @@ void logging::addChar(uint8_t c){
 
 
 uint8_t* logging::loop(){
-	if(!active){
+	if(!mqtt_trace_active){
 		return 0;
 	}
 	uint32_t ret;

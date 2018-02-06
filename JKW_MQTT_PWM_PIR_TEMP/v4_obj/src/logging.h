@@ -49,13 +49,15 @@ class logging {
 		uint8_t* loop();
 		void addChar(uint8_t c);
 		void addChar(String S);
-		void set_active(bool in);
+		void enable_mqtt_trace(bool in);
+		void enable_serial_trace(bool in);
 	private:
 		uint8_t buffer[LOGGING_BUFFER_SIZE];
 		uint16_t head;
 		uint16_t tail;
 		uint8_t msg_c;
-		bool active;
+		bool serial_trace_active;
+		bool mqtt_trace_active;
 };
 
 extern logging logger;
