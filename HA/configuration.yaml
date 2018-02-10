@@ -69,9 +69,6 @@ recorder:
   db_url: mysql://ha:ah@localhost/ha
   purge_interval: 1
   purge_keep_days: 5
-  include:
-    domains:
-      - sensor
 
 # View all events in a logbook
 logbook:
@@ -115,6 +112,19 @@ automation: !include automation.yaml
 script: !include scripts.yaml
 
 camera:
+  - platform: generic
+    still_image_url: http://192.168.178.42/snapshot.jpg
+    name: cam_xia1
+
+  - platform: generic
+    still_image_url: http://192.168.2.54/snapshot.jpg
+    name: cam_xia2
+
+  - platform: generic
+    still_image_url: http://192.168.2.56/snapshot.jpg
+    name: cam_xia3
+
+
   - name: map_caro
     platform: generic
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}
@@ -166,6 +176,12 @@ shell_command:
   cam6_3: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_3.jpg
   cam6_4: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_4.jpg
   cam6_5: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_5.jpg
+
+  camxia1_1: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_1.jpg
+  camxia1_2: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_2.jpg
+  camxia1_3: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_3.jpg
+  camxia1_4: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_4.jpg
+  camxia1_5: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_5.jpg
   
 
 google_assistant:

@@ -18,15 +18,15 @@
           {%- else -%}
           false
           {%- endif %}
-        entity_id:
-          - binary_sensor.dev102_motion
-          - binary_sensor.dev103_motion
-          - binary_sensor.dev106_motion
-          - binary_sensor.dev4_motion
-          - binary_sensor.dev6_motion
-          - binary_sensor.dev10_motion
-          - binary_sensor.dev14_motion
-          - binary_sensor.dev15_motion
+#        entity_id:
+#          - binary_sensor.dev102_motion
+#          - binary_sensor.dev103_motion
+#          - binary_sensor.dev106_motion
+#          - binary_sensor.dev4_motion
+#          - binary_sensor.dev6_motion
+#          - binary_sensor.dev10_motion
+#          - binary_sensor.dev14_motion
+#          - binary_sensor.dev15_motion
 # -------------- all motion sensors -------------
 # -------------- is someone at home -------------
       someone_is_home:
@@ -39,9 +39,9 @@
           {%- else -%}
           false
           {%- endif %}
-        entity_id:
-          - device_tracker.illuminum_kolja
-          - device_tracker.illuminum_caro
+#        entity_id:
+#          - device_tracker.illuminum_kolja
+#          - device_tracker.illuminum_caro
 # -------------- is someone at home -------------
       everyone_is_home:
         device_class: occupancy
@@ -53,9 +53,9 @@
           {%- else -%}
           false
           {%- endif %}
-        entity_id:
-          - device_tracker.illuminum_kolja
-          - device_tracker.illuminum_caro
+#        entity_id:
+#          - device_tracker.illuminum_kolja
+#          - device_tracker.illuminum_caro
 # -------------- is everyone at home -------------
 # -------------- templates ----------------------
 
