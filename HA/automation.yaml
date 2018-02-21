@@ -59,7 +59,7 @@
           {% endif %}
         entity_id: 
           - light.dev55
-          - light.dev18_simple_rainbow
+#          - light.dev18_simple_rainbow
 # ------------------- carlo --------------------------------
 # ------------------- living room sunset -------------------
   - alias: joiner_livingroom_in
@@ -354,6 +354,15 @@
           hours: 0
           minutes: 2
           seconds: 0
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: light.joiner_hallwayU
+          state: 'on'
+        - condition: time
+          before: '23:00:00'
+          after: '06:00:00'
     action:
       - service_template: >
           {% if is_state('binary_sensor.dev10_motion','on') %}
@@ -470,6 +479,37 @@
        title: "Leakage detected"
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------
+# ------------------- value trigger for over temp ----------
+  - alias: 'over temp'
+    initial_state: 'on'
+    trigger:
+     - platform: numeric_state
+       entity_id: sensor.dev11_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev1_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev16_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev4_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev2_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev10_temperature
+       above: 50
+     - platform: numeric_state
+       entity_id: sensor.dev9_temperature
+       above: 50
+    action:
+     service: notify.pb
+     data:
+       title: "over temp detected"
+       message: "over temp triggered"
+# ------------------- value trigger for over temp ----------
 # ------------------- outdoor light ------------------------
   - alias: outdoor_light2
     initial_state: True
@@ -629,6 +669,27 @@
       - service: script.turn_on
         entity_id: script.seq_106
 # --------------------- 106 --------------------------------
+# --------------------- xia1 --------------------------------
+  - alias: alarm_system_cxia1
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev6_motion
+        to: 'on'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.alarm_System
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.someone_is_home
+          state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_xia1
+# --------------------- xia1 --------------------------------
 # --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
@@ -646,20 +707,6 @@
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------------------
 
-# ------------------- owntracks kolja ----------------------
-  - alias: inform_owntracks_kolja
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: state
-      entity_id: sensor.owntracks_kolja_t
-      to: '1'
-    action:
-     service: notify.pb
-     data:
-       title: "owntracks offline"
-       message: "please restart"
-# ------------------- owntracks kolja ----------------------
 # ------------------- drivetime kolja ----------------------
   - alias: inform_tavel_kolja
     initial_state: True

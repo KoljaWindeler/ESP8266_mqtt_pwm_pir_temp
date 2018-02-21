@@ -14,8 +14,8 @@
           {{ (( as_timestamp(now()) - as_timestamp(states.binary_sensor.g_motion.last_updated)) //60) | int }}
           {%- endif %}
         unit_of_measurement: 'min'
-        entity_id:
-         - sensor.time
+#        entity_id:
+#         - sensor.time
 # ---------------------------------------------------------
 # --- 200 min timeout for owntrack changes
       owntracks_kolja_t:
@@ -26,8 +26,8 @@
             0
           {%- endif -%}
         unit_of_measurement: ''
-        entity_id:
-         - sensor.time
+#        entity_id:
+#         - sensor.time
 # -----------------------------------------------------------
 # -------------- TRAVELTIME ---------------------------------
 # -----------------------------------------------------------
