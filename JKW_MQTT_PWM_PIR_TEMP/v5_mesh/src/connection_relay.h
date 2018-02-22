@@ -45,8 +45,8 @@ class connection_relay {
 
 	private:
  		int8_t scan(bool blocking);
-		bool send_up(char* msg);
-		bool enqueue_up(char* msg);
+		bool send_up(char* msg, uint16_t size);
+		bool enqueue_up(char* msg, uint16_t size);
 		bool dequeue_up();
 
 		void onClient(AsyncClient* c);
