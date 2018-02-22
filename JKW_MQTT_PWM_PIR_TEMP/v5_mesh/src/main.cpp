@@ -33,7 +33,7 @@ char* p_trace;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// helper to calc times a bit easier ///////////////////////////
-bool relationship_timeout(float decelleration_factor){
+bool relationship_timeout(float decelleration_factor, char* next_mode){
 	uint16_t time_connected     = (timer_connected_stop - timer_connected_start) / 1000;
 	uint16_t time_not_connected = (millis() - timer_connected_stop) / 1000;
 	// min 45sec
@@ -45,8 +45,8 @@ bool relationship_timeout(float decelleration_factor){
 	time_max_reconnect *= decelleration_factor;
 
 	logger.addColor(COLOR_PURPLE);
-	sprintf(m_msg_buffer,	"Prev. connected for %i sec, disconnected for %i sec, total time before next mode %i sec",
-		time_connected, time_not_connected, time_max_reconnect);
+	sprintf(m_msg_buffer,	"Prev. connected for %i sec, disconnected for %i sec, total time before %s mode %i sec",
+		time_connected, time_not_connected, next_mode, time_max_reconnect);
 	logger.pln(m_msg_buffer);
 	logger.remColor(COLOR_PURPLE);
 
@@ -94,23 +94,28 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			// debug
 			WiFi.printDiag(Serial);
 		} else if (!strncmp_P((const char *) p_payload, "http", 4)) { // update
-			logger.p(F("Update command with url found, trying to update from "));
-			logger.pln((char*)p_payload);
-			// have to create a copy, whenever we publish we'll override the current buffer
-			char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
-			strcpy(copy_buffer,(const char*)p_payload);
-			network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"ok");
-			network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"updating...");
+			if(network.m_connection_type == CONNECTION_DIRECT_CONNECTED){
+				logger.p(F("Update command with url found, trying to update from "));
+				logger.pln((char*)p_payload);
+				// have to create a copy, whenever we publish we'll override the current buffer
+				char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
+				strcpy(copy_buffer,(const char*)p_payload);
+				network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"ok");
+				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"updating...");
 
-			ESPhttpUpdate.rebootOnUpdate(false);
-			HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
-			if (res == HTTP_UPDATE_OK) {
-				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"rebooting...");
-				logger.pln(F("Update OK, rebooting"));
-				ESP.restart();
+				ESPhttpUpdate.rebootOnUpdate(false);
+				HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
+				if (res == HTTP_UPDATE_OK) {
+					network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"rebooting...");
+					logger.pln(F("Update OK, rebooting"));
+					ESP.restart();
+				} else {
+					network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"update failed");
+					logger.pln(F("Update failed"));
+				}
 			} else {
-				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"update failed");
-				logger.pln(F("Update failed"));
+				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"Can't update. Mesh connection.");
+				logger.p(F("Can't update. Mesh connection."));
 			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			logger.p(F("Received reset command"));
@@ -233,7 +238,7 @@ void reconnect(){
 		////////////////// MESH CONNECTION ///////////////////////
 		// try mesh if wifi directly did not work after some time
 		if (WiFi.status() != WL_CONNECTED) {
-			if(relationship_timeout(0.8)){ // this will be true after (min 45*0.8=35 sec)
+			if(relationship_timeout(0.8, (char*)"MESH")){ // this will be true after (min 45*0.8=35 sec)
 				logger.println(TOPIC_WIFI,F("Can't connect directly, trying mesh"), COLOR_YELLOW);
 				network.MeshConnect();
 			}
@@ -248,6 +253,7 @@ void reconnect(){
 			if(network.connectServer(mqtt.dev_short, mqtt.login, mqtt.pw)){
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
+				network.loopCheck();
 				// ... and resubscribe
 				network.subscribe(build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
@@ -318,7 +324,7 @@ void reconnect(){
 		if (!network.connected()) {
 			// connect failed
 			// min 45 sec, per 5 sec connected add one sec, max 1200 sec
-			if(relationship_timeout(1)){
+			if(relationship_timeout(1, (char*)"AP")){
 				// time to start the AP
 				logger.pln(F("Can't connect, starting AP"));
 				if(p_neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
@@ -333,7 +339,7 @@ void reconnect(){
 				// debug
 				WiFi.printDiag(Serial);
 			} else { // not yet time to access point, wait 5 sec
-				logger.print(TOPIC_WIFI, F("connect failed, trying again in 5 seconds "));
+				logger.println(TOPIC_WIFI, F("connect failed, trying again in 5 seconds "));
 				// Serial.printf("%i/%i\r\n", tries, max_tries);
 
 				// only wait if the MQTT broker was not available,

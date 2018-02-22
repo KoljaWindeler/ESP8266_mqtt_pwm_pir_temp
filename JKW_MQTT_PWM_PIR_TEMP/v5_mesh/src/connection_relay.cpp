@@ -75,7 +75,7 @@ bool connection_relay::MeshConnect(){
 		}
 
 		if(best_RSSI>-1){
-			sprintf(m_msg_buffer,"%i Networks found, incl mesh. Connecting",scan_count);
+			sprintf(m_msg_buffer,"%i Networks found, incl mesh [%idbm]. Connecting",scan_count,WiFi.RSSI(best_RSSI));
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 
 			// connect to AP
@@ -116,6 +116,20 @@ bool connection_relay::connectServer(char* dev_short, char* login, char* pw){
 	return false;
 }
 
+// suppose to send a raw message around in the network
+bool connection_relay::loopCheck(){
+	if(m_connection_type == CONNECTION_MESH_CONNECTED){
+		sprintf(m_msg_buffer,"sending NETLOOP check up the chain");
+		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_PURPLE);
+
+		char msg[25];
+		uint8_t mac[6];
+		WiFi.macAddress(mac);
+		sprintf(msg, "%c%02x:%02x:%02x:%02x:%02x:%02x",MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2],	mac[1],	mac[0]);
+		send_up(msg);
+	}
+}
+
 void connection_relay::disconnectServer(){
 	if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
 		client.disconnect();
@@ -134,6 +148,10 @@ bool connection_relay::connected(){
 }
 
 bool connection_relay::subscribe(char* topic){
+	return subscribe(topic,false);
+}
+
+bool connection_relay::subscribe(char* topic, bool enqueue){
 	if(!connected()){
 		return false;
 	}
@@ -148,12 +166,20 @@ bool connection_relay::subscribe(char* topic){
 		msg[0]=MSG_TYPE_SUBSCRPTION;
 		memcpy(msg+1,topic,strlen(topic));
 		msg[strlen(topic)+1]='\0';
-		return send_up(msg);
+		// send or enqueue
+		if(enqueue){
+			return enqueue_up(msg);
+		} else {
+			return send_up(msg);
+		}
 	}
 	return false;
 }
 
 bool connection_relay::publish(char* topic, char* mqtt_msg){
+	return publish(topic,mqtt_msg,false);
+}
+bool connection_relay::publish(char* topic, char* mqtt_msg,bool enqueue){
 	if(!connected()){
 		return false;
 	}
@@ -169,13 +195,21 @@ bool connection_relay::publish(char* topic, char* mqtt_msg){
 		memcpy(msg+3,topic,strlen(topic));
 		memcpy(msg+3+strlen(topic),mqtt_msg,strlen(mqtt_msg));
 		msg[strlen(topic)+strlen(mqtt_msg)+4-1]='\0';
-		return send_up(msg);
+		// send or enqueue
+		if(enqueue){
+			return enqueue_up(msg);
+		} else {
+			return send_up(msg);
+		}
 	}
 	return false;
 }
 
 // used to send messages fro the mqtt server downstream to all connected clients
 bool connection_relay::broadcast_publish_down(char* topic, char* mqtt_msg){
+	sprintf(m_msg_buffer,"(down) FWD '%s' -> '%s'",topic,mqtt_msg);
+	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
+
 	char msg[strlen(topic)+strlen(mqtt_msg)+4];
 	msg[0]=MSG_TYPE_PUBLISH;
 	msg[1]=strlen(topic);
@@ -191,23 +225,68 @@ bool connection_relay::broadcast_publish_down(char* topic, char* mqtt_msg){
 	return true;
 }
 
-// send pre-encoded messages (subscriptions/pubish's) to our mesh server
+// send pre-encoded messages (subscriptions/pubish's) UP to our mesh server
 bool connection_relay::send_up(char* msg){
+	if(!connected()){
+		return false;
+	}
 	uint32_t start = millis();
 	uint8_t buf;
 	//send up
 	espUplink.print(msg);
 	// waitup to 5 sec for ACK
 	while((millis()-start<5000) || espUplink.available()){
+		Serial.println(millis()-start);
+		delay(100);
 		if(espUplink.available()){
+			Serial.printf("-2..%i\r\n",ESP.getFreeHeap());
+			delay(100);
 			espUplink.read(&buf,1);
 			//Serial.printf("recv %i %c\r\n",buf,buf);
 			if(buf==MSG_TYPE_ACK){
+				Serial.println("-3..");
+				delay(100);
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+bool connection_relay::enqueue_up(char* msg){
+	uint8_t* buf;
+	buf = new uint8_t[strlen(msg)];
+	if(buf){
+		memcpy(buf,msg,strlen(msg));
+		for(uint8_t i=0; i<MAX_MSG_QUEUE; i++){
+			if(!outBuf[i]){
+				Serial.print("Enqueue Slot ");
+				Serial.println(i);
+
+				outBuf[i]=buf;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool connection_relay::dequeue_up(){
+	uint32_t start;
+	uint8_t buf;
+	for(uint8_t i=0; i<MAX_MSG_QUEUE; i++){
+		if(outBuf[i]){
+			start = millis();
+			Serial.print("Dequeue Slot ");
+			Serial.println(i);
+			//send up
+			if(send_up((char*)outBuf[i])){
+				delete outBuf[i];
+				outBuf[i]=0x00;
+			}
+		}
+	}
+	return true;
 }
 
 void connection_relay::startAP(){
@@ -266,15 +345,16 @@ void connection_relay::receive_loop(){
 	} else if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
 		client.loop();
 	}
+	dequeue_up();
 }
 
 void connection_relay::onClient(AsyncClient* c) {
-	sprintf(m_msg_buffer,"Incoming client connection from: %s",c->remoteIP().toString().c_str());
-	logger.println(TOPIC_CON_REL, m_msg_buffer);
-	for (int i = 0; i <= ESP8266_NUM_CLIENTS; i++) {
+	sprintf(m_msg_buffer,"(%s) Incoming client connection",c->remoteIP().toString().c_str());
+	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
+	for (int i = 3; i <= ESP8266_NUM_CLIENTS; i++) {
 		if (!espClients[i]) {
-			//sprintf(m_msg_buffer,"Assign id: %i",i);
-			//logger.println(TOPIC_CON_REL, m_msg_buffer);
+			sprintf(m_msg_buffer,"Assign id: %i",i);
+			logger.println(TOPIC_CON_REL, m_msg_buffer);
 
 			espClients[i] = c;
 			espClients[i]->onDisconnect([this](void * arg, AsyncClient *c)                           { this->onDisconnect(c);      }, this);
@@ -303,49 +383,68 @@ void connection_relay::onDisconnect(AsyncClient* c) {
 void connection_relay::onError(AsyncClient* c, int8_t error) {
 	sprintf(m_msg_buffer,"Got error on %s : %s",c->remoteIP().toString().c_str(),String(error).c_str());
 	logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
+	c->close();
 }
 
 void connection_relay::onTimeout(AsyncClient* c, uint32_t time) {
-    //logger.println(TOPIC_CON_REL, "Got timeout  " + c->remoteIP().toString() + ": " + String(time),COLOR_YELLOW);
-    c->close();
+  //logger.println(TOPIC_CON_REL, "Got timeout  " + c->remoteIP().toString() + ": " + String(time),COLOR_YELLOW);
+  c->close();
 }
 
 void connection_relay::onData(AsyncClient* c, void* data, size_t len) {
 	//sprintf(m_msg_buffer,"Got data from %s",c->remoteIP().toString().c_str());
 	//logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
-	char msg[2];
-	msg[0]=MSG_TYPE_ACK;
-	msg[1]='\0';
-	c->write(msg,1);
+	char msg_ack[2];
+	msg_ack[0]=MSG_TYPE_ACK;
+	msg_ack[1]='\0';
+	c->write(msg_ack,1);
 	//Serial.println(msg);
 	if(((char*)data)[0] == MSG_TYPE_SUBSCRPTION){
 		char msg[len+1];
 		memcpy(msg,(char*)data+1,len-1);
 		msg[len-1]='\0';
 
-		sprintf(m_msg_buffer,"(%s) FWD subscription %s", c->remoteIP().toString().c_str(), msg);
+		sprintf(m_msg_buffer,"(%s) FWD subscription '%s'", c->remoteIP().toString().c_str(), msg);
 		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
 
-		subscribe(msg);
+		subscribe(msg,true); //subscribe via enqueue
 	} else if(((char*)data)[0] == MSG_TYPE_PUBLISH){
-		char topic[((uint8_t*)data)[1]];
-		char msg[((uint8_t*)data)[2]];
+		char topic[((uint8_t*)data)[1]+1];
+		char msg[((uint8_t*)data)[2]+1];
 		memcpy(topic,(char*)data+3,((uint8_t*)data)[1]);
 		topic[((uint8_t*)data)[1]]='\0';
 		memcpy(msg,(char*)data+3+((uint8_t*)data)[1],((uint8_t*)data)[2]);
 		msg[((uint8_t*)data)[2]]='\0';
-
 		sprintf(m_msg_buffer,"(%s) FWD '%s' -> '%s'", c->remoteIP().toString().c_str(),topic,msg);
 		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
 
-		publish(topic,msg);
+		publish(topic,msg,true); // publish via enqueue
 	} else if(((char*)data)[0] == MSG_TYPE_NW_LOOP_CHECK){
-		char msg[len+1];
-		memcpy(msg,(char*)data,len);
-		msg[len]='\0';
-		// check if this is our own MAC missing here TODO
-		Serial.printf("(%s) received Network request, going to forward it",c->remoteIP().toString().c_str());
-		Serial.println(msg);
-		send_up(msg);
-	} // TODO else case for unknown message missing
+		if(m_connection_type == CONNECTION_MESH_CONNECTED){ //  don't care it if we're then head, no loop here
+			// copy message to send it up the chain
+			char msg[len+1];
+			memcpy(msg,(char*)data,len);
+			msg[len]='\0';
+
+			// prepare our own message to compare both
+			char msg_check[20]; // 1 + 2*6 + 5
+			uint8_t mac[6];
+			WiFi.macAddress(mac);
+			sprintf(msg_check, "%c%02x:%02x:%02x:%02x:%02x:%02x",MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2],	mac[1],	mac[0]);
+
+			sprintf(m_msg_buffer,"(%s) NETLOOP check '%s' vs '%s'", c->remoteIP().toString().c_str(), msg+1, msg_check+1);
+			logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_PURPLE);
+
+			// do the check
+			if(strcmp(msg,msg_check)==0){
+				// fuck .. loop .. disconnect network
+				disconnectServer();
+			} else {
+				enqueue_up(msg);
+			}
+		}
+	} else {
+		sprintf(m_msg_buffer,"Received unsupported message type '%i'", ((char*)data)[0]);
+		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_RED);
+	}
 }

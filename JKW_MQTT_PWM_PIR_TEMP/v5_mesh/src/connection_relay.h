@@ -10,6 +10,7 @@
 #define AP_PW "ESP_relay_pw"
 #define MESH_PORT 1883
 #define ESP8266_NUM_CLIENTS 99
+#define MAX_MSG_QUEUE 99
 
 #define CONNECTION_NOT_CONNECTED 0
 #define CONNECTION_DIRECT_CONNECTED 1
@@ -33,14 +34,20 @@ class connection_relay {
 		void startAP();
 		void stopAP();
 		bool subscribe(char* topic);
+		bool subscribe(char* topic, bool enqueue);
 		bool publish(char* topic, char* msg);
+		bool publish(char* topic, char* mqtt_msg,bool enqueue);
 		bool broadcast_publish_down(char* topic, char* mqtt_msg);
 		bool connected();
 		void receive_loop();
+		bool loopCheck();
+		uint8_t m_connection_type;
 
 	private:
  		int8_t scan(bool blocking);
 		bool send_up(char* msg);
+		bool enqueue_up(char* msg);
+		bool dequeue_up();
 
 		void onClient(AsyncClient* c);
 		void onDisconnect(AsyncClient* c);
@@ -52,10 +59,10 @@ class connection_relay {
 		void onError(AsyncClient* c, int8_t error);
 
 		bool m_AP_running;
-		uint8_t m_connection_type;
 		AsyncServer* espServer;
     AsyncClient* espClients[ESP8266_NUM_CLIENTS] = {0};
 		WiFiClient espUplink;
+		uint8_t* outBuf[MAX_MSG_QUEUE];
 };
 
 #include "main.h"
