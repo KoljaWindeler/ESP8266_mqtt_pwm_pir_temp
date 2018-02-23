@@ -49,18 +49,21 @@ class connection_relay {
 		bool enqueue_up(char* msg, uint16_t size);
 		bool dequeue_up();
 
-		void onClient(AsyncClient* c);
+		void onClient(WiFiClient* c);
+		void onData(WiFiClient* c);
+		/*
+		void onData(WiFiClient* c, void* data, size_t len);
 		void onDisconnect(AsyncClient* c);
 		void onTimeout(AsyncClient* c, uint32_t time);
-		void onData(AsyncClient* c, void* data, size_t len);
 		void onServerData(AsyncClient* c, void* data, size_t len);
 		void onClientDisconnect(const WiFiEventSoftAPModeStationDisconnected* ip);
 		void onClientConnect(const WiFiEventSoftAPModeStationConnected* ip);
 		void onError(AsyncClient* c, int8_t error);
+		*/
 
 		bool m_AP_running;
-		AsyncServer* espServer;
-    AsyncClient* espClients[ESP8266_NUM_CLIENTS] = {0};
+		WiFiServer* espServer;
+    WiFiClient* espClients[ESP8266_NUM_CLIENTS] = {0};
 		WiFiClient espUplink;
 		uint8_t* outBuf[MAX_MSG_QUEUE];
 };

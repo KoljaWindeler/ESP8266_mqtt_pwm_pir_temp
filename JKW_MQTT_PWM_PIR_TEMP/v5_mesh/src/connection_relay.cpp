@@ -11,9 +11,12 @@ on Next IP response, reassign IP
 
 */
 #include "connection_relay.h"
+#define DEV_DBG 1
 
 connection_relay::connection_relay(){
-	espServer = new AsyncServer(MESH_PORT);
+	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
+		espClients[i]=NULL;
+	}
 	//espServer->setNoDelay(true);
 	m_AP_running = false;
 	m_connection_type = CONNECTION_DIRECT_CONNECTED; // wifi STA connection can survive reboots
@@ -63,15 +66,15 @@ bool connection_relay::MeshConnect(){
 	int8_t scan_count = scan(true); // will start with blocking scan
 	int8_t best_RSSI=-1;
 	if(scan_count>0){
-		//Serial.printf("%d network(s) found\r\n", scan_count);
+		//erial.printf("%d network(s) found\r\n", scan_count);
 		for (int i = 0; i < scan_count; i++)
 		{
-			//Serial.printf("%d: %s, Ch:%d (%ddBm) %s %i\n\r", i+1, WiFi.SSID(i).c_str(), WiFi.channel(i), WiFi.RSSI(i), WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "", WiFi.isHidden(i));
+			//erial.printf("%d: %s, Ch:%d (%ddBm) %s %i\n\r", i+1, WiFi.SSID(i).c_str(), WiFi.channel(i), WiFi.RSSI(i), WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "", WiFi.isHidden(i));
 			//if(WiFi.isHidden(i) && strncmp(WiFi.SSID(i).c_str(),AP_SSID,strlen(AP_SSID))==0){
 			if(strncmp(WiFi.SSID(i).c_str(),AP_SSID,strlen(AP_SSID))==0){
-				//Serial.println("interesting config");
+				//erial.println("interesting config");
 				if(best_RSSI==-1 || WiFi.RSSI(i) > WiFi.RSSI(best_RSSI)){
-					//Serial.println("actually the best");
+					//erial.println("actually the best");
 					best_RSSI=i;
 				}
 			}
@@ -116,7 +119,25 @@ bool connection_relay::connectServer(char* dev_short, char* login, char* pw){
 
 		IPAddress apIP = WiFi.localIP();
 		apIP[3]=1;
-		return espUplink.connect(apIP,MESH_PORT);
+
+		//erial.println("A..");
+		//delay(100);
+
+		if(espUplink.connect(apIP,MESH_PORT)){
+
+			//erial.println("B..");
+			//delay(100);
+
+			if(send_up(dev_short,0)){
+
+				//erial.println("C..");
+				//delay(100);
+
+				sprintf(m_msg_buffer,"Received server welcome");
+				logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_GREEN);
+			} // only read
+			return true;
+		}
 	}
 	return false;
 }
@@ -131,7 +152,8 @@ bool connection_relay::loopCheck(){
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
 		sprintf(msg, "%c%02x:%02x:%02x:%02x:%02x:%02x",MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2],	mac[1],	mac[0]);
-		send_up(msg,strlen(msg));
+		enqueue_up(msg,strlen(msg));
+		//send_up(msg,strlen(msg));
 	}
 }
 
@@ -147,8 +169,13 @@ bool connection_relay::connected(){
 	if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
 		return client.connected();
 	} else if(m_connection_type == CONNECTION_MESH_CONNECTED){
-		return espUplink.connected();
+		if(!espUplink.connected()){
+			logger.println(TOPIC_CON_REL, F("Disconnected from mesh"),COLOR_RED);
+			return false;
+		}
+		return true;
 	}
+	logger.println(TOPIC_CON_REL, F("unknown connection type"),COLOR_RED);
 	return false;
 }
 
@@ -161,8 +188,8 @@ bool connection_relay::subscribe(char* topic, bool enqueue){
 		return false;
 	}
 	if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
-		//Serial.print("Direct subscibe: ");
-		//Serial.println(topic);
+		//erial.print("Direct subscibe: ");
+		//erial.println(topic);
 		client.subscribe(topic); // MQTT_TRACE_TOPIC topic
 		client.loop();
 		return client.connected();
@@ -200,7 +227,7 @@ bool connection_relay::publish(char* topic, char* mqtt_msg,bool enqueue){
 		sprintf(msg,"%c%c%c%s%c%s",MSG_TYPE_PUBLISH,strlen(topic)+1,strlen(mqtt_msg)+1,topic,0,mqtt_msg); // last 0x00 will be added automatically
 
 		//for(uint8_t i=0; i<strlen(topic)+strlen(mqtt_msg)+5; i++){
-		//	Serial.printf("[%i] %c %i\r\n",i,msg[i],msg[i]);
+		//	.printf("[%i] %c %i\r\n",i,msg[i],msg[i]);
 		//}
 		// send or enqueue
 		if(enqueue){
@@ -224,7 +251,7 @@ bool connection_relay::broadcast_publish_down(char* topic, char* mqtt_msg){
 	memcpy(msg+3,topic,strlen(topic));
 	memcpy(msg+3+strlen(topic),mqtt_msg,strlen(mqtt_msg));
 	msg[strlen(topic)+strlen(mqtt_msg)+4-1]='\0';
-	for (int i = 0; i <= ESP8266_NUM_CLIENTS; i++) {
+	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
 		if (espClients[i]) {
 			espClients[i]->write(msg);
 		}
@@ -234,25 +261,32 @@ bool connection_relay::broadcast_publish_down(char* topic, char* mqtt_msg){
 
 // send pre-encoded messages (subscriptions/pubish's) UP to our mesh server
 bool connection_relay::send_up(char* msg, uint16_t size){
+	//erial.println("1..");
+	//delay(100);
 	if(!connected()){
 		return false;
 	}
 	uint32_t start = millis();
 	uint8_t buf;
 	//send up
+	//erial.println("2..");
+	//delay(100);
+
 	espUplink.write(msg, size);
+
+	//erial.println("3..");
+	//delay(100);
+
 	// waitup to 5 sec for ACK
 	while((millis()-start<5000) || espUplink.available()){
-		//Serial.println(millis()-start);
-		//delay(100);
+		//erial.println(millis()-start);
+		delay(1); // resets wtd
 		if(espUplink.available()){
-			//Serial.printf("-2..%i\r\n",ESP.getFreeHeap());
+			//erial.println("4..");
 			//delay(100);
 			espUplink.read(&buf,1);
-			//Serial.printf("recv %i %c\r\n",buf,buf);
+			//erial.printf("recv %i %c\r\n",buf,buf);
 			if(buf==MSG_TYPE_ACK){
-				//Serial.println("-3..");
-				//delay(100);
 				return true;
 			}
 		}
@@ -267,17 +301,18 @@ bool connection_relay::enqueue_up(char* msg, uint16_t size){
 		buf[0]=size/256;
 		buf[1]=size%256;
 		memcpy(buf+2,msg,size);
-		buf[size]=0x00; // just to be sure
+		buf[size+2]=0x00; // just to be sure
 		for(uint8_t i=0; i<MAX_MSG_QUEUE; i++){
 			if(!outBuf[i]){
-				Serial.print("Enqueue Slot ");
-				Serial.println(i);
-				delay(100);
+				//erial.print("Enqueue Slot ");
+				//erial.println(i);
+				//delay(100);
 				outBuf[i]=buf;
 				return true;
 			}
 		}
 	}
+	logger.println(TOPIC_CON_REL, F("Send queue overflow"),COLOR_RED);
 	return false;
 }
 
@@ -288,15 +323,19 @@ bool connection_relay::dequeue_up(){
 	for(uint8_t i=0; i<MAX_MSG_QUEUE; i++){
 		if(outBuf[i]){
 			start = millis();
-			Serial.print("Dequeue Slot ");
-			Serial.println(i);
-			delay(100);
+			//erial.print("Dequeue Slot ");
+			//erial.println(i);
+			//delay(100);
 			size = outBuf[i][0]*256 + outBuf[i][1];
 			//send up
 			if(send_up((char*)outBuf[i]+2,size)){
 				delete outBuf[i];
 				outBuf[i]=0x00;
-				Serial.println("send done");
+				//erial.println("send done");
+				return true;
+			} else {
+				logger.println(TOPIC_CON_REL, F("Send up failed"),COLOR_RED);
+				return false;
 			}
 		}
 	}
@@ -317,7 +356,8 @@ void connection_relay::startAP(){
 		WiFi.softAP(AP_SSID, AP_PW, WiFi.channel(), 0); // 1 == hidden SSID
 		m_AP_running = true;
 
-		espServer->onClient( [this](void * arg, AsyncClient *c){ this->onClient(c);  }, this);
+		//espServer->onClient( [this](void * arg, AsyncClient *c){ this->onClient(c);  }, this);
+		espServer = new WiFiServer(MESH_PORT);
 		espServer->begin();
 
 		logger.println(TOPIC_CON_REL, F("AP started"),COLOR_GREEN);
@@ -331,6 +371,10 @@ void connection_relay::stopAP(){
 		WiFi.softAPdisconnect(true);
 		WiFi.mode(WIFI_STA);
 		m_AP_running = false;
+		if(espServer){
+			delete espServer;
+			espServer = NULL;
+		}
 		logger.println(TOPIC_CON_REL, F("AP stopped"));
 	}
 }
@@ -338,9 +382,10 @@ void connection_relay::stopAP(){
 void connection_relay::receive_loop(){
 	if(m_connection_type == CONNECTION_MESH_CONNECTED){
 		while(espUplink.available()){
-			//uint8_t len = espUplink.available();
 			uint8_t buf;
 			espUplink.readBytes(&buf,1);
+			sprintf(m_msg_buffer,"Received data from Uplink");
+			logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
 			if(buf == MSG_TYPE_PUBLISH){
 				uint8_t topic_len;
 				uint8_t msg_len;
@@ -359,30 +404,53 @@ void connection_relay::receive_loop(){
 	} else if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
 		client.loop();
 	}
+	// new client
+	if(espServer->hasClient()){
+		WiFiClient* c = new WiFiClient(espServer->available());
+		onClient(c);
+	}
+	// incoming traffic
+	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
+		if(espClients[i]!=NULL){
+			if(espClients[i]->connected()){
+				if(espClients[i]->available()){
+					onData(espClients[i]);
+				}
+			} else {
+				logger.println(TOPIC_CON_REL, F("Client disconnected"),COLOR_YELLOW);
+				delete espClients[i];
+				espClients[i] = NULL;
+			}
+		}
+	}
 	dequeue_up();
 }
 
-void connection_relay::onClient(AsyncClient* c) {
+void connection_relay::onClient(WiFiClient* c) {
 	sprintf(m_msg_buffer,"(%s) Incoming client connection",c->remoteIP().toString().c_str());
 	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
-	for (int i = 0; i <= ESP8266_NUM_CLIENTS; i++) {
-		if (!espClients[i]) {
+	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
+		if (espClients[i]==NULL) {
 			sprintf(m_msg_buffer,"Assign id: %i",i);
 			logger.println(TOPIC_CON_REL, m_msg_buffer);
 
 			espClients[i] = c;
-			espClients[i]->onDisconnect([this](void * arg, AsyncClient *c)                           { this->onDisconnect(c);      }, this);
-			espClients[i]->onError(     [this](void * arg, AsyncClient *c, int8_t error)             { this->onError(c, error);    }, this);
+			char buf[2];
+			buf[0]=MSG_TYPE_ACK;
+			buf[1]=0x00;
+			c->write(buf,1);
+			//espClients[i]->onDisconnect([this](void * arg, AsyncClient *c)                           { this->onDisconnect(c);      }, this);
+			//espClients[i]->onError(     [this](void * arg, AsyncClient *c, int8_t error)             { this->onError(c, error);    }, this);
 			//espClients[i]->onAck(       [this](void * arg, AsyncClient *c, size_t len, uint32_t time){ this->onAck(c, len, time);  }, this);
-			espClients[i]->onTimeout(   [this](void * arg, AsyncClient *c, uint32_t time)            { this->onTimeout(c, time);   }, this);
-			espClients[i]->onData(      [this](void * arg, AsyncClient *c, void* data, size_t len)   { this->onData(c, data, len); }, this);
+			//espClients[i]->onTimeout(   [this](void * arg, AsyncClient *c, uint32_t time)            { this->onTimeout(c, time);   }, this);
+			//espClients[i]->onData(      [this](void * arg, AsyncClient *c, void* data, size_t len)   { this->onData(c, data, len); }, this);
 			break;
 		}
 	}
 }
 
-void connection_relay::onDisconnect(AsyncClient* c) {
-	for (int i = 0; i <= ESP8266_NUM_CLIENTS; i++) {
+/*void connection_relay::onDisconnect(AsyncClient* c) {
+	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
 	    if (c == espClients[i]) {
 	        logger.println(TOPIC_CON_REL, F("Client disconnected"),COLOR_YELLOW);
 	        delete espClients[i];
@@ -403,16 +471,20 @@ void connection_relay::onError(AsyncClient* c, int8_t error) {
 void connection_relay::onTimeout(AsyncClient* c, uint32_t time) {
   //logger.println(TOPIC_CON_REL, "Got timeout  " + c->remoteIP().toString() + ": " + String(time),COLOR_YELLOW);
   c->close();
-}
+}*/
 
-void connection_relay::onData(AsyncClient* c, void* data, size_t len) {
+//void connection_relay::onData(WiFiClient* c, void* data, size_t len) {
+void connection_relay::onData(WiFiClient* c) {
+	size_t len = c->available();
+	uint8_t data[len];
+	c->read(data,len);
 	//sprintf(m_msg_buffer,"Got data from %s",c->remoteIP().toString().c_str());
 	//logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
 	char msg_ack[2];
 	msg_ack[0]=MSG_TYPE_ACK;
 	msg_ack[1]='\0';
 	c->write(msg_ack,1);
-	//Serial.println(msg);
+	//erial.println(msg);
 	if(((char*)data)[0] == MSG_TYPE_SUBSCRPTION){
 		// [0] type
 		// [1..] topic
