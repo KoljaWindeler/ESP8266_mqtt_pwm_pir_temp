@@ -20,6 +20,7 @@
 #define MSG_TYPE_PUBLISH 2
 #define MSG_TYPE_NW_LOOP_CHECK 3
 #define MSG_TYPE_ACK 4
+#define MSG_TYPE_ROUTING 5
 
 
 class connection_relay {

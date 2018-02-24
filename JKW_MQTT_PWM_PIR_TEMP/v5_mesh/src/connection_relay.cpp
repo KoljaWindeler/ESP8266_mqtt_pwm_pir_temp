@@ -148,12 +148,23 @@ bool connection_relay::loopCheck(){
 		sprintf(m_msg_buffer,"sending NETLOOP check up the chain");
 		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_PURPLE);
 
-		char msg[25];
+		char msg[50];
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
 		sprintf(msg, "%c%02x:%02x:%02x:%02x:%02x:%02x",MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2],	mac[1],	mac[0]);
 		enqueue_up(msg,strlen(msg));
 		//send_up(msg,strlen(msg));
+
+		// reuse buffer to send a "routing" msg
+		char topic[50];
+		sprintf(topic, "%s", build_topic("routing",UNIT_TO_PC));
+		sprintf(msg, "%c%c%c%s%c%s", MSG_TYPE_ROUTING, strlen(topic)+1, strlen(mqtt.dev_short)+1, topic, 0, mqtt.dev_short);
+
+		for(uint8_t i=0; i<3+strlen(topic)+1+strlen(mqtt.dev_short)+1; i++){
+			Serial.printf("(%i)   %c  %i\r\n",i ,((char*)msg)[i],((char*)msg)[i]);
+		};
+
+		enqueue_up(msg,3+strlen(topic)+1+strlen(mqtt.dev_short)+1);
 	}
 }
 
@@ -531,6 +542,41 @@ void connection_relay::onData(WiFiClient* c) {
 				logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_GREEN);
 				enqueue_up(msg,len+1);
 			}
+		} // no else needed, if we're the direct connected node then this showsn that there is no loop
+	} else if(((char*)data)[0] == MSG_TYPE_ROUTING){
+		// preparation
+		if(strlen(mqtt.dev_short)>6){ // to make sure
+			mqtt.dev_short[6]=0x00;
+		}
+		// [0] type
+		// [1] length of topic
+		// [2] length of msg
+		// [3..] topic, which will end with 0x00
+		// [..] message, which will end with 0x00
+
+		for(uint8_t i=0; i<len; i++){
+			Serial.printf("[%i]   %c  %i\r\n",i, ((char*)data)[i], ((char*)data)[i]);
+		};
+
+		char msg[len+5+strlen(mqtt.dev_short)]; // what ever is in it + my name + " -> '\0'"
+		memcpy(msg, data, len); // copy existing message
+		memcpy(msg+len-1, " -> ",4);
+		memcpy(msg+len-1+4, &mqtt.dev_short, strlen(mqtt.dev_short)+1); // copy name + \0
+
+		for(uint8_t i=0; i<len+5+strlen(mqtt.dev_short); i++){
+			Serial.printf("{%i}   %c  %i\r\n", i, msg[i], msg[i]);
+		};
+
+
+		uint8_t* topic_start = ((uint8_t*)msg)+3;
+		uint8_t* msg_start = ((uint8_t*)msg)+((uint8_t*)msg)[1]+3;
+		sprintf(m_msg_buffer,"(%s) FWD routing '%s' -> '%s'", c->remoteIP().toString().c_str(),topic_start,msg_start);
+		logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
+
+		if(m_connection_type == CONNECTION_DIRECT_CONNECTED){
+			publish((char*)topic_start,(char*)msg_start);
+		} else {
+			enqueue_up(msg,len+4+strlen(mqtt.dev_short));
 		}
 	} else {
 		sprintf(m_msg_buffer,"Received unsupported message type '%i'", ((char*)data)[0]);
