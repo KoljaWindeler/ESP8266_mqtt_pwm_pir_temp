@@ -1,3 +1,17 @@
+20180224
+	- Added Mesh option
+	- Wifi will try to connect for x seconds after boot or disconnect
+	  After 0.8*X sec have passed: Try to connect alternating. Mesh and regular WIFI
+	- If connection (no matter what kind) was established: Switch to WiFi station + AP
+	- Start server on port 1883 to accept incoming connections
+	- Send regular keep alives up, so each server can detected dead clients and disconnect them
+	- Send "loop_detect" to see if I receive my own MAC from the net. If that happens: disconnect / no blacklist added as of now
+	- Send routing message up the chain. Each node on the way will add its name so we get a nice tree
+	- If we get data (from upstream) that we didn't consume, send it on to all clients
+	- TODO: if I connect to a AP that has 5 clients, my connection the the server will fail.
+		But I'm still connected and even if not: the AP will still have the best RSSI value. So I'll keep Re-trying.
+	- Overall status: In general working (tested with 7 clients in a row), rare crashes (probably fixed?)
+	- text size 381960 not optimized
 20180206
 	- reverted inital connect with timeout .. init connection fails too often
 	- remove all wifi connections before connect to dedicated NW
