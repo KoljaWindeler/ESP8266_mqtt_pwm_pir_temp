@@ -254,6 +254,7 @@ void reconnect(){
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
 				network.loopCheck();
+				network.publishRouting();
 				// ... and resubscribe
 				network.subscribe(build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT), COLOR_GREEN);

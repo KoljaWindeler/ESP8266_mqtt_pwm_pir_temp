@@ -8,6 +8,11 @@ connection_relay::connection_relay(){
 	espLastcomm       = 0;
 	m_AP_running      = false;
 	m_connection_type = CONNECTION_DIRECT_CONNECTED; // wifi STA connection can survive reboots
+
+	// is this possible?
+	uint8_t mac[6];
+	WiFi.macAddress(mac);
+	bl = new blacklist_entry(mac); // root node with own MAC, kind of pointless but we have to start somewhere
 };
 connection_relay::~connection_relay(){ };
 
@@ -60,9 +65,11 @@ bool connection_relay::MeshConnect(){
 			// if(WiFi.isHidden(i) && strncmp(WiFi.SSID(i).c_str(),AP_SSID,strlen(AP_SSID))==0){
 			if (strncmp(WiFi.SSID(i).c_str(), AP_SSID, strlen(AP_SSID)) == 0) {
 				// erial.println("interesting config");
-				if (best_RSSI == -1 || WiFi.RSSI(i) > WiFi.RSSI(best_RSSI)) {
+				if (best_RSSI == -1 || WiFi.RSSI(i) > WiFi.RSSI(best_RSSI)){
+					if(bl->get_fails(WiFi.BSSID(i))<2) { // only connect to this network if there are less then 2 failed tries
 					// erial.println("actually the best");
-					best_RSSI = i;
+						best_RSSI = i;
+					}
 				}
 			}
 		}
@@ -83,8 +90,7 @@ bool connection_relay::MeshConnect(){
 				return true;
 			}
 		} else {
-			sprintf(m_msg_buffer, "No mesh in range");
-			logger.print(TOPIC_WIFI, m_msg_buffer, COLOR_RED);
+			logger.println(TOPIC_WIFI, F("No mesh node in range"), COLOR_RED);
 		}
 	}
 	return false;
@@ -95,15 +101,13 @@ bool connection_relay::MeshConnect(){
 // if mesh connected: Blocking call for server!
 bool connection_relay::connectServer(char * dev_short, char * login, char * pw){
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
-		sprintf(m_msg_buffer, "Establishing direct MQTT link");
-		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_YELLOW);
+		logger.println(TOPIC_MQTT, F("Establishing direct MQTT link"), COLOR_YELLOW);
 
 		client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 		client.setCallback(callback); // in main.cpp
 		return client.connect(dev_short, login, pw);
 	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
-		sprintf(m_msg_buffer, "Establishing indirect MESH-MQTT link");
-		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_YELLOW);
+		logger.println(TOPIC_MQTT, F("Establishing indirect MESH-MQTT link"), COLOR_YELLOW);
 
 		IPAddress apIP = WiFi.localIP();
 		apIP[3] = 1;
@@ -114,13 +118,18 @@ bool connection_relay::connectServer(char * dev_short, char * login, char * pw){
 		if (espUplink.connect(apIP, MESH_PORT)) {
 			// erial.println("B..");
 			// delay(100);
-			if (send_up(dev_short, 0)) {
+			if (send_up(dev_short, 0)) { // only read
 				// erial.println("C..");
+				bl->set_fails(WiFi.BSSID(),0);
 				// delay(100);
-				sprintf(m_msg_buffer, "Received server welcome");
-				logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_GREEN);
-			} // only read
-			return true;
+				logger.println(TOPIC_MQTT, F("Received server welcome"), COLOR_GREEN);
+			} else {
+				logger.println(TOPIC_MQTT, F("Didn't receive server welcome"), COLOR_YELLOW);
+			}
+			return true; // return true, even when we didn't receive welcome. good?
+		} else {
+			logger.println(TOPIC_MQTT, F("Server didn't accept connection"), COLOR_RED);
+			bl->set_fails(WiFi.BSSID(),1); // increase blacklist counter by one
 		}
 	}
 	return false;
@@ -140,16 +149,23 @@ bool connection_relay::loopCheck(){
 		  mac[0]);
 		enqueue_up(msg, strlen(msg));
 		// send_up(msg,strlen(msg));
+	};
+};
 
-		// reuse buffer to send a "routing" msg, enqueue already copied last msg
-		char topic[50];
-		sprintf(topic, "%s", build_topic("routing", UNIT_TO_PC));
-		sprintf(msg, "%c%c%c%s%c%s", MSG_TYPE_ROUTING, strlen(topic) + 1, strlen(
-		   mqtt.dev_short) + 1, topic, 0, mqtt.dev_short);
+// publish the routing
+bool connection_relay::publishRouting(){
+	char msg[50];
+	char topic[50];
+	sprintf(topic, "%s", build_topic("routing", UNIT_TO_PC));
+	sprintf(msg, "%c%c%c%s%c%s", MSG_TYPE_ROUTING, strlen(topic) + 1, strlen(
+	   mqtt.dev_short) + 1, topic, 0, mqtt.dev_short);
 
-		enqueue_up(msg, 3 + strlen(topic) + 1 + strlen(mqtt.dev_short) + 1);
-	}
-}
+	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
+			return publish((char *) topic, (char *) msg);
+		} else {
+			return enqueue_up(msg, 3 + strlen(topic) + 1 + strlen(mqtt.dev_short) + 1);
+		}
+};
 
 // disconnect e.g. to apply new setting before reconnecting
 void connection_relay::disconnectServer(){
@@ -439,9 +455,10 @@ void connection_relay::receive_loop(){
 			if (espClients[i]->connected()) {
 				if (espClients[i]->available()) {
 					espClientsLastComm[i] = millis();
-					onData(espClients[i]);
+					onData(espClients[i],i);
 				} else if (espClientsLastComm[i] > 0 && (millis() - espClientsLastComm[i]) / 1000 > COMM_TIMEOUT * 1.2) { // 1.2 to be able to miss one and have 20% headroom
-					logger.println(TOPIC_CON_REL, F("Client timed out. Disconnecting"), COLOR_YELLOW);
+					sprintf(m_msg_buffer, "Client %i timed out. Disconnecting", i);
+					logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 					espClients[i]->stop();
 					delete espClients[i];
 					espClients[i] = NULL;
@@ -479,7 +496,7 @@ void connection_relay::onClient(WiFiClient * c){
 
 // will be callen by the receive_loop if the client has data available
 // should do the parsing and enqueue_up the response
-void connection_relay::onData(WiFiClient * c){
+void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 	size_t len = c->available();
 	uint8_t data[len];
 
@@ -495,7 +512,7 @@ void connection_relay::onData(WiFiClient * c){
 		// [0] type
 		// [1..] topic
 		uint8_t * topic_start = ((uint8_t *) data) + 1;
-		sprintf(m_msg_buffer, "(%s) FWD subscription '%s'", c->remoteIP().toString().c_str(), topic_start);
+		sprintf(m_msg_buffer, "[%i](%s) FWD subscription '%s'",client_nr, c->remoteIP().toString().c_str(), topic_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
 		subscribe((char *) topic_start, true); // subscribe via enqueue
@@ -505,7 +522,7 @@ void connection_relay::onData(WiFiClient * c){
 		// [2] length of msg
 		uint8_t * topic_start = ((uint8_t *) data) + 3;
 		uint8_t * msg_start   = ((uint8_t *) data) + ((uint8_t *) data)[1] + 3;
-		sprintf(m_msg_buffer, "(%s) FWD '%s' -> '%s'", c->remoteIP().toString().c_str(), topic_start, msg_start);
+		sprintf(m_msg_buffer, "[%i](%s) FWD '%s' -> '%s'",client_nr, c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
 		publish((char *) topic_start, (char *) msg_start, true); // publish via enqueue
@@ -523,7 +540,7 @@ void connection_relay::onData(WiFiClient * c){
 			sprintf(msg_check, "%c%02x:%02x:%02x:%02x:%02x:%02x", MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2], mac[1],
 			  mac[0]);
 
-			sprintf(m_msg_buffer, "(%s) NETLOOP check '%s' vs '%s'", c->remoteIP().toString().c_str(), msg + 1, msg_check + 1);
+			sprintf(m_msg_buffer, "[%i](%s) NETLOOP check '%s' vs '%s'",client_nr, c->remoteIP().toString().c_str(), msg + 1, msg_check + 1);
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
 
 			// do the check
@@ -555,7 +572,7 @@ void connection_relay::onData(WiFiClient * c){
 
 		uint8_t * topic_start = ((uint8_t *) msg) + 3;
 		uint8_t * msg_start   = ((uint8_t *) msg) + ((uint8_t *) msg)[1] + 3;
-		sprintf(m_msg_buffer, "(%s) FWD routing '%s' -> '%s'", c->remoteIP().toString().c_str(), topic_start, msg_start);
+		sprintf(m_msg_buffer, "[%i](%s) FWD routing '%s' -> '%s'",client_nr, c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
 		if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
@@ -564,10 +581,71 @@ void connection_relay::onData(WiFiClient * c){
 			enqueue_up(msg, len + 4 + strlen(mqtt.dev_short)); // len-1+4+strlen()+1
 		}
 	} else if (((char *) data)[0] == MSG_TYPE_PING) {
-		sprintf(m_msg_buffer, "Received keep alive from '%s'", c->remoteIP().toString().c_str());
+		sprintf(m_msg_buffer, "[%i](%s) Received keep alive", client_nr, c->remoteIP().toString().c_str());
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_GREEN);
 	} else {
-		sprintf(m_msg_buffer, "Received unsupported message type '%i'", ((char *) data)[0]);
+		sprintf(m_msg_buffer, "[%i](%s) Received unsupported message type '%i'", client_nr, c->remoteIP().toString().c_str(), ((char *) data)[0]);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 	}
 } // onData
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// a blacklist is a self organized data structure that can store and retrieve information about unsuccessfl connects to a BSSID
+blacklist_entry::blacklist_entry(uint8_t* MAC){
+	m_next = NULL;
+	memcpy(m_mac, MAC, 6);
+	m_fails = 0;
+	m_last_change = millis()/1000;
+};
+
+blacklist_entry::~blacklist_entry(){};
+
+
+// get the number of failed connection attempts to the passed MAC
+// if this node has a different MAC it will relay the request to the next node and return its response
+// if there are no further nodes but the MAC is still not found: Create a new node with the MAC in doubt
+// and return the init value 0
+uint8_t blacklist_entry::get_fails(uint8_t* MAC){
+	if(strncmp((char*)m_mac,(char*)MAC,6)==0){
+		//sprintf(m_msg_buffer, "Blacklist for this WiFi is %i", m_fails);
+		//logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
+		if(m_fails>0 && ((millis()/1000)-m_last_change > BLACKLIST_RECOVER_TIME_SEC)){ // if node was unable to connect more then 6 hours ago: give it another chance ..
+			m_fails--;
+			m_last_change = millis()/1000;
+		}
+		return m_fails;
+	}
+	if(m_next==NULL){
+		//Serial.println("no next, creating one");
+		blacklist_entry* new_entry = new blacklist_entry(MAC);
+		if(!new_entry){
+			return 255; // creation failed
+		}
+		m_next = new_entry;
+	}
+	return m_next->get_fails(MAC);
+}
+
+// same as above, but this time SET the fail counter. v=0 will reset the value, evenything else will increase it by one
+// setting it to 2 and above with disqualiify the node from being connected
+// Overtime this value will be decreaesed, so node which have a bad rating can recover slowly
+void blacklist_entry::set_fails(uint8_t* MAC, uint8_t v){
+	if(strncmp((char*)m_mac,(char*)MAC,6)==0){ // this is me
+		if(v==0){
+			m_fails=0;
+		} else {
+			m_fails++;
+			sprintf(m_msg_buffer, "Setting blacklist for current BSSID to %i", m_fails);
+			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
+		}
+		m_last_change = millis()/1000;
+	} else { // not me, ask next
+		if(m_next==NULL){
+			get_fails(MAC);
+		}
+		return m_next->set_fails(MAC, v);
+	}
+}

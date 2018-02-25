@@ -1,3 +1,5 @@
+20180225
+	- Added station blacklist
 20180224
 	- Added Mesh option
 	- Wifi will try to connect for x seconds after boot or disconnect

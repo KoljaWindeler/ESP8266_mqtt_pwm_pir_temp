@@ -12,6 +12,7 @@
 #define ESP8266_NUM_CLIENTS 5
 #define MAX_MSG_QUEUE 99
 #define COMM_TIMEOUT 140
+#define BLACKLIST_RECOVER_TIME_SEC 60*60*6
 
 #define CONNECTION_NOT_CONNECTED 0
 #define CONNECTION_DIRECT_CONNECTED 1
@@ -24,6 +25,18 @@
 #define MSG_TYPE_ROUTING 5
 #define MSG_TYPE_PING 6
 
+class blacklist_entry {
+public:
+	blacklist_entry(uint8_t* MAC);
+	~blacklist_entry();
+	uint8_t get_fails(uint8_t* MAC);
+	void set_fails(uint8_t* MAC, uint8_t v);
+private:
+	uint8_t m_mac[6];
+	uint8_t m_fails;
+	blacklist_entry* m_next;
+	uint32_t m_last_change;
+};
 
 class connection_relay {
 	public:
@@ -41,6 +54,7 @@ class connection_relay {
 		bool connected();
 		void receive_loop();
 		bool loopCheck();
+		bool publishRouting();
 		uint8_t m_connection_type;
 
 	private:
@@ -53,7 +67,7 @@ class connection_relay {
 		bool dequeue_up();
 
 		void onClient(WiFiClient* c);
-		void onData(WiFiClient* c);
+		void onData(WiFiClient* c, uint8_t client_nr);
 
 		bool m_AP_running;
 		WiFiServer* espServer;
@@ -62,7 +76,9 @@ class connection_relay {
 		uint32_t espLastcomm;
 		WiFiClient espUplink;
 		uint8_t* outBuf[MAX_MSG_QUEUE];
+		blacklist_entry* bl;
 };
+
 
 #include "main.h"
 
