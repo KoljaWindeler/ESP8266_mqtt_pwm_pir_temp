@@ -56,7 +56,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180225"
+	#define VERSION               "20180227_MESH_OTA"
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -64,7 +64,6 @@ public:
 	#define CALC_RECONNECT_WEIGHT 5            // add 1 sec of reconnect time per 5 sec that we've been connected previously
 	#define MAX_RECONNECT_TIME    20 * 60      // even if we've been happliy connected to this network for weeks: start AP after 20 min of trying to reconnect
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
-
 
 	// capability list
 	#define RGB_PWM_BITMASK     1 << 0 // 1
@@ -106,7 +105,7 @@ public:
 		uint8_t b;
 	};
 
-	void callback(char * p_topic, byte * p_payload, unsigned int p_length);
+	void callback(char * p_topic, byte * p_payload, uint16_t p_length);
 	void reconnect();
 	void configModeCallback(WiFiManager * myWiFiManager);
 	void saveConfigCallback();
@@ -117,6 +116,7 @@ public:
 	void setup();
 	void loop();
 	bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config);
+	uint8_t mqtt_ota(uint8_t* data, uint8_t size);
 
 
 	/*mqtt_parameter_8 m_simple_light_state;
@@ -140,6 +140,7 @@ public:
 	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability";  // subscribe
 	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";       // subscribe
 	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";       // subscribe
+	static constexpr char MQTT_OTA_TOPIC[]         = "ota";         // subscribe
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";

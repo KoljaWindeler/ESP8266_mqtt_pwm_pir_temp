@@ -59,12 +59,15 @@ bool relationship_timeout(float decelleration_factor, char* next_mode){
 
 // /////////////////////////////////////////////////////////////////////////////////////
 // /////////////////// function called when a MQTT message arrived /////////////////////
-void callback(char * p_topic, byte * p_payload, unsigned int p_length){
+void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	p_payload[p_length] = 0x00;
 	logger.addColor(COLOR_PURPLE);
 	logger.topic(TOPIC_MQTT_IN);
-	sprintf(m_msg_buffer,"%s --> %s\r\n", p_topic, p_payload);
-	logger.p(m_msg_buffer);
+
+	if(p_length<MSG_BUFFER_SIZE-10){ // limit
+		sprintf(m_msg_buffer,"%s --> %s\r\n", p_topic, p_payload);
+		logger.p(m_msg_buffer);
+	}
 	//Serial.printf("%s --> %s\r\n", p_topic, p_payload);
 	logger.remColor(COLOR_PURPLE);
 
@@ -208,10 +211,19 @@ void callback(char * p_topic, byte * p_payload, unsigned int p_length){
 			logger.enable_mqtt_trace(false);
 		}
 	}
+	////////////////////// OTA via MQTT /////////////////////////////
+	else if(!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT)) || !strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false))){ // dev specific and global
+		// forward if global before processing, otherwise we reboot before we broadcast
+		if(!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false))){
+			network.broadcast_publish_down(p_topic,(char*)p_payload, p_length);
+		}
+		// now process
+		network.mqtt_ota(p_payload,p_length);
+	}
 	////////////////////// mesh /////////////////////////////
 	else {
 		// message is not for me, send it downhill to all clientSM
-		network.broadcast_publish_down(p_topic,(char*)p_payload);
+		network.broadcast_publish_down(p_topic,(char*)p_payload, p_length);
 	}
 } // callback
 
@@ -264,6 +276,13 @@ void reconnect(){
 
 				network.subscribe(build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT)); // capability topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+
+				network.subscribe(build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT)); // MQTT_OTA_TOPIC topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+
+				network.subscribe(build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false)); // MQTT_OTA_TOPIC but global topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false), COLOR_GREEN);
+
 
 				for(uint8_t i = 0; active_p[i]!=0x00 && i<MAX_PERIPHERALS-1; i++){
 					//Serial.printf("subscibe e%i\r\n",i);
@@ -692,6 +711,3 @@ bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config){
 	}
 	return false;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//bool

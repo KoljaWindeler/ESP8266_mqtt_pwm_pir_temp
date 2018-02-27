@@ -1,5 +1,12 @@
+20180227
+	-	Added OTA via MQTT
+	- Including MD5 and seqence nr checking
+	- can be routed to single dev or to all "s/ota"
+	- Changed MQTT buffer to 1024 (was 128)
+	- text size 378160 (minor cleanups)
 20180225
-	- Added station blacklist
+	- Added station blacklisting
+	- text size 382820
 20180224
 	- Added Mesh option
 	- Wifi will try to connect for x seconds after boot or disconnect
