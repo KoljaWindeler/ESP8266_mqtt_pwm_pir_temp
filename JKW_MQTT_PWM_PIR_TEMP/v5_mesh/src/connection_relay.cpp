@@ -1,6 +1,7 @@
 #include "connection_relay.h"
 
 connection_relay::connection_relay(){
+	// reset clients
 	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
 		espClients[i]         = NULL;
 		espClientsLastComm[i] = 0;
@@ -10,19 +11,19 @@ connection_relay::connection_relay(){
 	m_connection_type = CONNECTION_DIRECT_CONNECTED; // wifi STA connection can survive reboots
 	m_ota_status      = OTA_STATUS_END_FAILED;       // avoid start in middle
 
-	// is this possible?
+	// root node with own MAC, kind of pointless but we have to start somewhere
 	uint8_t mac[6];
 	WiFi.macAddress(mac);
-	bl = new blacklist_entry(mac); // root node with own MAC, kind of pointless but we have to start somewhere
+	bl = new blacklist_entry(mac);
 };
+
 connection_relay::~connection_relay(){ };
 
 // scan can return [blocking] the nr of APs
 int8_t connection_relay::scan(bool blocking){
 	int8_t status;
-
 	if (blocking) {
-		// when should we run WiFi.scanDelete();?
+		WiFi.scanDelete();
 		status = WiFi.scanNetworks();
 		return status;
 	} else {
@@ -456,15 +457,19 @@ void connection_relay::receive_loop(){
 				//Serial.printf("received msg with %i byte \r\n",msg_len);
 				// this is a bit hacky .. we could receive very long messages, (OTA is 950 byte)
 				// that would force us to allocate quite a bit of memory, as of now there is no checking in place
-				// if that worked out or not
-				// furthermore: we simpley assume that the message is already reassembled .. what if this is not true?
+				// if that worked out or not, but currently (20180227 we're running at 28k free RAM)
 				char msg[msg_len + 1];
 				char topic[topic_len + 1];
+				// fill buffer .. again dangerous ?
 				espUplink.readBytes(topic, topic_len); // topic is NOT \0 terminated in the message
 				topic[topic_len] = '\0';
-				espUplink.readBytes(msg, msg_len+1); // there is one more byte in the buffer, after the msg and that is the \0 for the msg
-				//msg[msg_len]     = '\0';
-				callback(topic, (byte *) msg, msg_len);
+				if(espUplink.readBytes(msg, msg_len+1) == msg_len+1){
+					//msg[msg_len]     = '\0';
+					callback(topic, (byte *) msg, msg_len);
+					// there is one more byte in the buffer, after the msg and that is the \0 for the msg
+				} else {
+					logger.println(TOPIC_CON_REL, F("Can get all data from buffer"), COLOR_RED);
+				}
 			}
 			size = espUplink.available();
 		}
@@ -503,7 +508,8 @@ void connection_relay::receive_loop(){
 					espClients[i] = NULL;
 				}
 			} else {
-				logger.println(TOPIC_CON_REL, F("Client disconnected"), COLOR_YELLOW);
+				sprintf(m_msg_buffer, "Client %i disconnected", i);
+				logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 				delete espClients[i];
 				espClients[i] = NULL;
 			}
@@ -638,7 +644,6 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 	// [0] CMD
 	// [1] if CMD = WRITE: length
 	// [2] data
-
 	//////// start of OTA ////////
 	if (data[0] == MQTT_OTA_BEGIN) {
 		m_ota_total_update_size = atoi((char *) (data + 1));

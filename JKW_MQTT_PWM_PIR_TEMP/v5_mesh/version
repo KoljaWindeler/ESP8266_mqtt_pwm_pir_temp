@@ -3,7 +3,7 @@
 	- Including MD5 and seqence nr checking
 	- can be routed to single dev or to all "s/ota"
 	- Changed MQTT buffer to 1024 (was 128)
-	- text size 378160 (minor cleanups)
+	- text size 384716
 20180225
 	- Added station blacklisting
 	- text size 382820

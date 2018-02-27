@@ -116,16 +116,6 @@ public:
 	void setup();
 	void loop();
 	bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config);
-	uint8_t mqtt_ota(uint8_t* data, uint8_t size);
-
-
-	/*mqtt_parameter_8 m_simple_light_state;
-	 * mqtt_parameter_8 m_button_press;
-	 * mqtt_parameter_8 m_light_brightness;
-	 *
-	 * mqtt_parameter_8 m_animation_type; // type 1 = rainbow wheel, 2 = simple rainbow .. see define above
-	 * mqtt_parameter_16 m_light_color;
-	 */
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
@@ -195,7 +185,6 @@ public:
 #include "light.h"
 #include "night_light.h"
 #include "bridge.h"
-
 
 
 #endif // ifndef main_h
