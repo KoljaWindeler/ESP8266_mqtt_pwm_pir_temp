@@ -85,6 +85,12 @@ void logging::remColor(uint8_t color){
 	}
 }
 
+void logging::resetSerialLine(){
+	if(serial_trace_active){
+		Serial.print("\r");
+	}
+}
+
 
 void logging::topic(uint8_t TOPIC){
 	if(TOPIC==TOPIC_MQTT){
@@ -107,6 +113,8 @@ void logging::topic(uint8_t TOPIC){
 		p(F("[BUTTON]            "));
 	} else if(TOPIC==TOPIC_CON_REL){
 		p(F("[WIFI RELAY]        "));
+	} else if(TOPIC==TOPIC_OTA){
+		p(F("[OTA]               "));
 	} else if(TOPIC==TOPIC_GENERIC_INFO){
 		p(F("[GENERIC]           "));
 	}
