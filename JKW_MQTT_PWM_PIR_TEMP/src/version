@@ -1,0 +1,67 @@
+20180206
+	- reverted inital connect with timeout .. init connection fails too often
+	- remove all wifi connections before connect to dedicated NW
+20180120
+	- fixed getting SSID and password from WiFiManger
+	- changed WiFiManger to use timeout on initial connect
+	- text size 354206
+20180119
+	- added checksum to NW config
+20180118
+	- added ability to change server IP
+	- added repoting of MAC on startup
+20180113
+	- added hold button for 1s,2s,3s
+	- moved topics to connected classes
+20180108
+	- Added Nightlight class for sonoff touch, broadcast topic
+	- Fixed resistor value a bit to match expected voltage without calibration
+20171229
+	- Fixed bug that crashed WifiManager after 2nd call
+20171227
+	- Removed checkboxes from WiFiManager
+	- readded capability string to GUI
+	- skipped capability reading from config console
+20171220
+	- fixed h801 pinout
+	- added support for 5 PWMs
+20171217
+	-	added support for hlw8012, power IC from SONOFF POW
+	- each entity will receive slot count 0-based
+	- text size 352942
+20171211
+	-	moved all pins to the objects
+	- live support for Kolja_v2 and sonoff at once
+20171210
+	- added brightness scale for animation
+2017104
+	- fixed AI light pinout
+20171125
+	- clear separation between PC to unit and unit to pc topics
+	- publish capability to recover on PC site
+20171111
+	- readded config via serial to mqtt struct v3
+	- added 2nd adc slot to remove delay
+	- added factory pattern to init obj
+	- fixed flash/ram display
+20171115
+	- fixed reporting of animation status
+20171114
+	-	fixed button directly toggle light
+20171111
+	- trace added
+20171108
+	- v4 ready
+20171102
+	- improve topic subscription order
+	- subscribe color before brightness
+20171031
+	- fixed URL upload
+20171030
+	- reconnect time based on previously connection time
+		up to 20min reconnect
+20171029
+	- OTA working
+	- no wifi communication during dimming
+	- supports sonoff b1
+	- colorized serial outout for screen
