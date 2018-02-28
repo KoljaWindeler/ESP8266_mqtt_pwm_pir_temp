@@ -239,29 +239,35 @@ void reconnect(){
 
 	// first check wifi
 	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
-	while (!network.connected()) { // this is wifi + mqtt/mesh
+	while (!network.connected()) { // this is wifi + mqtt/mesh connect
 		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
 		// check if we have valid credentials for a WiFi at all
-		// the ssid will be set to "" if the EEPROM was empty / invalid 
+		// the ssid and pw will be set to "" if the EEPROM was empty / invalid
 		// if this is the case: start config Portal without waiting
-		if(strlen(mqtt.nw_ssid)==0){
+		if(strlen(mqtt.nw_ssid)==0 && strlen(mqtt.nw_pw)==0){
 			wifiManager.startConfigPortal(CONFIG_SSID);
 		}
 		// each round, check wifi first
-		if (WiFi.status() != WL_CONNECTED) {
-			network.DirectConnect();
+		if (WiFi.status() != WL_CONNECTED){
+			// if the ssid was programmed to be " ", connect to mesh
+			if(strlen(mqtt.nw_ssid)==1 && mqtt.nw_ssid[0]==' '){
+				logger.println(TOPIC_WIFI,F("No SSID trying mesh only"), COLOR_YELLOW);
+				network.MeshConnect();
+			} else {
+				network.DirectConnect();
+				////////////////// MESH CONNECTION ///////////////////////
+				// try mesh if wifi directly did not work after some time
+				// this will be true after (min 45*0.8=35 sec)
+				// or when the ssid is not programmed, set SSID to
+				if(relationship_timeout(0.8, (char*)"MESH")){
+					logger.println(TOPIC_WIFI,F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
+					network.MeshConnect();
+				}
+			}
+			////////////////// MESH CONNECTION ///////////////////////
 		} else {
 			logger.println(TOPIC_WIFI, F("online"), COLOR_GREEN);
 		}
-		////////////////// MESH CONNECTION ///////////////////////
-		// try mesh if wifi directly did not work after some time
-		if (WiFi.status() != WL_CONNECTED) {
-			if(relationship_timeout(0.8, (char*)"MESH")){ // this will be true after (min 45*0.8=35 sec)
-				logger.println(TOPIC_WIFI,F("Can't connect directly, trying mesh"), COLOR_YELLOW);
-				network.MeshConnect();
-			}
-		}
-		////////////////// MESH CONNECTION ///////////////////////
 		// only try mqtt after wifi is estabilshed
 		if (WiFi.status() == WL_CONNECTED) {
 			// Attempt to connect
@@ -549,7 +555,6 @@ char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
 // /////////////////////////////////////////////////////////////////////////////////////
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
 void setup(){
-	// /// init the serial and print debug /////
 	Serial.begin(115200);
 	logger.init();
 	for (uint8_t i = 0; i < 10; i++) {
