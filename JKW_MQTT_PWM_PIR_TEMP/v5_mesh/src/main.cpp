@@ -241,6 +241,12 @@ void reconnect(){
 	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
 	while (!network.connected()) { // this is wifi + mqtt/mesh
 		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
+		// check if we have valid credentials for a WiFi at all
+		// the ssid will be set to "" if the EEPROM was empty / invalid 
+		// if this is the case: start config Portal without waiting
+		if(strlen(mqtt.nw_ssid)==0){
+			wifiManager.startConfigPortal(CONFIG_SSID);
+		}
 		// each round, check wifi first
 		if (WiFi.status() != WL_CONNECTED) {
 			network.DirectConnect();
@@ -352,7 +358,7 @@ void reconnect(){
 					delay(500);
 					Serial.begin(115200);
 				}
-				wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
+				wifiManager.startConfigPortal(CONFIG_SSID);
 				timer_connected_stop  = millis();           // resets timer
 				timer_connected_start = millis();
 				logger.pln(F("Config AP closed"));
@@ -428,6 +434,8 @@ void loadConfig(){
 		wifiManager.setCustomIdElement("");
 		logger.pln(F("Config load failed"));
 		sprintf(mqtt.dev_short,"new");
+		mqtt.nw_ssid[0]=0x00;
+		mqtt.nw_pw[0]=0x00;
 	}
 	logger.pln(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
