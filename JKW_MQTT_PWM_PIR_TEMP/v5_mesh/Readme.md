@@ -125,8 +125,14 @@ See section below for more details and configuration.
 Todo
 
 ### WiFi Relay feature
-Each node that is connected will open an own access point. During (re-)connect phase each device will also try to connect to those access points at some point.
-A "mesh connected" (I know that this is not a mesh) device will still send subscriptions on the uplink and also publish messages. The data will be slightly 
-converted and send up to the AP. A "mesh server" will receive the message and decode them, if they are not directly send to himself, it will automatically forward the data up the chain.
+Each node that is connected will open an own access point. During (re-)connect phase each device will also try to connect to those access points at some point. A "mesh connected" (I know that this is not a mesh) device will still send subscriptions on the uplink and also publish messages. The data will be slightly converted and send up to the AP. A "mesh server" will receive the message and decode them, if they are not directly send to himself, it will automatically forward the data up the chain.
 
-### Relationship reconnect
+### Relationship timeout
+A client that wasn't connected to the MQTT server (since reboot) should "pretty quickly" activate its own configuration AP. 
+But a client that was connected to the MQTT server for a long time should try a little longer to reconnect to the server before starting the configuration AP.
+
+The "relactionship timeout" give you both: Initally the time to start the AP is set to 45 sec. Each second that the client is 
+connected to the MQTT will increase the time before the configuration AP will be started if the client gets disconnected. 
+The client will try 1 second longer to reconnect per 20 sec of previous connection time. The maximum time is limited to 20 minutes.
+
+The MESH mode will kick in after 80% of the waittime hast passed.
