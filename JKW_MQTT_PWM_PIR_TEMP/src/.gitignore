@@ -4,3 +4,4 @@
 .gcc-flags.json
 wifi.h
 NW_configs
+*.gch
