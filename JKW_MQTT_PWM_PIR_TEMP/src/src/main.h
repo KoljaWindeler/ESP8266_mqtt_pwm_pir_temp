@@ -56,7 +56,8 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define VERSION               "20180227_MESH_OTA"
+	#define DEV                   "_dev" // set this to "_dev" during development to avoid Mesh confilicts
+	#define VERSION               "20180302" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try

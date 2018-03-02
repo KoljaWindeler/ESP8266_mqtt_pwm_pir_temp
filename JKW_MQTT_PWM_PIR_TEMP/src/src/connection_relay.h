@@ -3,7 +3,7 @@
 
 #include <ESP8266WiFi.h>
 
-	#define AP_SSID                     "ESP_relay"
+	#define AP_SSID                     "ESP_relay" DEV
 	#define AP_PW                       "ESP_relay_pw"
 	#define MESH_PORT                   1883
 	#define ESP8266_NUM_CLIENTS         5
@@ -30,11 +30,9 @@
 	#define OTA_STATUS_END_FAILED       5
 	#define OTA_STATUS_UNKNOWN_CMD      6
 
-	#define MQTT_OTA_BEGIN 'A'
-	#define MQTT_OTA_WRITE 'B'
-	#define MQTT_OTA_END 'C'
-
-
+	#define MQTT_OTA_BEGIN              'A'
+	#define MQTT_OTA_WRITE              'B'
+	#define MQTT_OTA_END                'C'
 
 
 	class blacklist_entry {
