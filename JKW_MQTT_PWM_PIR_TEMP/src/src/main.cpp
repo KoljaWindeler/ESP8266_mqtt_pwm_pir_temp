@@ -143,8 +143,8 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 							if(p_payload[i]==chk && i==p_length-1){
 								chk=1;
 							} else {
-								logger.print(TOPIC_MQTT, F("NW update failed, CKH wrong expected: "), COLOR_RED);
-								logger.pln((char*)&chk);
+								sprintf(m_msg_buffer,	"NW update failed, CKH wrong expected: %c",chk);
+								logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_RED);
 								chk=0;
 								break;
 							}
@@ -634,6 +634,10 @@ void loop(){
 		reconnect();
 		// reconnect will NEVER leave with not connected network, it will actaully loop until a connection is established
 	}
+	// handle network .. like parse and react on incoming data
+	network.receive_loop();
+
+
 	// // dimming end ////
 	uninterrupted = false;
 	for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
@@ -643,10 +647,6 @@ void loop(){
 		}
 	}
 
-	// handle network .. like parse and react on incoming data
-	if(!uninterrupted){
-		network.receive_loop();
-	}
 
 	// // send periodic updates ////
 	if(!uninterrupted){
