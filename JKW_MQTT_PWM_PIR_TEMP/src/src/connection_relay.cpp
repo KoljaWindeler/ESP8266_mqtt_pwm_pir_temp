@@ -77,7 +77,7 @@ bool connection_relay::MeshConnect(){
 		}
 
 		if (best_RSSI > -1) {
-			sprintf(m_msg_buffer, "%i Networks found, incl mesh [%idbm]. Connecting", scan_count, WiFi.RSSI(best_RSSI));
+			sprintf(m_msg_buffer, "%i Networks found, incl mesh '%s' [%idbm]. Connecting", scan_count, AP_SSID, WiFi.RSSI(best_RSSI));
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 
 			// connect to AP
@@ -567,6 +567,13 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 		// [2] length of msg
 		uint8_t * topic_start = ((uint8_t *) data) + 3;
 		uint8_t * msg_start   = ((uint8_t *) data) + ((uint8_t *) data)[1] + 3;
+
+		// make routing more obvious, replace generic mesh AP SSID with parent node name in SSID msg from client
+		if(strstr((char*)topic_start, build_topic("SSID",UNIT_TO_PC,false))!=NULL && strcmp((char*)AP_SSID,(char*)msg_start)==0){
+			logger.println(TOPIC_CON_REL, F("Replacing client SSID with my name"), COLOR_PURPLE);
+			msg_start = (uint8_t*)mqtt.dev_short;
+		}
+
 		sprintf(m_msg_buffer, "[%i](%s) FWD '%s' -> '%s'", client_nr,
 		  c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
@@ -619,6 +626,7 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 
 		uint8_t * topic_start = ((uint8_t *) msg) + 3;
 		uint8_t * msg_start   = ((uint8_t *) msg) + ((uint8_t *) msg)[1] + 3;
+		logger.println(TOPIC_CON_REL, F("Adding my name to routing chain"), COLOR_PURPLE);
 		sprintf(m_msg_buffer, "[%i](%s) FWD routing '%s' -> '%s'", client_nr,
 		  c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
