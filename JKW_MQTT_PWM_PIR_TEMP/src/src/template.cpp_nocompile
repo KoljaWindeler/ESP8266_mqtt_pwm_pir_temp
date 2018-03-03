@@ -44,7 +44,7 @@ bool template::loop(){
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever
-// slots are per unit, so you will receive 0,1,2,3 ... 
+// slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
 bool template::intervall_update(uint8_t slot){
 	if(slot%count_intervall_update()==0){
@@ -52,7 +52,7 @@ bool template::intervall_update(uint8_t slot){
 		dtostrf(template.getSomething(), 3, 2, m_msg_buffer);
 		logger.p(F("Template "));
 		logger.pln(m_msg_buffer);
-		return client.publish(build_topic(MQTT_TEMPLATE_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
+		return network.publish(build_topic(MQTT_TEMPLATE_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
 	}
 	return false;
 }
@@ -61,8 +61,8 @@ bool template::intervall_update(uint8_t slot){
 // this is the chance to fire some subsctions
 // return is ignored
 bool template::subscribe(){
-	client.subscribe(build_topic(MQTT_TEMPLATE_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
-	client.loop();
+	network.subscribe(build_topic(MQTT_TEMPLATE_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
+	network.loop();
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TEMPLATE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	return true;
 }
