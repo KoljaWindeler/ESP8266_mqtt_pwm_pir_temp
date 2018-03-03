@@ -156,9 +156,6 @@
     binary_sensor.dev4_motion:
       friendly_name: "Rack"
 # -----------------------------------------------
-    light.dev5:
-      friendly_name: "Front Door"
-# -----------------------------------------------
     light.dev6:
       friendly_name: "Entrance"
       icon: "mdi:lamp"
@@ -264,9 +261,9 @@
       icon: "mdi:thermometer"
 # -----------------------------------------------
     light.dev19:
-      friendly_name: "19 AI"
+      friendly_name: "Front Door"
     light.dev19_simple_rainbow:
-      friendly_name: "19 AI Rainbow"
+      friendly_name: "Front Door Rainbow"
     binary_sensor.dev19_motion:
       friendly_name: "19 AI"
     sensor.dev19_temperature:

@@ -464,6 +464,22 @@
       - service: homeassistant.turn_on
         entity_id: input_boolean.alarm_System
 # --------------------- rearm ------------------------------
+# --------------------- un-arm ------------------------------
+  - alias: dearm_alarm_system
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "alarm/dearm"
+    action:
+      - service_template: >
+          {% if trigger.payload=="ON" %} 
+            homeassistant.turn_on
+          {% else %} 
+            homeassistant.turn_off
+          {% endif %} 
+        entity_id: input_boolean.alarm_System
+# --------------------- un-arm ------------------------------
 # ----------------------------------------------------------
 
 # ------------------- value trigger for leakage ------------
@@ -557,7 +573,7 @@
             light.turn_off
           {% endif %}
         entity_id: 
-          - light.dev5
+          - light.dev19
 # ------------------- outdoor light ------------------------
 # -------------------- alarm system ------------------------
 # ----------------------------------------------------------

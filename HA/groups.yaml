@@ -6,7 +6,7 @@
       - group.kitchen
       - group.dining_room
       - group.outside
-      - group.temperature
+      #- group.temperatures
       - group.bed_room
       - group.hallway
       - group.room_carlo
@@ -68,9 +68,16 @@
       #- binary_sensor.dev106_motion
       #- binary_sensor.dev57_motion
 
-  Temperature:
+  Temp:
     control: hidden
-    icon: mdi:comment-multiple-outline
+    icon: mdi:thermometer
+    view: yes
+    entities:
+      - group.temperatures
+
+  Temperatures:
+    control: hidden
+    icon: mdi:thermometer
     view: no
     entities:
       - sensor.dev11_temperature
@@ -206,7 +213,7 @@
   Outside:
     control: hidden
     entities:
-      - light.dev5
+      - light.dev19
 #      - sun.sun
 #      - sensor.dark_sky_temperature
 #      - sensor.dark_sky_apparent_temperature
@@ -240,7 +247,7 @@
       - sensor.dev2_info
       - sensor.dev3_info
       - sensor.dev4_info
-      - sensor.dev5_info
+#      - sensor.dev5_info
       - sensor.dev6_info
       - sensor.dev7_info
       - sensor.dev8_info
@@ -275,7 +282,7 @@
       - sensor.dev2_bssid
       - sensor.dev3_bssid
       - sensor.dev4_bssid
-      - sensor.dev5_bssid
+#      - sensor.dev5_bssid
       - sensor.dev6_bssid
       - sensor.dev7_bssid
       - sensor.dev8_bssid
@@ -310,7 +317,7 @@
       - sensor.dev2_ssid
       - sensor.dev3_ssid
       - sensor.dev4_ssid
-      - sensor.dev5_ssid
+#      - sensor.dev5_ssid
       - sensor.dev6_ssid
       - sensor.dev7_ssid
       - sensor.dev8_ssid
@@ -345,7 +352,7 @@
       - sensor.dev2_capability
       - sensor.dev3_capability
       - sensor.dev4_capability
-      - sensor.dev5_capability
+#      - sensor.dev5_capability
       - sensor.dev6_capability
       - sensor.dev7_capability
       - sensor.dev8_capability
@@ -381,7 +388,7 @@
       - sensor.dev2_rssi
       - sensor.dev3_rssi
       - sensor.dev4_rssi
-      - sensor.dev5_rssi
+#      - sensor.dev5_rssi
       - sensor.dev6_rssi
       - sensor.dev7_rssi
       - sensor.dev8_rssi
@@ -416,7 +423,7 @@
       - sensor.dev2_update
       - sensor.dev3_update
       - sensor.dev4_update
-      - sensor.dev5_update
+#      - sensor.dev5_update
       - sensor.dev6_update
       - sensor.dev7_update
       - sensor.dev8_update
@@ -449,7 +456,7 @@
       - sensor.dev2
       - sensor.dev3
       - sensor.dev4
-      - sensor.dev5
+#      - sensor.dev5
       - sensor.dev6
       - sensor.dev7
       - sensor.dev8
