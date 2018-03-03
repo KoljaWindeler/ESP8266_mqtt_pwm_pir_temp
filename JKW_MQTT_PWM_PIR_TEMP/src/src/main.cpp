@@ -234,12 +234,11 @@ void reconnect(){
 	if (timer_connected_stop < timer_connected_start) {
 		timer_connected_stop = millis();
 	}
-	logger.pln(F("\r\n"));
 	network.stopAP();
 
 	// first check wifi
 	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
-	while (!network.connected()) { // this is wifi + mqtt/mesh connect
+	while (!network.connected(false)) { // this is wifi + mqtt/mesh connect
 		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
 		// check if we have valid credentials for a WiFi at all
 		// the ssid and pw will be set to "" if the EEPROM was empty / invalid

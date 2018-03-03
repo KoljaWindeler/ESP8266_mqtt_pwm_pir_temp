@@ -165,7 +165,7 @@ bool connection_relay::publishRouting(){
 	   mqtt.dev_short) + 1, topic, 0, mqtt.dev_short);
 
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
-		return publish((char *) topic, (char *) msg);
+		return publish((char *) topic, mqtt.dev_short);
 	} else {
 		return enqueue_up(msg, 3 + strlen(topic) + 1 + strlen(mqtt.dev_short) + 1);
 	}
@@ -184,16 +184,21 @@ void connection_relay::disconnectServer(){
 }
 
 // make "connected" more versatile
-bool connection_relay::connected(){
+bool connection_relay::connected(){ return connected(true); }
+bool connection_relay::connected(bool print){
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
 		if (!client.connected()) {
-			logger.println(TOPIC_CON_REL, F("Not connected to MQTT"), COLOR_RED);
+			if(print){
+				logger.println(TOPIC_CON_REL, F("Not connected to MQTT"), COLOR_RED);
+			}
 			return false;
 		}
 		return true;
 	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		if (!espUplink.connected()) {
-			logger.println(TOPIC_CON_REL, F("Not connected to mesh"), COLOR_RED);
+			if(print){
+				logger.println(TOPIC_CON_REL, F("Not connected to mesh"), COLOR_RED);
+			}
 			return false;
 		}
 		return true;

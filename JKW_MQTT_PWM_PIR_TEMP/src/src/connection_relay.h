@@ -62,6 +62,7 @@ public:
 		bool publish(char * topic, char * msg);
 		bool broadcast_publish_down(char * topic, char * mqtt_msg, uint16_t payload_size);
 		bool connected();
+		bool connected(bool print);
 		void receive_loop();
 		bool loopCheck();
 		bool publishRouting();
