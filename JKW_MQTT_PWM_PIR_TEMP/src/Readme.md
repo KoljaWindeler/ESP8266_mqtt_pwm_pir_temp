@@ -125,7 +125,10 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 ### GPIO
 	Configuration string: "G0" / "G1" / ... / "G16"
 	Purpose: directly set outputs, whatch out: this module can override other outputs
-	Sub-Topic(s): "gpio_0_out" (in: ON/OFF) /  "gpio_0_toggle" (in only, no payload) / "gpio_0_pulse" (in only, payload is pulse time in ms)
+	Sub-Topic(s): 
+		"gpio_0_out" (in and out: ON/OFF)
+		"gpio_0_toggle" (in only, no payload)
+		"gpio_0_pulse" (in only, payload is pulse time in ms)
 
 ### WiFi Configuration Access Point
 Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.
