@@ -43,20 +43,22 @@ See section below for more details and configuration.
 			- Publish intervall data of each peripheral once per minute, e.g. Temperature updated
 			
 # Peripherals supported
+All sub topic will concatenated with the dev_short and the direction: e.g. "dev99/r/rssi"
+
 ### RSSI
 	Configuration string: "R"
 	Purpose: publishs WiFi strength once per minute
-	Sub-Topic(s): "/r/rssi"
+	Sub-Topic(s): "rssi" (out only)
 	
 ### Button
 	Configuration string: "B"
 	Purpose: publishes button push imidiatly, button can be hold which will trigger extra messages
-	Sub-Topic(s): "/r/button" / "/r/button1s" / "/r/button2s" / "/r/button3s"
+	Sub-Topic(s): "button" / "button1s" / "button2s" / "button3s" (all out only)
 	
 ### ADC 
 	Configuration string: "ADC"
 	Purpose: publish raw ADC value once per minute
-	Sub-Topic(s): "/s/adc"
+	Sub-Topic(s): "adc" (out only)
 	
 ### Light
 	Configuration string: none
@@ -83,17 +85,17 @@ See section below for more details and configuration.
 ### DHT22 
 	Configuration string: "DHT"
 	Purpose: publishs Temperature and humidity once per minute
-	Sub-Topic(s): "/s/temperature" and "/s/humidity"
+	Sub-Topic(s): "temperature" and "humidity" (both out only)
 
 ### DS18B20 
 	Configuration string: "DS"
 	Purpose: publishs once per minute
-	Sub-Topic(s): "/s/temperature"
+	Sub-Topic(s): "temperature" (out only)
 
 ### HLW8012 
 	Configuration string: "HLW"
 	Purpose: this chip is used in the Sonoff POW, it publishes Voltage, current and Power once per minute
-	Sub-Topic(s): "/s/current" "/s/voltage" "/s/power" 
+	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only) 
 
 ### Neopixel 
 	Configuration string: "NEO"
@@ -103,7 +105,7 @@ See section below for more details and configuration.
 ### PIR 
 	Configuration string: "PIR / PI2" (PIR uses input-pin 14, PI2 pin 5)
 	Purpose: publishes motion events instantly
-	Sub-Topic(s): "/s/motion"
+	Sub-Topic(s): "motion"
 
 ### PWM 
 	Configuration string: "PWM / PW2 / PW3" (Pin 4/5/16,0,0    4/4/4,0,0      15,13,12,14,4)
@@ -113,16 +115,20 @@ See section below for more details and configuration.
 ### RF bridge 
 	Configuration string: "RFB"
 	Purpose: forwards 433Mhz packages
-	Sub-Topic(s): "/s/bridge"
+	Sub-Topic(s): "bridge"
 
 ### Simple light / relay 
 	Configuration string: "SL"
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
-
+	
+### GPIO
+	Configuration string: "G0" / "G1" / ... / "G16"
+	Purpose: directly set outputs, whatch out: this module can override other outputs
+	Sub-Topic(s): "gpio_0_out" (in: ON/OFF) /  "gpio_0_toggle" (in only, no payload) / "gpio_0_pulse" (in only, payload is pulse time in ms)
 
 ### WiFi Configuration Access Point
-Todo
+Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.
 
 ### WiFi Relay feature
 Each node that is connected will open an own access point. During (re-)connect phase each device will also try to connect to those access points at some point. A "mesh connected" (I know that this is not a mesh) device will still send subscriptions on the uplink and also publish messages. The data will be slightly converted and send up to the AP. A "mesh server" will receive the message and decode them, if they are not directly send to himself, it will automatically forward the data up the chain.
