@@ -102,7 +102,7 @@ void logging::topic(uint8_t TOPIC){
 	} else if(TOPIC==TOPIC_MQTT_PUBLISH){
 		p(F("[MQTT publish]      "));
 	} else if(TOPIC==TOPIC_WIFI){
-		p(F("[WiFi]              "));
+		p(F("[WIFI]              "));
 	} else if(TOPIC==TOPIC_MQTT_IN){
 		p(F("[MQTT in]           "));
 	} else if(TOPIC==TOPIC_INFO_PWM){

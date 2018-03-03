@@ -103,10 +103,10 @@ void J_GPIO::set_output(uint8_t pin, uint8_t state){
 	}
 	if (state) {
 		m_state[pin].set(1);
-		sprintf(m_msg_buffer,"Set J_GPIO %i ON",pin);
+		sprintf(m_msg_buffer,"Set J_GPIO %i: ON",pin);
 	} else {
 		m_state[pin].set(0);
-		sprintf(m_msg_buffer,"Set J_GPIO %i OFF",pin);
+		sprintf(m_msg_buffer,"Set J_GPIO %i: OFF",pin);
 	}
 	logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
 	digitalWrite(pin,m_state[pin].get_value());
