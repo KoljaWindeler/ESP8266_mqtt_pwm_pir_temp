@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "_dev" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180302" DEV
+	#define VERSION               "20180303" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -168,6 +168,9 @@ public:
 	extern peripheral * p_hlw;
 	extern peripheral * p_nl;
 	extern peripheral * p_rfb;
+	extern peripheral * p_gpio;
+
+
 	extern const uint8_t intens[100];
 
 
@@ -186,6 +189,7 @@ public:
 #include "light.h"
 #include "night_light.h"
 #include "bridge.h"
+#include "J_GPIO.h"
 
 
 #endif // ifndef main_h

@@ -65,7 +65,7 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	logger.topic(TOPIC_MQTT_IN);
 
 	if(p_length<MSG_BUFFER_SIZE-10){ // limit
-		sprintf(m_msg_buffer,"%s --> %s\r\n", p_topic, p_payload);
+		sprintf(m_msg_buffer,"'%s' --> '%s'\r\n", p_topic, p_payload);
 		logger.p(m_msg_buffer);
 	}
 	//Serial.printf("%s --> %s\r\n", p_topic, p_payload);
@@ -484,6 +484,8 @@ void loadPheripherals(uint8_t* config){
 	bake(new J_hlw8012(), &p_hlw, config);
 	bake(new night_light(), &p_nl, config);
 	bake(new bridge(), &p_rfb, config);
+	bake(new J_GPIO(), &p_gpio, config);
+
 
 	//logger.p("RAM after init objects ");
 	//logger.pln(system_get_free_heap_size());

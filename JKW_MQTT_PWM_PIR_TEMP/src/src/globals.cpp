@@ -21,6 +21,7 @@ peripheral *p_light;
 peripheral *p_hlw;
 peripheral *p_nl;
 peripheral *p_rfb;
+peripheral *p_gpio;
 
 connection_relay network;
 WiFiClient wifiClient;
