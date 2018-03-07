@@ -17,14 +17,6 @@ homeassistant:
   packages: !include_dir_named packages
 
 config:
-cloud:
-  alexa:
-    filter:
-      include_domains:
-        - light
-        - group
-        - switch
-        - media_player
 zone 3:
   name: Home
   latitude: !secret latitude
@@ -143,9 +135,9 @@ camera:
     platform: generic
     still_image_url: http://192.168.2.102/cam_full.jpg
 
-  - name: cam_103
-    platform: generic
-    still_image_url: http://192.168.2.103/cam_full.jpg
+#  - name: cam_103
+#    platform: generic
+#    still_image_url: http://192.168.2.103/cam_full.jpg
 
   - name: cam_106
     platform: generic
@@ -165,11 +157,11 @@ shell_command:
   cam2_4: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_4.jpg
   cam2_5: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_5.jpg
   
-  cam3_1: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_1.jpg
-  cam3_2: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_2.jpg
-  cam3_3: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_3.jpg
-  cam3_4: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_4.jpg
-  cam3_5: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_5.jpg
+ # cam3_1: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_1.jpg
+ # cam3_2: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_2.jpg
+ # cam3_3: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_3.jpg
+ # cam3_4: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_4.jpg
+ # cam3_5: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_5.jpg
     
   cam6_1: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_1.jpg
   cam6_2: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_2.jpg
