@@ -16,7 +16,11 @@ from homeassistant.helpers.entity import Entity
 import homeassistant.components.mqtt as mqtt
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import async_track_point_in_utc_time
+from homeassistant.helpers.entity import Entity, async_generate_entity_id
 from homeassistant.util import dt as dt_util
+from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.components.sensor import PLATFORM_SCHEMA, ENTITY_ID_FORMAT
+
 
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_NAME = 'MQTT Sensor'
@@ -33,7 +37,6 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     if discovery_info is not None:
         config = PLATFORM_SCHEMA(discovery_info)
 
-    
     name      = config.get(CONF_NAME)
     friendly  = config.get("fname")
     qos       = 0
@@ -42,19 +45,19 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 
     async_add_devices([
     # entries RSSI
-      JkwMqttSensor(name+"_rssi",name+"/r/rssi",qos,'%',no_update,"mdi:signal-variant",friendly+" Signal"),
-    # entries BSSID 
-      JkwMqttSensor(name+"_bssid",name+"/r/BSSID",qos,'',no_update,"mdi:information-outline",friendly),
-    # entries SSID 
-      JkwMqttSensor(name+"_ssid",name+"/r/SSID",qos,'',no_update,"mdi:information-outline",friendly),
+      JkwMqttSensor(hass, name+"_rssi",name+"/r/rssi",qos,'%',no_update,"mdi:signal-variant",friendly+" Signal"),
+    # entries BSSID
+      JkwMqttSensor(hass, name+"_bssid",name+"/r/BSSID",qos,'',no_update,"mdi:information-outline",friendly),
+    # entries SSID
+      JkwMqttSensor(hass, name+"_ssid",name+"/r/SSID",qos,'',no_update,"mdi:information-outline",friendly),
     # entries update
-      JkwMqttSensor(name+"_info",name+"/r/INFO",qos,'',no_update,"mdi:information-outline",friendly),
+      JkwMqttSensor(hass, name+"_info",name+"/r/INFO",qos,'',no_update,"mdi:information-outline",friendly),
     # entries capability
-      JkwMqttSensor(name+"_capability",name+"/r/capability",qos,'',no_update,"mdi:information-outline",friendly),
+      JkwMqttSensor(hass, name+"_capability",name+"/r/capability",qos,'',no_update,"mdi:information-outline",friendly),
     # entries update
-      JkwMqttSensor(name+"_update",name+"/r/#",qos,'min',update,"mdi:timer-sand",friendly),
+      JkwMqttSensor(hass, name+"_update",name+"/r/#",qos,'min',update,"mdi:timer-sand",friendly),
     # entries all
-      JkwMqttSensor(name,name+"/r/#",qos,'',no_update,"mdi:information-outline",friendly),
+      JkwMqttSensor(hass, name,name+"/r/#",qos,'',no_update,"mdi:information-outline",friendly),
     # end of entries
     ])
 
@@ -62,7 +65,7 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 class JkwMqttSensor(Entity):
     """Representation of a sensor that can be updated using MQTT."""
 
-    def __init__(self, name, state_topic, qos, unit_of_measurement,
+    def __init__(self,hass: HomeAssistantType, name, state_topic, qos, unit_of_measurement,
                  update,icon,fname):
         """Initialize the sensor."""
         self._state = STATE_UNKNOWN
@@ -74,6 +77,7 @@ class JkwMqttSensor(Entity):
         self._unit_of_measurement = unit_of_measurement
         self._update = update
         self._last_update = time.time()
+        self.entity_id = async_generate_entity_id(ENTITY_ID_FORMAT, name, hass=hass)
 
     def async_added_to_hass(self):
         """Subscribe to MQTT events.
@@ -89,7 +93,6 @@ class JkwMqttSensor(Entity):
             else:
                self._state = payload
             self.async_schedule_update_ha_state()
-	    
 
         # run update all 30 sec 
         if(self._update):
@@ -106,23 +109,12 @@ class JkwMqttSensor(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name
-
-    @property
-    def friendly_name(self):
-        """Return the fname of the sensor."""
         return self._fname
 
     @property
     def icon(self):
         """Return the mdi icon of the sensor."""
         return self._icon
-
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return { ATTR_FRIENDLY_NAME: self._fname,  }
-
 
     @property
     def unit_of_measurement(self):

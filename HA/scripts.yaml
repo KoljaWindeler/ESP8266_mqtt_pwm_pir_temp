@@ -18,7 +18,7 @@
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
-          activity: "28445444"
+          activity: "32486021"
 # ---------------------------------------------------------
   seq_gradio_off:
     sequence:
@@ -359,7 +359,7 @@
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
-          activity: "28445444"
+          activity: "32486021"
 
 
 # ---------------------------------------------------------
@@ -373,7 +373,7 @@
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
-          activity: "28445444"
+          activity: "32486021"
 # ---------------------------------------------------------
   test:
     sequence:
