@@ -160,6 +160,7 @@
       - camera.cam_xia2
       - camera.cam_xia3
       - camera.cam_xia4
+      - camera.cam_xia5
       - camera.cam_101
      # - camera.cam_102
       - camera.cam_103
@@ -191,6 +192,8 @@
       - automation.alarm_system_c106
       - automation.over_temp
       - automation.leakage
+      - switch.cam5_up_down
+      - switch.cam5_left_right
 
 
   Motion:

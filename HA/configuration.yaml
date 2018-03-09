@@ -120,6 +120,9 @@ camera:
     still_image_url: http://192.168.2.73/snapshot.jpg
     name: cam_xia4
 
+  - platform: generic
+    still_image_url: http://192.168.2.74/cgi-bin/currentpic.cgi
+    name: cam_xia5
 
   - name: map_caro
     platform: generic

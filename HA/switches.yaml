@@ -1,5 +1,19 @@
   - platform: mqtt
     initial: false
+    name: "Cam5 left_right"
+    payload_on: "motor_left"
+    payload_off: "motor_right"
+    command_topic: "dafang5/sr/set"
+  
+  - platform: mqtt
+    initial: false
+    name: "Cam5 up_down"
+    payload_on: "motor_up"
+    payload_off: "motor_down"
+    command_topic: "dafang5/sr/set"
+  
+  - platform: mqtt
+    initial: false
     name: "Background"
     command_topic: "gmusic_nice_player"
   
