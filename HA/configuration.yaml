@@ -35,6 +35,7 @@ panel_custom:
     url_path: floorplan
     config: !include floorplan.yaml
 
+
 http:
   api_password: !secret http_password
 

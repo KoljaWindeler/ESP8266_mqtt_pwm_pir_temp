@@ -1,35 +1,40 @@
 # --------------------------------------------------
 # ------ JOINER ------------------------------------
 # --------------------------------------------------
-  - platform: mqtt
+  - platform: group
     name: "joiner_kitchen"
-    state_topic: "joiner/kitchen"
-    command_topic: "joiner/kitchen"
-    retain: True
+    entities:
+      - light.dev2
+      - light.dev4
+      - light.dev14
 # --------------------------------------------------
-  - platform: mqtt
+  - platform: group
     name: "joiner_livingroom"
-    state_topic: "joiner/livingroom"
-    command_topic: "joiner/livingroom"
-    retain: True
+    entities:
+      - light.dev1
+      - light.dev7
+      - light.dev11
+      - light.dev17
+      - light.dev21
+      - light.dev23
 # --------------------------------------------------
-  - platform: mqtt
+  - platform: group
     name: "joiner_bedroom"
-    state_topic: "joiner/bedroom"
-    command_topic: "joiner/bedroom"
-    retain: True
+    entities:
+      - light.dev20
+      - light.dev3
+      - light.dev16
 # --------------------------------------------------
-  - platform: mqtt
+  - platform: group
     name: "joiner_hallwayD"
-    state_topic: "joiner/hallwayD"
-    command_topic: "joiner/hallwayD"
-    retain: True
+    entities:
+      - light.dev15
+      - light.dev56
 # --------------------------------------------------
-  - platform: mqtt
+  - platform: group
     name: "joiner_hallwayU"
-    state_topic: "joiner/hallwayU"
-    command_topic: "joiner/hallwayU"
-    retain: True
+    entities:
+      - light.dev10
 # --------------------------------------------------
 # ------ JOINER ------------------------------------
 # --------------------------------------------------

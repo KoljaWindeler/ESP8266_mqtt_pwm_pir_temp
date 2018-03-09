@@ -1,0 +1,32 @@
+sensor:
+  - platform: systemmonitor
+    resources:
+    - type: processor_use
+
+binary_sensor:
+  - platform: template
+    sensors:
+      cpu_overload:
+        value_template: "{{ states('sensor.cpu_use')|int > 25 }}"
+        friendly_name: 'cpu above 25 %'
+
+automation:
+  - alias: cpu usage above 25 percent
+    initial_state: 'on'
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.cpu_overload
+      to: 'on'
+      for:
+        seconds: 60
+    action:
+      - service: automation.turn_off
+        entity_id: automation.cpu_usage_above_25_percent
+      - service: notify.pb
+        data:
+          title: "Warning"
+          message: "CPU Spike"
+      - delay:
+          minutes: 5
+      - service: automation.turn_on
+        entity_id: automation.cpu_usage_above_25_percent

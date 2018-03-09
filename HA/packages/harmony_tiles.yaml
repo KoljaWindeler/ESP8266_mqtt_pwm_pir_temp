@@ -1,0 +1,221 @@
+input_text:
+  tiles_harmony:
+    name: Tiles Harmony
+
+group:
+  harmony_remote_button:
+    name: Harmony
+    control: hidden
+    view: no
+    entities:
+      - input_text.tiles_harmony
+
+frontend:
+  extra_html_url:
+    - /local/custom_ui/state-card-tiles.html
+  extra_html_url_es5:
+    - /local/custom_ui/state-card-tiles_es5.html
+
+script:
+  tvvolumeup:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: VolumeUp
+          device: 47580278
+          num_repeats: 5
+          delay_secs: 0.0
+  tvmute:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: Mute
+          device: 47580278
+  tvvolumedown:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: VolumeDown
+          device: 47580278
+          num_repeats: 5
+          delay_secs: 0.0
+  firedown:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: DirectionDown
+          device: 49174954
+  fireup:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: DirectionUp
+          device: 49174954
+  fireok:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: OK
+          device: 49174954
+  fireleft:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: DirectionLeft
+          device: 49174954
+  fireright:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: DirectionRight
+          device: 49174954
+  firehome:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: Home
+          device: 49174954
+  tvoff:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "-1"
+  start_fire:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "29555877"
+  start_chromaudio:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "32486021"
+  start_tv:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.tvhub
+        data:
+          activity: "32433389"
+  tvup:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: ChannelUp
+          device: 53034729
+  tvdown:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: ChannelDown
+          device: 53034729
+
+
+
+homeassistant:
+  customize:
+    input_text.tiles_harmony:
+      custom_ui_state_card: state-card-tiles
+      config:
+        columns: 4
+        row_height: 60px
+        column_width: 60px
+        gap: 10px
+        color: '#555B65'
+        color_on: '#D5D619'
+        color_off: '#BBBEC2'
+        entities:
+          # Favorites
+
+          - entity: script.tvoff
+            icon: mdi:power
+            column: 1
+            row: 1
+            column_span: 2
+          - entity: script.start_fire
+            label: "FireTV"
+            column: 3
+            row: 1
+            column_span: 2
+
+          - entity: script.start_tv
+            label: "TV"
+            column: 1
+            row: 2
+            column_span: 2
+          - entity: script.start_chromaudio
+            label: "ChromeAudio"
+            column: 3
+            row: 2
+            column_span: 2
+
+          - entity: script.firehome
+            icon: mdi:menu
+            column: 1
+            row: 3
+          - entity: script.fireup
+            label: "Fire"
+            icon: mdi:arrow-up-bold
+            column: 2
+            row: 3
+          - entity: script.tvvolumeup
+            icon: mdi:volume-plus
+            column: 3
+            row: 3
+          - entity: script.tvup
+            icon: mdi:arrow-up-bold
+            label: "TV"
+            column: 4
+            row: 3
+
+          - entity: script.fireleft
+            label: "Fire"
+            icon: mdi:arrow-left-bold
+            column: 1
+            row: 4
+          - entity: script.fireok
+            label: "Fire"
+            icon: mdi:check-circle
+            column: 2
+            row: 4
+          - entity: script.fireright
+            label: "Fire"
+            icon: mdi:arrow-right-bold
+            column: 3
+            row: 4
+          - entity: script.firehome
+            icon: mdi:menu
+            column: 4
+            row: 4
+
+          - entity: script.tvmute
+            icon: mdi:volume-mute
+            column: 1
+            row: 5
+          - entity: script.firedown
+            label: "Fire"
+            icon: mdi:arrow-down-bold
+            column: 2
+            row: 5
+          - entity: script.tvvolumedown
+            icon: mdi:volume-minus
+            column: 3
+            row: 5
+          - entity: script.tvdown
+            icon: mdi:arrow-down-bold
+            label: "TV"
+            column: 4
+            row: 5

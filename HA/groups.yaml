@@ -53,6 +53,7 @@
       #- light.dev11
       #- light.dev7
       - light.joiner_livingroom
+      - light.joiner_livingroom_test
       - light.dev1
       - light.dev21
       #- light.dev101
@@ -67,13 +68,6 @@
       #- binary_sensor.dev103_motion
       #- binary_sensor.dev106_motion
       #- binary_sensor.dev57_motion
-
-  Temp:
-    control: hidden
-    icon: mdi:thermometer
-    view: yes
-    entities:
-      - group.temperatures
 
   Temperatures:
     control: hidden
@@ -176,6 +170,22 @@
       - group.alarm_maps
       - group.presents
       - group.motion
+
+  mediaplayer:
+    name: Media Player
+    icon: mdi:cast-connected
+    view: yes
+    entities:
+      - group.harmony_remote_button
+      - group.media
+      # - group.gmusic
+
+  Temp:
+    control: hidden
+    icon: mdi:thermometer
+    view: yes
+    entities:
+      - group.temperatures
 
       
   Alarm_control:
@@ -493,14 +503,6 @@
       - sensor.dev13_adc
       - light.dev9
 
-
-  mediaplayer:
-    name: Media Player
-    icon: mdi:cast-connected
-    view: yes
-    entities:
-      - group.media
-      # - group.gmusic
 
   gmusic:
     name: Gmusic

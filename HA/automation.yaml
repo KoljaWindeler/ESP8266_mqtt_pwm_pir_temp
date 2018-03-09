@@ -9,8 +9,7 @@
       data:
         name: darkorange
 # ------------------- autoload theme ------------------------
-
-# ------------------- entrance Room ------------------------
+# ------------------- entrance Room HAUSTUER ----------------
   - alias: entranceRoom
     initial_state: True
     hide_entity: False
@@ -34,7 +33,7 @@
           {% endif %}
         entity_id: 
           - light.dev12
-# ------------------- entrance Room ------------------------
+# ------------------- entrance Room HAUSTUER ----------------
 # ------------------- carlo --------------------------------
   - alias: carlo_test
     initial_state: True
@@ -92,29 +91,8 @@
       - service: light.turn_on
         entity_id: 
           - light.joiner_livingroom
-# ------------------- living joiner out -------------------
-  - alias: joiner_livingroom_out
-    initial_state: True
-    hide_entity: False
-    trigger: 
-      - platform: state
-        entity_id: light.joiner_livingroom
-    action:
-      - service_template: >
-          {% if is_state('light.joiner_livingroom','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev1
-          - light.dev7
-          - light.dev11
-          - light.dev17
-          - light.dev21  
-          - light.dev23
 # ----------------------------------------------------------
-# ----------------------------------------------------------
+# --------------- bedroom ----------------------------------
   - alias: joiner_bedroom_in
     initial_state: True
     hide_entity: False
@@ -141,25 +119,7 @@
         entity_id: 
           - light.joiner_bedroom
 # ----------------------------------------------------------
-  - alias: joiner_bedroom_out
-    initial_state: True
-    hide_entity: False
-    trigger: 
-      - platform: state
-        entity_id: light.joiner_bedroom
-    action:
-      - service_template: >
-          {% if is_state('light.joiner_bedroom','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev20
-          - light.dev3
-          - light.dev16  
-# ----------------------------------------------------------
-# ----------------------------------------------------------
+# ------------------- kueche -------------------------------
   - alias: joiner_kitchen_in
     initial_state: True
     hide_entity: False
@@ -213,26 +173,6 @@
       service: light.turn_off
       entity_id: light.joiner_kitchen
 # ------------------- kitchen movement ---------------------
-# ----------------------------------------------------------
-# ----------------------------------------------------------
-  - alias: joiner_kitchen_out
-    initial_state: True
-    hide_entity: False
-    trigger: 
-      - platform: state
-        entity_id: light.joiner_kitchen
-    action:
-      - service_template: >
-          {% if is_state('light.joiner_kitchen','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev2
-          - light.dev4
-          - light.dev14  
-# ----------------------------------------------------------
 # ----------------------------------------------------------
 # ------------------- couch  movement ---------------------
   - alias: couch_automation
@@ -388,22 +328,6 @@
       service: homeassistant.turn_off
       entity_id: light.joiner_hallwayU
 # ----------------------------------------------------------
-  - alias: joiner_hallwayU_out
-    initial_state: True
-    hide_entity: False
-    trigger: 
-      - platform: state
-        entity_id: light.joiner_hallwayU
-    action:
-      - service_template: >
-          {% if is_state('light.joiner_hallwayU','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev10
-# ----------------------------------------------------------
 # ----------------------------------------------------------
 # -- alias: Turn_on_hallwayD_lights_when_there_is_movement -
   - alias: joiner_hallwayD_in
@@ -429,23 +353,6 @@
           {% endif %}
         entity_id: 
           - light.joiner_hallwayD
-# ----------------------------------------------------------
-  - alias: joiner_hallwayD_out
-    initial_state: True
-    hide_entity: False
-    trigger: 
-      - platform: state
-        entity_id: light.joiner_hallwayD
-    action:
-      - service_template: >
-          {% if is_state('light.joiner_hallwayD','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev56
-          - light.dev15
 # ----------------------------------------------------------
 # ----------------------------------------------------------
 
