@@ -2,10 +2,8 @@
 
 
 peripheral *p_adc;
-peripheral *p_animaton;
 peripheral *p_bOne;
 peripheral *p_button;
-peripheral *p_dimmer;
 peripheral *p_neo;
 peripheral *p_pir;
 peripheral *p_pir2;
@@ -22,6 +20,7 @@ peripheral *p_hlw;
 peripheral *p_nl;
 peripheral *p_rfb;
 peripheral *p_gpio;
+peripheral *p_husqvarna;
 
 connection_relay network;
 WiFiClient wifiClient;

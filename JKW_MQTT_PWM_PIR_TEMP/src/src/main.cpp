@@ -17,12 +17,6 @@ WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devX
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
 
-const uint8_t hb[34] = { 27, 27, 27, 27, 27, 27, 17, 27, 37, 21, 27, 27, 27, 27, 27, 52, 71,
-	                        91, 99, 91, 33,  0, 12, 29, 52, 33, 21, 26, 33, 26, 20, 27, 27, 27 };
-
-// buffer used to send/receive data with MQTT, can not be done with the m_topic_buffer, as both as need simultaniously
-
-
 uint8_t active_p_pointer=0;
 uint8_t active_p_intervall_counter=0;
 peripheral **active_p[MAX_PERIPHERALS];
@@ -484,6 +478,7 @@ void loadPheripherals(uint8_t* config){
 	bake(new night_light(), &p_nl, config);
 	bake(new bridge(), &p_rfb, config);
 	bake(new J_GPIO(), &p_gpio, config);
+	bake(new husqvarna(), &p_husqvarna, config);
 
 
 	//logger.p("RAM after init objects ");

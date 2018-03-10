@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "_dev" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180303" DEV
+	#define VERSION               "20180310" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
@@ -66,39 +66,11 @@ public:
 	#define MAX_RECONNECT_TIME    20 * 60      // even if we've been happliy connected to this network for weeks: start AP after 20 min of trying to reconnect
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
 
-	// capability list
-	#define RGB_PWM_BITMASK     1 << 0 // 1
-	#define NEOPIXEL_BITMASK    1 << 1 // 2
-	#define AVOID_RELAY_BITMASK 1 << 2 // 4
-	#define SONOFF_B1_BITMASK   1 << 3 // 8
-	#define AITINKER_BITMASK    1 << 4 // 16
-	// #define MY9291_BITMASK      1 << 5 // 32
-	// #define MY9291_BITMASK      1 << 6 // 64
-	// #define MY9291_BITMASK      1 << 7 // 128
-
-	#define T_SL   1
-	#define T_PWM  2
-	#define T_NEO  3
-	#define T_BOne 4
-	#define T_AI   5
-
-
 	#define PINOUT                   "SONOFF"
-	#define BUTTON_TIMEOUT           1500 // max 1500ms timeout between each button press to count up (start of config)
-	#define BUTTON_DEBOUNCE          400  // ms debouncing for the botton
 	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
-
-	#define ANIMATION_STEP_TIME      15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
-	#define NEOPIXEL_LED_COUNT       24
-	#define ANIMATION_OFF            0
-	#define ANIMATION_RAINBOW_WHEEL  1
-	#define ANIMATION_RAINBOW_SIMPLE 2
-	#define ANIMATION_COLOR_WIPE     3
-
 	#define MAX_PERIPHERALS          20
-
 
 	struct led {
 		uint8_t r;
@@ -147,10 +119,8 @@ public:
 	extern char m_topic_buffer[TOPIC_BUFFER_SIZE];
 	extern char m_msg_buffer[MSG_BUFFER_SIZE];
 	extern peripheral * p_adc;
-	extern peripheral * p_animaton;
 	extern peripheral * p_bOne;
 	extern peripheral * p_button;
-	extern peripheral * p_dimmer;
 	extern peripheral * p_neo;
 	extern peripheral * p_pir;
 	extern peripheral * p_pir2;
@@ -169,6 +139,7 @@ public:
 	extern peripheral * p_nl;
 	extern peripheral * p_rfb;
 	extern peripheral * p_gpio;
+	extern peripheral * p_husqvarna;
 
 
 	extern const uint8_t intens[100];
@@ -190,7 +161,7 @@ public:
 #include "night_light.h"
 #include "bridge.h"
 #include "J_GPIO.h"
-
+#include "husqvarna.h"
 
 #endif // ifndef main_h
 
