@@ -17,6 +17,11 @@ frontend:
     - /local/custom_ui/state-card-tiles_es5.html
 
 script:
+  chrome_pause:
+    sequence:
+      - service: media_player.media_play_pause
+        entity_id: media_player.jkw_cast2
+
   tvvolumeup:
     sequence:
       - service: remote.send_command
@@ -130,7 +135,7 @@ homeassistant:
     input_text.tiles_harmony:
       custom_ui_state_card: state-card-tiles
       config:
-        columns: 4
+        columns: 3 #technically wrong, but this will stretch the last column which is kind of cool
         row_height: 60px
         column_width: 60px
         gap: 10px
@@ -146,7 +151,7 @@ homeassistant:
             row: 1
             column_span: 2
           - entity: script.start_fire
-            label: "FireTV"
+            label: "Fire TV"
             column: 3
             row: 1
             column_span: 2
@@ -156,14 +161,20 @@ homeassistant:
             column: 1
             row: 2
             column_span: 2
-          - entity: script.start_chromaudio
-            label: "ChromeAudio"
+          - entity: script.chrome_pause
+            icon: mdi:play-pause
+            label: "CHR"
             column: 3
             row: 2
-            column_span: 2
+          - entity: script.start_chromaudio
+            label: "Chrome Audio"
+            column: 4
+            row: 2
+       
 
           - entity: script.firehome
             icon: mdi:menu
+            label: "Fire"
             column: 1
             row: 3
           - entity: script.fireup
@@ -196,8 +207,9 @@ homeassistant:
             icon: mdi:arrow-right-bold
             column: 3
             row: 4
-          - entity: script.firehome
-            icon: mdi:menu
+          - entity: script.the_buzz
+            label: "The Buzz"
+            icon: mdi:music-circle
             column: 4
             row: 4
 

@@ -10,15 +10,12 @@
       - group.bed_room
       - group.hallway
       - group.room_carlo
-      # - group.presents
-      # - group.media
 
-  media:
+  media_controll:
     control: hidden
     icon: mdi:comment-multiple-outline
     view: no
     entities:
-      - media_player.jkw_cast2
       - switch.fernseher
       - switch.the_buzz
       - switch.next_track
@@ -68,6 +65,7 @@
       #- binary_sensor.dev103_motion
       #- binary_sensor.dev106_motion
       #- binary_sensor.dev57_motion
+
 
   Temperatures:
     control: hidden
@@ -171,14 +169,19 @@
       - group.presents
       - group.motion
 
-  mediaplayer:
+  media_player:
     name: Media Player
+    view: no
+    entities:
+      - media_player.jkw_cast2
+
+  media:
+    name: Media 
     icon: mdi:cast-connected
     view: yes
     entities:
       - group.harmony_remote_button
-      - group.media
-      # - group.gmusic
+      - group.media_player
 
   Temp:
     control: hidden
@@ -186,6 +189,7 @@
     view: yes
     entities:
       - group.temperatures
+      - group.vac
 
       
   Alarm_control:
