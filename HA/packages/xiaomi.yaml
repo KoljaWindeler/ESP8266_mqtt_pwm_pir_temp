@@ -30,7 +30,7 @@ sensor:
 vacuum:
   - platform: xiaomi_miio
     host: 192.168.2.75
-    token: 4d53785148576d5865734d4d4d595867
+    token: !secret xiaomi_token
 
 input_boolean:
   cleaning_done_today:
