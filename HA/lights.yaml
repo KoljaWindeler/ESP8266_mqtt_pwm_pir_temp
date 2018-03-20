@@ -16,6 +16,7 @@
       - light.dev11
       - light.dev17
       - light.dev21
+      - light.dev22
       - light.dev23
 # --------------------------------------------------
   - platform: group
@@ -270,6 +271,19 @@
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
+# --------------------------------------------------
+  - platform: mqtt ### palette
+    name: "dev22"
+    state_topic: "dev22/r/light"
+    command_topic: "dev22/s/light/dimm"
+    brightness_state_topic: 'dev22/r/light/brightness'
+    brightness_command_topic: 'dev22/s/light/brightness'
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
 # --------------------------------------------------
   - platform: mqtt ### touch livingroom
     name: "dev23"

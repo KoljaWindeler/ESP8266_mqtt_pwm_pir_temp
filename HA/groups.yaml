@@ -223,6 +223,7 @@
       - binary_sensor.dev10_motion
       - binary_sensor.dev14_motion
       - binary_sensor.dev15_motion
+      - binary_sensor.dev22_motion
       - binary_sensor.dev101_motion
       - binary_sensor.dev102_motion
       - binary_sensor.dev103_motion
@@ -282,6 +283,7 @@
 #      - sensor.dev19_info
       - sensor.dev20_info
       - sensor.dev21_info
+      - sensor.dev22_info
       - sensor.dev23_info
 #      - sensor.dev25_info
       - sensor.dev55_info
@@ -317,6 +319,7 @@
 #      - sensor.dev19_bssid
       - sensor.dev20_bssid
       - sensor.dev21_bssid
+      - sensor.dev22_bssid
       - sensor.dev23_bssid
 #      - sensor.dev25_bssid
       - sensor.dev55_bssid
@@ -352,6 +355,7 @@
 #      - sensor.dev19_ssid
       - sensor.dev20_ssid
       - sensor.dev21_ssid
+      - sensor.dev22_ssid
       - sensor.dev23_ssid
 #      - sensor.dev25_ssid
       - sensor.dev55_ssid
@@ -387,6 +391,7 @@
 #      - sensor.dev19_capability
       - sensor.dev20_capability
       - sensor.dev21_capability
+      - sensor.dev22_capability
       - sensor.dev23_capability
 #      - sensor.dev25_capability
       - sensor.dev55_capability
@@ -423,6 +428,7 @@
 #      - sensor.dev19_rssi
       - sensor.dev20_rssi
       - sensor.dev21_rssi
+      - sensor.dev22_rssi
       - sensor.dev23_rssi
 #      - sensor.dev25_rssi
       - sensor.dev55_rssi
@@ -458,6 +464,7 @@
 #      - sensor.dev19_update
       - sensor.dev20_update
       - sensor.dev21_update
+      - sensor.dev22_update
       - sensor.dev23_update
 #      - sensor.dev25_update
       - sensor.dev55_update
@@ -491,6 +498,7 @@
 #      - sensor.dev19
       - sensor.dev20
       - sensor.dev21
+      - sensor.dev22
       - sensor.dev23
 #      - sensor.dev25
       - sensor.dev55
@@ -556,6 +564,7 @@
       - light.dev19_simple_rainbow
       - light.dev20
       - light.dev21
+      - light.dev22
       - light.dev25
       - light.dev42
       - light.dev55

@@ -125,6 +125,11 @@
     device_class: motion
 
   - platform: mqtt
+    state_topic: "dev22/r/motion"
+    name: "dev22_motion"
+    device_class: motion
+
+  - platform: mqtt
     state_topic: "dev42/r/motion"
     name: "dev42_motion"
     device_class: motion
