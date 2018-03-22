@@ -1,7 +1,7 @@
 """
-@ Author      : Kolja Windeler, based on a template of  Daniel Palstra & Bram van Dartel
-@ Date        : 22/03/2018
-@ Description : Celler Muellentsorgung
+@ Author      : Daniel Palstra & Bram van Dartel
+@ Date        : 06/12/2017
+@ Description : MijnAfvalwijzer Sensor - It queries mijnafvalwijzer.nl.
 @ Notes:        Copy this file and place it in your
                 "Home Assistant Config folder\custom_components\sensor\" folder.
 """
@@ -56,9 +56,9 @@ class TrashCollectionSensor(Entity):
         """Initialize the sensor."""
         self._state = None
         self._trash_type_id = trash_type_id
-		self._name = "trash_ff_"+trash_type_id
+        self._name = "trash_ff_"+trash_type_id
         self.data = data
-		self.entity_id = async_generate_entity_id(ENTITY_ID_FORMAT, "trash_" + trash_type_id, hass=hass)
+        self.entity_id = async_generate_entity_id(ENTITY_ID_FORMAT, "trash_" + trash_type_id, hass=hass)
 
     @property
     def name(self):
@@ -73,8 +73,8 @@ class TrashCollectionSensor(Entity):
     @property
     def icon(self):
         """Return the icon to use in the frontend."""
-		#if self._trash_type_id == 0:
-		#	return ... 
+        #if self._trash_type_id == 0:
+        #    return ... 
         return ICON
 
     def update(self):
@@ -82,8 +82,8 @@ class TrashCollectionSensor(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         self.data.update()
-		self._state=self.data.data[self._trash_type_id]['pickup_date']
-		self._name=self.data.data[self._trash_type_id]['name_type']
+        self._state=self.data.data[self._trash_type_id]['pickup_date']
+        self._name=self.data.data[self._trash_type_id]['name_type']
 
 
 class TrashCollectionSchedule(object):
@@ -94,23 +94,23 @@ class TrashCollectionSchedule(object):
 
     @Throttle(SCAN_INTERVAL)
     def update(self):
-		today = datetime.datetime.now()
-		trash_data = []
-		magic_nr = 234
+        today = datetime.datetime.now()
+        trash_data = []
+        magic_nr = 234
 
-		for ii in range(0,4):
-			url = self._url.format(ii,magic_nr)
-			response = urlopen(url)
-			string = response.read().decode('ISO-8859-1')
-			entries = string.split("BEGIN:VEVENT")
-			trash = {}
-			for i in range(1,len(entries)):
-				l = entries[i].split('\n')
-				trash['name_type'] = l[4].split("SUMMARY:")[1]
-				trash['pickup_date'] = "-"
-				if datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d") > today:
-					trash['pickup_date'] = (str(datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d")))
-					trash_data.append(trash)
-					break
-		
-		self.data = trash_data
+        for ii in range(0,4):
+            url = self._url.format(ii,magic_nr)
+            response = urlopen(url)
+            string = response.read().decode('ISO-8859-1')
+            entries = string.split("BEGIN:VEVENT")
+            trash = {}
+            for i in range(1,len(entries)):
+                l = entries[i].split('\n')
+                trash['name_type'] = l[4].split("SUMMARY:")[1]
+                trash['pickup_date'] = "-"
+                if datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d") > today:
+                    trash['pickup_date'] = (str(datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d")))
+                    trash_data.append(trash)
+                    break
+        
+        self.data = trash_data
