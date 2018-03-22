@@ -502,6 +502,9 @@
         - condition: state
           entity_id: binary_sensor.someone_is_home
           state: 'off'
+        - condition: state
+          entity_id: vacuum.xiaomi_vacuum_cleaner
+          state: 'off'
     action:
      service: notify.pb
      data:
@@ -608,6 +611,9 @@
           state: 'on'
         - condition: state
           entity_id: binary_sensor.someone_is_home
+          state: 'off'
+        - condition: state
+          entity_id: vacuum.xiaomi_vacuum_cleaner
           state: 'off'
     action:
       - service: script.turn_on
