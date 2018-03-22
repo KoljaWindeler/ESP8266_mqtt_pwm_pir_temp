@@ -31,22 +31,21 @@ SCAN_INTERVAL = timedelta(minutes=1)
 DEFAULT_NAME = 'Trash_Sensor'
 CONST_REGIONCODE = "regioncode"
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Required(CONST_REGIONCODE): cv.string,
-})
+#PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+#    vol.Required(CONST_REGIONCODE): cv.string,
+#})
 
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
+def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up date afval sensor."""
-    regioncode = config.get(CONST_REGIONCODE)
+    regioncode = 148#config.get(CONST_REGIONCODE)
     url = "http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1[ot]="+regioncode+"&tx_ckcellextermine_pi1[ics]={0}&tx_ckcellextermine_pi1[startingpoint]={1}&type=3333"
     data = TrashCollectionSchedule(url)
 
     devices = []
     for trash_type_id in range(0,4): # 4 types of trash
         devices.append(TrashCollectionSensor(trash_type_id, data))
-    add_devices(devices)
+    async_add_devices(devices)
 
 
 class TrashCollectionSensor(Entity):
