@@ -184,11 +184,3 @@ shell_command:
   camxia1_5: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_5.jpg
   
 
-google_assistant:
-  project_id: gHomeHA
-  client_id: hGAge1k3mmUdI64AnndCYnYSlyjgZgzgW3j661ewsh82o0sjZZKAkS1HVJCKyGmqHHgkgMo5xdIzQeor
-  access_token: SxcP33iR1aWjhlaeR4IcigV1lR6qibPP2NkN7kVutavESmbnw9wVQFrqzS2MPDrK4pzFHuwZ99T8wo04
-  exposed_domains:
-    - switch
-    - light
-    - group
