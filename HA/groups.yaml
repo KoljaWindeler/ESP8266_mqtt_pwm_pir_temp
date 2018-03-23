@@ -1,5 +1,5 @@
   default_view:
-    icon: mdi:home
+    icon: mdi:lamp
     view: yes
     entities:
       - group.living_room
@@ -10,6 +10,7 @@
       - group.bed_room
       - group.hallway
       - group.room_carlo
+      - group.trash
 
   media_controll:
     control: hidden
@@ -24,6 +25,16 @@
       - switch.five_down
       - switch.ten_down
 
+  trash:
+    name: Trash
+    control: hidden
+    icon: mdi:comment-multiple-outline
+    view: no
+    entities:
+      - sensor.trash_0
+      - sensor.trash_1
+      - sensor.trash_2
+      - sensor.trash_3
 
   room_carlo:
     name: Carlo
@@ -185,7 +196,7 @@
 
   Temp:
     control: hidden
-    icon: mdi:thermometer
+    icon: mdi:home
     view: yes
     entities:
       - group.temperatures

@@ -278,6 +278,8 @@
 # -----------------------------------------------
     light.dev22:
       friendly_name: "22 Palette"
+    binary_sensor.dev22_motion:
+      friendly_name: "22 Palette"
 # -----------------------------------------------
     light.dev55:
       friendly_name: "Lampinions"

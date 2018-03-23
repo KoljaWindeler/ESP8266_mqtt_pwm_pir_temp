@@ -16,7 +16,7 @@
       - light.dev11
       - light.dev17
       - light.dev21
-      - light.dev22
+      #- light.dev22 via automation now
       - light.dev23
 # --------------------------------------------------
   - platform: group
