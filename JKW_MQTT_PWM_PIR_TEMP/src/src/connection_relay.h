@@ -2,9 +2,10 @@
 	#define connection_relay_h
 
 #include <ESP8266WiFi.h>
+#include "connection_relay_pw.h"
 
-	#define AP_SSID                     "ESP_relay" DEV
-	#define AP_PW                       "ESP_relay_pw"
+	#define AP_SSID                     CR_SSID DEV
+	#define AP_PW                       CRPW
 	#define MESH_PORT                   1883
 	#define ESP8266_NUM_CLIENTS         5
 	#define MAX_MSG_QUEUE               99

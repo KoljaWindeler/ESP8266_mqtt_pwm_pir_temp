@@ -406,7 +406,7 @@ void connection_relay::startAP(){
 		IPAddress ip   = WiFi.localIP();
 		ip[2] = ip[2] + 1; // increase 3rd octed for each sublevel
 		ip[3] = 1;
-		sprintf(m_msg_buffer, "Set AP IP to %i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3]);
+		sprintf(m_msg_buffer, "Set AP IP to %i.%i.%i.%i and SSID to %s", ip[0], ip[1], ip[2], ip[3],AP_SSID);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 		WiFi.softAPConfig(ip, ip, apSM);
 		WiFi.softAP(AP_SSID, AP_PW, WiFi.channel(), 0); // 1 == hidden SSID
