@@ -21,6 +21,7 @@ peripheral *p_nl;
 peripheral *p_rfb;
 peripheral *p_gpio;
 peripheral *p_husqvarna;
+peripheral *p_no_mesh;
 
 connection_relay network;
 WiFiClient wifiClient;

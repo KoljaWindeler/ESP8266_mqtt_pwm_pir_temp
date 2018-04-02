@@ -66,6 +66,8 @@ public:
 		bool connected(bool print);
 		void receive_loop();
 		bool loopCheck();
+		void enableMesh(bool in);
+		bool MeshEnabled();
 		bool publishRouting();
 		uint8_t m_connection_type;
 		uint8_t mqtt_ota(uint8_t * data, uint16_t size);
@@ -91,6 +93,7 @@ private:
 		uint8_t * outBuf[MAX_MSG_QUEUE];
 		blacklist_entry * bl;
 
+		bool m_mesh_enabled;
 		uint32_t m_ota_bytes_in;
 		uint16_t m_ota_seq;
 		uint32_t m_ota_total_update_size;

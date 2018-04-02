@@ -243,7 +243,7 @@ void reconnect(){
 		// each round, check wifi first
 		if (WiFi.status() != WL_CONNECTED){
 			// if the ssid was programmed to be " ", connect to mesh
-			if(strlen(mqtt.nw_ssid)==1 && mqtt.nw_ssid[0]==' '){
+			if(strlen(mqtt.nw_ssid)==1 && mqtt.nw_ssid[0]==' ' && network.MeshEnabled()){
 				logger.println(TOPIC_WIFI,F("No SSID trying mesh only"), COLOR_YELLOW);
 				network.MeshConnect();
 			} else {
@@ -252,9 +252,11 @@ void reconnect(){
 				// try mesh if wifi directly did not work after some time
 				// this will be true after (min 45*0.8=35 sec)
 				// or when the ssid is not programmed, set SSID to
-				if(relationship_timeout(0.8, (char*)"MESH")){
-					logger.println(TOPIC_WIFI,F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
-					network.MeshConnect();
+				if(network.MeshEnabled()){
+					if(relationship_timeout(0.8, (char*)"MESH")){
+						logger.println(TOPIC_WIFI,F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
+						network.MeshConnect();
+					}
 				}
 			}
 			////////////////// MESH CONNECTION ///////////////////////
@@ -340,7 +342,9 @@ void reconnect(){
 
 				logger.println(TOPIC_MQTT, F("publishing finished"));
 
-				network.startAP();
+				if(network.MeshEnabled()){
+					network.startAP();
+				}
 				timer_connected_start = millis();
 			} // if MQTT network.connect ok
 		}  // wifi status connected
@@ -479,6 +483,7 @@ void loadPheripherals(uint8_t* config){
 	bake(new bridge(), &p_rfb, config);
 	bake(new J_GPIO(), &p_gpio, config);
 	bake(new husqvarna(), &p_husqvarna, config);
+	bake(new no_mesh(), &p_no_mesh, config);
 
 
 	//logger.p("RAM after init objects ");
