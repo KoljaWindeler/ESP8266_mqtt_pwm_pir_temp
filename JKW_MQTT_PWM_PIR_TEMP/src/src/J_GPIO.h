@@ -6,6 +6,7 @@
 static constexpr char MQTT_J_GPIO_OUTPUT_TOPIC[]   = "gpio_%i_out";
 static constexpr char MQTT_J_GPIO_TOGGLE_TOPIC[]   = "gpio_%i_toggle";
 static constexpr char MQTT_J_GPIO_PULSE_TOPIC[]    = "gpio_%i_pulse";
+static constexpr char MQTT_J_GPIO_INVERT_TOPIC[]    = "gpio_%i_invert";
 
 class J_GPIO : public peripheral {
 	public:
@@ -25,6 +26,7 @@ class J_GPIO : public peripheral {
 		bool m_pin[17]={false};
 		mqtt_parameter_8 m_state[17];
 		uint32_t m_next_action[17]={0};
+		bool m_invert[17];
 };
 
 

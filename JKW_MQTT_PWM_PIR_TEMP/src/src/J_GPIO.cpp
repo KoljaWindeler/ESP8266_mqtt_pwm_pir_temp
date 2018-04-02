@@ -35,6 +35,7 @@ bool J_GPIO::init(){
 		if(m_pin[i]){
 			digitalWrite(i,LOW);
 			pinMode(i, OUTPUT);
+			m_invert[i]=false;
 			sprintf(m_msg_buffer,"J_GPIO G%i init",i);
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 		}
@@ -91,6 +92,11 @@ bool J_GPIO::subscribe(){
 			sprintf(m_msg_buffer,MQTT_J_GPIO_PULSE_TOPIC,i);
 			network.subscribe(build_topic(m_msg_buffer,PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer,PC_TO_UNIT), COLOR_GREEN);
+
+			// invert setting
+			sprintf(m_msg_buffer,MQTT_J_GPIO_INVERT_TOPIC,i);
+			network.subscribe(build_topic(m_msg_buffer,PC_TO_UNIT));
+			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer,PC_TO_UNIT), COLOR_GREEN);
 		}
 	}
 	return true;
@@ -109,7 +115,11 @@ void J_GPIO::set_output(uint8_t pin, uint8_t state){
 		sprintf(m_msg_buffer,"Set J_GPIO %i: OFF",pin);
 	}
 	logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
-	digitalWrite(pin,m_state[pin].get_value());
+	bool output_state = m_state[pin].get_value();
+	if(m_invert[pin]){
+		output_state = !output_state;
+	}
+	digitalWrite(pin,output_state);
 };
 
 
@@ -142,6 +152,21 @@ bool J_GPIO::receive(uint8_t* p_topic, uint8_t* p_payload){
 				set_output(i,1);
 				uint16_t pulse_length = atoi((char*)p_payload);
 				m_next_action[i] = millis()+pulse_length;
+				// do something
+				return true;
+			}
+
+			// invert settings
+			sprintf(m_msg_buffer,MQTT_J_GPIO_INVERT_TOPIC,i);
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer,PC_TO_UNIT))) { // on / off with dimming
+				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
+					sprintf(m_msg_buffer,"Set J_GPIO %i: inverted",i);
+					m_invert[i] = true;
+				} else {
+					sprintf(m_msg_buffer,"Set J_GPIO %i: non-inverted",i);
+					m_invert[i] = false;
+				}
+				logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_GREEN);
 				// do something
 				return true;
 			}
