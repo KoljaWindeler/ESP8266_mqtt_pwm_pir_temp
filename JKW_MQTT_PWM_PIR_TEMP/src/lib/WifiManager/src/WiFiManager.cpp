@@ -601,7 +601,7 @@ int WiFiManager::connectWifi(String ssid, String pass){
 	//DEBUG_WM(F("Connecting as wifi client..."));
 	Serial.print(F("*WM: Connecting to "));
 	if(ssid != ""){
-		Serial.println(ssid);
+		Serial.printf("->%s<-\r\n",ssid.c_str());
 	} else if (WiFi.SSID()) {
 		Serial.println(WiFi.SSID());
 	};
