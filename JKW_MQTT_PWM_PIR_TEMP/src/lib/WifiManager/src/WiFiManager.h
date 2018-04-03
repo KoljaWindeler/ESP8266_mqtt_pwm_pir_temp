@@ -218,6 +218,7 @@ class WiFiManager
 		boolean       storeMqttStruct_v3(char* temp,uint8_t size);
     boolean       loadMqttStruct_v3(char* temp,uint8_t size);
 		boolean       loadMqttStruct_v2(char* temp,uint8_t size);
+		char*					getMQTTelement(uint8_t i,mqtt_data * mqtt);
 
     // DNS server
     const byte    DNS_PORT = 53;

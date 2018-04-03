@@ -271,12 +271,12 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 				// Serial.print("@");
 				p = (uint8_t *) m_mqtt;
 				f_p         = 0;
-				char_buffer = 13; // enter the "if" below
+				char_buffer = 255; // enter the "if" below
 				f_start     = 0;
 			}
 
 			// jump to next field
-			if (char_buffer == 13) {
+			if (char_buffer == 13 || char_buffer == 255) {
 				// Serial.print("#");
 				f_start = 0;
 				for (int i = 0; i <= sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 1.2.3.4.5.6.7
@@ -284,6 +284,13 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 						f_start += m_mqtt_sizes[i - 1];
 					}
 					// Serial.printf("+%i %i\r\n",f_p,f_start);
+					// no text entered but [enter], keep content
+					if(f_p == f_start && char_buffer == 13){
+						strcpy((char*)p,getMQTTelement(i,m_mqtt));
+						f_p+=strlen(getMQTTelement(i,m_mqtt));
+						p+=strlen(getMQTTelement(i,m_mqtt));
+						Serial.print(getMQTTelement(i,m_mqtt));
+					}
 					// seach for the field that starts closes to our current pos
 					if (f_p <= f_start) {
 						for (int ii = 0; ii < f_start - f_p; ii++) { // add as many 0x00 to the config as required
@@ -294,10 +301,11 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 						// print some shiny output
 						if (i == 0) {
 							Serial.print(F("\r\n\r\nStart readig config"));
-						}
-						;
+						};
 						if (i >= 0 && i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) {
-							explainMqttStruct(i, true);
+							Serial.println("");
+							explainMqttStruct(i, false);
+							Serial.printf("[%s]\r\n",getMQTTelement(i,m_mqtt));
 						} else if (i == sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) { // last segement .. save and reboot
 							// fill the buffer
 							Serial.print(F("\r\n==========\r\nConfig stored\r\n"));
@@ -529,6 +537,25 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 	return false;
 }
 
+char* WiFiManager::getMQTTelement(uint8_t i, mqtt_data * mqtt){
+	if(i==0){
+		return mqtt->login;
+	} else if(i==1){
+		return mqtt->pw;
+	} else if(i==2){
+		return mqtt->dev_short;
+	} else if(i==3){
+		return mqtt->server_ip;
+	} else if(i==4){
+		return mqtt->server_port;
+	} else if(i==5){
+		return mqtt->nw_ssid;
+	} else if(i==6){
+		return mqtt->nw_pw;
+	}
+	return mqtt->cap;
+}
+
 void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 	for(uint8_t i=0; i<sizeof(mqtt->cap);i++){
 		if((mqtt->cap[i]<'A' || mqtt->cap[i]>'z') && mqtt->cap[i]!=',' && (mqtt->cap[i]<'0' || mqtt->cap[i]>'9')){
@@ -536,22 +563,10 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 			mqtt->cap[i]=0x00;
 		}
 	}
-	explainMqttStruct(0, false);
-	Serial.println(mqtt->login);
-	explainMqttStruct(1, false);
-	Serial.println(mqtt->pw);
-	explainMqttStruct(2, false);
-	Serial.println(mqtt->dev_short);
-	explainMqttStruct(3, false);
-	Serial.println(mqtt->server_ip);
-	explainMqttStruct(4, false);
-	Serial.println(mqtt->server_port);
-	explainMqttStruct(5, false);
-	Serial.println(mqtt->nw_ssid);
-	explainMqttStruct(6, false);
-	Serial.println(mqtt->nw_pw);
-	explainMqttStruct(7, false);
-	Serial.println(mqtt->cap);
+	for(uint8_t i=0; i<7; i++){
+		explainMqttStruct(i, false);
+		Serial.println(getMQTTelement(i,mqtt));
+	}
 }
 
 void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
