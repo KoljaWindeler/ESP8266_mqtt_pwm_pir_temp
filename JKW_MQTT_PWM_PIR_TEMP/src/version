@@ -1,3 +1,19 @@
+20180403
+	- Mesh Host SSID pattern: JKW_relay_dev99_L1 = opened by dev99 and Level
+		one aka directly connected to the WIFI, next level would be L2 and so on ...
+	- Configure Mesh options via Capability string M0/1/2/3 (Full, Host only, client only, off)
+	- increased wifi connect time from 15 o 25 sec
+	- explicitly set STA mode before connecting to any WiFi (test showed significant improvement)
+	- explicitly set Mesh Channel on Mesh connect (again, way higher connection chances)
+20180402
+	- Added inverse option for GPIO (e.g. Relay shield is active LOW)
+	-	No Mesh function added:
+		- updated all nodes after having 20180310 on four nodes for a month
+		- Had multiple disconnects / offline nodes
+	- Added Mesh disconnect if no response is received within full "Timeout"
+		- We send a PING to our Uplink when we haven't send a message for Timeout/2 = 70 sec
+		- The uplink should immediately respond with a ACK
+		- We disconnect when we don't receive an ACK within 140 sec
 20180310
 	- added peripheral husqvarna UNTESTED
 	- text size 390460
@@ -30,7 +46,7 @@
 20180206
 	- reverted inital connect with timeout .. init connection fails too often
 	- remove all wifi connections before connect to dedicated NW
-20180120
+20180120 *** (LTS tested)
 	- fixed getting SSID and password from WiFiManger
 	- changed WiFiManger to use timeout on initial connect
 	- text size 354206

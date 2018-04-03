@@ -1,22 +1,30 @@
 #include <no_mesh.h>
 
 // simply the constructor
-no_mesh::no_mesh(){
-	sprintf((char*)key,"NOM");
-};
+no_mesh::no_mesh(){};
 
 // simply the destructor
-no_mesh::~no_mesh(){
-	network.enableMesh(true);
-	logger.println(TOPIC_GENERIC_INFO, F("Mesh enabeld"), COLOR_GREEN);
-};
+no_mesh::~no_mesh(){};
 
 // helper function that is really just calling another function .. somewhat useless at the moment
 // it is in charge of deciding if the object is loaded or not, but as of now it is just formwarding the
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded under all circumstances
 bool no_mesh::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	if(cap.parse(config,(uint8_t*)"M0")){ // MESH_MODE_FULL_MESH
+		logger.println(TOPIC_GENERIC_INFO, F("Full Mesh enabled"), COLOR_GREEN);
+		network.setMeshMode(MESH_MODE_FULL_MESH);
+	} else if(cap.parse(config,(uint8_t*)"M1")){ // MESH_MODE_HOST_ONLY
+		network.setMeshMode(MESH_MODE_HOST_ONLY);
+		logger.println(TOPIC_GENERIC_INFO, F("Mesh host mode enabled"), COLOR_YELLOW);
+	} else if(cap.parse(config,(uint8_t*)"M2")){ // MESH_MODE_CLIENT_ONLY
+		network.setMeshMode(MESH_MODE_CLIENT_ONLY);
+		logger.println(TOPIC_GENERIC_INFO, F("Mesh client mode enabled"), COLOR_YELLOW);
+	} else if(cap.parse(config,(uint8_t*)"M3")){ // MESH_MODE_OFF
+		network.setMeshMode(MESH_MODE_OFF);
+		logger.println(TOPIC_GENERIC_INFO, F("Mesh disabled"), COLOR_GREEN);
+	}
+	return false; // this will call our destructor
 }
 
 // the will be requested to check if the key is in the config strim
@@ -26,8 +34,6 @@ uint8_t* no_mesh::get_key(){
 
 // will be callen if the key is part of the config
 bool no_mesh::init(){
-	network.enableMesh(false);
-	logger.println(TOPIC_GENERIC_INFO, F("Mesh disabled"), COLOR_GREEN);
 	return true;
 }
 

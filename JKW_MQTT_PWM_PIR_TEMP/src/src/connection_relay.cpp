@@ -16,7 +16,9 @@ connection_relay::connection_relay(){
 	WiFi.macAddress(mac);
 	bl = new blacklist_entry(mac);
 
-	m_mesh_enabled = true;
+	// mesh is a bit tricky. first test failed misably, due to super long chaining
+	// 8 devices lined up in a row and the connection was bad.
+	network.setMeshMode(MESH_MODE_CLIENT_ONLY); // clever?
 };
 
 connection_relay::~connection_relay(){ };
@@ -52,6 +54,9 @@ bool connection_relay::DirectConnect(){
 	logger.pln(mqtt.nw_ssid);
 
 	if (wifiManager.connectWifi(mqtt.nw_ssid, mqtt.nw_pw) == WL_CONNECTED) {
+		sprintf(m_msg_buffer,"Direct connection with %s estabilshed, IP: %i.%i.%i.%i",
+			(char*)WiFi.SSID().c_str(),WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
+		logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 		m_connection_type = CONNECTION_DIRECT_CONNECTED;
 		return true;
 	}
@@ -59,19 +64,20 @@ bool connection_relay::DirectConnect(){
 }
 
 // enable or disable mesh function
-void connection_relay::enableMesh(bool in){
-	m_mesh_enabled = in;
+void connection_relay::setMeshMode(uint8_t in){
+	m_mesh_mode = in;
 }
 
 // get status, is mesh ok or shall we work standalone?
-bool connection_relay::MeshEnabled(){
-	return m_mesh_enabled;
+uint8_t connection_relay::getMeshMode(){
+	return m_mesh_mode;
 }
 
 // direct wifi didn't work, connect via mesh
 bool connection_relay::MeshConnect(){
 	int8_t scan_count = scan(true); // will start with blocking scan
-	int8_t best_RSSI  = -1;
+	int8_t best_AP  = -1;
+	uint8_t best_sig = 0;
 
 	if (scan_count > 0) {
 		// erial.printf("%d network(s) found\r\n", scan_count);
@@ -80,23 +86,41 @@ bool connection_relay::MeshConnect(){
 			// if(WiFi.isHidden(i) && strncmp(WiFi.SSID(i).c_str(),AP_SSID,strlen(AP_SSID))==0){
 			if (strncmp(WiFi.SSID(i).c_str(), AP_SSID, strlen(AP_SSID)) == 0) {
 				// erial.println("interesting config");
-				if (best_RSSI == -1 || WiFi.RSSI(i) > WiFi.RSSI(best_RSSI)) {
+				// schema: AP_SSID-dev1-2 = AP is dev1, level = 2
+				uint8_t step = 0;
+				uint8_t this_mesh_level = 1;
+				uint8_t this_sig = wifiManager.getRSSIasQuality((int)WiFi.RSSI(i));
+
+				if(WiFi.SSID(i).charAt(strlen(WiFi.SSID(i).c_str())-2)=='L'){
+					this_mesh_level = WiFi.SSID(i).charAt(strlen(WiFi.SSID(i).c_str())-1);
+					if(this_mesh_level>'0' && this_mesh_level<='9'){
+						this_mesh_level-='0';
+						this_sig = this_sig/2 + this_sig/(2<<(this_mesh_level-1)); // 1. level 100%, 2. 75%, 3. 62,5%
+					} else {
+						this_mesh_level = 0; // can't decode
+					}
+				}
+			 	Serial.printf("%d: %s, Ch:%d (%ddBm -> %d) %s %i\n\r", i+1, WiFi.SSID(i).c_str(), WiFi.channel(i), WiFi.RSSI(i), this_sig, WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "", WiFi.isHidden(i));
+
+				if (best_AP == -1 || this_sig>best_sig) {
 					if (bl->get_fails(WiFi.BSSID(i)) < 2) { // only connect to this network if there are less then 2 failed tries
 						// erial.println("actually the best");
-						best_RSSI = i;
+						best_sig = this_sig;
+						m_mesh_level = this_mesh_level;
+						best_AP = i;
 					}
 				}
 			}
 		}
 
-		if (best_RSSI > -1) {
-			sprintf(m_msg_buffer, "%i Networks found, incl mesh '%s' [%idbm]. Connecting", scan_count, AP_SSID,
-			  WiFi.RSSI(best_RSSI));
+		if (best_AP > -1) {
+			sprintf(m_msg_buffer, "%i Networks found, incl mesh '%s' [%idbm]. Connecting", scan_count, WiFi.SSID(best_AP).c_str(),
+			  WiFi.RSSI(best_AP));
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 
 			// connect to AP
 			WiFi.persistent(false); // avoids updating the same flash cell every reboot
-			WiFi.begin(WiFi.SSID(best_RSSI).c_str(), AP_PW, 0, WiFi.BSSID(best_RSSI), true);
+			WiFi.begin(WiFi.SSID(best_AP).c_str(), AP_PW, WiFi.channel(best_AP), WiFi.BSSID(best_AP), true);
 			WiFi.waitForConnectResult();
 			if (WiFi.status() == WL_CONNECTED) {
 				sprintf(m_msg_buffer, "Mesh connection established %i.%i.%i.%i", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP(
@@ -104,6 +128,9 @@ bool connection_relay::MeshConnect(){
 				logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 				m_connection_type = CONNECTION_MESH_CONNECTED;
 				return true;
+			} else {
+				sprintf(m_msg_buffer, "Mesh connection failed");
+				logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_RED);
 			}
 		} else {
 			sprintf(m_msg_buffer, ("No mesh node (%s) in range"), AP_SSID);
@@ -423,10 +450,12 @@ void connection_relay::startAP(){
 		IPAddress ip   = WiFi.localIP();
 		ip[2] = ip[2] + 1; // increase 3rd octed for each sublevel
 		ip[3] = 1;
-		sprintf(m_msg_buffer, "Set AP IP to %i.%i.%i.%i and SSID to %s", ip[0], ip[1], ip[2], ip[3], AP_SSID);
+		char ssid[strlen(AP_SSID)+4+strlen(mqtt.dev_short)]; // max 32?
+		sprintf(ssid,"%s_%s_L%i",AP_SSID,mqtt.dev_short,m_mesh_level+1);
+		sprintf(m_msg_buffer, "Set AP IP to %i.%i.%i.%i and SSID to %s", ip[0], ip[1], ip[2], ip[3], ssid);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 		WiFi.softAPConfig(ip, ip, apSM);
-		WiFi.softAP(AP_SSID, AP_PW, WiFi.channel(), 0); // 1 == hidden SSID
+		WiFi.softAP(ssid, AP_PW, WiFi.channel(), 0); // 1 == hidden SSID
 		m_AP_running = true;
 
 		espServer = new WiFiServer(MESH_PORT);
@@ -502,7 +531,9 @@ void connection_relay::receive_loop(){
 			buf[1] = 0x00;
 			enqueue_up(buf, 1);
 		}
-		// if we haven't received aresponse in time .. disconnect
+		// espLastcomm will be received when we receive a MSG_TYPE_ACK from our uplink
+		// MSG_TYPE_ACK will be send to a subnode whenever we receive data
+		// if we haven't received a response in time .. disconnect
 		if((millis()-espLastcomm) / 1000 > COMM_TIMEOUT ){
 			sprintf(m_msg_buffer, "Connection to server timed out. Disconnecting");
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);

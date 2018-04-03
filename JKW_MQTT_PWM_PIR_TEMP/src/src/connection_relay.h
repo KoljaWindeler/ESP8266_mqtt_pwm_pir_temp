@@ -16,6 +16,11 @@
 	#define CONNECTION_DIRECT_CONNECTED 1
 	#define CONNECTION_MESH_CONNECTED   2
 
+	#define MESH_MODE_FULL_MESH         0
+	#define MESH_MODE_HOST_ONLY         1
+	#define MESH_MODE_CLIENT_ONLY       2
+	#define MESH_MODE_OFF               3
+
 	#define MSG_TYPE_SUBSCRPTION        1
 	#define MSG_TYPE_PUBLISH            2
 	#define MSG_TYPE_NW_LOOP_CHECK      3
@@ -66,8 +71,8 @@ public:
 		bool connected(bool print);
 		void receive_loop();
 		bool loopCheck();
-		void enableMesh(bool in);
-		bool MeshEnabled();
+		void setMeshMode(uint8_t in);
+		uint8_t getMeshMode();
 		bool publishRouting();
 		uint8_t m_connection_type;
 		uint8_t mqtt_ota(uint8_t * data, uint16_t size);
@@ -93,7 +98,8 @@ private:
 		uint8_t * outBuf[MAX_MSG_QUEUE];
 		blacklist_entry * bl;
 
-		bool m_mesh_enabled;
+		uint8_t m_mesh_mode;
+		uint8_t m_mesh_level;
 		uint32_t m_ota_bytes_in;
 		uint16_t m_ota_seq;
 		uint32_t m_ota_total_update_size;

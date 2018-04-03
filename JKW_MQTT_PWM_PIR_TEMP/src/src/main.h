@@ -57,11 +57,11 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180402" DEV
+	#define VERSION               "20180403.2" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
-	#define MAX_CON_TIME          15           // give up connecting after 15 sec per try
-	#define MIN_RECONNECT_TIME    45           // try to reconnect for at least 45 sec, even after power up
+	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
+	#define MIN_RECONNECT_TIME    65           // try to reconnect for at least 65 sec, even after power up
 	#define CALC_RECONNECT_WEIGHT 5            // add 1 sec of reconnect time per 5 sec that we've been connected previously
 	#define MAX_RECONNECT_TIME    20 * 60      // even if we've been happliy connected to this network for weeks: start AP after 20 min of trying to reconnect
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
