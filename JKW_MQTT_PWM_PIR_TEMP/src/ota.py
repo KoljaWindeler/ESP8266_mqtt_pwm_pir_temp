@@ -9,10 +9,10 @@ import time, os
 import paho.mqtt.client as paho
 import hashlib
 broker="192.168.2.84"
-#filename="DSCI0027.jpg"
 filename=".pioenvs/esp01_1m/firmware.bin" #file to send
-#topic="dev99/s/ota"
-topic="s/ota"
+#filename="../releases/20180310.bin" #file to send
+topic="dev97/s/ota"
+#topic="s/ota"
 qos=1
 data_block_size=900
 fo=open(filename,"rb")
@@ -57,7 +57,7 @@ def on_publish(client, userdata, mid):
     client.puback_flag=True
 
 ## waitfor loop
-def wait_for(client,msgType,period=0.05,wait_time=2000,running_loop=False):
+def wait_for(client,msgType,period=1,wait_time=2000,running_loop=False):
     client.running_loop=running_loop #if using external loop
     wcount=0
     while True:

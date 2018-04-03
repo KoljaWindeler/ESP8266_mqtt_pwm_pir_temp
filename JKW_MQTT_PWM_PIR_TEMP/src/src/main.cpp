@@ -1,6 +1,6 @@
 #include "main.h"
 
-uint8_t  periodic_slot         = 0;
+uint8_t periodic_slot = 0;
 uint32_t updateFastValuesTimer = 0;
 uint32_t updateSlowValuesTimer = 0;
 uint32_t timer_republish_avoid = 0;
@@ -17,30 +17,30 @@ WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devX
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
 
-uint8_t active_p_pointer=0;
-uint8_t active_p_intervall_counter=0;
-peripheral **active_p[MAX_PERIPHERALS];
-peripheral **active_intervall_p[MAX_PERIPHERALS];
-char* p_trace;
+uint8_t active_p_pointer = 0;
+uint8_t active_p_intervall_counter = 0;
+peripheral ** active_p[MAX_PERIPHERALS];
+peripheral ** active_intervall_p[MAX_PERIPHERALS];
+char * p_trace;
 
-//bool (*intervall_p[MAX_PERIPHERALS]);
+// bool (*intervall_p[MAX_PERIPHERALS]);
 
-////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////// helper to calc times a bit easier ///////////////////////////
-bool relationship_timeout(float decelleration_factor, char* next_mode){
+// //////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////// helper to calc times a bit easier ///////////////////////////
+bool relationship_timeout(float decelleration_factor, char * next_mode){
 	uint16_t time_connected     = (timer_connected_stop - timer_connected_start) / 1000;
 	uint16_t time_not_connected = (millis() - timer_connected_stop) / 1000;
 	// min 45sec
 	// max 20min
 	// per second that we've been connected we increase the retry time by 0.2 sec
 	uint16_t time_max_reconnect =
-		_max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
+	  _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
 
 	time_max_reconnect *= decelleration_factor;
 
 	logger.addColor(COLOR_PURPLE);
-	sprintf(m_msg_buffer,	"Prev. connected for %i sec, disconnected for %i sec, total time before %s mode %i sec",
-		time_connected, time_not_connected, next_mode, time_max_reconnect);
+	sprintf(m_msg_buffer, "Prev. connected for %i sec, disconnected for %i sec, total time before %s mode %i sec",
+	  time_connected, time_not_connected, next_mode, time_max_reconnect);
 	logger.pln(m_msg_buffer);
 	logger.remColor(COLOR_PURPLE);
 
@@ -50,7 +50,6 @@ bool relationship_timeout(float decelleration_factor, char* next_mode){
 	return false;
 }
 
-
 // /////////////////////////////////////////////////////////////////////////////////////
 // /////////////////// function called when a MQTT message arrived /////////////////////
 void callback(char * p_topic, byte * p_payload, uint16_t p_length){
@@ -58,22 +57,22 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	logger.addColor(COLOR_PURPLE);
 	logger.topic(TOPIC_MQTT_IN);
 
-	if(p_length<MSG_BUFFER_SIZE-10){ // limit
-		sprintf(m_msg_buffer,"'%s' --> '%s'\r\n", p_topic, p_payload);
+	if (p_length < MSG_BUFFER_SIZE - 10) { // limit
+		sprintf(m_msg_buffer, "'%s' --> '%s'\r\n", p_topic, p_payload);
 		logger.p(m_msg_buffer);
 	}
-	//Serial.printf("%s --> %s\r\n", p_topic, p_payload);
+	// Serial.printf("%s --> %s\r\n", p_topic, p_payload);
 	logger.remColor(COLOR_PURPLE);
 
-	/// will find the right component and execute the input
-	for(uint8_t i = 0; active_p[i]!=0x00 && i<MAX_PERIPHERALS-1; i++){
-		if((*active_p[i])->receive((uint8_t*)p_topic, p_payload)){
+	// / will find the right component and execute the input
+	for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_PERIPHERALS - 1; i++) {
+		if ((*active_p[i])->receive((uint8_t *) p_topic, p_payload)) {
 			return;
 		}
 	}
 	// //////////////////////// SET LIGHT ON/OFF ////////////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
-	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT))) {
+	if (!strcmp(p_topic, build_topic(MQTT_SETUP_TOPIC, PC_TO_UNIT))) {
 		// the setup topic is versital, Message is checked:
 		// can be ON -> go to setup
 		// can be http:// ... url for update
@@ -81,143 +80,147 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // go to setup
 			logger.println(TOPIC_MQTT, F("Go to setup"));
 			delay(500);
-			//TODO if (neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
-				Serial.end();
-				delay(500);
-				Serial.begin(115200);
-			//}
-			network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"ok");
+			// TODO if (neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+			Serial.end();
+			delay(500);
+			Serial.begin(115200);
+			// }
+			network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "ok");
 			wifiManager.startConfigPortal(CONFIG_SSID); // needs to be tested!
 			// debug
 			WiFi.printDiag(Serial);
 		} else if (!strncmp_P((const char *) p_payload, "http", 4)) { // update
-			if(network.m_connection_type == CONNECTION_DIRECT_CONNECTED){
+			if (network.m_connection_type == CONNECTION_DIRECT_CONNECTED) {
 				logger.p(F("Update command with url found, trying to update from "));
-				logger.pln((char*)p_payload);
+				logger.pln((char *) p_payload);
 				// have to create a copy, whenever we publish we'll override the current buffer
-				char copy_buffer[sizeof(p_payload)/sizeof(p_payload[0])];
-				strcpy(copy_buffer,(const char*)p_payload);
-				network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"ok");
-				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"updating...");
+				char copy_buffer[sizeof(p_payload) / sizeof(p_payload[0])];
+				strcpy(copy_buffer, (const char *) p_payload);
+				network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "ok");
+				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "updating...");
 
 				ESPhttpUpdate.rebootOnUpdate(false);
 				HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
 				if (res == HTTP_UPDATE_OK) {
-					network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"rebooting...");
+					network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "rebooting...");
 					logger.pln(F("Update OK, rebooting"));
 					ESP.restart();
 				} else {
-					network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"update failed");
+					network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "update failed");
 					logger.pln(F("Update failed"));
 				}
 			} else {
-				network.publish(build_topic("INFO",UNIT_TO_PC), (char*)"Can't update. Mesh connection.");
+				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "Can't update. Mesh connection.");
 				logger.p(F("Can't update. Mesh connection."));
 			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
 			logger.p(F("Received reset command"));
 			ESP.restart();
 		} else if (!strncmp_P((const char *) p_payload, "setNW", 5)) { // set parameter
-				// msg: set/SSID/PW/IP/CHK
-				uint8_t slashes=0;
-				uint8_t chk=0;
-				for(uint8_t i=5; i<p_length; i++){
-						if(p_payload[i]=='/'){ // counte slaeses
-							slashes++;
-						} else if(slashes<=3) { // xor all chars before chk: SSID, PW, IP
-							chk ^= p_payload[i];
-						} else {
-							// move it to a letter between A-Z
-							while(chk<'A'){
-								chk+='Z'-'A';
-							}
-							while(chk>'Z'){
-								chk-='Z'-'A';
-							}
-							if(p_payload[i]==chk && i==p_length-1){
-								chk=1;
-							} else {
-								sprintf(m_msg_buffer,	"NW update failed, CKH wrong expected: %c",chk);
-								logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_RED);
-								chk=0;
-								break;
-							}
-						}
-				}
-				if(chk==1){
-					// SSID
-					uint8_t end=6;
-					uint8_t start=end;
-					for( ; p_payload[end]!='/'; end++){};
-					memset(mqtt.nw_ssid,0x00,sizeof(mqtt.nw_ssid));
-					memcpy(mqtt.nw_ssid, ((const char *)p_payload)+start, end-start);
-					// PW
-					end++;
-					start=end;
-					for( ; p_payload[end]!='/'; end++){};
-					memset(mqtt.nw_pw,0x00,sizeof(mqtt.nw_pw));
-					memcpy(mqtt.nw_pw, ((const char *)p_payload)+start, end-start);
-					// IP
-					end++;
-					start=end;
-					for( ; p_payload[end]!='/'; end++){};
-					memset(mqtt.server_ip,0x00,sizeof(mqtt.server_ip));
-					memcpy(mqtt.server_ip, ((const char *)p_payload)+start, end-start);
-
-					network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"NW updated");
-					logger.println(TOPIC_MQTT, F("NW updated"), COLOR_GREEN);
-					delay(1000); // time for transmit before disconnect
-					wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
-					wifiManager.explainFullMqttStruct(&mqtt);
-					WiFi.disconnect();
+			// msg: set/SSID/PW/IP/CHK
+			uint8_t slashes = 0;
+			uint8_t chk     = 0;
+			for (uint8_t i = 5; i < p_length; i++) {
+				if (p_payload[i] == '/') { // counte slaeses
+					slashes++;
+				} else if (slashes <= 3) { // xor all chars before chk: SSID, PW, IP
+					chk ^= p_payload[i];
 				} else {
-					network.publish(build_topic(MQTT_SETUP_TOPIC,UNIT_TO_PC), (char*)"NW update failed");
-					logger.println(TOPIC_MQTT, F("NW update failed"), COLOR_RED);
-				};
+					// move it to a letter between A-Z
+					while (chk < 'A') {
+						chk += 'Z' - 'A';
+					}
+					while (chk > 'Z') {
+						chk -= 'Z' - 'A';
+					}
+					if (p_payload[i] == chk && i == p_length - 1) {
+						chk = 1;
+					} else {
+						sprintf(m_msg_buffer, "NW update failed, CKH wrong expected: %c", chk);
+						logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_RED);
+						chk = 0;
+						break;
+					}
+				}
+			}
+			if (chk == 1) {
+				// SSID
+				uint8_t end   = 6;
+				uint8_t start = end;
+				for (; p_payload[end] != '/'; end++) { }
+				;
+				memset(mqtt.nw_ssid, 0x00, sizeof(mqtt.nw_ssid));
+				memcpy(mqtt.nw_ssid, ((const char *) p_payload) + start, end - start);
+				// PW
+				end++;
+				start = end;
+				for (; p_payload[end] != '/'; end++) { }
+				;
+				memset(mqtt.nw_pw, 0x00, sizeof(mqtt.nw_pw));
+				memcpy(mqtt.nw_pw, ((const char *) p_payload) + start, end - start);
+				// IP
+				end++;
+				start = end;
+				for (; p_payload[end] != '/'; end++) { }
+				;
+				memset(mqtt.server_ip, 0x00, sizeof(mqtt.server_ip));
+				memcpy(mqtt.server_ip, ((const char *) p_payload) + start, end - start);
+
+				network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "NW updated");
+				logger.println(TOPIC_MQTT, F("NW updated"), COLOR_GREEN);
+				delay(1000); // time for transmit before disconnect
+				wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
+				wifiManager.explainFullMqttStruct(&mqtt);
+				WiFi.disconnect();
+			} else {
+				network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "NW update failed");
+				logger.println(TOPIC_MQTT, F("NW update failed"), COLOR_RED);
+			};
 		}
 	}
 	// //////////////////////// SET CAPABILITYS ////////////////////////
-	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT))) {
+	else if (!strcmp(p_topic, build_topic(MQTT_CAPABILITY_TOPIC, PC_TO_UNIT))) {
 		wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
-		//logger.pln("compare:");
-		//logger.pln((const char*)mqtt.cap);
-		//logger.pln((const char*)p_payload);
+		// logger.pln("compare:");
+		// logger.pln((const char*)mqtt.cap);
+		// logger.pln((const char*)p_payload);
 
-		if(strcmp((const char*)mqtt.cap ,(const char*)p_payload)!=0){
+		if (strcmp((const char *) mqtt.cap, (const char *) p_payload) != 0) {
 			logger.print(TOPIC_MQTT, F("Capability update, new config:"));
-			memcpy(mqtt.cap,p_payload,_min(sizeof(mqtt.cap),strlen((const char*)p_payload)));
-			mqtt.cap[_min(sizeof(mqtt.cap),strlen((const char*)p_payload))]=0x00; // ensure that at least there is room for 1 more comma
+			memcpy(mqtt.cap, p_payload, _min(sizeof(mqtt.cap), strlen((const char *) p_payload)));
+			mqtt.cap[_min(sizeof(mqtt.cap), strlen((const char *) p_payload))] = 0x00; // ensure that at least there is room for 1 more comma
 			logger.pln(mqtt.cap);
-			//wifiManager.explainFullMqttStruct(&mqtt);
+			// wifiManager.explainFullMqttStruct(&mqtt);
 			wifiManager.storeMqttStruct((char *) &mqtt, sizeof(mqtt));
 			// reload
-			loadPheripherals((uint8_t*)mqtt.cap);
-			logger.println(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"),COLOR_PURPLE);
+			loadPheripherals((uint8_t *) mqtt.cap);
+			logger.println(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"), COLOR_PURPLE);
 			network.disconnectServer();
 		}
 	}
-	////////////////////// trace /////////////////////////////
-	else if(!strcmp(p_topic, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT))){
+	// //////////////////// trace /////////////////////////////
+	else if (!strcmp(p_topic, build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT))) {
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
 			logger.enable_mqtt_trace(true);
-			logger.println(TOPIC_MQTT, F("=== Trace activated ==="),COLOR_PURPLE);
+			logger.println(TOPIC_MQTT, F("=== Trace activated ==="), COLOR_PURPLE);
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) { // switch off
 			logger.enable_mqtt_trace(false);
 		}
 	}
-	////////////////////// OTA via MQTT /////////////////////////////
-	else if(!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT)) || !strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false))){ // dev specific and global
+	// //////////////////// OTA via MQTT /////////////////////////////
+	else if (!strcmp(p_topic,
+	   build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT)) || !strcmp(p_topic, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false))) {                   // dev specific and global
 		// forward if global before processing, otherwise we reboot before we broadcast
-		if(!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false))){
-			network.broadcast_publish_down(p_topic,(char*)p_payload, p_length);
+		if (!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false))) {
+			network.broadcast_publish_down(p_topic, (char *) p_payload, p_length);
 		}
 		// now process
-		network.mqtt_ota(p_payload,p_length);
+		network.mqtt_ota(p_payload, p_length);
 	}
-	////////////////////// mesh /////////////////////////////
+	// //////////////////// mesh /////////////////////////////
 	else {
 		// message is not for me, send it downhill to all clientSM
-		network.broadcast_publish_down(p_topic,(char*)p_payload, p_length);
+		network.broadcast_publish_down(p_topic, (char *) p_payload, p_length);
 	}
 } // callback
 
@@ -231,35 +234,40 @@ void reconnect(){
 	network.stopAP();
 
 	// first check wifi
-	WiFi.mode(WIFI_STA); // avoid station and ap at the same time
+	WiFi.mode(WIFI_STA);                // avoid station and ap at the same time
 	while (!network.connected(false)) { // this is wifi + mqtt/mesh connect
 		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
 		// check if we have valid credentials for a WiFi at all
 		// the ssid and pw will be set to "" if the EEPROM was empty / invalid
 		// if this is the case: start config Portal without waiting
-		if(strlen(mqtt.nw_ssid)==0 && strlen(mqtt.nw_pw)==0){
+		if (strlen(mqtt.nw_ssid) == 0 && strlen(mqtt.nw_pw) == 0) {
 			wifiManager.startConfigPortal(CONFIG_SSID);
 		}
 		// each round, check wifi first
-		if (WiFi.status() != WL_CONNECTED){
+		if (WiFi.status() != WL_CONNECTED) {
 			// if the ssid was programmed to be " ", connect to mesh
-			if(strlen(mqtt.nw_ssid)==1 && mqtt.nw_ssid[0]==' ' && network.MeshEnabled()){
-				logger.println(TOPIC_WIFI,F("No SSID trying mesh only"), COLOR_YELLOW);
+			if ((strlen(mqtt.nw_ssid) == 1 && mqtt.nw_ssid[0] == ' ' &&
+			   (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_CLIENT_ONLY)) ||
+			  network.getMeshMode() == MESH_MODE_ONLY_FULL_MESH)
+			{
+				logger.println(TOPIC_WIFI, F("No SSID trying mesh only"), COLOR_YELLOW);
+				WiFi.mode(WIFI_STA); // setting this here again dramatically improved chances of connection
 				network.MeshConnect();
 			} else {
+				WiFi.mode(WIFI_STA); // setting this here again dramatically improved chances of connection
 				network.DirectConnect();
-				////////////////// MESH CONNECTION ///////////////////////
+				// //////////////// MESH CONNECTION ///////////////////////
 				// try mesh if wifi directly did not work after some time
 				// this will be true after (min 45*0.8=35 sec)
 				// or when the ssid is not programmed, set SSID to
-				if(network.MeshEnabled()){
-					if(relationship_timeout(0.8, (char*)"MESH")){
-						logger.println(TOPIC_WIFI,F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
+				if (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_CLIENT_ONLY) {
+					if (relationship_timeout(0.8, (char *) "MESH")) {
+						logger.println(TOPIC_WIFI, F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
 						network.MeshConnect();
 					}
 				}
 			}
-			////////////////// MESH CONNECTION ///////////////////////
+			// //////////////// MESH CONNECTION ///////////////////////
 		} else {
 			logger.println(TOPIC_WIFI, F("online"), COLOR_GREEN);
 		}
@@ -268,58 +276,58 @@ void reconnect(){
 			// Attempt to connect
 			logger.print(TOPIC_MQTT, F("connecting with id: "));
 			logger.pln(mqtt.dev_short);
-			//if (c l i e n t . connect(mqtt.dev_short, mqtt.login, mqtt.pw)) {
-			if(network.connectServer(mqtt.dev_short, mqtt.login, mqtt.pw)){
+			// if (c l i e n t . connect(mqtt.dev_short, mqtt.login, mqtt.pw)) {
+			if (network.connectServer(mqtt.dev_short, mqtt.login, mqtt.pw)) {
 				logger.println(TOPIC_MQTT, F("connected"), COLOR_GREEN);
 
 				network.loopCheck();
 				network.publishRouting();
 				// ... and resubscribe
-				network.subscribe(build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
-				network.subscribe(build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT)); // setup topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_SETUP_TOPIC, PC_TO_UNIT)); // setup topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
-				network.subscribe(build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT)); // capability topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_CAPABILITY_TOPIC, PC_TO_UNIT)); // capability topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
-				network.subscribe(build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT)); // MQTT_OTA_TOPIC topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT)); // MQTT_OTA_TOPIC topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
-				network.subscribe(build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false)); // MQTT_OTA_TOPIC but global topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC,PC_TO_UNIT,false), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false)); // MQTT_OTA_TOPIC but global topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false), COLOR_GREEN);
 
 
-				for(uint8_t i = 0; active_p[i]!=0x00 && i<MAX_PERIPHERALS-1; i++){
-					//Serial.printf("subscibe e%i\r\n",i);
-					//delay(500);
+				for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_PERIPHERALS - 1; i++) {
+					// Serial.printf("subscibe e%i\r\n",i);
+					// delay(500);
 					(*active_p[i])->subscribe();
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
-				network.publish(build_topic("INFO",UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO",UNIT_TO_PC), COLOR_GREEN);
-				logger.p((char*)" -> ");
+				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
 
 				// WIFI publishing
-				network.publish(build_topic("SSID",UNIT_TO_PC), (char*)WiFi.SSID().c_str());
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("SSID",UNIT_TO_PC), COLOR_GREEN);
-				logger.p((char*)" -> ");
-				logger.pln((char*)(WiFi.SSID().c_str()));
+				network.publish(build_topic("SSID", UNIT_TO_PC), (char *) WiFi.SSID().c_str());
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("SSID", UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
+				logger.pln((char *) (WiFi.SSID().c_str()));
 
 				// BSSID publishing
 				uint8_t * bssid = WiFi.BSSID();
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[5], bssid[4], bssid[3], bssid[2],
 				  bssid[1],
 				  bssid[0]);
-				network.publish(build_topic("BSSID",UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("BSSID",UNIT_TO_PC), COLOR_GREEN);
-				logger.p((char*)" -> ");
+				network.publish(build_topic("BSSID", UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("BSSID", UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
 				// MAC publishing
@@ -328,21 +336,21 @@ void reconnect(){
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", mac[5], mac[4], mac[3], mac[2],
 				  mac[1],
 				  mac[0]);
-				network.publish(build_topic("MAC",UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("MAC",UNIT_TO_PC), COLOR_GREEN);
-				logger.p((char*)" -> ");
+				network.publish(build_topic("MAC", UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("MAC", UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
 				// CAP publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
-				network.publish(build_topic(MQTT_CAPABILITY_TOPIC,UNIT_TO_PC), mqtt.cap);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_CAPABILITY_TOPIC,UNIT_TO_PC), COLOR_GREEN);
-				logger.p((char*)" -> ");
+				network.publish(build_topic(MQTT_CAPABILITY_TOPIC, UNIT_TO_PC), mqtt.cap);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_CAPABILITY_TOPIC, UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
 				logger.pln(mqtt.cap);
 
 				logger.println(TOPIC_MQTT, F("publishing finished"));
 
-				if(network.MeshEnabled()){
+				if (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_HOST_ONLY) {
 					network.startAP();
 				}
 				timer_connected_start = millis();
@@ -353,16 +361,16 @@ void reconnect(){
 		if (!network.connected()) {
 			// connect failed
 			// min 45 sec, per 5 sec connected add one sec, max 1200 sec
-			if(relationship_timeout(1, (char*)"AP")){
+			if (relationship_timeout(1, (char *) "AP")) {
 				// time to start the AP
 				logger.pln(F("Can't connect, starting AP"));
-				if(p_neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+				if (p_neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
 					Serial.end();
 					delay(500);
 					Serial.begin(115200);
 				}
 				wifiManager.startConfigPortal(CONFIG_SSID);
-				timer_connected_stop  = millis();           // resets timer
+				timer_connected_stop  = millis(); // resets timer
 				timer_connected_start = millis();
 				logger.pln(F("Config AP closed"));
 				// debug
@@ -398,7 +406,7 @@ void configModeCallback(WiFiManager * myWiFiManager){
 
 // this is a callback so we can toggle the lights via the wifimanager and identify the light
 void toggleCallback(){
-	((light*)p_light)->toggle();
+	((light *) p_light)->toggle();
 }
 
 // save config to eeprom
@@ -436,42 +444,42 @@ void loadConfig(){
 	} else {
 		wifiManager.setCustomIdElement("");
 		logger.pln(F("Config load failed"));
-		sprintf(mqtt.dev_short,"new");
-		mqtt.nw_ssid[0]=0x00;
-		mqtt.nw_pw[0]=0x00;
+		sprintf(mqtt.dev_short, "new");
+		mqtt.nw_ssid[0] = 0x00;
+		mqtt.nw_pw[0]   = 0x00;
 	}
 	logger.pln(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
-	mqtt.cap[sizeof(mqtt.cap)-2]=0x00; // sure to make sure he string is determine
-	loadPheripherals((uint8_t*)mqtt.cap);
+	mqtt.cap[sizeof(mqtt.cap) - 2] = 0x00; // sure to make sure he string is determine
+	loadPheripherals((uint8_t *) mqtt.cap);
 	logger.pln(F("=== End of parameters ==="));
 } // loadConfig
 
-void loadPheripherals(uint8_t* config){
+void loadPheripherals(uint8_t * config){
 	// erase
-	for(uint8_t i = 0; i<MAX_PERIPHERALS ; i++){
-		if(active_p[i]){
+	for (uint8_t i = 0; i < MAX_PERIPHERALS; i++) {
+		if (active_p[i]) {
 			delete *active_p[i];
 			active_p[i] = 0x00;
 		}
 	}
 	// activate
-	active_p_pointer=0;
+	active_p_pointer = 0;
 	active_p_intervall_counter = 0;
 	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
 
-	//logger.p("RAM before creating objects ");
-	//logger.pln(system_get_free_heap_size());
+	// logger.p("RAM before creating objects ");
+	// logger.pln(system_get_free_heap_size());
 	// create objects
 	bake(new ADC(), &p_adc, config);
 	bake(new button(), &p_button, config);
 	bake(new simple_light(), &p_simple_light, config);
 	bake(new rssi(), &p_rssi, config);
-	bake(new PWM(((uint8_t*)"PWM"),4,5,16,0,0), &p_pwm, config); // SONOFF PWM TODO: THIS IS LIKELY NOT WORKING AS EXPECTED
-	bake(new PWM(((uint8_t*)"PW2"),4,4,4,0,0), &p_pwm2, config); // kolja 2
-	bake(new PWM(((uint8_t*)"PW3"),15,13,12,14,4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
-	bake(new PIR(((uint8_t*)"PIR"),14), &p_pir, config); // SONOFF PIR
-	bake(new PIR(((uint8_t*)"PI2"),5), &p_pir2, config); // Kolja_v2
+	bake(new PWM(((uint8_t *) "PWM"), 4, 5, 16, 0, 0), &p_pwm, config);     // SONOFF PWM TODO: THIS IS LIKELY NOT WORKING AS EXPECTED
+	bake(new PWM(((uint8_t *) "PW2"), 4, 4, 4, 0, 0), &p_pwm2, config);     // kolja 2
+	bake(new PWM(((uint8_t *) "PW3"), 15, 13, 12, 14, 4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
+	bake(new PIR(((uint8_t *) "PIR"), 14), &p_pir, config);                 // SONOFF PIR
+	bake(new PIR(((uint8_t *) "PI2"), 5), &p_pir2, config);                 // Kolja_v2
 	bake(new J_DHT22(), &p_dht, config);
 	bake(new J_DS(), &p_ds, config);
 	bake(new AI(), &p_ai, config);
@@ -486,11 +494,11 @@ void loadPheripherals(uint8_t* config){
 	bake(new no_mesh(), &p_no_mesh, config);
 
 
-	//logger.p("RAM after init objects ");
-	//logger.pln(system_get_free_heap_size());
+	// logger.p("RAM after init objects ");
+	// logger.pln(system_get_free_heap_size());
 
 	// disable serial interface if rf bridge was activated
-	if(p_rfb!=0x00){
+	if (p_rfb != 0x00) {
 		logger.enable_serial_trace(false);
 		logger.enable_mqtt_trace(true); // for debugging
 	}
@@ -499,55 +507,57 @@ void loadPheripherals(uint8_t* config){
 	// make this more generic .... like ...
 	// go through all entities, check if they have a dependency if so
 	// call the dependency with this opbject
+
 	/*
-	for(uint8_t i=0; i<active_p_pointer; i++){
-		// check of all objects if they had a dependency
-		if(strlen(active_p[i]->get_dep())>0){
-			// if so, find the dependency and tell them that we're depending on them
-			for(uint8_t ii=0; ii<active_p_pointer; ii++){
-				if(strcmp(active_p[i]->get_dep(), active_p[ii]->get_key())){
-					// so everyone and their sister need, get_key and reg_provider?
-					((light*)active_p[ii])->reg_provider(active_p[i],active_p[i]->get_key()));
-				}
-			}
-		}
-	}
-	*/
+	 * for(uint8_t i=0; i<active_p_pointer; i++){
+	 * // check of all objects if they had a dependency
+	 * if(strlen(active_p[i]->get_dep())>0){
+	 * // if so, find the dependency and tell them that we're depending on them
+	 * for(uint8_t ii=0; ii<active_p_pointer; ii++){
+	 * if(strcmp(active_p[i]->get_dep(), active_p[ii]->get_key())){
+	 *  // so everyone and their sister need, get_key and reg_provider?
+	 *  ((light*)active_p[ii])->reg_provider(active_p[i],active_p[i]->get_key()));
+	 * }
+	 * }
+	 * }
+	 * }
+	 */
 	// set one provider
-	if(p_simple_light){
-		((light*)p_light)->reg_provider(p_simple_light,T_SL);
-	} else if(p_pwm){
-		((light*)p_light)->reg_provider(p_pwm,T_PWM);
-	} else if(p_pwm2){
-		((light*)p_light)->reg_provider(p_pwm2,T_PWM);
-	} else if(p_pwm3){
-		((light*)p_light)->reg_provider(p_pwm3,T_PWM);
-	} else if(p_neo){
-		((light*)p_light)->reg_provider(p_neo,T_NEO);
-	} else if(p_bOne){
-		((light*)p_light)->reg_provider(p_bOne,T_BOne);
-	} else if(p_ai){
-		((light*)p_light)->reg_provider(p_ai,T_AI);
+	if (p_simple_light) {
+		((light *) p_light)->reg_provider(p_simple_light, T_SL);
+	} else if (p_pwm) {
+		((light *) p_light)->reg_provider(p_pwm, T_PWM);
+	} else if (p_pwm2) {
+		((light *) p_light)->reg_provider(p_pwm2, T_PWM);
+	} else if (p_pwm3) {
+		((light *) p_light)->reg_provider(p_pwm3, T_PWM);
+	} else if (p_neo) {
+		((light *) p_light)->reg_provider(p_neo, T_NEO);
+	} else if (p_bOne) {
+		((light *) p_light)->reg_provider(p_bOne, T_BOne);
+	} else if (p_ai) {
+		((light *) p_light)->reg_provider(p_ai, T_AI);
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
 	wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
-}
+} // loadPheripherals
 
 // build topics with device id on the fly
-char * build_topic(const char * topic, uint8_t pc_shall_R_or_S,bool with_dev){
-	if(pc_shall_R_or_S!=PC_TO_UNIT && pc_shall_R_or_S!=UNIT_TO_PC){
-		pc_shall_R_or_S=PC_TO_UNIT;
+char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev){
+	if (pc_shall_R_or_S != PC_TO_UNIT && pc_shall_R_or_S != UNIT_TO_PC) {
+		pc_shall_R_or_S = PC_TO_UNIT;
 	}
-	if(with_dev){
+	if (with_dev) {
 		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
 	} else {
 		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, topic);
 	}
 	return m_topic_buffer;
 }
+
 char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
-	return build_topic(topic,pc_shall_R_or_S,true);
+	return build_topic(topic, pc_shall_R_or_S, true);
 }
 
 // //////////////////////////////// network function ///////////////////////////////////
@@ -579,34 +589,35 @@ void setup(){
 			logger.p(F("  CRITICAL"));
 		}
 		logger.pln(F(", wrong flash config"));
-		sprintf_P(m_msg_buffer, (const char*)F("  Dev has %i but is configured with size %i"), ESP.getFlashChipRealSize(), ESP.getFlashChipSize());
+		sprintf_P(m_msg_buffer, (const char *) F("  Dev has %i but is configured with size %i"),
+		  ESP.getFlashChipRealSize(), ESP.getFlashChipSize());
 		logger.pln(m_msg_buffer);
 	} else {
 		logger.pln(F("  Flash config correct"));
 	}
 	logger.pln(F("+ RAM:"));
-	sprintf_P(m_msg_buffer, (const char*)F("  available  %i"), system_get_free_heap_size());
+	sprintf_P(m_msg_buffer, (const char *) F("  available  %i"), system_get_free_heap_size());
 	logger.pln(m_msg_buffer);
 	logger.pln(F("========== INFO ========== "));
 	// /// init the serial and print debug /////
 
 	// /// init the led /////
-	for(uint8_t i = 0; i<MAX_PERIPHERALS; i++){
-		active_intervall_p[i]=0x00;
+	for (uint8_t i = 0; i < MAX_PERIPHERALS; i++) {
+		active_intervall_p[i] = 0x00;
 	}
 	// load all paramters!
 	loadConfig();
 	// get reset reason
-	if(p_light){
+	if (p_light) {
 		if (ESP.getResetInfoPtr()->reason == REASON_DEFAULT_RST) {
 			// set some light on regular power up
 			logger.println(TOPIC_GENERIC_INFO, F("PowerUp. Set all lights on"), COLOR_PURPLE);
-			((light*)p_light)->setColor(255,255,255);
-			((light*)p_light)->setState(true);
+			((light *) p_light)->setColor(255, 255, 255);
+			((light *) p_light)->setState(true);
 		} else {
 			logger.pln(F(""));
 			logger.println(TOPIC_GENERIC_INFO, F("WatchDog Reset. Set all lights off"), COLOR_PURPLE);
-			((light*)p_light)->setState(false);
+			((light *) p_light)->setState(false);
 		}
 	}
 
@@ -641,19 +652,19 @@ void loop(){
 
 	// // dimming end ////
 	uninterrupted = false;
-	for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-			if((*active_p[i])->loop()){ // uninterrupted loop request ... don't execute others
-			uninterrupted=true;
+	for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
+		if ((*active_p[i])->loop()) { // uninterrupted loop request ... don't execute others
+			uninterrupted = true;
 			break;
 		}
 	}
 
 
 	// // send periodic updates ////
-	if(!uninterrupted){
+	if (!uninterrupted) {
 		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			for(uint8_t i = 0; i<active_p_pointer && active_p[i]!=0x00 ; i++){
-				if((*active_p[i])->publish()){ // some one published something urgend, stop others
+			for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
+				if ((*active_p[i])->publish()) { // some one published something urgend, stop others
 					timer_republish_avoid = millis();
 					timer_last_publish    = millis();
 					break;
@@ -662,19 +673,20 @@ void loop(){
 		}
 
 		// // send periodic updates ////
-		if(active_p_intervall_counter>0){
-			if (millis() - updateFastValuesTimer > (60000UL/active_p_intervall_counter) && millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
+		if (active_p_intervall_counter > 0) {
+			if (millis() - updateFastValuesTimer > (60000UL / active_p_intervall_counter) && millis() - timer_last_publish >
+			  PUBLISH_TIME_OFFSET) {
 				updateFastValuesTimer = millis();
 				// make sure that every entrie receives its own 0,1,2,3 slots
-				uint8_t user_slot=0;
-				if(periodic_slot>0){
-					for(user_slot=periodic_slot-1; user_slot>=0; user_slot--){
-						if(active_intervall_p[periodic_slot]!=active_intervall_p[user_slot]){
+				uint8_t user_slot = 0;
+				if (periodic_slot > 0) {
+					for (user_slot = periodic_slot - 1; user_slot >= 0; user_slot--) {
+						if (active_intervall_p[periodic_slot] != active_intervall_p[user_slot]) {
 							/* assuming	[0] = pir, [1] = adc, [2] = dht, [3] = dht
-							frist dht call: periodic_slot = 2, user slot = 1, adc != dht --> 2-1-1 = 0
-							second dht call: periodic_slot = 3, user slot = 2, dht == dht, user_slot = 1, adc != dht --> 3-1-1 = 1
-							*/
-							user_slot= periodic_slot-user_slot-1;
+							 * frist dht call: periodic_slot = 2, user slot = 1, adc != dht --> 2-1-1 = 0
+							 * second dht call: periodic_slot = 3, user slot = 2, dht == dht, user_slot = 1, adc != dht --> 3-1-1 = 1
+							 */
+							user_slot = periodic_slot - user_slot - 1;
 							break;
 						}
 					}
@@ -684,37 +696,36 @@ void loop(){
 			}
 		}
 
-	// // trace ////
+		// // trace ////
 		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			p_trace=(char *)logger.loop();
-			if(p_trace){
-				//Serial.printf("total %i, end %i,%i,%i\r\n",strlen(t),t[strlen(t)-1],t[strlen(t)-2],t[strlen(t)-3]);
-				//if(t[strlen(t)-2]==13 && t[strlen(t)-1]==10){
+			p_trace = (char *) logger.loop();
+			if (p_trace) {
+				// Serial.printf("total %i, end %i,%i,%i\r\n",strlen(t),t[strlen(t)-1],t[strlen(t)-2],t[strlen(t)-3]);
+				// if(t[strlen(t)-2]==13 && t[strlen(t)-1]==10){
 				//	t[strlen(t)-2]=0x00;
-				//}
-				network.publish(build_topic(MQTT_TRACE_TOPIC,UNIT_TO_PC), p_trace);
-				timer_last_publish    = millis();
+				// }
+				network.publish(build_topic(MQTT_TRACE_TOPIC, UNIT_TO_PC), p_trace);
+				timer_last_publish = millis();
 			}
 		}
 	}
-
 } // loop
 
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////
-bool bake(peripheral* p_obj,peripheral** p_handle, uint8_t* config){
-	if(p_obj->parse(config)){ // true = obj active
+bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config){
+	if (p_obj->parse(config)) { // true = obj active
 		*p_handle = p_obj;
 		(*p_handle)->init();
 		// store object in active peripheral list
-		active_p[active_p_pointer]=p_handle;
-		if(active_p_pointer<MAX_PERIPHERALS-1){
+		active_p[active_p_pointer] = p_handle;
+		if (active_p_pointer < MAX_PERIPHERALS - 1) {
 			active_p_pointer++;
 		}
 		// get the amount of intervall updates and store a pointer to the object
-		for(uint8_t ii = 0; ii<p_obj->count_intervall_update(); ii++){
+		for (uint8_t ii = 0; ii < p_obj->count_intervall_update(); ii++) {
 			active_intervall_p[active_p_intervall_counter] = p_handle;
-			if(active_p_intervall_counter<MAX_PERIPHERALS-1){
+			if (active_p_intervall_counter < MAX_PERIPHERALS - 1) {
 				active_p_intervall_counter++;
 			}
 		}
