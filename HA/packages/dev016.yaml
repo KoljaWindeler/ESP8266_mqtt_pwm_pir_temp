@@ -1,0 +1,48 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### dimmer bedroom
+    name: "dev16"
+    state_topic: "dev16/r/light"
+    command_topic: "dev16/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev16:
+      friendly_name: "Bedroom SW"
+    binary_sensor.dev16_motion:
+      friendly_name: "Bedroom SW"
+    sensor.dev16_temperature:
+      friendly_name: "Bedroom SW"
+      icon: "mdi:thermometer"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev16"
+    fname: "16 BedroomSW"
+
+  - platform: mqtt
+    state_topic: "dev16/r/temperature"
+    name: "dev16_temperature"
+    unit_of_measurement: "ºC"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev16/r/motion"
+    name: "dev16_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

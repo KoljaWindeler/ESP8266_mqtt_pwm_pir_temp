@@ -535,10 +535,14 @@
           state: 'off'
     action:
      service: notify.pb
-     data:
+     data_template:
        title: "Motion detected"
-       message: "GMotion triggered"
-# --------------------- gmotion ----------------------------
+       message: >
+         {% for state in states.binary_sensor -%}
+          {% if state.attributes.device_class == 'motion' and state.state | lower == 'on' %}- {{state.attributes.friendly_name}}
+         {% endif %}
+         {%- endfor %}
+# --------------------- gmotion ---------------------------- 
 # --------------------- 101 --------------------------------
   - alias: alarm_system_c101 
     initial_state: False
@@ -623,30 +627,6 @@
       - service: script.turn_on
         entity_id: script.seq_106
 # --------------------- 106 --------------------------------
-# --------------------- xia1 --------------------------------
-  - alias: alarm_system_cxia1
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev6_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-        - condition: state
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-          state: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_xia1
-# --------------------- xia1 --------------------------------
 # --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 

@@ -1,0 +1,24 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### touch not working?
+    name: "dev25"
+    state_topic: "dev25/r/light"
+    command_topic: "dev25/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    - platform: mqtt_jkw
+      name: "dev25"
+      fname: "25 unused Touch"
+
+# -----------------------------------------------
+

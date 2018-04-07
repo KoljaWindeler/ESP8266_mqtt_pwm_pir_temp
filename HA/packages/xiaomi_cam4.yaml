@@ -1,0 +1,11 @@
+camera:
+  - platform: generic
+    still_image_url: http://192.168.2.73/snapshot.jpg
+    name: cam_xia4
+
+shell_command:
+  camxia4_1: wget http://192.168.2.73/snapshot.jpg -O /tmp/xia4_1.jpg
+  camxia4_2: wget http://192.168.2.73/snapshot.jpg -O /tmp/xia4_2.jpg
+  camxia4_3: wget http://192.168.2.73/snapshot.jpg -O /tmp/xia4_3.jpg
+  camxia4_4: wget http://192.168.2.73/snapshot.jpg -O /tmp/xia4_4.jpg
+  camxia4_5: wget http://192.168.2.73/snapshot.jpg -O /tmp/xia4_5.jpg

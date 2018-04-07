@@ -10,7 +10,41 @@
       - group.bed_room
       - group.hallway
       - group.room_carlo
+
+  cams:
+    control: hidden
+    icon: mdi:cctv
+    view: yes
+    entities:
+      - group.alarm_cams
+
+  media:
+    name: Media 
+    icon: mdi:cast-connected
+    view: yes
+    entities:
+      - group.harmony_remote_button
+      - group.media_player
+
+  myhome:
+    control: hidden
+    icon: mdi:home
+    view: yes
+    entities:
+      - group.temperatures
+      - group.vac
       - group.trash
+
+  alarm:
+    control: hidden
+    icon: mdi:security
+    view: yes
+    entities:
+      #- group.fp_group
+      - group.alarm_control
+      - group.alarm_maps
+      - group.presents
+      - group.motion
 
   media_controll:
     control: hidden
@@ -24,17 +58,6 @@
       - switch.ten_up
       - switch.five_down
       - switch.ten_down
-
-  trash:
-    name: Trash
-    control: hidden
-    icon: mdi:comment-multiple-outline
-    view: no
-    entities:
-      - sensor.trash_0
-      - sensor.trash_1
-      - sensor.trash_2
-      - sensor.trash_3
 
   room_carlo:
     name: Carlo
@@ -84,7 +107,7 @@
     view: no
     entities:
       - sensor.dev11_temperature
-      #- sensor.dev7_temperature
+      - sensor.dev7_temperature
       - sensor.dev1_temperature
       - sensor.dev16_temperature
       - sensor.dev4_temperature
@@ -126,7 +149,7 @@
     entities:
       - light.joiner_hallwayU
       - light.joiner_hallwayD
-      - light.dev102
+      #- light.dev102
       - light.dev12
       - binary_sensor.dev102_motion
       - binary_sensor.dev10_motion
@@ -169,16 +192,6 @@
       - camera.cam_103
       - camera.cam_106
 
-  alarm:
-    control: hidden
-    icon: mdi:security
-    view: yes
-    entities:
-      - group.alarm_cams
-      - group.alarm_control
-      - group.alarm_maps
-      - group.presents
-      - group.motion
 
   media_player:
     name: Media Player
@@ -186,23 +199,13 @@
     entities:
       - media_player.jkw_cast2
 
-  media:
-    name: Media 
-    icon: mdi:cast-connected
-    view: yes
-    entities:
-      - group.harmony_remote_button
-      - group.media_player
-
-  Temp:
-    control: hidden
-    icon: mdi:home
-    view: yes
-    entities:
-      - group.temperatures
-      - group.vac
-
       
+  fp_group:
+    control: hidden
+    view: no
+    entities:
+      - binary_sensor.floorplan
+
   Alarm_control:
     control: hidden
     view: no
@@ -527,113 +530,15 @@
       - light.dev9
 
 
-  gmusic:
-    name: Gmusic
-    icon: mdi:cast-connected
-    view: no
-    entities:
-      # - input_select.music    
-      # - switch.google_music
-      # - switch.google_music_radio
-      # - switch.background
-
-  joiner:
-    name: Light Joiner
-    control: hidden
-    view: no
-    entities:
-      - light.joiner_kitchen
-      - light.joiner_bedroom
-      - light.joiner_livingroom
-
-  alllights:
-    name: All lights
-    control: hidden
-    view: no
-    entities:
-      - light.dev1
-      - light.dev2
-      - light.dev3
-      - light.dev4
-      - light.dev5
-      - light.dev6
-      - light.dev7
-      - light.dev8
-      - light.dev9
-      - light.dev10
-      - light.dev11
-      - light.dev12
-      - light.dev12_simple_rainbow
-      - light.dev13
-      - light.dev14
-      - light.dev15
-      - light.dev16
-      - light.dev17
-      - light.dev18
-      - light.dev18_simple_rainbow
-      - light.dev19
-      - light.dev19_simple_rainbow
-      - light.dev20
-      - light.dev21
-      - light.dev22
-      - light.dev25
-      - light.dev42
-      - light.dev55
-      - light.dev56
-      - light.dev57
-      - light.dev77
-      - light.dev98
-      - light.dev99
-      - light.dev982
-
   system:
     name: System
     view: yes
     icon: mdi:settings
     entities:
       - group.alarm_controll
-      - group.alllights
-      - group.joiner
-      - automation.joiner_bedroom_in
-      - automation.joiner_bedroom_out
-      - automation.joiner_kitchen_in
-      - automation.joiner_kitchen_in2
-      - automation.joiner_kitchen_out
-      - automation.dev7_11_1_on
-      - automation.dev7_11_1_off
-      - automation.dev2_4_14_on
-      - automation.dev2_4_14_off
-      - automation.sunset_dev7_dev11_dev1
-      - automation.Turn_on_hallwayD_lights_when_there_is_movement
-      - automation.Turn_off_hallwayD_lights_10min_after_movement
-      - automation.Turn_on_hallwayU_lights_when_there_is_movement
-      - automation.Turn_off_hallwayU_lights_10min_after_movement
-      - automation.sunset_dev5
-      - automation.sunrise_dev20
-      - automation.midnight_dev5
-      - automation.all_home_dev5
+      - group.all_lights
+      - group.all_automations
       - sensor.ram_free
       - sensor.disk_use_home
       - sensor.cpu_use
 
-  playground:
-    name: Playground
-    icon: mdi:radioactive
-    view: yes
-    entities:
-      - binary_sensor.dev3_motion
-      - binary_sensor.dev17_motion
-      - binary_sensor.dev42_motion
-      - sensor.dev13_adc
-      - sensor.dev9_humidity_DHT
-      - sensor.dev9_temperature_DHT
-      - sensor.dev26_power
-      - light.dev19
-      - light.dev42
-      - light.dev98
-      - light.dev982
-      - binary_sensor.dev12_motion
-      - binary_sensor.dev99_motion
-      - light.dev12
-      - input_slider.dev12_dimmer_delay
-      - sun.sun        

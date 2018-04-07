@@ -1,0 +1,50 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### dimmer bett
+    name: "dev13"
+    state_topic: "dev13/r/light"
+    command_topic: "dev13/s/light/dimm"
+    brightness_state_topic: 'dev13/r/light/brightness'
+    brightness_command_topic: 'dev13/s/light/brightness'
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    sensor.dev13_adc:
+      friendly_name: "13 Leakage"
+    light.dev13:
+      friendly_name: "Leakage"
+    sensor.dev13_temperature:
+      icon: "mdi:thermometer"
+      friendly_name: "Leakage"
+    binary_sensor.dev13_motion:
+      friendly_name: "Leakage"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev13"
+    fname: "13 Leakage"
+
+  - platform: mqtt
+    state_topic: "dev13/r/temperature"
+    name: "dev13_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev13/r/adc"
+    name: "dev13_adc"
+
+# -----------------------------------------------
+

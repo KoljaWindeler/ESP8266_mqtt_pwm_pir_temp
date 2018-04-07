@@ -18,15 +18,6 @@
           {%- else -%}
           false
           {%- endif %}
-#        entity_id:
-#          - binary_sensor.dev102_motion
-#          - binary_sensor.dev103_motion
-#          - binary_sensor.dev106_motion
-#          - binary_sensor.dev4_motion
-#          - binary_sensor.dev6_motion
-#          - binary_sensor.dev10_motion
-#          - binary_sensor.dev14_motion
-#          - binary_sensor.dev15_motion
 # -------------- all motion sensors -------------
 # -------------- is someone at home -------------
       someone_is_home:
@@ -39,9 +30,6 @@
           {%- else -%}
           false
           {%- endif %}
-#        entity_id:
-#          - device_tracker.illuminum_kolja
-#          - device_tracker.illuminum_caro
 # -------------- is someone at home -------------
       everyone_is_home:
         device_class: occupancy
@@ -53,132 +41,10 @@
           {%- else -%}
           false
           {%- endif %}
-#        entity_id:
-#          - device_tracker.illuminum_kolja
-#          - device_tracker.illuminum_caro
 # -------------- is everyone at home -------------
 # -------------- templates ----------------------
-
+# -------------- floorplan  ----------------------
   - platform: mqtt
-    state_topic: "dev2/r/motion"
-    name: "dev2_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev1/r/motion"
-    name: "dev1_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev3/r/motion"
-    name: "dev3_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev4/r/motion"
-    name: "dev4_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev6/r/motion"
-    name: "dev6_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev8/r/motion"
-    name: "dev8_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev10/r/motion"
-    name: "dev10_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev12/r/motion"
-    name: "dev12_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev13/r/motion"
-    name: "dev13_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev14/r/motion"
-    name: "dev14_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev15/r/motion"
-    name: "dev15_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev16/r/motion"
-    name: "dev16_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev17/r/motion"
-    name: "dev17_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev22/r/motion"
-    name: "dev22_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev42/r/motion"
-    name: "dev42_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev57/r/motion"
-    name: "dev57_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "128480595098010/r/motion"
-    name: "dev101_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "255726482140298/r/motion"
-    name: "dev102_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "128480595098001/r/motion"
-    name: "dev103_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "137291054495417/r/motion"
-    name: "dev106_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev77/r/motion"
-    name: "dev77_motion"
-    device_class: motion
-
-
-
-  - platform: mqtt
-    state_topic: "dev98/r/motion"
-    name: "dev98_motion"
-    device_class: motion
-
-  - platform: mqtt
-    state_topic: "dev99/r/motion"
-    name: "dev99_motion"
-    device_class: motion
-    
-    
-  - platform: mqtt
-    state_topic: "illuminum/r/motion"
-    name: "illuminum_motion"
-    device_class: motion
-
+    state_topic: dummy/floorplan/sensor
+    name: Floorplan
+# -------------- floorplan  ----------------------

@@ -18,6 +18,26 @@ input_select:
 automation:
 
 # ------------------- rule ------------------------
+  - alias: joiner_livingroom_change
+    initial_state: True
+    hide_entity: False
+    trigger: 
+      - platform: state
+        entity_id: light.joiner_livingroom
+    action:
+      service: input_select.select_option
+      data_template: 
+        entity_id: input_select.light_livingroom
+        option: > 
+         {% if is_state('light.joiner_livingroom','on') %}
+          all on
+         {% else %}
+          all off
+         {% endif %}
+# ------------------- rule ------------------------
+
+
+# ------------------- rule ------------------------
   - alias: 'next option next'
     initial_state: 'on'
     trigger:
@@ -104,12 +124,23 @@ script:
   seq_all_off:
     sequence:
       - service: light.turn_off
-        entity_id: light.joiner_livingroom
+        entity_id: light.dev1
+      - service: light.turn_off
+        entity_id: light.dev21
+      - service: light.turn_off
+        entity_id: light.dev11
+      - service: light.turn_off
+        entity_id: light.dev7
 
   seq_all_on:
     sequence:
       - service: light.turn_on
-        entity_id: light.joiner_livingroom
-
+        entity_id: light.dev1
+      - service: light.turn_on
+        entity_id: light.dev21
+      - service: light.turn_on
+        entity_id: light.dev11
+      - service: light.turn_on
+        entity_id: light.dev7
 # -----------------------------------------------------------
 # -----------------------------------------------------------

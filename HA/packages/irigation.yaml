@@ -1,0 +1,265 @@
+sensor:
+  - platform: mqtt
+    name: "Zone 1 Timer Reset Sensor"
+    state_topic: "cmnd/zone_1_control/TIMER"
+  - platform: template
+    sensors:
+      zone_1_timer:
+        value_template: '{{ "{:02d}".format(states.input_number.timer_hours_1.state|int) }}:{{ "{:02d}".format(states.input_number.timer_minutes_1.state|int) }}'
+        friendly_name: "Time"
+      last_run_zone_1:
+        friendly_name: "Last Run"
+        value_template: '{{ (as_timestamp(states.switch.zone_1.last_changed)) |   timestamp_custom("%A, %d %h %H:%M") }}'
+      next_run_zone_1:
+        friendly_name: "Next Run"
+        value_template: '{{states.sensor.zone_1_timer_reset_sensor.state}}'
+
+      time_delta:
+        friendly_name: "Zone 1 Timedelta"
+        value_template: '{{states.input_number.repeat_1.state|int * 3600}}'
+      duration_1:
+        value_template: '{{states.input_number.duration_1.state | int}}mins'
+        friendly_name: "Duration"
+      repeat_1:
+        value_template: '{{ "{:02d}".format(states.input_number.repeat_1.state|int)}}hrs'
+        friendly_name: "Repeat in"
+      rain_sensor:
+        friendly_name: "Rainfall Threshold Sensitivity"
+        value_template: >-
+          {% if states.sensor.dark_sky_precip_intensity.state <= states.input_number.rain_precip_mm.state and states.sensor.dark_sky_precip_probability.state <= states.input_number.rain_probability.state %}
+            dry
+          {% else %}
+            too wet
+          {% endif %}
+
+switch:
+  - platform: mqtt
+    name: "Zone 1"
+    state_topic: "stat/irrigation/POWER1"
+    command_topic: "cmnd/irrigation/POWER1"
+    payload_on: "ON"
+    payload_off: "OFF"
+    qos: 0
+    retain: true
+
+binary_sensor:
+  - platform: mqtt
+    name: "ZONE 1"
+    device_class: moisture
+    state_topic: "cmnd/irrigation/POWER1"
+    payload_on: "ON"
+
+input_boolean:
+  reset_zone_1:
+    name: Reset Next Run Timer
+    initial: off
+    icon: mdi:lock-reset
+
+input_number:
+  timer_minutes_1:
+    name: "Minutes"
+    initial: 0
+    min: 0
+    max: 55
+    step: 1
+    icon: mdi:timer
+  timer_hours_1:
+    name: "Hour"
+    initial: 6
+    min: 0
+    max: 23
+    step: 1
+    icon: mdi:timer
+  duration_1:
+    name: "Set Duration"
+    initial: 3
+    min: 0
+    max: 15
+    step: 1
+    icon: mdi:camera-timer
+  repeat_1:
+    name: "Set Repeat"
+    initial: 24
+    min: 0
+    max: 48
+    icon: mdi:repeat
+  rain_precip_mm:
+    name: "Rainfall mm Sensitivity"
+    initial: 0.1
+    min: 0
+    max: 2
+    step: 0.1
+    icon: mdi:contrast
+  rain_probability:
+    name: "Rainfall Probability Sensitivity"
+    initial: 40
+    min: 0
+    max: 100
+    step: 10
+    icon: mdi:contrast
+
+group:
+  garden:
+    view: yes
+    control: hidden
+    name: "Garden"
+    entities:
+     - group.solenoids
+     - group.irrigation_timer_1
+     - group.rain_sensor
+     - sensor.dark_sky_precip_probability
+     - sensor.dark_sky_precip_intensity
+     - binary_sensor.zone_1
+
+
+  solenoids:
+    view: no
+    name: "Back Garden Irrigation"
+    icon: 'mdi:flower'
+    entities:
+      - switch.zone_1
+
+
+  rain_sensor:
+    view: no
+    name: "Rainfall Sensitivity"
+    icon: mdi:contrast
+    entities:
+      - sensor.dark_sky_precip_intensity
+      - input_number.rain_precip_mm
+      - input_number.rain_probability
+      - sensor.dark_sky_precip_probability
+      - sensor.rain_sensor
+
+  irrigation_timer_1:
+    view: no
+    name: "Sprinklers Zone 1"
+    icon: mdi:clock
+    entities:
+      - sensor.last_run_zone_1
+      - sensor.next_run_zone_1
+      - sensor.duration_1
+      - sensor.repeat_1
+      - group.setting_zone_1
+      - automation.activate_zone_1_timer
+
+  setting_zone_1:
+    view: no
+    control: hidden
+    name: "Settings"
+    icon: mdi:settings
+    entities:
+      - sensor.zone_1_timer
+      - input_number.timer_hours_1
+      - input_number.timer_minutes_1
+      - input_number.duration_1
+      - input_number.repeat_1
+      - input_boolean.reset_zone_1
+
+automation:
+  - id: "Activate_Zone_1_Timer"
+    alias: "Activate Zone 1 Timer"
+    trigger:
+      - platform: time
+        minutes: '/1'
+    condition:
+      condition: and
+      conditions:
+      - condition: template
+        value_template: '{{(as_timestamp(now()) | timestamp_custom("%A, %d %h %H:%M"))  == states.sensor.next_run_zone_1.state}}'
+      - condition: state
+        entity_id: sensor.rain_sensor
+        state: 'dry'
+    action:
+      - service: script.turn_on
+        entity_id: script.activate_irrigation_zone_1
+
+
+  - id: "Zone_1_ON_Notification"
+    alias: "Zone 1 Active Notification"
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: switch.zone_1
+        from: 'off'
+        to: 'on'
+    action:
+      - service: notify.pb
+        data:
+          title: "Irrigation Zone 1"
+          message: "Watering has started"
+  - id: "Zone_1_OFF_Notification"
+    alias: "Zone 1 Completed Notification"
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: switch.zone_1
+        from: 'on'
+        to: 'off'
+    action:
+      - service: notify.pb
+        data:
+          title: "Irrigation Zone 1"
+          message: "Watering has completed"
+
+  - id: "Zone_1_Timer_Reset"
+    alias: "Zone 1 Timer Reset"
+    trigger:
+      - platform: state
+        entity_id: input_boolean.reset_zone_1
+        from: 'off'
+        to: 'on'
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/zone_1_control/TIMER"
+          retain: 1
+          payload_template: >-
+            {%if now().strftime("%H:%M") > states.sensor.zone_1_timer.state %}
+              {{(as_timestamp(now() )+24*3600 ) | timestamp_custom("%A, %d %h ")}}{{states.sensor.zone_1_timer.state}}
+            {%else%}
+              {{(as_timestamp(now() ) ) | timestamp_custom("%A, %d %h ")}}{{states.sensor.zone_1_timer.state}}
+            {%endif%}
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.reset_zone_1
+  - id: "Extend_Zone_1_Timer_When_Wet"
+    alias: "Extend Zone 1 Timer When Wet"
+    trigger:
+      - platform: time
+        minutes: '/1'
+    condition:
+      condition: and
+      conditions:
+      - condition: template
+        value_template: '{{(as_timestamp(now()) | timestamp_custom("%A, %d %h %H:%M"))  == states.sensor.next_run_zone_1.state}}'
+      - condition: state
+        entity_id: sensor.rain_sensor
+        state: 'too wet'
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "cmnd/zone_1_control/TIMER"
+          retain: 1
+          payload_template: '{{(as_timestamp(now() )+ states.sensor.time_delta.state | int) |   timestamp_custom("%A, %d %h %H:%M") }}'
+
+
+script:
+  activate_irrigation_zone_1:
+    alias: "Activate Irrigation Zone 1"
+    sequence:
+      - alias: "Switch on Zone 1"
+        service: switch.turn_on
+        entity_id: switch.zone_1
+      - delay: '00:{{ states.input_number.duration_1.state | int }}:00'
+      - alias: "Switch off Zone 1"
+        service: switch.turn_off
+        entity_id: switch.zone_1
+      - alias: "Update Next Run Time"
+        service: mqtt.publish
+        data:
+          topic: "cmnd/zone_1_control/TIMER"
+          retain: 1
+          payload_template: '{{ (as_timestamp(states.switch.zone_1.last_changed)+ states.sensor.time_delta.state | int) |   timestamp_custom("%A, %d %h %H:%M") }}'

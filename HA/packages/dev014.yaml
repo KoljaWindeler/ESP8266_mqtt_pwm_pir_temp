@@ -1,0 +1,40 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### kitchen drawer
+    name: "dev14"
+    state_topic: "dev14/r/light"
+    command_topic: "dev14/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev14:
+      friendly_name: "Cabinet"
+    binary_sensor.dev14_motion:
+      friendly_name: "Cabinet"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev14"
+    fname: "14 Kitchen Cabinet"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev14/r/motion"
+    name: "dev14_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

@@ -1,0 +1,54 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### bed room touch switch
+    name: "dev3"
+    state_topic: "dev3/r/light"
+    command_topic: "dev3/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev3:
+      friendly_name: "03 Bedroom Touch"
+    sensor.dev3_temperature:
+      friendly_name: "PCB2"
+      icon: "mdi:thermometer"
+    binary_sensor.dev3_motion:
+      friendly_name: "PCB2"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev3"
+    fname: "03 Bedroom Touch"
+
+  - platform: mqtt
+    state_topic: "dev3/r/temperature"
+    name: "dev3_temperature"
+    unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev3/humidity"
+    name: "dev3_humidity"
+    unit_of_measurement: "%"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev3/r/motion"
+    name: "dev3_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

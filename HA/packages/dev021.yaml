@@ -1,0 +1,30 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### slamper livingroom
+    name: "dev21"
+    state_topic: "dev21/r/light"
+    command_topic: "dev21/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev21:
+      friendly_name: "21 SL Livingroom"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev21"
+    fname: "21 SL Livingroom"
+
+# -----------------------------------------------
+

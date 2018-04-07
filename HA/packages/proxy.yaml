@@ -1,0 +1,30 @@
+proximity:
+  kolja_home:
+    zone: home
+    devices:
+      device_tracker.illuminum_kolja
+    tolerance: 50
+    unit_of_measurement: km
+  caro_home:
+    zone: home
+    devices:
+      device_tracker.illuminum_caro
+    tolerance: 50
+    unit_of_measurement: km
+
+automation:
+  - alias: proxy_caro
+    initial_state: True
+    hide_entity: False
+    trigger:
+     - platform: numeric_state
+       entity_id: proximity.caro_home
+       below: 20
+    condition:
+     - condition: template
+       value_template: '{{ states.proximity.caro_home.attributes.dir_of_travel == "towards"}}'
+    action:
+     service: notify.pb
+     data:
+       title: "Caro on the way home"
+       message: "prepare dinner?"
