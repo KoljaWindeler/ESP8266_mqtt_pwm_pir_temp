@@ -46,7 +46,7 @@ group:
       - sensor.trash_3
 # -----------------------------------------------
 automation:
-  - alias: 'pickup_0'
+  - alias: 'trash pickup msg'
     initial_state: 'on'
     trigger:
       - platform: time

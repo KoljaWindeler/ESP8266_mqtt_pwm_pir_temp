@@ -40,7 +40,7 @@ input_boolean:
 
 
 automation:
-  - alias: "Reset_cleaning_done"
+  - alias: "Vac_Reset_cleaning_done"
     initial_state: 'on'
     trigger:
       - platform: time
@@ -51,7 +51,7 @@ automation:
       - service: homeassistant.turn_off
         entity_id: input_boolean.cleaning_done_today
 
-  - alias: "Start_cleaning_when_alone"
+  - alias: "Vac_Start_cleaning_when_alone"
     initial_state: 'on'
     trigger:
       - platform: state
@@ -65,7 +65,7 @@ automation:
       - service: script.turn_on
         entity_id: script.activate_cleaning
 
-  - alias: "Stop_cleaning_when_not_alone"
+  - alias: "Vac_Stop_cleaning_when_not_alone"
     initial_state: 'on'
     trigger:
       - platform: state

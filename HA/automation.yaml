@@ -10,7 +10,7 @@
         name: darkorange
 # ------------------- autoload theme ------------------------
 # ------------------- entrance Room HAUSTUER ----------------
-  - alias: entranceRoom
+  - alias: entrance_frontdoor_inside
     initial_state: True
     hide_entity: False
     trigger: # trigger twice, whenever the motion sensors are off for 2 min
@@ -35,7 +35,7 @@
           - light.dev12
 # ------------------- entrance Room HAUSTUER ----------------
 # ------------------- carlo --------------------------------
-  - alias: carlo_test
+  - alias: carlo_light_on_motion
     initial_state: True
     hide_entity: False
     trigger: # trigger twice, whenever the motion sensors are off for 10min
