@@ -1,3 +1,8 @@
+20180408
+	- GPIO class extended, provides ouput / input / input hold Capability
+		- Config string GOP4 = GPIO, Output, Positive (active high), Pin GPIO4
+		- Config string GIN3 = GPIO, input, Negative (active low), Pin GPIO3
+		- Publishing limited to 9 Messages: devXX/r/gpio_X_hold with payload 1..9 (seconds hold)
 20180403
 	- Mesh Host SSID pattern: JKW_relay_dev99_L1 = opened by dev99 and Level
 		one aka directly connected to the WIFI, next level would be L2 and so on ...
