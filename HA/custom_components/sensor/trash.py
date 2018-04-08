@@ -54,6 +54,7 @@ class TrashCollectionSensor(Entity):
 
     def __init__(self,hass: HomeAssistantType, trash_type_id, data):
         """Initialize the sensor."""
+        self._state_attributes = None
         self._state = None
         self._trash_type_id = trash_type_id
         self._name = "Loading ("+str(trash_type_id)+")"
@@ -64,6 +65,11 @@ class TrashCollectionSensor(Entity):
     def name(self):
         """Return the name of the sensor."""
         return self._name
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._state_attributes
 
     @property
     def state(self):
@@ -83,9 +89,10 @@ class TrashCollectionSensor(Entity):
         if self.data.f_date != str(today.strftime("%d")):
             self.data.update()
         if type(self.data.data) == list:
-            if len(self.data.data[self._trash_type_id]) == 2:
+            if len(self.data.data[self._trash_type_id]) == 3:
                 self._state = self.data.data[self._trash_type_id]['pickup_date']
                 self._name = self.data.data[self._trash_type_id]['name_type']
+                self._state_attributes = self.data.data[self._trash_type_id]['extra']
 
 
 class TrashCollectionSchedule(object):
@@ -116,6 +123,7 @@ class TrashCollectionSchedule(object):
             trash = {}
             trash['name_type'] = "-"
             trash['pickup_date'] = "-"
+            extra={}
             for i in range(1,len(entries)):
                 l = entries[i].split('\n')
                 s = l[4].split("SUMMARY:")[1]
@@ -124,13 +132,19 @@ class TrashCollectionSchedule(object):
                 s = s.replace(chr(195), 'u')
                 s = s.replace(chr(188), 'e')
                 trash['name_type'] = s
+                trash['extra'] = []
                 trash['pickup_date'] = "-"
                 d = datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d")
                 if d > today:
                     types_found = types_found + 1
                     trash['pickup_date'] = str(d.strftime("%d.%m.%Y"))
+
+                    rem = d - datetime.datetime.now()
+                    extra['remaining'] = str(int(rem.total_seconds()/86400))
+                    trash['extra'] = extra
                     break
             trash_data.append(trash)
         self.data = trash_data
         if types_found == 4:
             self.f_date = str(today.strftime("%d"))
+

@@ -1,0 +1,56 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### b1
+    name: "dev27"
+    state_topic: "dev27/r/light"
+    command_topic: "dev27/s/light/dimm"
+    rgb_state_topic: 'dev27/r/light/dimm/color'
+    rgb_command_topic: 'dev27/s/light/dimm/color'
+    brightness_state_topic: 'dev27/r/light/brightness'
+    brightness_command_topic: 'dev27/s/light/brightness'
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+  - platform: mqtt ### b1
+    name: "dev27_simple_rainbow"
+    state_topic: "dev27/r/light/animation/simple_rainbow"
+    command_topic: "dev27/s/light/animation/simple_rainbow"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev27:
+      friendly_name: "027 B1"
+      icon: "mdi:lamp"
+    light.dev27_simple_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "027 B1"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev27"
+    fname: "027 B1"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev27/r/motion"
+    name: "dev27_motion"
+    device_class: motion
+
+
+# -----------------------------------------------
+

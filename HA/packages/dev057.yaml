@@ -1,0 +1,40 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### weihnachtskette
+    name: "dev57"
+    state_topic: "dev57/r/light"
+    command_topic: "dev57/s/light"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev57:
+      friendly_name: "x-mas"
+    binary_sensor.dev57_motion:
+      friendly_name: "x-mas"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev57"
+    fname: "57 x-mas tree"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev57/r/motion"
+    name: "dev57_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

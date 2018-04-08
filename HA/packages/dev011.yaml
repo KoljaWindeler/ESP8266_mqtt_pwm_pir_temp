@@ -1,0 +1,40 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### tower living
+    name: "dev11"
+    command_topic: "dev11/s/light"
+    state_topic: "dev11/r/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev11:
+      friendly_name: "TowerE"
+      icon: "mdi:lamp"
+    sensor.dev11_temperature:
+      friendly_name: "Livingroom TowerE"
+      icon: "mdi:thermometer"
+    binary_sensor.dev11_motion:
+      friendly_name: "TowerE"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev11"
+    fname: "11 TowerE"
+
+  - platform: mqtt
+    state_topic: "dev11/r/temperature"
+    name: "dev11_temperature"
+    unit_of_measurement: "ºC"
+
+# -----------------------------------------------

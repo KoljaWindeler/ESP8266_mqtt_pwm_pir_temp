@@ -1,0 +1,44 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### dimmer treppe
+    name: "dev15"
+    state_topic: "dev15/r/light"
+    command_topic: "dev15/s/light/dimm"
+    brightness_state_topic: 'dev15/r/light/brightness'
+    brightness_command_topic: 'dev15/s/light/brightness'
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev15:
+      friendly_name: "HallwayD"
+    binary_sensor.dev15_motion:
+      friendly_name: "HallwayD"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev15"
+    fname: "15 HallwayD"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev15/r/motion"
+    name: "dev15_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

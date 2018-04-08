@@ -1,0 +1,36 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+
+homeassistant:
+  customize:
+    sensor.dev6_temperature:
+      friendly_name: "Entrance"
+      icon: "mdi:thermometer"
+    binary_sensor.dev6_motion:
+      friendly_name: "Entrance"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev6"
+    fname: "06 Entrance"
+
+  - platform: mqtt
+    state_topic: "dev6/r/temperature"
+    name: "dev6_temperature"
+    sensor_class: "temperature"
+    unit_of_measurement: "ºC"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev6/r/motion"
+    name: "dev6_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

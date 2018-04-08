@@ -1,0 +1,16 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev26"
+    fname: "26 pow"
+
+  - platform: mqtt
+    state_topic: "dev26/r/power"
+    name: "dev26_power"
+    unit_of_measurement: "W"
+
+# -----------------------------------------------
+

@@ -30,3 +30,12 @@ ha_jkw:
   picture:
   track: true
   vendor:
+
+kolja_handy_kolja_handy:
+  hide_if_away: false
+  icon:
+  mac:
+  name: kolja handy
+  picture:
+  track: true
+  vendor:

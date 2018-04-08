@@ -1,0 +1,42 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### helle lampinions
+    name: "dev56"
+    state_topic: "dev56/r/light"
+    command_topic: "dev56/s/light/dimm"
+    brightness_state_topic: 'dev56/r/light/brightness'
+    brightness_command_topic: 'dev56/s/light/brightness'
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev56:
+      friendly_name: "Lampinion"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev56"
+    fname: "56 Lampinions"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev57/r/motion"
+    name: "dev57_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

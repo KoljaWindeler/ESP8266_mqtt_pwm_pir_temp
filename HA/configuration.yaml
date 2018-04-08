@@ -27,6 +27,11 @@ zone 3:
 # Enables the frontend
 frontend:
   themes: !include_dir_merge_named themes/
+  extra_html_url:
+    - /local/custom_ui/state-card-tiles.html
+    - /local/custom_ui/state-card-floorplan.html
+  extra_html_url_es5:
+    - /local/custom_ui/state-card-tiles_es5.html
 
 panel_custom:
   - name: floorplan
@@ -45,28 +50,16 @@ notify:
   platform: pushbullet
   api_key: !secret pushbullet_key
 
-# Checks for available updates
-updater:
-
-# Discover some devices automatically
-discovery:
-#lirc:
 remote:
   - platform: harmony
     name: TVHub
     host: 192.168.2.23
 
+updater:
+discovery:
 history:
-
 recorder:
-#  db_url: mysql://ha:ah@localhost/ha?charset=utf8
-#  purge_interval: 1
-#  purge_keep_days: 5
-
-# View all events in a logbook
 logbook:
-
-# Track the sun
 sun:
 
 # Text to speech
@@ -90,41 +83,17 @@ mqtt:
 media_player:
  - platform: cast
    host: 192.168.2.51
-# emulated_hue:
 
-# Weather Prediction
 sensor: !include sensors.yaml
 switch: !include switches.yaml
 group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml
 binary_sensor: !include b_sensors.yaml
-# input_slider: !include slider.yaml
-
 automation: !include automation.yaml
 script: !include scripts.yaml
 
 camera:
-  - platform: generic
-    still_image_url: http://192.168.178.42/snapshot.jpg
-    name: cam_xia1
-
-  - platform: generic
-    still_image_url: http://192.168.2.54/snapshot.jpg
-    name: cam_xia2
-
-  - platform: generic
-    still_image_url: http://192.168.2.56/snapshot.jpg
-    name: cam_xia3
-
-  - platform: generic
-    still_image_url: http://192.168.2.73/snapshot.jpg
-    name: cam_xia4
-
-  - platform: generic
-    still_image_url: http://192.168.2.74/cgi-bin/currentpic.cgi
-    name: cam_xia5
-
   - name: map_caro
     platform: generic
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}
@@ -135,52 +104,4 @@ camera:
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}
     limit_refetch_to_url_change: true
 
-  - name: cam_101
-    platform: generic
-    still_image_url: http://192.168.2.101/cam_full.jpg
-
-  - name: cam_102
-    platform: generic
-    still_image_url: http://192.168.2.102/cam_full.jpg
-
-#  - name: cam_103
-#    platform: generic
-#    still_image_url: http://192.168.2.103/cam_full.jpg
-
-  - name: cam_106
-    platform: generic
-    still_image_url: http://192.168.2.106/cam_full.jpg
-
-
-shell_command:
-  cam1_1: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_1.jpg
-  cam1_2: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_2.jpg
-  cam1_3: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_3.jpg
-  cam1_4: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_4.jpg
-  cam1_5: wget http://192.168.2.101/cam_full.jpg -O /tmp/101_5.jpg
-
-  cam2_1: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_1.jpg
-  cam2_2: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_2.jpg
-  cam2_3: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_3.jpg
-  cam2_4: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_4.jpg
-  cam2_5: wget http://192.168.2.102/cam_full.jpg -O /tmp/102_5.jpg
-  
- # cam3_1: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_1.jpg
- # cam3_2: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_2.jpg
- # cam3_3: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_3.jpg
- # cam3_4: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_4.jpg
- # cam3_5: wget http://192.168.2.103/cam_full.jpg -O /tmp/103_5.jpg
-    
-  cam6_1: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_1.jpg
-  cam6_2: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_2.jpg
-  cam6_3: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_3.jpg
-  cam6_4: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_4.jpg
-  cam6_5: wget http://192.168.2.106/cam_full.jpg -O /tmp/106_5.jpg
-
-  camxia1_1: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_1.jpg
-  camxia1_2: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_2.jpg
-  camxia1_3: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_3.jpg
-  camxia1_4: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_4.jpg
-  camxia1_5: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_5.jpg
-  
 

@@ -1,4 +1,6 @@
 # run this via /etc/rc.local
 # /path/to/start_ha.sh&
-sudo screen -S "A" -d -m
-sudo screen -r "A" -X stuff "su -s /bin/bash homeassistant -c 'whoami; source /srv/homeassistant/bin/activate; hass'\n"
+sudo screen -S "HA" -d -m
+sudo screen -r "HA" -X stuff "hass\n"
+sudo screen -S "NR" -d -m
+sudo screen -r "NR" -X stuff "node-red\n"

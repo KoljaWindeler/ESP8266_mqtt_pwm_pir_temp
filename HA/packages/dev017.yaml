@@ -1,0 +1,50 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### steckdosen dings wohnzimmer
+    name: "dev17"
+    state_topic: "dev17/r/light"
+    command_topic: "dev17/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev17:
+      friendly_name: "x-mas 2"
+    binary_sensor.dev17_motion:
+      friendly_name: "x-mas 2"
+    sensor.dev17_temperature:
+      friendly_name: "x-mas 2"
+      icon: "mdi:thermometer"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev17"
+    fname: "17 X-mas2"
+
+  - platform: mqtt
+    state_topic: "dev17/r/temperature"
+    name: "dev17_temperature"
+    unit_of_measurement: "ºC"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev17/r/motion"
+    name: "dev17_motion"
+    device_class: motion
+
+# -----------------------------------------------
+
