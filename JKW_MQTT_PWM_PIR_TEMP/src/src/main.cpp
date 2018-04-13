@@ -246,9 +246,8 @@ void reconnect(){
 		// each round, check wifi first
 		if (WiFi.status() != WL_CONNECTED) {
 			// if the ssid was programmed to be " ", connect to mesh
-			if ((strlen(mqtt.nw_ssid) == 1 && mqtt.nw_ssid[0] == ' ' &&
-			   (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_CLIENT_ONLY)) ||
-			  network.getMeshMode() == MESH_MODE_ONLY_FULL_MESH)
+			if (strlen(mqtt.nw_ssid) == 1 && mqtt.nw_ssid[0] == ' ' &&
+			  (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_CLIENT_ONLY))
 			{
 				logger.println(TOPIC_WIFI, F("No SSID trying mesh only"), COLOR_YELLOW);
 				WiFi.mode(WIFI_STA); // setting this here again dramatically improved chances of connection
