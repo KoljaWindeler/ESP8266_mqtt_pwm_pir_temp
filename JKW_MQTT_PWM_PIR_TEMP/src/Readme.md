@@ -8,7 +8,7 @@ As of now I have Sonoff Touch, Sonoff Basic, Sonoff Pow and a couple of self bui
 - Wait 90 sec
 - Connect to the AP (SSID "ESP CONFIG")
 - Open http://192.168.4.1
-- Configuration the wifi and MQTT settings, assign a unique device short name (e.g. dev01 / dev02 / ... keep this short, it will be used for all mqtt topics in the future)
+- Configuration the wifi and MQTT settings, assign a unique device short name (e.g. dev01 / dev02 / ... keep this short (max 5 chars), it will be used for all mqtt topics in the future)
 - Prepare to see the "boot up" message of the device by connecting to the same MQTT broker and subscribe to e.g. "dev01/r/#" (all PC receivable topics of this device)
 - Once the device rebooted, it will connect to the configured wifi and publish its default config (e.g. Firmware version etc) which will show up on the PC
 - Configure the capabilities of the device by publishing e.g. [mosquito_pub -t "dev01/s/capabilities" -m "R,B,SL" -u MQTT_USER -p MQTT_PW] (see peripherals list below)
@@ -123,12 +123,19 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 	
 ### GPIO
-	Configuration string: "G0" / "G1" / ... / "G16"
-	Purpose: directly set outputs, whatch out: this module can override other outputs
+	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]" e.g. "GPI1" / "GNI3" / "GNO6"  / "GPO16"
+	Purpose: directly set or get pin out-/input, watch out: this module can override other outputs
+	GPO4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
+	GNI3 will configure GPIO3 as LOW-active Input, thus publishing "ON" when the pin goes LOW
 	Sub-Topic(s): 
-		"gpio_0_out" (in and out: ON/OFF)
-		"gpio_0_toggle" (in only, no payload)
-		"gpio_0_pulse" (in only, payload is pulse time in ms)
+		"gpio_0_out" 
+			configured as input will publish ON/OFF on this topic, publish "ON" / "OFF"
+			/ {0..99} to e.g. dev4/s/gpio_0_out to set the PIN (0..99 will set the PWM 
+			to 0..99% durty cycle) if used as output
+		"gpio_0_toggle" 
+			in only, no payload, will toggle between ON/OFF
+		"gpio_0_pulse" 
+			in only, payload is pulse time in ms, will set pin ON and back to OFF after xx ms
 
 ### WiFi Configuration Access Point
 Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.
