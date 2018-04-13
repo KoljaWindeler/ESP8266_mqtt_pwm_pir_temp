@@ -167,17 +167,17 @@ All devices will publish a set of information on connect (helps to check if the 
 
 All devices will also subscribe to a set of topics:
 1) dev95/s/trace	
-	--> "ON"/"OFF" as payload, once activated all debug output will be published at dev95/r/trace
+	- "ON"/"OFF" as payload, once activated all debug output will be published at dev95/r/trace
 2) dev95/s/setup
-	--> "ON" start WiFi access point for confirguration
-	--> "http://192.168.2.84:81/20180403.bin" will update the firmware from the given URL
-	--> "reset" reboot the ESP
-	--> "setNW/[SSID]/[pw]/[mqtt server ip]/CHK" CHK is a single byte = xor of SSID,PW,IP
+	- "ON" start WiFi access point for confirguration
+	- "http://192.168.2.84:81/20180403.bin" will update the firmware from the given URL
+	- "reset" reboot the ESP
+	- "setNW/[SSID]/[pw]/[mqtt server ip]/CHK" CHK is a single byte = xor of SSID,PW,IP
 	    to calculate CHK: connect via serial to a ESP and send msg with random CHK, debug will show expected CHK
 3) dev95/s/capability
-	--> "B,PIR,PWM" config string as mentioned above
+	- "B,PIR,PWM" config string as mentioned above
 4) dev95/s/ota
-	--> MQTT firmware update .. not stable ATM
+	- MQTT firmware update .. not stable ATM
 5) s/ota
-	--> MQTT firmware update .. not stable ATM
+	- MQTT firmware update .. not stable ATM
 
