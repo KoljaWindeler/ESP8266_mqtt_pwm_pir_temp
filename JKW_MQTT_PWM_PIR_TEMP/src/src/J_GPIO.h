@@ -10,7 +10,7 @@
 
 	#define PWM_MAX 99
 	#define PWM_MIN 0
-	#define PWM_ON 255
+	#define PWM_ON  255
 	#define PWM_OFF 254
 
 

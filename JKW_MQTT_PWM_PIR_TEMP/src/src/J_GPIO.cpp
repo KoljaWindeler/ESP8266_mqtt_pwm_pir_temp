@@ -52,6 +52,10 @@ bool J_GPIO::parse(uint8_t * config){
 			continue;
 		};
 	}
+	// set correct pwm range
+	if(f){
+		analogWriteRange(255);
+	}
 	return f;
 }
 
@@ -195,7 +199,7 @@ void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 		if (m_invert[pin]) {
 			output_state = PWM_MAX-output_state;
 		}
-		analogWrite(pin, output_state);
+		analogWrite(pin, intens[output_state]);
 	}
 
 };
