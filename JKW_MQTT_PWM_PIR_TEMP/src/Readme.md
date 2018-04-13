@@ -156,7 +156,7 @@ The client will try 1 second longer to reconnect per 20 sec of previous connecti
 
 The MESH mode will kick in after 80% of the waittime hast passed.
 
-### Tricks
+# Tricks
 All devices will publish a set of information on connect (helps to check if the device connected):
 1) dev97/r/INFO SONOFF 20180413  	--> firmware version
 2) dev97/r/SSID JKW_relay_dev23_L1 	--> SSID of the connected AP
