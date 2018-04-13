@@ -1,5 +1,7 @@
+20180413
+	- Addedpwm capability to gpio class
 20180408
-	- GPIO class extended, provides ouput / input / input hold Capability
+	- GPIO class extended, provides output / input / input-hold capability
 		- Config string GOP4 = GPIO, Output, Positive (active high), Pin GPIO4
 		- Config string GIN3 = GPIO, input, Negative (active low), Pin GPIO3
 		- Publishing limited to 9 Messages: devXX/r/gpio_X_hold with payload 1..9 (seconds hold)

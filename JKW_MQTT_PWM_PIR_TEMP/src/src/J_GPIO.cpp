@@ -161,23 +161,43 @@ bool J_GPIO::subscribe(){
 }
 
 // drive pin
-void J_GPIO::set_output(uint8_t pin, uint8_t state){
+void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 	if (pin > 16) {
 		return;
 	}
-	if (state) {
-		m_state[pin].set(1);
-		sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
-	} else {
-		m_state[pin].set(0);
-		sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
+	if(intens_level==PWM_ON || intens_level==PWM_OFF){
+		m_state[pin].set(intens_level);
+		bool output_state;
+
+		if(m_state[pin].get_value()==PWM_ON){
+			sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
+			output_state=1;
+		} else {
+			sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
+			output_state=0;
+		}
+		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
+
+		if (m_invert[pin]){
+			output_state = !output_state;
+		}
+		digitalWrite(pin, output_state);
+
+	} else { // pwm
+		// limit
+		intens_level = min(PWM_MAX,(int)intens_level);
+		m_state[pin].set(intens_level);
+
+		sprintf(m_msg_buffer, "Set J_GPIO %i: %i%% = %i", pin, intens_level, intens[intens_level]);
+		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
+
+		uint8_t output_state = m_state[pin].get_value();
+		if (m_invert[pin]) {
+			output_state = PWM_MAX-output_state;
+		}
+		analogWrite(pin, output_state);
 	}
-	logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
-	bool output_state = m_state[pin].get_value();
-	if (m_invert[pin]) {
-		output_state = !output_state;
-	}
-	digitalWrite(pin, output_state);
+
 };
 
 
@@ -190,9 +210,12 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
 				// change OUTPUT
 				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
-					set_output(i, 1);
+					set_output(i, PWM_ON); // 99 == 100% (0..99)
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
-					set_output(i, 0);
+					set_output(i, PWM_OFF); // 0%
+				} else { // pwm
+					// try to get BRIGHTNESS
+					set_output(i, min(PWM_MAX,atoi((const char*)p_payload))); // limit to 0..99
 				}
 				return true;
 			}
@@ -200,14 +223,18 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			// change pin
 			sprintf(m_msg_buffer, MQTT_J_GPIO_TOGGLE_TOPIC, i);
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
-				set_output(i, !m_state[i].get_value());
+				if(m_state[i].get_value()==PWM_ON){
+					set_output(i, PWM_OFF);
+				} else {
+					set_output(i, PWM_ON);
+				}
 				return true;
 			}
 
 			// pulse output
 			sprintf(m_msg_buffer, MQTT_J_GPIO_PULSE_TOPIC, i);
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
-				set_output(i, 1);
+				set_output(i, PWM_ON);
 				uint16_t pulse_length = atoi((char *) p_payload);
 				m_timing_parameter[i] = millis() + pulse_length;
 				// do something
@@ -234,12 +261,17 @@ bool J_GPIO::publish(){
 
 				if (m_pin_out[i]) {
 					sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STATE_TOPIC, i);
-					if (m_state[i].get_value()) {
+					if (m_state[i].get_value() == PWM_ON) {
 						logger.pln((char *) STATE_ON);
 						ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) STATE_ON);
-					} else {
+					} else if(m_state[i].get_value() == PWM_OFF) {
 						logger.pln((char *) STATE_OFF);
 						ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) STATE_OFF);
+					} else { // pwm
+						char t[5];
+						sprintf(t,"%i",m_state[i].get_value());
+						logger.pln(t);
+						ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), t);
 					}
 				} else { // input pin
 					if (m_state[i].get_value() == 1 || m_state[i].get_value() == 0) { // right after push / release

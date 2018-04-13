@@ -8,6 +8,12 @@
 	static constexpr char MQTT_J_GPIO_TOGGLE_TOPIC[]       = "gpio_%i_toggle";
 	static constexpr char MQTT_J_GPIO_PULSE_TOPIC[]        = "gpio_%i_pulse";
 
+	#define PWM_MAX 99
+	#define PWM_MIN 0
+	#define PWM_ON 255
+	#define PWM_OFF 254
+
+
 	class J_GPIO : public peripheral {
 public:
 		J_GPIO();
