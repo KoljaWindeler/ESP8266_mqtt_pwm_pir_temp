@@ -123,10 +123,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 	
 ### GPIO
-	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]" e.g. "GPI1" / "GNI3" / "GNO6"  / "GPO16"
+	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]" 
+	e.g. "GPI1" / "GNI3" / "GNO6"  / "GPO16"
+	
 	Purpose: directly set or get pin out-/input, watch out: this module can override other outputs
 	GPO4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
 	GNI3 will configure GPIO3 as LOW-active Input, thus publishing "ON" when the pin goes LOW
+	
 	Sub-Topic(s): 
 		"gpio_0_out" 
 			configured as input will publish ON/OFF on this topic, publish "ON" / "OFF"
@@ -152,3 +155,29 @@ connected to the MQTT will increase the time before the configuration AP will be
 The client will try 1 second longer to reconnect per 20 sec of previous connection time. The maximum time is limited to 20 minutes.
 
 The MESH mode will kick in after 80% of the waittime hast passed.
+
+### Tricks
+All devices will publish a set of information on connect (helps to check if the device connected):
+1) dev97/r/INFO SONOFF 20180413  	--> firmware version
+2) dev97/r/SSID JKW_relay_dev23_L1 	--> SSID of the connected AP
+3) dev97/r/BSSID c5:60:8e:94:01:62	--> BSSID of the connected AP
+4) dev97/r/MAC 26:20:22:e8:3a:2c	--> own MAC
+5) dev97/r/capability GIN4,GOP2		--> configured capabilityes
+6) dev97/r/routing dev97 >> dev23	--> routing info, this is valueable for MESH mode
+
+All devices will also subscribe to a set of topics:
+1) dev95/s/trace	
+	--> "ON"/"OFF" as payload, once activated all debug output will be published at dev95/r/trace
+2) dev95/s/setup
+	--> "ON" start WiFi access point for confirguration
+	--> "http://192.168.2.84:81/20180403.bin" will update the firmware from the given URL
+	--> "reset" reboot the ESP
+	--> "setNW/[SSID]/[pw]/[mqtt server ip]/CHK" CHK is a single byte = xor of SSID,PW,IP
+	    to calculate CHK: connect via serial to a ESP and send msg with random CHK, debug will show expected CHK
+3) dev95/s/capability
+	--> "B,PIR,PWM" config string as mentioned above
+4) dev95/s/ota
+	--> MQTT firmware update .. not stable ATM
+5) s/ota
+	--> MQTT firmware update .. not stable ATM
+
