@@ -15,22 +15,6 @@ illuminum_caro:
   track: true
   vendor:
 
-ha_hweva:
-  hide_if_away: false
-  mac:
-  name: ha
-  picture:
-  track: true
-  vendor:
-
-ha_jkw:
-  hide_if_away: false
-  mac:
-  name: ha
-  picture:
-  track: true
-  vendor:
-
 kolja_handy_kolja_handy:
   hide_if_away: false
   icon:

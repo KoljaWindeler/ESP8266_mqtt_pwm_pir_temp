@@ -23,7 +23,7 @@ script:
         data:
           command: VolumeUp
           device: 47580278
-          num_repeats: 5
+          num_repeats: 10
           delay_secs: 0.0
   tvmute:
     sequence:
@@ -39,7 +39,7 @@ script:
         data:
           command: VolumeDown
           device: 47580278
-          num_repeats: 5
+          num_repeats: 10
           delay_secs: 0.0
   firedown:
     sequence:
