@@ -21,8 +21,13 @@ automation:
        entity_id: proximity.caro_home
        below: 20
     condition:
-     - condition: template
-       value_template: '{{ states.proximity.caro_home.attributes.dir_of_travel == "towards"}}'
+      condition: and
+      conditions:
+        - condition: template
+          value_template: '{{ states.proximity.caro_home.attributes.dir_of_travel == "towards"}}'
+        - condition: state
+          entity_id: 'device_tracker.illuminum_kolja'
+          state: 'home'
     action:
      service: notify.pb
      data:
