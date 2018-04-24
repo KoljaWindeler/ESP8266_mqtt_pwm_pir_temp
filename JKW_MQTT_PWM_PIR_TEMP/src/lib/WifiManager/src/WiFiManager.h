@@ -47,9 +47,21 @@ const char HTTP_UPDATE_SUC[] PROGMEM      = "Update Success! Rebooting...";
 #define WIFI_MANAGER_MAX_PARAMS 10
 #define CHK_FORMAT_V2       0x22
 #define CHK_FORMAT_V3       0x33
+#define CHK_FORMAT_V4       0x44
 
 // Buffer to hold data from the WiFi manager for mqtt login
-struct mqtt_data { //140 byte
+struct mqtt_data { //
+	char login[16];
+  char pw[16];
+  char dev_short[50]; 
+  char server_ip[16];
+  char server_port[6];
+  char nw_ssid[16];
+  char nw_pw[16];
+	char cap[64]; // capability
+};
+
+struct mqtt_data_v3 { //140 byte
   char login[16];
   char pw[16];
   char dev_short[6];
@@ -118,6 +130,7 @@ class WiFiManager
     void          explainMqttStruct(uint8_t i,boolean rn);
     void          explainFullMqttStruct(mqtt_data *mqtt);
     boolean       storeMqttStruct(char* temp,uint8_t size);
+		boolean 			storeMqttStruct_universal(char * temp, uint8_t size, uint8_t chk);
     boolean       loadMqttStruct(char* temp,uint8_t size);
 
     //sets timeout before webserver loop ends and exits even if there has been no setup.
@@ -215,7 +228,8 @@ class WiFiManager
     void          handle204();
     boolean       captivePortal();
 
-		boolean       storeMqttStruct_v3(char* temp,uint8_t size);
+		boolean       storeMqttStruct_v4(char* temp,uint8_t size);
+		boolean       loadMqttStruct_v4(char* temp,uint8_t size);
     boolean       loadMqttStruct_v3(char* temp,uint8_t size);
 		boolean       loadMqttStruct_v2(char* temp,uint8_t size);
 		char*					getMQTTelement(uint8_t i,mqtt_data * mqtt);

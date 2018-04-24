@@ -1,3 +1,5 @@
+20180423
+	- Enlarged dev_short to 50 chars
 20180417
 	- Added dimming capability to the gpio class
 		-	set e.g. "gpio_2_brightness" to "50" [%] {default is 100%}
