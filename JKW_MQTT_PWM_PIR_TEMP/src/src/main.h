@@ -56,7 +56,7 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define DEV                   "_dev" // set this to "_dev" during development to avoid Mesh confilicts
+	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
 	#define VERSION               "20180424" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
