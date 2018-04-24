@@ -167,7 +167,6 @@ public:
 
 #endif // ifndef main_h
 
-
 /*
  * 01	VDDA			Analog Power 3.0 V ~ 3.6V
  * 02	LNA				RF Antenna Interface Chip Output Impedance = 50 Ω No matching required. It is suggested to retain the π-type matching network to match the antenna.
