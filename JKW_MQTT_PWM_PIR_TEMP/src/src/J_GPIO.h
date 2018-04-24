@@ -21,9 +21,11 @@ public:
 		dimmer(uint8_t gpio, bool invers);
 		bool loop();
 		bool set_brightness(uint8_t t);
+		bool set_brightness(uint8_t t, bool dimming);
 		void set_state(bool s);
-private:
 		void dimm_to(uint8_t t);
+		void dimm_to(uint8_t t, bool dimming);
+private:
 		uint8_t m_gpio        = 0;
 		bool m_invers         = false;
 		uint8_t m_start_v     = 0;

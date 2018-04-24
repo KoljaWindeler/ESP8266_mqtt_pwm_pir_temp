@@ -7,6 +7,14 @@ J_GPIO::J_GPIO(){ };
 
 // simply the destructor
 J_GPIO::~J_GPIO(){
+	// unload the dimmer
+	for (uint8_t i = 0; i <= 16; i++) {
+		if (m_dimmer[i]) {
+			delete m_dimmer[i];
+			m_dimmer[i] = NULL;
+		}
+	}
+	;
 	logger.println(TOPIC_GENERIC_INFO, F("J_GPIO deleted"), COLOR_YELLOW);
 };
 
@@ -190,79 +198,72 @@ bool J_GPIO::subscribe(){
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
 
 	return true;
-}
+} // subscribe
 
 // drive pin
 void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 	if (pin > 16) {
 		return;
 	}
-	if (intens_level == PWM_ON || intens_level == PWM_OFF) {
-		m_state[pin].set(intens_level);
-		bool output_state;
+	if (intens_level == PWM_ON || intens_level == PWM_OFF) { // non - pwm / ON-OFF
+		m_state[pin].set(intens_level);                         // store to trigger publish
 
 		if (m_state[pin].get_value() == PWM_ON) {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
-			output_state = 1;
+			m_dimmer[pin]->dimm_to(PWM_MAX, false); // max on with no dimming
 		} else {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
-			output_state = 0;
+			m_dimmer[pin]->dimm_to(0, false); // off with no dimming;
 		}
 		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
+	} else {                                          // pwm
+		intens_level = min(PWM_MAX, (int) intens_level); // limit
+		m_state[pin].set(intens_level);                  // store to trigger publish
 
-		if (m_invert[pin]) {
-			output_state = !output_state;
-		}
-		digitalWrite(pin, output_state);
-	} else { // pwm
-		// limit
-		intens_level = min(PWM_MAX, (int) intens_level);
-		m_state[pin].set(intens_level);
-
+		// sort of debug
 		sprintf(m_msg_buffer, "Set J_GPIO %i: %i%% = %i", pin, intens_level, intens[intens_level]);
 		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
 
-		uint8_t output_state = m_state[pin].get_value();
-		if (m_invert[pin]) {
-			output_state = PWM_MAX - output_state;
-		}
-		analogWrite(pin, intens[output_state]);
+		m_dimmer[pin]->dimm_to(m_state[pin].get_value(), false); // set pwm with no dimming
 	}
 };
 
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
+	////////////////// MASS DIMMING //////////////////
 	// MASS dimm pins .. e.g.  "gpio_255_dimm" >> "ON,13,15"
 	sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_DIMM_TOPIC, 255);
 	if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
 		// get state ON / OFF
 		bool state = false;
-		if(!strncmp((const char *)p_payload,STATE_ON,2)){
+		if (!strncmp((const char *) p_payload, STATE_ON, 2)) {
 			state = true;
 		}
-		uint8_t pin=0;
-		for(uint8_t i=0; p_payload[i];i++){
-			if(p_payload[i]>='0' && p_payload[i]<='9'){
-				pin=pin*10+(p_payload[i]-'0');
+		uint8_t pin = 0;
+		for (uint8_t i = 0; p_payload[i]; i++) {
+			if (p_payload[i] >= '0' && p_payload[i] <= '9') {
+				pin = pin * 10 + (p_payload[i] - '0');
 			}
 			// check if execution is up
-			if((p_payload[i]==',' || p_payload[i+1]==0x00) && pin!=0){
+			if ((p_payload[i] == ',' || p_payload[i + 1] == 0x00) && pin != 0) {
 				// execute if configured
-				if(m_pin_out[pin]){
+				if (m_pin_out[pin]) {
 					m_dimmer[pin]->set_state(state);
-					if(state){
-						m_state[pin].set(PWM_ON); // publish "OFF" as text
+					m_brightness[pin].outdated(true); // force republish for HA
+					if (state) {
+						m_state[pin].set(PWM_ON); // publish "ON" as text
 					} else {
 						m_state[pin].set(PWM_OFF); // publish "OFF" as text
 					}
 				}
 				// reset pin to read the next in
-				pin=0;
+				pin = 0;
 			}
 		}
 		return true;
 	}
+	////////////////// MASS DIMMING //////////////////
 
 	// single pin dimming, not 100% in syn
 	for (uint8_t i = 0; i <= 16; i++) {
@@ -275,8 +276,9 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 					set_output(i, PWM_ON); // 99 == 100% (0..99)
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 					set_output(i, PWM_OFF); // 0%
-				} else {  // set pwm level direct
+				} else {                 // set pwm level direct
 					// try to get BRIGHTNESS
+					m_brightness[i].set(min(PWM_MAX, atoi((const char *) p_payload)));
 					set_output(i, min(PWM_MAX, atoi((const char *) p_payload))); // limit to 0..99
 				}
 				return true;
@@ -297,6 +299,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 				// change OUTPUT
 				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 					m_dimmer[i]->set_state(true);
+					m_brightness[i].outdated(true); // force republish for HA
 					m_state[i].set(PWM_ON); // publish "OFF" as text
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 					m_dimmer[i]->set_state(false);
@@ -336,6 +339,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 bool J_GPIO::publish(){
 	// publish STATE and BRIGHTNESS after they've been set
 	bool ret = false;
+
 	for (uint8_t i = 0; i <= 16; i++) {
 		// publish state, both in and out
 		if (m_pin_out[i] || m_pin_in[i]) {
@@ -385,7 +389,6 @@ bool J_GPIO::publish(){
 				}
 				return ret; // one at the time
 			}
-
 			// brightness publishing required?
 			else if (m_brightness[i].get_outdated()) {
 				sprintf(m_msg_buffer, "J_GPIO %i brightness ", i);
@@ -411,7 +414,7 @@ dimmer::dimmer(uint8_t gpio, bool invers){
 	m_step_time = 10; // ms
 	m_gpio      = gpio;
 	m_invers    = invers;
-	m_backup_v 	= 99; // override by MQTT msg
+	m_backup_v  = PWM_MAX; // override by MQTT msg
 };
 
 // actually executing the m_dimmer
@@ -421,22 +424,22 @@ bool dimmer::loop(){
 	if (m_end_time) { // we are dimming as long as this is non-zero
 		// logger.p(".");
 		if (millis() >= m_next_time) {
-			//erial.printf("%i > %i\r\n",m_next_time,m_end_time);
+			// erial.printf("%i > %i\r\n",m_next_time,m_end_time);
 			m_next_time = millis() + m_step_time; // save for next round
 			// set new value
 			if (m_next_time > m_end_time) {
-				//erial.println("end time");
+				// erial.println("end time");
 				m_current_v = m_target_v;
 				m_end_time  = 0; // last step, stop dimming
 			} else {
-				m_current_v = min(99, (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
+				m_current_v = min(PWM_MAX, (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
 			}
 			// logger.pln(m_light_current.r);``
 			if (m_invers) {
-				//erial.printf("%i,%i\r\n",m_gpio,intens[99 - m_current_v]);
-				analogWrite(m_gpio, intens[99 - m_current_v]);
+				// erial.printf("%i,%i\r\n",m_gpio,intens[99 - m_current_v]);
+				analogWrite(m_gpio, intens[PWM_MAX - m_current_v]);
 			} else {
-				//erial.printf("%i,%i\r\n",m_gpio,intens[m_current_v]);
+				// erial.printf("%i,%i\r\n",m_gpio,intens[m_current_v]);
 				analogWrite(m_gpio, intens[m_current_v]);
 			}
 		}
@@ -448,31 +451,55 @@ bool dimmer::loop(){
 // if the light is on: dimm to new value, else set the backup value, so we're going
 // to dimm to this as soon as we turn the pin "ON"
 bool dimmer::set_brightness(uint8_t t){
+	return set_brightness(t, true);
+}
+
+bool dimmer::set_brightness(uint8_t t, bool dimming){
+	t = min((int) t, PWM_MAX);
+	// if the light is already on, dimm to new brightness
 	if (m_current_v) {
-		dimm_to(min((int) t, 99));
-	} else {
+		dimm_to(t, dimming);
+	} else { // else prepare to dimm on to new value
 		m_backup_v = t;
 	}
+	return true;
 };
 
 // prepare the paramter for the dimmer, setting m_end_time will trigger the dimmer
 void dimmer::dimm_to(uint8_t t){
-	m_start_v    = m_current_v; // used current values as new start value
-	m_target_v   = t;
-	m_start_time = millis();
-	m_end_time   = m_start_time + abs(m_current_v - m_target_v) * m_step_time;
-	//erial.printf("set end time to %i\r\n",m_end_time);
-	m_next_time  = m_start_time + m_step_time;
+	return dimm_to(t, true);
+}
+
+void dimmer::dimm_to(uint8_t t, bool dimming){
+	if (dimming) {               // std: with dimming
+		m_start_v    = m_current_v; // used current values as new start value
+		m_target_v   = t;
+		m_start_time = millis();
+		m_end_time   = m_start_time + abs(m_current_v - m_target_v) * m_step_time;
+		m_next_time  = m_start_time + m_step_time;
+		// erial.printf("set end time to %i\r\n",m_end_time);
+	} else {          // this is used if we only want to update our internal states
+		m_target_v  = t; // the dimm to value
+		m_end_time  = 1; // not 0 but very low to trigger loop
+		m_next_time = 2; // next > end to directly ump to the end state
+		loop();          // run, will set the t value instantly
+	}
 };
+
+// call brightess 3, call dimm ON
+// dimm ON -> set_state(true) -> dimm_to(m_backup_v)
 
 // switch the dimmer ON or OFF, basically dimm to 0 or back to the backup value
 void dimmer::set_state(bool s){
-	if (s) {
-		//erial.printf("ON %i\r\n",m_gpio);
-		dimm_to(m_backup_v);
-	} else {
-		// avoid override backup with target when target is 0
-		if(m_target_v != 0){
+	if (s) { // turn ON
+		// erial.printf("ON %i\r\n",m_gpio);
+		// DIMM ON (to backup) if we're not dimming at this very point
+		if(m_end_time == 0){
+			dimm_to(m_backup_v);
+		}
+	} else { // turn OFF
+		// avoid override backup with target when target is 0, e.g. when we receive OFF twice
+		if (m_target_v != 0) {
 			m_backup_v = m_target_v;
 		}
 		dimm_to(0);
