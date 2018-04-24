@@ -231,7 +231,7 @@ void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
-	////////////////// MASS DIMMING //////////////////
+	// //////////////// MASS DIMMING //////////////////
 	// MASS dimm pins .. e.g.  "gpio_255_dimm" >> "ON,13,15"
 	sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_DIMM_TOPIC, 255);
 	if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
@@ -263,7 +263,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 		}
 		return true;
 	}
-	////////////////// MASS DIMMING //////////////////
+	// //////////////// MASS DIMMING //////////////////
 
 	// single pin dimming, not 100% in syn
 	for (uint8_t i = 0; i <= 16; i++) {
@@ -300,7 +300,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 					m_dimmer[i]->set_state(true);
 					m_brightness[i].outdated(true); // force republish for HA
-					m_state[i].set(PWM_ON); // publish "OFF" as text
+					m_state[i].set(PWM_ON);         // publish "OFF" as text
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 					m_dimmer[i]->set_state(false);
 					m_state[i].set(PWM_OFF); // publish "OFF" as text
@@ -410,6 +410,8 @@ bool J_GPIO::publish(){
 }  // publish
 
 //  ---------------------------------------- ///
+//  ---------------- DIMMER ---------------- ///
+//  ---------------------------------------- ///
 dimmer::dimmer(uint8_t gpio, bool invers){
 	m_step_time = 10; // ms
 	m_gpio      = gpio;
@@ -494,7 +496,7 @@ void dimmer::set_state(bool s){
 	if (s) { // turn ON
 		// erial.printf("ON %i\r\n",m_gpio);
 		// DIMM ON (to backup) if we're not dimming at this very point
-		if(m_end_time == 0){
+		if (m_end_time == 0) {
 			dimm_to(m_backup_v);
 		}
 	} else { // turn OFF
@@ -505,4 +507,6 @@ void dimmer::set_state(bool s){
 		dimm_to(0);
 	}
 };
+//  ---------------------------------------- ///
+//  ---------------- DIMMER ---------------- ///
 //  ---------------------------------------- ///

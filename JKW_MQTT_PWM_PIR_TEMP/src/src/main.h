@@ -56,8 +56,8 @@ public:
 	#define DHT_def               1
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
-	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180423" DEV
+	#define DEV                   "_dev" // set this to "_dev" during development to avoid Mesh confilicts
+	#define VERSION               "20180424" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -183,7 +183,7 @@ public:
  * 11	VDDPST		P	Digital / IO power supply (1.8 V ~ 3.3 V)
  * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS
  * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS
- * 14	GPIO02		D4; UART Tx during flash programming;
+ * 14	GPIO02		D4; UART Tx during flash programming; internal LED
  * 15	GPIO00		D3; SPI_CS2
  * 16	GPIO04		D2
  *
