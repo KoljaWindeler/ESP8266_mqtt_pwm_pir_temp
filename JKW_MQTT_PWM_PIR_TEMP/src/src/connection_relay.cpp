@@ -149,7 +149,7 @@ bool connection_relay::connectServer(char * dev_short, char * login, char * pw){
 
 		client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 		client.setCallback(callback); // in main.cpp
-		return client.connect(dev_short, login, pw);
+		return client.connect(dev_short, login, pw, build_topic("INFO", UNIT_TO_PC), 0, true, "lost signal");
 	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		logger.println(TOPIC_MQTT, F("Establishing indirect MESH-MQTT link"), COLOR_YELLOW);
 
