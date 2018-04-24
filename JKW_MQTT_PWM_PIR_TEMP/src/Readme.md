@@ -149,6 +149,22 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 			will sweep the PWM "ON"/"OFF", like dimming a light ON and OFF
 		"gpio_0_brightness" 
 			max PWM level that is used during dimm command, make this a retained msg
+			
+	HomeAssistant PWM light config:
+		light:
+		  - platform: mqtt
+		    name: "test_esp"
+		    state_topic: "test_esp/r/gpio_2_state"
+		    command_topic: "test_esp/s/gpio_2_dimm"
+		    brightness_state_topic: "test_esp/r/gpio_2_brightness"
+		    brightness_command_topic: "test_esp/s/gpio_2_brightness"
+		    retain: True
+		    qos: 0
+		    payload_on: "ON"
+		    payload_off: "OFF"
+		    optimistic: false
+		    brightness_scale: 99
+
 
 
 ### WiFi Configuration Access Point
