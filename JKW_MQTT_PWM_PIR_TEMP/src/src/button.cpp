@@ -96,6 +96,12 @@ bool button::publish(){
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 3s"), COLOR_GREEN);
 			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)"");
 		}
+		else if(m_state.get_value() > BUTTON_RELEASE_OFFSET){ // release after > 1
+			sprintf(m_msg_buffer, "%i", m_state.get_value()-BUTTON_RELEASE_OFFSET);
+			logger.print(TOPIC_MQTT_PUBLISH, F("button release after "), COLOR_GREEN);
+			logger.pln(m_msg_buffer);
+			ret = network.publish(build_topic(MQTT_BUTTON_RELEASE_TOPIC,UNIT_TO_PC), m_msg_buffer);
+		}
 		if (ret) {
 			m_state.outdated(false);
 		}
@@ -127,6 +133,10 @@ void button::interrupt(){
 		// Serial.print(".");
 		m_timer_button_down = millis();
 	} else {
-
+		// release button after holding for n*BUTTON_LONG_PUSH (1000ms)
+		if(millis() - m_timer_button_down > BUTTON_LONG_PUSH) {
+			// set the state to BUTTON_RELEASE_OFFSET (10) + N, where N = how many we've hold down the key
+			m_state.set( BUTTON_RELEASE_OFFSET + (millis() - m_timer_button_down) / BUTTON_LONG_PUSH );
+		}
 	};
 }
