@@ -8,12 +8,14 @@
 	#define BUTTON_LONG_PUSH       1000 // ms
 	#define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
 	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
+	#define BUTTON_RELEASE_OFFSET  10   // internal use
 
 
 	static constexpr char MQTT_BUTTON_TOPIC_0S[] = "button";   // publish
 	static constexpr char MQTT_BUTTON_TOPIC_1S[] = "button1s"; // publish
 	static constexpr char MQTT_BUTTON_TOPIC_2S[] = "button2s"; // publish
 	static constexpr char MQTT_BUTTON_TOPIC_3S[] = "button3s"; // publish
+	static constexpr char MQTT_BUTTON_RELEASE_TOPIC[] = "button_release"; // publish
 
 	class button : public peripheral {
 public:
