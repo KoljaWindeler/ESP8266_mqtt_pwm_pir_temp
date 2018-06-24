@@ -491,6 +491,7 @@ void loadPheripherals(uint8_t * config){
 	bake(new J_GPIO(), &p_gpio, config);
 	bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
+	bake(new uptime(), &p_uptime, config);
 
 
 	// logger.p("RAM after init objects ");

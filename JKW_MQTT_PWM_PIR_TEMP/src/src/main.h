@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180424" DEV
+	#define VERSION               "20180624" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -141,6 +141,7 @@ public:
 	extern peripheral * p_gpio;
 	extern peripheral * p_husqvarna;
 	extern peripheral * p_no_mesh;
+	extern peripheral * p_uptime;
 
 
 	extern const uint8_t intens[100];
@@ -164,6 +165,7 @@ public:
 #include "J_GPIO.h"
 #include "husqvarna.h"
 #include "no_mesh.h"
+#include "uptime.h"
 
 #endif // ifndef main_h
 

@@ -29,7 +29,7 @@ bool template::init(){
 	return true;
 }
 
-// return how many value you want to publish per second
+// return how many value you want to publish per minute
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t template::count_intervall_update(){
 	return 0;
@@ -62,7 +62,6 @@ bool template::intervall_update(uint8_t slot){
 // return is ignored
 bool template::subscribe(){
 	network.subscribe(build_topic(MQTT_TEMPLATE_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
-	network.loop();
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TEMPLATE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	return true;
 }
