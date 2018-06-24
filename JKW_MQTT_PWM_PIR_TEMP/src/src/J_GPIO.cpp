@@ -407,6 +407,7 @@ bool J_GPIO::publish(){
 			}
 		}
 	} // loop
+	return ret;
 }  // publish
 
 //  ---------------------------------------- ///
