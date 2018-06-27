@@ -24,6 +24,7 @@ bool light::init(){
 	timer_dimmer       = 0;
 	timer_dimmer_start = 0;
 	timer_dimmer_end   = 0;
+	m_onfor_offtime		 = 0;
 	type = 0;
 	m_light_brightness.set(99,false); // init values, will be overwirtten by MQTT commands
 	m_animation_brightness.set(99,false);
@@ -202,6 +203,18 @@ bool light::loop(){
 		} // timer
 	}  // if active
 	   // // RGB circle ////
+	// auto off
+	if(m_onfor_offtime != 0){
+		if(m_onfor_offtime < millis()){
+			// unset
+			m_onfor_offtime = 0;
+			// switch of
+			m_state.set(false);
+			m_light_backup  = m_light_target; // save last target value to resume later on
+			m_light_current = (led){ 0, 0, 0 };
+			send_current_light();
+		}
+	}
 	return false; // i did nothing
 } // loop
 
@@ -260,8 +273,9 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 	if ( (!strcmp((const char *) p_topic,
 	    build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT))) ||
 	  (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT)))  ) {
+		m_onfor_offtime = 0;
 		// test if the payload is equal to "ON" or "OFF"
-		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
+		if (!strcmp_P((const char *) p_payload, STATE_ON) || !strncmp_P((const char*) p_payload, STATE_ONFOR, 5)) {
 			if (m_state.get_value() != true || m_animation_type.get_value()) {
 				// we don't want to keep running the animation if brightness was submitted
 				if (m_animation_type.get_value()) { // if there is an animation, switch it off
@@ -280,6 +294,14 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				// was already on .. and the received didn't know it .. so we have to re-publish
 				m_state.outdated();
 			}
+
+			// only leave the light on for some seconds
+			if(!strncmp_P((const char*) p_payload, STATE_ONFOR, 5)){
+				m_onfor_offtime = millis() + 1000 * atoi((const char*) (p_payload+5));
+				logger.print(TOPIC_GENERIC_INFO, F("Auto off in "),COLOR_PURPLE);
+				sprintf(m_msg_buffer,"%i sec",(m_onfor_offtime-millis())/1000+1);
+				logger.pln(m_msg_buffer);
+			}
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 			if (m_state.get_value() != false  || m_animation_type.get_value()) {
 				// we don't want to keep running the animation if brightness was submitted
@@ -296,9 +318,11 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_state.outdated();
 			}
 		}
+		return true; // command consumed
 	}
 	// dimm to given PWM value
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_TOPIC,PC_TO_UNIT))) { // on / off with dimming
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		logger.println(TOPIC_MQTT, F("received dimm command"),COLOR_PURPLE);
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
@@ -334,10 +358,12 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_state.outdated();
 			}
 		}
+		return true; // command consumed
 	}
 	// //////////////////////// SET RAINBOW /////////////////
 	// simply switch GPIO ON/OFF
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC,PC_TO_UNIT))) {
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_WHEEL) {
 			setAnimationType(ANIMATION_RAINBOW_WHEEL); // triggers also the publishing
@@ -349,11 +375,13 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			m_animation_type.outdated();
 		}
+		return true; // command consumed
 	}
 	// //////////////////////// SET RAINBOW /////////////////
 	// //////////////////////// SET SIMPLE RAINBOW /////////////////
 	// simply switch GPIO ON/OFF
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC,PC_TO_UNIT))) {
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_RAINBOW_SIMPLE) {
 			setAnimationType(ANIMATION_RAINBOW_SIMPLE);
@@ -365,11 +393,13 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			m_animation_type.outdated();
 		}
+		return true; // command consumed
 	}
 	// //////////////////////// SET SIMPLE RAINBOW /////////////////
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// simply switch GPIO ON/OFF
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT))) {
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		// test if the payload is equal to "ON" or "OFF"
 		if (!strcmp_P((const char *) p_payload, STATE_ON) && m_animation_type.get_value() != ANIMATION_COLOR_WIPE) {
 			setAnimationType(ANIMATION_COLOR_WIPE);
@@ -379,17 +409,20 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			// was already in the state .. and the received didn't know it .. so we have to re-publish
 			m_animation_type.outdated();
 		}
+		return true; // command consumed
 	}
 	// //////////////////////// SET SIMPLE COLOR WIPE /////////////////
 	// //////////////////////// SET LIGHT BRIGHTNESS AND COLOR ////////////////////////
 	else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // directly set the color, hard
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
 		if(t>=100){
 			t=99;
 		}
 		m_animation_brightness.check_set(t); // will also eventually trigger publish
+		return true; // command consumed
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // directly set the color, hard
-
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
 
 		if(m_state.get_value()){
@@ -412,10 +445,10 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			m_light_backup.g = t;                                          // das regelt die helligkeit
 			m_light_backup.b = t;                                          // das regelt die helligkeit
 		}
+		return true; // command consumed
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_BRIGHTNESS_TOPIC,PC_TO_UNIT))) { // smooth dimming of pwm
-
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		uint8_t t = (uint8_t) atoi((const char *) p_payload);
-
 		if(m_state.get_value()){
 			// we don't want to keep running the animation if brightness was submitted
 			if (m_animation_type.get_value()) { // if there is an animation, switch it off
@@ -433,7 +466,9 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			m_light_backup.g = t;                                          // das regelt die helligkeit
 			m_light_backup.b = t;                                          // das regelt die helligkeit
 		}
+		return true; // command consumed
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_COLOR_TOPIC,PC_TO_UNIT))) { // directly set rgb, hard
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		uint8_t color[3] = { 0, 0, 0 };
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
@@ -467,7 +502,9 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				(uint8_t) map(color[2], 0, 255, 0, 99)
 			};
 		}
+		return true; // command consumed
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_COLOR_TOPIC,PC_TO_UNIT))) { // smoothly dimm to rgb value
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		uint8_t color[3] = { 0, 0, 0 };
 		uint8_t s        = 0;
 		for (uint8_t i = 0; p_payload[i]; i++) {
@@ -499,11 +536,15 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				(uint8_t) map(color[2], 0, 255, 0, 99)
 			};
 		}
+		return true; // command consumed
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_LIGHT_DIMM_DELAY_TOPIC,PC_TO_UNIT))) { // adjust dimmer delay
+		m_onfor_offtime = 0; // avoid delay auto off switching if we get some other commands in between
 		m_pwm_dimm_time = atoi((const char *) p_payload);
 		// logger.p("Setting dimm time to: ");
 		// logger.pln(m_pwm_dimm_time);
+		return true; // command consumed
 	}
+	// if we didn't use the command ..
 	return false; // not for me
 } // receive
 

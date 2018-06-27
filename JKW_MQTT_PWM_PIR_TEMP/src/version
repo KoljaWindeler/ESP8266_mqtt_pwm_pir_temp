@@ -1,3 +1,6 @@
+20180627
+	- added auto off feature for light
+			instead of "ON" send "ONFOR10" for 10 sec light
 20180624
 	- added uptime component
 	- Text size 405648 [93.4%]
