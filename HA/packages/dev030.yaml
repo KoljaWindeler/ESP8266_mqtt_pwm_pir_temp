@@ -1,0 +1,109 @@
+### valve ctrl
+# 4x water valve
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### valve 1
+    name: "dev30_1"
+    command_topic: "dev30/s/gpio_2_state"
+    state_topic: "dev30/r/gpio_2_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### valve 2
+    name: "dev30_2"
+    command_topic: "dev30/s/gpio_16_state"
+    state_topic: "dev30/r/gpio_16_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### valve 3
+    name: "dev30_3"
+    command_topic: "dev30/s/gpio_4_state"
+    state_topic: "dev30/r/gpio_4_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### valve 4
+    name: "dev30_4"
+    command_topic: "dev30/s/gpio_5_state"
+    state_topic: "dev30/r/gpio_5_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### valve power
+    name: "dev30_pow"
+    command_topic: "dev30/s/gpio_14_state"
+    state_topic: "dev30/r/gpio_14_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev30_1:
+      friendly_name: "Valve LT Lounge"
+      icon: mdi:call-split
+    light.dev30_2:
+      friendly_name: "Valve 3xT200"
+      icon: mdi:call-split
+    light.dev30_3:
+      friendly_name: "Valve LT Pool"
+      icon: mdi:call-split
+    light.dev30_4:
+      friendly_name: "Valve 2xT200"
+      icon: mdi:call-split
+    light.dev30_pow:
+      friendly_name: "Water valve Power"
+      icon: mdi:power-plug
+    sensor.dev30_uptime:
+      friendly_name: "Rain time today"
+      icon: mdi:clock-start
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev30"
+    fname: "30 Water valve"
+  - platform: mqtt
+    state_topic: "dev30/r/uptime"
+    name: "dev30_uptime"
+    unit_of_measurement: "min"
+
+# -----------------------------------------------
+
+input_boolean:
+  irrigation:
+    name: "Irrigation"
+    initial: off
+    icon: mdi:basket-fill
+
+# -----------------------------------------------
+
+automation:
+  - alias: reset rain time
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: time
+        hours: 0
+        minutes: 00
+        seconds: 00
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "dev30/s/uptime_reset"
+          payload: "now"
+
+# -----------------------------------------------

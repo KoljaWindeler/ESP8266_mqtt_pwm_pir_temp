@@ -30,25 +30,31 @@ frontend:
   extra_html_url:
     - /local/custom_ui/state-card-tiles.html
     - /local/custom_ui/state-card-floorplan.html
+    - /local/kitchen.jpg
+    - /local/livingroom.jpg
   extra_html_url_es5:
     - /local/custom_ui/state-card-tiles_es5.html
+  javascript_version: auto
 
-panel_custom:
-  - name: floorplan
-    sidebar_title: Floorplan
-    sidebar_icon: mdi:home
-    url_path: floorplan
-    config: !include floorplan.yaml
+#panel_custom:
+#  - name: floorplan
+#    sidebar_title: Floorplan
+#    sidebar_icon: mdi:home
+#    url_path: floorplan
+#    config: !include floorplan.yaml
 
 
 http:
   api_password: !secret http_password
+#  ssl_certificate: /ssl/fullchain.pem
+#  ssl_key: /ssl/privkey.pem
 
 
 notify:
   name: pb
   platform: pushbullet
   api_key: !secret pushbullet_key
+  base_url: https://kolja.duckdns.org:8123
 
 remote:
   - platform: harmony
@@ -61,6 +67,8 @@ history:
 recorder:
 logbook:
 sun:
+
+emulated_hue:
 
 # Text to speech
 tts:
@@ -104,4 +112,30 @@ camera:
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}
     limit_refetch_to_url_change: true
 
+#google_assistant:
+#  project_id: api-project-862888425872
+#  client_id: KQZcfAUd6hOKwSClPRfDJNfx1OKG32yuPD6j7rFxKZcjNySflZWZkAgPj8u3vFyXZ72rGHnLebsOfjUy
+#  access_token: PgVpUCQuXyGWF9DxtaKkFWB5Hyj2LDMrlXqo5wUWUxBvQaF95eRKqbQriT61AxmaFOwitevvGgBPw0R0
+#  exposed_domains:
+#    - light
+#  api_key: AIzaSyC9Kjkp6myVq79TlOred_ihu3d3CA6Q1ek
+
+weather:
+  - platform: darksky
+    api_key: !secret darksky_key
+
+history_graph:
+  gr1:
+    name: Temperatures
+    entities:
+      - sensor.dev11_temperature
+      - sensor.dev7_temperature
+      - sensor.dev1_temperature
+      - sensor.dev16_temperature
+      - sensor.dev6_temperature
+      - sensor.dev2_temperature
+      - sensor.dev10_temperature
+      - sensor.dev9_temperature
+    hours_to_show: 24
+    refresh: 60
 

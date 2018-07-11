@@ -1,14 +1,14 @@
 shell_command:
-  camxia1_1: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_1.jpg
-  camxia1_2: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_2.jpg
-  camxia1_3: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_3.jpg
-  camxia1_4: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_4.jpg
-  camxia1_5: wget http://192.168.178.42/snapshot.jpg -O /tmp/xia1_5.jpg
+  camxia1_1: wget http://192.168.2.42/snapshot.jpg -O /tmp/xia1_1.jpg
+  camxia1_2: wget http://192.168.2.42/snapshot.jpg -O /tmp/xia1_2.jpg
+  camxia1_3: wget http://192.168.2.42/snapshot.jpg -O /tmp/xia1_3.jpg
+  camxia1_4: wget http://192.168.2.42/snapshot.jpg -O /tmp/xia1_4.jpg
+  camxia1_5: wget http://192.168.2.42/snapshot.jpg -O /tmp/xia1_5.jpg
 
 
 camera:
   - platform: generic
-    still_image_url: http://192.168.178.42/snapshot.jpg
+    still_image_url: http://192.168.2.42/snapshot.jpg
     name: cam_xia1
 
 automation:

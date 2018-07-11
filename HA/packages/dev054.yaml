@@ -1,0 +1,128 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### LED dimmer
+    name: "dev54"
+    state_topic: "dev54/r/gpio_16_state"
+    command_topic: "dev54/s/gpio_16_dimm"
+    brightness_state_topic: 'dev54/r/gpio_16_brightness'
+    brightness_command_topic: 'dev54/s/gpio_16_brightness'
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+  - platform: mqtt ### kronleuchter
+    name: "dev54_2"
+    command_topic: "dev54/s/gpio_5_state"
+    state_topic: "dev54/r/gpio_5_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### aussen-ecken-licht
+    name: "dev54_3"
+    command_topic: "dev54/s/gpio_4_state"
+    state_topic: "dev54/r/gpio_4_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### aussenlicht haustuer
+    name: "dev54_4"
+    command_topic: "dev54/s/gpio_2_state"
+    state_topic: "dev54/r/gpio_2_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev54:
+      friendly_name: "LED Entrance"
+    light.dev54_2:
+      friendly_name: "Chandelier Entrance"
+    light.dev54_3:
+      friendly_name: "House Exterior light"
+    light.dev54_4:
+      friendly_name: "Main Door light"
+    binary_sensor.dev2_motion:
+      friendly_name: "Hood"
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev54"
+    fname: "54 Ultra Entrance"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev54/r/gpio_0_state"
+    name: "dev54_button"
+    device_class: safety
+
+# -----------------------------------------------
+
+automation:
+#------- DOOR BELL -----------
+  - alias: doorbell_msg
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dev54_button
+        to: 'on'
+    action:
+      - service: script.turn_on
+        entity_id: script.seq_dingdong
+
+#------- Toggle LED -----------
+  - alias: doorbell_msg
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev16/r/button"
+    action:
+      - service: light.toggle
+        entity_id: light.dev54
+#------- Toggle Chandelier -----------
+  - alias: doorbell_msg
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev54/r/gpio_14_hold"
+    action:
+      - service: light.toggle
+        entity_id: light.dev54_2
+
+# -----------------------------------------------
+
+script:
+  seq_dingdong:
+    sequence:
+      - service: notify.pb
+        data:
+          title: "Doorbell"
+          message: "Ding Dong"
+      - service: shell_command.camxia2_1
+      - service: notify.pb 
+        data:
+          title: "Doorbell"
+          message: "cam 2"
+          data:
+            file: /tmp/xia2_1.jpg
+
+# -----------------------------------------------

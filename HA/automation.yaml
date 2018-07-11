@@ -60,6 +60,31 @@
           - light.dev55
 #          - light.dev18_simple_rainbow
 # ------------------- carlo --------------------------------
+# ------------------- cellar --------------------------------
+  - alias: cellar_light_on_motion
+    initial_state: True
+    hide_entity: False
+    trigger: # trigger twice, whenever the motion sensors are off for 10min
+      - platform: state
+        entity_id: binary_sensor.dev6_motion
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 5
+          seconds: 0
+      - platform: state
+        entity_id: binary_sensor.dev6_motion
+        to: 'on'
+    action:
+      - service_template: >
+          {% if is_state('binary_sensor.dev6_motion','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev6
+# ------------------- cellar --------------------------------
 # ------------------- living room sunset -------------------
   - alias: joiner_livingroom_in
     initial_state: True
@@ -70,6 +95,18 @@
     action:
       service: light.toggle
       entity_id: light.joiner_livingroom
+# ----------------------------------------------------------
+  - alias: livingroom_off
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev23/r/button_1s"
+    action:
+      service: homeassistant.turn_off
+      entity_id: 
+        - light.joiner_livingroom
+        - switch.fernseher
 # ----------------------------------------------------------
   - alias: joiner_livingroom_in2
     initial_state: True
@@ -101,8 +138,6 @@
         topic: "dev16/r/button"
       - platform: mqtt
         topic: "dev20/r/button"
-      - platform: mqtt
-        topic: "dev3/r/button"
     action:
       service: light.toggle
       entity_id: light.joiner_bedroom
@@ -126,10 +161,6 @@
     trigger:
       - platform: state
         entity_id: binary_sensor.dev4_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev14_motion
-        to: 'on'
     action:
       service: light.turn_on
       entity_id: light.joiner_kitchen
@@ -255,7 +286,7 @@
 # ------------------- entrace  movement -------------------
 # ----------------------------------------------------------
 # ------------------- tv  movement -------------------
-  - alias: tv_automation
+  - alias: tv_light_automation
     initial_state: True
     hide_entity: False
     trigger:
@@ -326,7 +357,7 @@
       condition: or
       conditions:
         - condition: state
-          entity_id: light.joiner_hallwayU
+          entity_id: light.dev54
           state: 'on'
         - condition: time
           before: '23:00:00'
@@ -339,7 +370,7 @@
             light.turn_off
           {% endif %}
         entity_id: 
-          - light.joiner_hallwayU 
+          - light.dev54
 # ----------------------------------------------------------
 # -- alias: Turn_off_hallwayU_lights_10min_after_movement --
   - alias: joiner_hallwayU_in2
@@ -462,7 +493,7 @@
        message: "over temp triggered"
 # ------------------- value trigger for over temp ----------
 # ------------------- outdoor light ------------------------
-  - alias: outdoor_light2
+  - alias: outdoor_light3
     initial_state: True
     hide_entity: False
     trigger:
@@ -508,7 +539,7 @@
             light.turn_off
           {% endif %}
         entity_id: 
-          - light.dev19
+          - light.joiner_outdoor
 # ------------------- outdoor light ------------------------
 # -------------------- alarm system ------------------------
 # ----------------------------------------------------------
@@ -630,20 +661,6 @@
 # --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
-# ------------------- value trigger for leakage ------------------------
-  - alias: 'leakage'
-    initial_state: 'on'
-    trigger:
-     - platform: numeric_state
-       entity_id: sensor.dev13_adc
-       below: 500
-    action:
-     service: notify.pb
-     data:
-       title: "Leakage detected"
-       message: "Leakage triggered"
-# ------------------- value trigger for leakage ------------------------
-
 # ------------------- drivetime kolja ----------------------
   - alias: inform_tavel_kolja
     initial_state: True
@@ -684,4 +701,20 @@
           {% endif %}
         entity_id: 
           - light.night
-#-------------------- night lights -------------------------
+#-------------------- new kitchen -------------------------
+  - alias: new_kitchen_in
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: state
+        entity_id: light.dev3
+    action:
+      - service_template: >
+          {% if is_state('light.dev3','on') %}
+            light.turn_on
+          {% else %}
+            light.turn_off
+          {% endif %}
+        entity_id: 
+          - light.dev21
+#-------------------- new kitchen -------------------------

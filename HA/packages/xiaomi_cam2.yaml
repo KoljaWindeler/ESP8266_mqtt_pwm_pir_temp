@@ -1,10 +1,10 @@
 camera:
   - platform: generic
-    still_image_url: http://192.168.2.54/snapshot.jpg
+    still_image_url: http://192.168.2.43/snapshot.jpg
     name: cam_xia2
 shell_command:
-  camxia2_1: wget http://192.168.2.54/snapshot.jpg -O /tmp/xia2_1.jpg
-  camxia2_2: wget http://192.168.2.54/snapshot.jpg -O /tmp/xia2_2.jpg
-  camxia2_3: wget http://192.168.2.54/snapshot.jpg -O /tmp/xia2_3.jpg
-  camxia2_4: wget http://192.168.2.54/snapshot.jpg -O /tmp/xia2_4.jpg
-  camxia2_5: wget http://192.168.2.54/snapshot.jpg -O /tmp/xia2_5.jpg
+  camxia2_1: wget http://192.168.2.43/snapshot.jpg -O /tmp/xia2_1.jpg
+  camxia2_2: wget http://192.168.2.43/snapshot.jpg -O /tmp/xia2_2.jpg
+  camxia2_3: wget http://192.168.2.43/snapshot.jpg -O /tmp/xia2_3.jpg
+  camxia2_4: wget http://192.168.2.43/snapshot.jpg -O /tmp/xia2_4.jpg
+  camxia2_5: wget http://192.168.2.43/snapshot.jpg -O /tmp/xia2_5.jpg

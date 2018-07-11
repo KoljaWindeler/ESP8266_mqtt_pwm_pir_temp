@@ -3,7 +3,7 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### sonoff 1, kitchen rack
+  - platform: mqtt ### sonoff 1, Caro Upstairs
     name: "dev4"
     state_topic: "dev4/r/light"
     command_topic: "dev4/s/light"
@@ -18,20 +18,20 @@ light:
 homeassistant:
   customize:
     light.dev4:
-      friendly_name: "Rack"
+      friendly_name: "04 Caro"
       emulated_hue_name: "Kueche"
     sensor.dev4_temperature:
-      friendly_name: "Kitchen Rack"
+      friendly_name: "Caro Upstairs"
       icon: "mdi:thermometer"
     binary_sensor.dev4_motion:
-      friendly_name: "Rack"
+      friendly_name: "04 Caro"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev4"
-    fname: "04 Kitchen Rack"
+    fname: "04 Caro Upstairs"
 
   - platform: mqtt
     state_topic: "dev4/r/temperature"

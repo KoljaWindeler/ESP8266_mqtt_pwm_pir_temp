@@ -4,27 +4,28 @@
   - platform: group
     name: "joiner_kitchen"
     entities:
-      - light.dev2
-      - light.dev4
-      - light.dev14
+      - light.dev21
+      - light.dev3
 # --------------------------------------------------
   - platform: group
     name: "joiner_livingroom"
     entities:
       - light.dev1
+      - light.dev2
       - light.dev7
       - light.dev11
-      - light.dev17
-      - light.dev21
-      #- light.dev22 via automation now
-      - light.dev23
 # --------------------------------------------------
   - platform: group
     name: "joiner_bedroom"
     entities:
       - light.dev20
-      - light.dev3
       - light.dev16
+# --------------------------------------------------
+  - platform: group
+    name: "joiner_outdoor"
+    entities:
+      - light.dev54_3
+      - light.dev54_4
 # --------------------------------------------------
   - platform: group
     name: "joiner_hallwayD"
@@ -54,7 +55,6 @@
 # --------------------------------------------------
 # ------ BROADCAST ---------------------------------
 # --------------------------------------------------
-
   - platform: mqtt ### template
     name: "dev99"
     state_topic: "dev99/r/light"

@@ -1,0 +1,33 @@
+automation:
+  - alias: ada_mqtt
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "Kkoolljjaa/f/HA"
+    action:
+      service_template: >
+        {% if "amplifier aus" in trigger.payload or "tv aus" in trigger.payload %} 
+          homeassistant.turn_on
+        {% elif "spotcleanup" in trigger.payload %} 
+          vacuum.clean_spot
+        {% elif "on" in trigger.payload or "an" in trigger.payload or "ein" in trigger.payload %} 
+          homeassistant.turn_on
+        {% else %} 
+          homeassistant.turn_off
+        {% endif %}
+      data_template:
+        entity_id: >
+          {% if "livingroom" in trigger.payload %} 
+            light.joiner_livingroom
+          {% elif "kitchen" in trigger.payload %}
+            light.joiner_kitchen
+          {% elif "amplifier aus" in trigger.payload or "tv aus" in trigger.payload %}
+            script.tvoff
+          {% elif "amplifier" in trigger.payload %}
+            script.start_chromaudio
+          {% elif "spotcleanup" in trigger.payload %} 
+            vacuum.xiaomi_vacuum_cleaner
+          {% else %} 
+            light.none
+          {% endif %}

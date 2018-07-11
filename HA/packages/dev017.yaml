@@ -1,9 +1,9 @@
 ### ball living room
-# SL, DS18B20
+# SL
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### steckdosen dings wohnzimmer
+  - platform: mqtt ### steckdosen dings Water pumpe
     name: "dev17"
     state_topic: "dev17/r/light"
     command_topic: "dev17/s/light"
@@ -14,37 +14,96 @@ light:
     optimistic: false
     brightness_scale: 99
 
+  - platform: mqtt ### steckdosen dings Water pumpe
+    name: "dev17_30"
+    state_topic: "dev17/r/light"
+    command_topic: "dev17/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ONFOR1800"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
+  - platform: mqtt ### steckdosen dings Water pumpe
+    name: "dev17_45"
+    state_topic: "dev17/r/light"
+    command_topic: "dev17/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ONFOR2700"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
+
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev17:
-      friendly_name: "x-mas 2"
-    binary_sensor.dev17_motion:
-      friendly_name: "x-mas 2"
-    sensor.dev17_temperature:
-      friendly_name: "x-mas 2"
-      icon: "mdi:thermometer"
+      friendly_name: "Water pump"
+      icon: mdi:water-pump
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev17"
-    fname: "17 X-mas2"
-
-  - platform: mqtt
-    state_topic: "dev17/r/temperature"
-    name: "dev17_temperature"
-    unit_of_measurement: "ºC"
+    fname: "17 Water pump"
 
 # -----------------------------------------------
 
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev17/r/motion"
-    name: "dev17_motion"
-    device_class: motion
+automation:
+  - alias: pump_on
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: irrigation
+        payload: 'on'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.irrigation
+
+  - alias: pump_auto_on
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: time
+        at: '19:00:00'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.irrigation
+
+
+  - alias: pump_off
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: irrigation
+        payload: 'off'
+    action:
+      - service: light.turn_off
+        entity_id: light.dev17
 
 # -----------------------------------------------
 
+script:
+  seq_irrigation:
+    sequence:
+      - service: notify.pb
+        data:
+          title: "Irrigation"
+          message: "started"
+      - service: light.turn_on
+        entity_id: light.dev17
+      - delay: '00:00:30'
+      - service: light.turn_off
+        entity_id: light.dev17
+      - delay: '00:00:10'
+      - service: light.turn_on
+        entity_id: light.dev17
+      - delay: '00:30:00'
+      - service: light.turn_off
+        entity_id: light.dev17

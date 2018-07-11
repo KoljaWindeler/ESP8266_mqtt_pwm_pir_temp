@@ -1,0 +1,7 @@
+---
+hello_world:
+  module: hello
+  class: HelloWorld
+sprinkler:
+  module: sprinkler
+  class: SprinklerWorld
