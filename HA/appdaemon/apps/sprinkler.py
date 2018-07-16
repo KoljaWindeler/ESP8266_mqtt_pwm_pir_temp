@@ -15,6 +15,10 @@ class SprinklerWorld(hass.Hass):
 
 
     def start(self, entity, attribute, old, new,kwargs):
+        #self.set_state("sensor.dev30_ssid",state = "42")
+        #exit()
+
+        self.call_service("notify/pb", title="Irrigation", message="Starting")
         self.log("################################################")
         self.log("Starting Sprinker call")
         max_time = 20 #30
@@ -32,7 +36,10 @@ class SprinklerWorld(hass.Hass):
             max_time = 0
 
         self.log("Today max temp is "+str(today_max_temp)+", will irrigate for "+str(max_time)+ " min")
-        rain_today = int(float(self.get_state("sensor.dev30_uptime")))
+        if(self.get_state("sensor.dev30_uptime")!="unknown"):
+            rain_today = int(float(self.get_state("sensor.dev30_uptime")))
+        else:
+            rain_today = 0
         max_time = max(max_time - rain_today,0)
         self.log("There was already "+str(rain_today)+" min of rain, so I'll irrigate for "+str(max_time)+" now")
 
@@ -40,6 +47,18 @@ class SprinklerWorld(hass.Hass):
             self.log("################################################")
             self.log("Preparing Pump")
             self.log("Activating valve power")
+            if(int(self.get_state("sensor.dev30_update"))>0):
+                self.call_service("notify/pb", title="Irrigation", message="Valves offline, waiting up to 5 min")
+                for wait in range(0,50):
+                    time.sleep(6)
+                    if(int(self.get_state("sensor.dev30_update"))==0):
+                        break
+            if(int(self.get_state("sensor.dev30_update"))>0):
+                self.call_service("notify/pb", title="Irrigation", message="Valves still offline, giving up")
+                exit()
+            else:
+                self.call_service("notify/pb", title="Irrigation", message="Valves online, here we go")
+
             self.turn_on("light.dev30_pow")
             self.log("Opening all valves to reduce pump pressure")
             for ring in range(0,len(config)):
@@ -77,7 +96,7 @@ class SprinklerWorld(hass.Hass):
 
 
             for ring in range(0,len(config)):
-                if(self.get_state("light.dev17")!="off"): 
+                if(self.get_state("light.dev17")!="off"):
                     self.log("Turn ring "+str(ring+1)+" on.")
                     D = max_time * config[ring][1]
                     for sprinkler in range(0,len(config[ring][0])):
@@ -86,6 +105,7 @@ class SprinklerWorld(hass.Hass):
                         self.log("Currently running ring "+str(ring+1)+" for further "+str(D)+" min")
                         D = D-1
                         if(self.get_state("light.dev17")=="off" or self.get_state("input_boolean.irrigation")=="off"): 
+                            self.call_service("notify/pb", title="Irrigation", message="Pump off, stopping")
                             self.log("Pump off, stopping irrigation")
                             break
                         time.sleep(60)
@@ -95,10 +115,15 @@ class SprinklerWorld(hass.Hass):
                 else:
                     self.log("Skipping ring "+str(ring+1)+" pump is off")
 
-        self.log("Shutting down valve power")
-        self.turn_off("light.dev30_pow")
-        self.log("Shutting down pump")
-        self.turn_off("light.dev17")
+            self.log("Shutting down valve power")
+            self.turn_off("light.dev30_pow")
+            self.log("Shutting down pump")
+            self.turn_off("light.dev17")
+            self.call_service("notify/pb", title="Irrigation", message="All done")
+
+        else:
+            self.call_service("notify/pb", title="Irrigation", message="Skipping, no rain needed")
+
         self.turn_off("input_boolean.irrigation")
         self.log("All done")
         self.log("################################################")
