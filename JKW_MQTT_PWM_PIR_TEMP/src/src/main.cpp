@@ -13,7 +13,7 @@ uint32_t m_animation_dimm_time = 0;
 WiFiManagerParameter WiFiManager_mqtt_server_ip("mq_ip", "mqtt server ip", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_port("mq_port", "mqtt server port", "1883", 5);
 WiFiManagerParameter WiFiManager_mqtt_capability("capability", "capability", "", 60);
-WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 6);
+WiFiManagerParameter WiFiManager_mqtt_client_short("sid", "mqtt short id", "devXX", 49);
 WiFiManagerParameter WiFiManager_mqtt_server_login("login", "mqtt login", "", 15);
 WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
 

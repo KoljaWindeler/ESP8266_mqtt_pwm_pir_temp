@@ -1,3 +1,7 @@
+20180722
+  - wifimanager will accept 60 chars for dev_short now
+	- wifimanager will not try to parse v1 blindly anymore
+	- gpio skipps unusable pins 6 - 11
 20180627
 	- added auto off feature for light
 			instead of "ON" send "ONFOR10" for 10 sec light

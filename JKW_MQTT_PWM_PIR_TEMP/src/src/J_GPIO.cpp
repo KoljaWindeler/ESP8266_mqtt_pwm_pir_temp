@@ -1,7 +1,6 @@
 #include <J_GPIO.h>
 // R,PI2,PW3,M3
 // REMEMBER: we're talking about GPIO5 and NOT Arduino D5!!
-
 // simply the constructor
 J_GPIO::J_GPIO(){ };
 
@@ -27,6 +26,10 @@ bool J_GPIO::parse(uint8_t * config){
 
 	// output
 	for (uint8_t i = 0; i <= 16; i++) {
+		if(i>=6 && i<=11){
+			// 6 to 11 should not be used
+			continue;
+		}
 		// output non inverted
 		sprintf(m_msg_buffer, "GOP%i", i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
@@ -36,7 +39,6 @@ bool J_GPIO::parse(uint8_t * config){
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
-		;
 		// output inverted
 		sprintf(m_msg_buffer, "GON%i", i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
@@ -46,7 +48,6 @@ bool J_GPIO::parse(uint8_t * config){
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
-		;
 		// input non inverted
 		sprintf(m_msg_buffer, "GIP%i", i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
@@ -55,7 +56,6 @@ bool J_GPIO::parse(uint8_t * config){
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
-		;
 		// input inverted
 		sprintf(m_msg_buffer, "GIN%i", i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
@@ -64,7 +64,6 @@ bool J_GPIO::parse(uint8_t * config){
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
-		;
 	}
 	// set correct pwm range
 	if (f) {
