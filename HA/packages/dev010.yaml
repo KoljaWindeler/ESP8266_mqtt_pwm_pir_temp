@@ -17,20 +17,20 @@ light:
 homeassistant:
   customize:
     light.dev10:
-      friendly_name: "HallwayU"
+      friendly_name: "Entrance Support"
       emulated_hue_name: "Kueche"
     sensor.dev10_temperature:
-      friendly_name: "Hallway Upstairs"
+      friendly_name: "10 Entrance Support"
       icon: "mdi:thermometer"
     binary_sensor.dev10_motion:
-      friendly_name: "HallwayU"
+      friendly_name: "10 Entrance Support"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev10"
-    fname: "10 HallwayU"
+    fname: "10 Entrance Support"
 
   - platform: mqtt
     state_topic: "dev10/r/temperature"

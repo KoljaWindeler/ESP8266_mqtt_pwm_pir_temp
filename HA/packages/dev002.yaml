@@ -17,19 +17,18 @@ light:
 homeassistant:
   customize:
     light.dev2:
-      friendly_name: "Hood"
+      friendly_name: "Donald"
+      icon: "mdi:lamp"
     sensor.dev2_temperature:
-      friendly_name: "Kitchen Hood"
+      friendly_name: "Donald"
       icon: "mdi:thermometer"
-    binary_sensor.dev2_motion:
-      friendly_name: "Hood"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev2"
-    fname: "02 Hood"
+    fname: "02 Donald"
 
   - platform: mqtt
     state_topic: "dev2/r/temperature"
@@ -38,11 +37,4 @@ sensor:
 
 # -----------------------------------------------
 
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev2/r/motion"
-    name: "dev2_motion"
-    device_class: motion
-
-# -----------------------------------------------
 

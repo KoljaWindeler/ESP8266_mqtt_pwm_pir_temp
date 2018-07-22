@@ -35,13 +35,13 @@
   - platform: google_travel_time
     name: To_Hannover
     api_key: !secret gmaps_api_key
-    origin: Wienhausen
+    origin: Hambuehren, kaliweg
     destination: Uni, Hannover
 
   - platform: google_travel_time
     name: To_Baker
     api_key: !secret gmaps_api_key
-    origin: Wienhausen, Muehlenstr 8a
+    origin: Hambuehren, kaliweg
     destination: Baker Hughes, Celle
 # -----------------------------------------------------------
 # --------------- MQTT --------------------------------------

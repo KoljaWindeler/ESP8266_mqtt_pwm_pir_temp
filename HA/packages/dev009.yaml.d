@@ -3,10 +3,10 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### tower living
-    name: "dev11"
-    command_topic: "dev11/s/light"
-    state_topic: "dev11/r/light"
+  - platform: mqtt ### vac
+    name: "dev9"
+    state_topic: "dev9/r/light"
+    command_topic: "dev9/s/light"
     qos: 0
     retain: True
     payload_on: "ON"
@@ -16,25 +16,28 @@ light:
 
 homeassistant:
   customize:
-    light.dev11:
-      friendly_name: "TowerL"
-      icon: "mdi:lamp"
-    sensor.dev11_temperature:
-      friendly_name: "Livingroom TowerL"
+    light.dev9:
+      friendly_name: "Vac"
+    sensor.dev9_temperature:
+      friendly_name: "Shop VAC"
       icon: "mdi:thermometer"
-    binary_sensor.dev11_motion:
-      friendly_name: "TowerL"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
-    name: "dev11"
-    fname: "11 TowerL"
+    name: "dev9"
+    fname: "09 VAC"
 
   - platform: mqtt
-    state_topic: "dev11/r/temperature"
-    name: "dev11_temperature"
+    state_topic: "dev9/r/temperature"
+    name: "dev9_temperature"
     unit_of_measurement: "ºC"
 
+  - platform: mqtt
+    state_topic: "dev9/humidity"
+    name: "dev9_humidity"
+    unit_of_measurement: "%"
+
 # -----------------------------------------------
+

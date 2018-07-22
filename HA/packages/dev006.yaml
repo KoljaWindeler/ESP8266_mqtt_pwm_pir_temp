@@ -1,22 +1,35 @@
 ### ball living room
 # SL, DS18B20
 # -----------------------------------------------
+light:
+  - platform: mqtt ### tower dinning
+    name: "dev6"
+    command_topic: "dev6/s/light"
+    state_topic: "dev6/r/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
 
 
 homeassistant:
   customize:
     sensor.dev6_temperature:
-      friendly_name: "Entrance"
+      friendly_name: "06 Cellar"
       icon: "mdi:thermometer"
     binary_sensor.dev6_motion:
-      friendly_name: "Entrance"
+      friendly_name: "06 Cellar"
+    light.dev6:
+      friendly_name: "06 Cellar"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev6"
-    fname: "06 Entrance"
+    fname: "06 Cellar"
 
   - platform: mqtt
     state_topic: "dev6/r/temperature"

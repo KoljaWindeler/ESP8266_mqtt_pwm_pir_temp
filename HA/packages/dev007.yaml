@@ -17,20 +17,20 @@ light:
 homeassistant:
   customize:
     light.dev7:
-      friendly_name: "TowerW"
+      friendly_name: "TowerD"
       icon: "mdi:lamp"
     sensor.dev7_temperature:
-      friendly_name: "TowerW"
+      friendly_name: "TowerD"
       icon: "mdi:thermometer"
     binary_sensor.dev7_motion:
-      friendly_name: "TowerW"
+      friendly_name: "TowerD"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev7"
-    fname: "07 TowerW"
+    fname: "07 TowerD"
 
   - platform: mqtt
     state_topic: "dev7/r/temperature"

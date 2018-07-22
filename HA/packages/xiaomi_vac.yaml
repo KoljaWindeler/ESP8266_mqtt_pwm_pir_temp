@@ -29,7 +29,7 @@ sensor:
 
 vacuum:
   - platform: xiaomi_miio
-    host: 192.168.2.75
+    host: 192.168.2.30
     token: !secret xiaomi_token
 
 input_boolean:

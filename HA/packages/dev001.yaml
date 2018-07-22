@@ -18,7 +18,6 @@ homeassistant:
   customize:
     light.dev1:
       friendly_name: "Ball"
-      icon: "mdi:lamp"
     sensor.dev1_temperature:
       friendly_name: "Livingroom Ball"
       icon: "mdi:thermometer"

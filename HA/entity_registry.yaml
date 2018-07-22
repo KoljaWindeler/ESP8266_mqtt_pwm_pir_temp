@@ -1,3 +1,16 @@
 media_player.jkw_cast2:
+  name:
   platform: cast
   unique_id: eda3717b-e24f-0699-7df4-c6343fe7ce25
+media_player.wohnen:
+  name:
+  platform: cast
+  unique_id: cda393f4-05b1-9d21-a65a-5d497081ffd8
+media_player.badezimmer:
+  name:
+  platform: cast
+  unique_id: 891fe4a1-e415-738a-d71d-b0cf9e476d63
+media_player.badezimmer_2:
+  name:
+  platform: cast
+  unique_id: 5f20cb21-4f22-855f-22da-92916a340666

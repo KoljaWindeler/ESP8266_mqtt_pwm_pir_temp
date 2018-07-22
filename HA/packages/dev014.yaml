@@ -17,16 +17,16 @@ light:
 homeassistant:
   customize:
     light.dev14:
-      friendly_name: "Cabinet"
+      friendly_name: "Fridge"
     binary_sensor.dev14_motion:
-      friendly_name: "Cabinet"
+      friendly_name: "14 Fridge"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev14"
-    fname: "14 Kitchen Cabinet"
+    fname: "14 Kitchen Fridge"
 
 # -----------------------------------------------
 
