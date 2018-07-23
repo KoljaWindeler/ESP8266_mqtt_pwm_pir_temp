@@ -561,10 +561,10 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 
 		// try legacy V1 to v2 conversion
 		v2_p = (char*)&v2; // rewind
-		for(int i=0;i<(16+16+6+20+16+6);i++){
+		//for(int i=0;i<(16+16+6+20+16+6);i++){
 			//Serial.printf(" (%i)",i);
 			//Serial.print(char(*temp));
-			if(i<16+16+6){
+			/*if(i<16+16+6){
 				*v2_p = EEPROM.read(i);
 				v2_p++;
 			} else if(i == 16+16+6){
@@ -575,8 +575,16 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 			} else if(i >= 16+16+6+20){
 				*v2_p = EEPROM.read(i);
 				v2_p++;
-			}
-		}
+			}*/
+			v2.login[0]=0x00;
+			v2.pw[0]=0x00;
+			v2.dev_short[0]=0x00;
+			v2.server_ip[0]=0x00;
+			v2.server_port[0]=0x00;
+			v2.cap[0]=0x00;
+			v2.nw_pw[0]=0x00;
+			v2.nw_ssid[0]=0x00;
+		//}
 		v2_p = (char*)&v2; // rewind
 		// try legacy V1 to v2 conversion
 	}

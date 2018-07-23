@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180624" DEV
+	#define VERSION               "20180722" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -180,21 +180,21 @@ public:
  * 08	GPIO16		D0,XPD_DCDC, Deep-sleep wakeup (need to be connected to EXT_RSTB;
  *
  * 09	GPIO14		D5; MTMSl; HSPI_CLK
- * 10	GPIO12		D6; MTDI; HSPI_MISO
+ * 10	GPIO12		D6; MTDI; HSPI_MISO 						// DO NOT USE, CONNECTED TO FLASH
  * 11	VDDPST		P	Digital / IO power supply (1.8 V ~ 3.3 V)
- * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS
- * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS
+ * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS	// DO NOT USE, CONNECTED TO FLASH
+ * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS  	// DO NOT USE, CONNECTED TO FLASH
  * 14	GPIO02		D4; UART Tx during flash programming; internal LED
- * 15	GPIO00		D3; SPI_CS2
+ * 15	GPIO00		D3; SPI_CS2; Button pin, needs to be high during startup
  * 16	GPIO04		D2
  *
  * 17	VDDPST		Digital / IO power supply (1.8 V ~ 3.3 V)
- * 18	GPIO09		SDIO_DATA_2; Connect to SD_D2 (Series R: 200 Ω); SPIHD; HSPIHD
- * 19	GPIO10		SDIO_DATA_3; Connect to SD_D3 (Series R: 200 Ω); SPIWP; HSPIWP
- * 20	GPIO11		SDIO_CMD;	Connect to SD_CMD (Series R: 200 Ω); SPI_CS0;
- * 21	GPIO06		SDIO_CLK; Connect to SD_CLK (Series R: 200 Ω); SPI_CLK;
- * 22	GPIO07		SDIO_DATA_0; Connect to SD_D0 (Series R: 200 Ω); SPI_MSIO;
- * 23	GPIO08		SDIO_DATA_1; Connect to SD_D1 (Series R: 200 Ω); SPI_MOSI;
+ * 18	GPIO09		SDIO_DATA_2; Connect to SD_D2 (Series R: 200 Ω); SPIHD; HSPIHD // DO NOT USE, CONNECTED TO FLASH
+ * 19	GPIO10		SDIO_DATA_3; Connect to SD_D3 (Series R: 200 Ω); SPIWP; HSPIWP // DO NOT USE, CONNECTED TO FLASH
+ * 20	GPIO11		SDIO_CMD;	Connect to SD_CMD (Series R: 200 Ω); SPI_CS0;	// DO NOT USE, CONNECTED TO FLASH
+ * 21	GPIO06		SDIO_CLK; Connect to SD_CLK (Series R: 200 Ω); SPI_CLK;	// DO NOT USE, CONNECTED TO FLASH
+ * 22	GPIO07		SDIO_DATA_0; Connect to SD_D0 (Series R: 200 Ω); SPI_MSIO; // DO NOT USE, CONNECTED TO FLASH
+ * 23	GPIO08		SDIO_DATA_1; Connect to SD_D1 (Series R: 200 Ω); SPI_MOSI; // DO NOT USE, CONNECTED TO FLASH
  * 24	GPIO05		D1
  *
  * 25 GPIO03		D9; U0RXD; UART Rx during flash programming;

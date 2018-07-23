@@ -1,4 +1,4 @@
-This firmware is the base of my personal smarthome system. The idea is to use the same firmware on a 
+This firmware is the base of my personal smarthome system. The idea is to use the same firmware on a
 variety of devices and let a configuration determine what kind of sensors and services can/will be used.
 As of now I have Sonoff Touch, Sonoff Basic, Sonoff Pow and a couple of self build boards in use.
 
@@ -41,7 +41,7 @@ See section below for more details and configuration.
 			- Loop each peripheral e.g. to let them read their sensors data
 			- Let each peripheral publish imidiate information whenever they are available, e.g. Button was pushed
 			- Publish intervall data of each peripheral once per minute, e.g. Temperature updated
-			
+
 # Peripherals supported
 All sub topic will concatenated with the dev_short and the direction: e.g. "dev99/r/rssi"
 
@@ -49,17 +49,17 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "R"
 	Purpose: publishs WiFi strength once per minute
 	Sub-Topic(s): "rssi" (out only)
-	
+
 ### Button
 	Configuration string: "B"
 	Purpose: publishes button push imidiatly, button can be hold which will trigger extra messages
 	Sub-Topic(s): "button" / "button1s" / "button2s" / "button3s" (all out only)
-	
-### ADC 
+
+### ADC
 	Configuration string: "ADC"
 	Purpose: publish raw ADC value once per minute
 	Sub-Topic(s): "adc" (out only)
-	
+
 ### Light
 	Configuration string: none
 	Purpose: will consume all light commands (dimm/color) and forward it to the best available light provider
@@ -69,7 +69,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		"light/brightness":  payload "0-99", will switch hard to the value
 		"light/dimm":  payload ON/ OFF, to dimm the light on and off
 		"light/dimm/brightness":  payload "0-99", will dimm towards the new value
-		"light/dimm/delay":  payload "1-255" default 10, eg 10ms per dimm step, 255*0.01 = 2.5 sec 
+		"light/dimm/delay":  payload "1-255" default 10, eg 10ms per dimm step, 255*0.01 = 2.5 sec
 		"light/dimm/color":  payload "0-99,0-99,0-99", will dimm towards the new value
 		"light/animation/brightness":  payload "0-99", will switch hard to the value
 		"light/animation/rainbow":  payload ON / OFF, to switch hard
@@ -82,74 +82,75 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Mentioning the config string "B1" will autoload the light class which takes care of all commands
 	Sub-Topic(s): none, is sub-peripheral to light class
 
-### DHT22 
+### DHT22
 	Configuration string: "DHT"
 	Purpose: publishs Temperature and humidity once per minute
 	Sub-Topic(s): "temperature" and "humidity" (both out only)
 
-### DS18B20 
+### DS18B20
 	Configuration string: "DS"
 	Purpose: publishs once per minute
 	Sub-Topic(s): "temperature" (out only)
 
-### HLW8012 
+### HLW8012
 	Configuration string: "HLW"
 	Purpose: this chip is used in the Sonoff POW, it publishes Voltage, current and Power once per minute
-	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only) 
+	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only)
 
-### Neopixel 
+### Neopixel
 	Configuration string: "NEO"
 	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
 	Sub-Topic(s): none, is sub-peripheral to light class
 
-### PIR 
+### PIR
 	Configuration string: "PIR / PI2" (PIR uses input-pin 14, PI2 pin 5)
 	Purpose: publishes motion events instantly
 	Sub-Topic(s): "motion"
 
-### PWM 
+### PWM
 	Configuration string: "PWM / PW2 / PW3" (Pin 4/5/16,0,0    4/4/4,0,0      15,13,12,14,4)
 	Purpose: will consume all light commands (dimm/color) and forward it to the selected outputs (R,G,B,W,WW)
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 
-### RF bridge 
+### RF bridge
 	Configuration string: "RFB"
 	Purpose: forwards 433Mhz packages
 	Sub-Topic(s): "bridge"
 
-### Simple light / relay 
+### Simple light / relay
 	Configuration string: "SL"
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
-	
+
 ### GPIO
-	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]" 
-	e.g. "GPI1" / "GNI3" / "GNO6"  / "GPO16"
-	
+	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]"
+	e.g. "GPI1" / "GNI3" / "GNO5"  / "GPO16"
+
 	Purpose: directly set or get pin out-/input, watch out: this module can override other outputs
 	GPO4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
 	GNI3 will configure GPIO3 as LOW-active Input, thus publishing "ON" when the pin goes LOW
-	
-	Sub-Topic(s) if used as INPUT: 
-		"gpio_0_state" 
+	GPIO 6-11 are not available due to their connection to the flash. Usage of those will be ignored.
+
+	Sub-Topic(s) if used as INPUT:
+		"gpio_0_state"
 			will publish ON/OFF on this topic
-		"gpio_0_hold" 
+		"gpio_0_hold"
 			will report 1,2,3,..,9 if the input is ON for the same amount of time [sec]
 
-	Sub-Topic(s) if used as OUTPUT: 
-		"gpio_0_state" 
-			publish "ON" / "OFF" or the int value {0..99} to e.g. dev4/s/gpio_0_out 
-			to set the PIN (0..99 will set the PWM 
+	Sub-Topic(s) if used as OUTPUT:
+		"gpio_0_state"
+			publish "ON" / "OFF" or the int value {0..99} to e.g. dev4/s/gpio_0_out
+			to set the PIN (0..99 will set the PWM
 			to 0..99% durty cycle) if used as output
-		"gpio_0_toggle" 
+		"gpio_0_toggle"
 			no payload, will toggle between ON/OFF
-		"gpio_0_pulse" 
+		"gpio_0_pulse"
 			payload is pulse time in ms, will set pin ON and back to OFF after xx ms
-		"gpio_0_dimm" 
+		"gpio_0_dimm"
 			will sweep the PWM "ON"/"OFF", like dimming a light ON and OFF
-		"gpio_0_brightness" 
+		"gpio_0_brightness"
 			max PWM level that is used during dimm command, make this a retained msg
-			
+
 	HomeAssistant PWM light config:
 		light:
 		  - platform: mqtt
@@ -174,11 +175,11 @@ Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data savi
 Each node that is connected will open an own access point. During (re-)connect phase each device will also try to connect to those access points at some point. A "mesh connected" (I know that this is not a mesh) device will still send subscriptions on the uplink and also publish messages. The data will be slightly converted and send up to the AP. A "mesh server" will receive the message and decode them, if they are not directly send to himself, it will automatically forward the data up the chain.
 
 ### Relationship timeout
-A client that wasn't connected to the MQTT server (since reboot) should "pretty quickly" activate its own configuration AP. 
+A client that wasn't connected to the MQTT server (since reboot) should "pretty quickly" activate its own configuration AP.
 But a client that was connected to the MQTT server for a long time should try a little longer to reconnect to the server before starting the configuration AP.
 
-The "relactionship timeout" give you both: Initally the time to start the AP is set to 45 sec. Each second that the client is 
-connected to the MQTT will increase the time before the configuration AP will be started if the client gets disconnected. 
+The "relactionship timeout" give you both: Initally the time to start the AP is set to 45 sec. Each second that the client is
+connected to the MQTT will increase the time before the configuration AP will be started if the client gets disconnected.
 The client will try 1 second longer to reconnect per 20 sec of previous connection time. The maximum time is limited to 20 minutes.
 
 The MESH mode will kick in after 80% of the waittime hast passed.
@@ -193,7 +194,7 @@ All devices will publish a set of information on connect (helps to check if the 
 6) dev97/r/routing dev97 >> dev23	--> routing info, this is valueable for MESH mode
 
 All devices will also subscribe to a set of topics:
-1) dev95/s/trace	
+1) dev95/s/trace
 	- "ON"/"OFF" as payload, once activated all debug output will be published at dev95/r/trace
 2) dev95/s/setup
 	- "ON" start WiFi access point for confirguration
@@ -207,4 +208,3 @@ All devices will also subscribe to a set of topics:
 	- MQTT firmware update .. not stable ATM
 5) s/ota
 	- MQTT firmware update .. not stable ATM
-

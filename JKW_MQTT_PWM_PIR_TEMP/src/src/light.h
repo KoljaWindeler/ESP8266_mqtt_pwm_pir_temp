@@ -29,6 +29,8 @@
 	#define ANIMATION_RAINBOW_SIMPLE 2
 	#define ANIMATION_COLOR_WIPE     3
 
+	#define STATE_ONFOR 						"ONFOR"
+
 
 	class light : public peripheral {
 public:
@@ -71,6 +73,7 @@ private:
 		uint8_t type;
 		uint8_t m_animation_pos; // pointer im wheel
 		uint32_t m_animation_dimm_time;
+		uint32_t m_onfor_offtime;
 
 		bool publishRGBColor();
 		bool publishLightBrightness();
