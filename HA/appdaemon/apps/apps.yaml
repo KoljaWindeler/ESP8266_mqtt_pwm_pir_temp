@@ -1,7 +1,10 @@
 ---
-hello_world:
-  module: hello
-  class: HelloWorld
+entrance:
+  module: dev54_entrance
+  class: EntranceWorld
 sprinkler:
   module: sprinkler
   class: SprinklerWorld
+warmwater:
+  module: dev29_warmwater
+  class: warm_waterWorld
