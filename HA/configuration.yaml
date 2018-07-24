@@ -51,15 +51,19 @@ http:
 
 
 notify:
-  name: pb
-  platform: pushbullet
-  api_key: !secret pushbullet_key
-  base_url: https://kolja.duckdns.org:8123
+  - name: pb
+    platform: pushbullet
+    api_key: !secret pushbullet_key
+    base_url: https://kolja.duckdns.org:8123
+  - name: pb_c
+    platform: pushbullet
+    api_key: !secret pushbullet_key_c
+    base_url: https://kolja.duckdns.org:8123
 
 remote:
   - platform: harmony
     name: TVHub
-    host: 192.168.2.23
+    host: 192.168.2.44
 
 updater:
 discovery:
@@ -90,7 +94,11 @@ mqtt:
 
 media_player:
  - platform: cast
-   host: 192.168.2.51
+   host: 192.168.2.39
+ - platform: cast
+   host: 192.168.2.55
+ - platform: cast
+   host: 192.168.2.22
 
 sensor: !include sensors.yaml
 switch: !include switches.yaml

@@ -88,17 +88,17 @@ automation:
         entity_id: script.seq_dingdong
 
 #------- Toggle LED -----------
-  - alias: doorbell_msg
+  - alias: Toggle_entrance_LED
     initial_state: True
     hide_entity: False
     trigger:
       - platform: mqtt
-        topic: "dev16/r/button"
+        topic: "dev54/r/gpio_14_state"
     action:
       - service: light.toggle
         entity_id: light.dev54
 #------- Toggle Chandelier -----------
-  - alias: doorbell_msg
+  - alias: Toggle_entrance_chanelier
     initial_state: True
     hide_entity: False
     trigger:
@@ -117,12 +117,38 @@ script:
         data:
           title: "Doorbell"
           message: "Ding Dong"
+
+      - service: notify.pb_c
+        data:
+          title: "Doorbell"
+          message: "Ding Dong"
+
       - service: shell_command.camxia2_1
+
       - service: notify.pb 
         data:
           title: "Doorbell"
           message: "cam 2"
           data:
             file: /tmp/xia2_1.jpg
+
+      - service: notify.pb_c
+        data:
+          title: "Doorbell"
+          message: "cam 2"
+          data:
+            file: /tmp/xia2_1.jpg
+
+      - service: tts.google_say
+        entity_id: media_player.wohnen
+        data:
+          message: "DingDong"
+          language: "fr"
+
+      - service: tts.google_say
+        entity_id: media_player.badezimmer_2
+        data:
+          message: "DingDong"
+          language: "fr"
 
 # -----------------------------------------------
