@@ -1,5 +1,14 @@
 ### ball living room
-# SL, DS18B20
+# R,GOP16,GON5,GON4,GIN0,GON2,GIN12,GIN14,GIP13,GIP1
+# 00: klingel
+# 01: motion cellar
+# 02: haustuer licht
+# 04: aussen eck lichter
+# 05: kronleuchter
+# 12: gruppenschalter
+# 13: motion ceiling
+# 14: einzel licht schalter
+# 16: led dimmer 
 # -----------------------------------------------
 
 light:
@@ -55,8 +64,11 @@ homeassistant:
       friendly_name: "House Exterior light"
     light.dev54_4:
       friendly_name: "Main Door light"
-    binary_sensor.dev2_motion:
-      friendly_name: "Hood"
+    binary_sensor.dev54_motion_1:
+      friendly_name: "54_1 Entrance ceiling"
+    binary_sensor.dev54_motion_2:
+      friendly_name: "54_2 Entrance cellar"
+
 # -----------------------------------------------
 
 sensor:
@@ -71,6 +83,14 @@ binary_sensor:
     state_topic: "dev54/r/gpio_0_state"
     name: "dev54_button"
     device_class: safety
+  - platform: mqtt
+    state_topic: "dev54/r/gpio_13_state"
+    name: "dev54_motion_1"
+    device_class: motion
+  - platform: mqtt
+    state_topic: "dev54/r/gpio_1_state"
+    name: "dev54_motion_2"
+    device_class: motion
 
 # -----------------------------------------------
 

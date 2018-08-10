@@ -1,174 +1,195 @@
-name: My Awesome Home
-views:
-#####################################################################
-    # The name of a view will be used as tab title.
-    # Might be used for other things in the future.
-  - tab_icon: mdi:home-assistant
-    # Each view can have a different theme applied. Theme should be defined in the frontend.
-    theme: dark-mode
-    # The cards to show on this view.
-    cards:
+    name: My Awesome Home
+    views:
+    #####################################################################
+        # The title of a view will be used as tab title.
+        # Might be used for other things in the future.
+      - icon: mdi:home-assistant
+        # Each view can have a different theme applied. Theme should be defined in the frontend.
+        theme: dark-mode
+        # The cards to show on this view.
+        cards:
 
-      - type: picture-glance
-        image: /local/livingroom.jpg
-        title: Living
-        entities:
-          - light.joiner_livingroom
-          - light.dev1
-          - light.dev2
+          - type: picture-glance
+            image: /local/livingroom.jpg
+            title: Living
+            entities:
+              - light.joiner_livingroom
+              - light.dev1
+              - light.dev2
 
-      - type: picture-glance
-        image: /local/kitchen.jpg
-        title: Kitchen
-        entities:
-          - light.joiner_kitchen
-          - binary_sensor.dev14_motion
+          - type: picture-glance
+            image: /local/kitchen.jpg
+            #camera_image: camera.cam_xia1
+            title: Kitchen
+            entities:
+              - light.joiner_kitchen
+              - binary_sensor.dev14_motion
 
-      - type: picture-glance
-        image: /local/hallway.jpg
-        title: Hallway Downstairs
-        entities:
-          - light.joiner_hallwayd
-          - binary_sensor.dev10_motion
-          - binary_sensor.dev15_motion
+          - type: picture-glance
+            image: /local/hallway.jpg
+            title: Hallway Downstairs
+            entities:
+              - light.joiner_hallwayd
+              - binary_sensor.dev10_motion
+              - binary_sensor.dev15_motion
 
-      - type: weather-forecast
-        entity: weather.dark_sky
+          - type: map
+            aspect_ratio: 70%
+            entities:
+                - entity: device_tracker.illuminum_kolja
+                - entity: device_tracker.illuminum_caro
+                - zone.home
 
-      - type: media-control
-        entity: media_player.jkw_cast2
+          - type: media-control
+            entity: media_player.jkw_cast2
 
-
-
-#####################################################################
-  - tab_icon: mdi:cctv
-    name: Cams
-    cards:
-      - type: camera-preview
-        entity: camera.cam_xia1
-      - type: camera-preview
-        entity: camera.cam_xia2
-      - type: camera-preview
-        entity: camera.cam_xia3
-      - type: camera-preview
-        entity: camera.cam_xia4
-#####################################################################
-    # Specify a tab_icon if you want the view tab to be an icon.
-  - tab_icon: mdi:home
-    # Name of the view. Will be used as the tooltip for tab icon
-    name: Second view
-    cards:
-
-      - type: glance
-        title: Temperatures
-        entities:
-          - sensor.dev11_temperature
-          - sensor.dev7_temperature
-          - sensor.dev1_temperature
-          - sensor.dev16_temperature
-          - sensor.dev6_temperature
-          - sensor.dev2_temperature
-          - sensor.dev10_temperature
-          - sensor.dev9_temperature
-          - sensor.dark_sky_apparent_temperature
-          - sensor.dark_sky_daily_high_temperature
-          - sensor.dark_sky_daily_low_temperature
-
-      - type: history-graph
-        entity: history_graph.temperatures
-      - type: entities
-        title: Trash
-        entities:
-          - sensor.trash_0
-          - sensor.trash_1
-          - sensor.trash_2
-          - sensor.trash_3
-
-      - type: entities
-        title: Water
-        entities:
-          - input_boolean.irrigation
-          - light.dev17
-          - light.dev30_4
-          - light.dev30_1
-          - light.dev30_2
-          - light.dev30_3
-          - sensor.dev30_uptime
-          - sensor.dark_sky_precip_probability
-          - sensor.dark_sky_precip_intensity
-
-      - type: entities
-        title: Vacuuming
-        entities:
-          - vacuum.xiaomi_vacuum_cleaner
-          - input_boolean.cleaning_done_today
-          - sensor.vac_triggered
-          - automation.Start_cleaning_when_alone
-
-      - type: entities
-        title: Outside light
-        entities:
-          - light.dev54_3
-          - light.dev54_4
+          - type: weather-forecast
+            entity: weather.dark_sky
 
 
+    #####################################################################
+      - icon: mdi:cctv
+        title: Cams
+        cards:
+          - type: picture-entity
+            entity: camera.cam_xia1
+          - type: picture-entity
+            entity: camera.cam_xia2
+          - type: picture-entity
+            entity: camera.cam_xia3
+          - type: picture-entity
+            entity: camera.cam_xia4
+    #####################################################################
+        # Specify a icon if you want the view tab to be an icon.
+      - icon: mdi:home
+        # title of the view. Will be used as the tooltip for tab icon
+        title: Second view
+        cards:
 
-#####################################################################
+          - type: glance
+            title: Temperatures
+            entities:
+              - sensor.dev11_temperature
+              - sensor.dev7_temperature
+              - sensor.dev1_temperature
+              - sensor.dev16_temperature
+              - sensor.dev6_temperature
+              - sensor.dev2_temperature
+              - sensor.dev10_temperature
+              - sensor.dev9_temperature
+              - sensor.dark_sky_apparent_temperature
+              - sensor.dark_sky_daily_high_temperature
+              - sensor.dark_sky_daily_low_temperature
 
-  - tab_icon: mdi:security
-    # Name of the view. Will be used as the tooltip for tab icon
-    name: Security
-    cards:
-      - type: entities
-        title: Alarm
-        entities:
-          - input_boolean.Alarm_System
-          - automation.rearm_alarm_system
-          - automation.alarm_system
-          - automation.over_temp
-          - automation.leakage
-          - sensor.dev13_adc
+          - type: history-graph
+            entities: 
+              - sensor.dev11_temperature
+              - sensor.dev7_temperature
+              - sensor.dev1_temperature
+              - sensor.dev16_temperature
+              - sensor.dev6_temperature
+              - sensor.dev2_temperature
+              - sensor.dev10_temperature
+              - sensor.dev9_temperature
+
+          - type: entities
+            title: Trash
+            entities:
+              - sensor.trash_0
+              - sensor.trash_1
+              - sensor.trash_2
+              - sensor.trash_3
+
+          - type: entities
+            title: Water
+            show_header_toggle: false
+            entities:
+              - input_boolean.irrigation
+              - light.dev17
+              - light.dev30_pow
+              - light.dev30_1
+              - light.dev30_2
+              - light.dev30_3
+              - light.dev30_4
+              - sensor.dev30_uptime
+              - sensor.dark_sky_precip_probability
+              - sensor.dark_sky_precip_intensity
+
+          - type: entities
+            title: Vacuuming
+            show_header_toggle: false
+            entities:
+              - vacuum.xiaomi_vacuum_cleaner
+              - input_boolean.cleaning_done_today
+              - sensor.vac_triggered
+              - automation.vac_start_cleaning_when_alone
+
+          - type: entities
+            title: Outside light
+            show_header_toggle: false
+            entities:
+              - light.dev54_3
+              - light.dev54_4
 
 
-      - type: glance
-        title: Alarm Status
-        entities:
-          - binary_sensor.someone_is_home
-          - binary_sensor.everyone_is_home
-          - device_tracker.illuminum_kolja
-          - device_tracker.illuminum_caro
-          - binary_sensor.g_motion
-          #- sensor.g_motion_t
 
-      - type: camera-preview
-        entity: camera.map_caro
+    #####################################################################
 
-      - type: camera-preview
-        entity: camera.map_kolja
+      - icon: mdi:security
+        # title of the view. Will be used as the tooltip for tab icon
+        title: Security
+        cards:
+          - type: entities
+            title: Alarm
+            show_header_toggle: false
+            entities:
+              - input_boolean.alarm_system
+              - automation.rearm_alarm_system
+              - automation.alarm_system
+              - automation.over_temp
+              - automation.leakage
+              - sensor.dev13_adc
 
 
-#####################################################################
+          - type: glance
+            title: Alarm Status
+            entities:
+              - binary_sensor.someone_is_home
+              - binary_sensor.everyone_is_home
+              - device_tracker.illuminum_kolja
+              - device_tracker.illuminum_caro
+              - binary_sensor.g_motion
+              #- sensor.g_motion_t
 
-  - tab_icon: mdi:settings
-    name: Settings
-    cards:
+          - type: map
+            aspect_ratio: 90%
+            entities:
+                - entity: device_tracker.illuminum_kolja
+                - entity: device_tracker.illuminum_caro
+                - zone.home
 
-      - type: entity-filter
-        filter:
-          - domain: light
-            state: 'on'
-        card_config:
-          title: Eating power
-      
-    
-      - type: entity-filter
-        filter:
-          - domain: light
-        card_config:
-          title: All lights
 
-      - type: entity-filter
-        filter:
-          - domain: automation
-        card_config:
-          title: All automation
+    #####################################################################
+
+      - icon: mdi:settings
+        title: Settings
+        cards:
+
+          - type: entity-filter
+            entities:
+              - light.dev1
+            state_filter:
+              - "on"
+            card_config:
+              title: Eating power
+          
+        
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - group.all_automations
+
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - group.all_lights

@@ -3,6 +3,15 @@
 # -----------------------------------------------
 
 light:
+  - platform: mqtt ### reset raintime
+    name: "dev30_reset_rain_time"
+    command_topic: "dev30/s/uptime_reset"
+    state_topic: "dev30/r/uptime_reset"
+    qos: 0
+    retain: True
+    payload_on: "now"
+    payload_off: "OFF"
+
   - platform: mqtt ### valve 1
     name: "dev30_1"
     command_topic: "dev30/s/gpio_2_state"
@@ -70,6 +79,9 @@ homeassistant:
     sensor.dev30_uptime:
       friendly_name: "Rain time today"
       icon: mdi:clock-start
+    sensor.dev30_state:
+      friendly_name: "Irrigation state"
+      icon: mdi:access-point
 # -----------------------------------------------
 
 sensor:
@@ -80,6 +92,9 @@ sensor:
     state_topic: "dev30/r/uptime"
     name: "dev30_uptime"
     unit_of_measurement: "min"
+  - platform: mqtt
+    state_topic: "dev30/r/state"
+    name: "dev30_state"
 
 # -----------------------------------------------
 
@@ -91,19 +106,3 @@ input_boolean:
 
 # -----------------------------------------------
 
-automation:
-  - alias: reset rain time
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: time
-        hours: 0
-        minutes: 00
-        seconds: 00
-    action:
-      - service: mqtt.publish
-        data:
-          topic: "dev30/s/uptime_reset"
-          payload: "now"
-
-# -----------------------------------------------

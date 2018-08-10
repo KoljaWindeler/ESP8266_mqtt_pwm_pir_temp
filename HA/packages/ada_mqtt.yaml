@@ -7,7 +7,7 @@ automation:
         topic: "Kkoolljjaa/f/HA"
     action:
       service_template: >
-        {% if "amplifier aus" in trigger.payload or "tv aus" in trigger.payload %} 
+        {% if "amplifier aus" in trigger.payload or "tv aus" in trigger.payload or "esszimmer" in trigger.payload%} 
           homeassistant.turn_on
         {% elif "spotcleanup" in trigger.payload %} 
           vacuum.clean_spot
@@ -22,6 +22,8 @@ automation:
             light.joiner_livingroom
           {% elif "kitchen" in trigger.payload %}
             light.joiner_kitchen
+          {% elif "esszimmer" in trigger.payload %}
+            script.vacuum_kitchen
           {% elif "amplifier aus" in trigger.payload or "tv aus" in trigger.payload %}
             script.tvoff
           {% elif "amplifier" in trigger.payload %}

@@ -158,7 +158,11 @@ class SprinklerWorld(hass.Hass):
         else:
             self.call_service("notify/pb", title="Irrigation", message="Skipping, no rain needed")
 
+        self.turn_on("light.dev30_reset_rain_time")
+        time.sleep(1)
+        self.turn_off("light.dev30_reset_rain_time")
+        self.log("All done, enjoy your evening")
         self.turn_off("input_boolean.irrigation")
-        self.log("All done")
+        self.log("All done, enjoy your evening")
         self.set_state("sensor.dev30_state",state="Done")
         self.log("################################################")

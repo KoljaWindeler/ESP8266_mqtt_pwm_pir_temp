@@ -9,6 +9,8 @@
               or is_state("binary_sensor.dev10_motion", "on")
               or is_state("binary_sensor.dev14_motion", "on")
               or is_state("binary_sensor.dev15_motion", "on")
+              or is_state("binary_sensor.dev54_motion_1", "on")
+              or is_state("binary_sensor.dev54_motion_2", "on")
           -%}
           true
           {%- else -%}

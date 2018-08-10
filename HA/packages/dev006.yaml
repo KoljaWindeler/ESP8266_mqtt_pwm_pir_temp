@@ -22,7 +22,7 @@ homeassistant:
     binary_sensor.dev6_motion:
       friendly_name: "06 Cellar"
     light.dev6:
-      friendly_name: "06 Cellar"
+      friendly_name: "Cellar"
 
 # -----------------------------------------------
 

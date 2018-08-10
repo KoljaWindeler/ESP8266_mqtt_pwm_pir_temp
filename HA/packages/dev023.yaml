@@ -1,12 +1,21 @@
-### ball living room
-# SL, DS18B20
+### touch bedroom
+# SL
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### touch livingroom
+  - platform: mqtt ### touch ventilator
     name: "dev23"
-    state_topic: "dev23/r/light"
-    command_topic: "dev23/s/light"
+    state_topic: "dev23/r/gpio_12_state"
+    command_topic: "dev23/s/gpio_12_state"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### touchbedroom group
+    name: "dev23_2"
+    state_topic: "dev23/r/gpio_0_state"
+    command_topic: "dev23/s/gpio_0_state"
     retain: True
     qos: 0
     payload_on: "ON"
@@ -17,8 +26,17 @@ light:
 sensor:
   - platform: mqtt_jkw
     name: "dev23"
-    fname: "23 Livingroom Touch"
+    fname: "23 Bedroom Touch"
+
+  - platform: mqtt
+    state_topic: "dev23/r/gpio_0_hold"
+    name: "dev23_0_hold"
 
 # -----------------------------------------------
 
+homeassistant:
+  customize:
+    light.dev23:
+      friendly_name: "Bed Ventilator"
+      icon: "mdi:fan"
 
