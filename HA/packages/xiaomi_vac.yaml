@@ -2,7 +2,7 @@ homeassistant:
   customize:
     vacuum.xiaomi_vacuum_cleaner:
       friendly_name: "Mr Thielmann"
-    automation.Start_cleaning_when_alone:
+    automation.vac_start_cleaning_when_alone:
       friendly_name: "Autostart cleaning"
     group.vac:
       friendly_name: "Vacuuming"
@@ -17,7 +17,7 @@ group:
       - vacuum.xiaomi_vacuum_cleaner
       - input_boolean.cleaning_done_today
       - sensor.vac_triggered
-      - automation.Start_cleaning_when_alone
+      - automation.vac_start_cleaning_when_alone
 
 
 sensor:
@@ -40,7 +40,7 @@ input_boolean:
 
 
 automation:
-  - alias: "Vac_Reset_cleaning_done"
+  - alias: "vac_reset_cleaning_done"
     initial_state: 'on'
     trigger:
       - platform: time
@@ -51,7 +51,7 @@ automation:
       - service: homeassistant.turn_off
         entity_id: input_boolean.cleaning_done_today
 
-  - alias: "Vac_Start_cleaning_when_alone"
+  - alias: "vac_start_cleaning_when_alone"
     initial_state: 'on'
     trigger:
       - platform: state
@@ -65,7 +65,7 @@ automation:
       - service: script.turn_on
         entity_id: script.activate_cleaning
 
-  - alias: "Vac_Stop_cleaning_when_not_alone"
+  - alias: "vac_stop_cleaning_when_not_alone"
     initial_state: 'on'
     trigger:
       - platform: state
@@ -86,6 +86,15 @@ script:
       - alias: "set reminder"
         service: homeassistant.turn_on
         entity_id: input_boolean.cleaning_done_today
+
+  vacuum_kitchen:
+    alias: "Vacuum the kitchen"
+    sequence:
+      - service: vacuum.send_command
+        data:
+          entity_id: vacuum.xiaomi_vacuum_cleaner
+          command: app_zoned_clean
+          params: [[23200,29500,27600,33000,1]]
  
   deactivate_cleaning:
     alias: "deactivate cleaning"

@@ -1,0 +1,30 @@
+### touch bedroom
+# SL
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### 
+    name: "dev31"
+    state_topic: "dev31/r/light"
+    command_topic: "dev31/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev31"
+    fname: "31 Bedroom caro"
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev31:
+      friendly_name: "Bed Caro"
+      icon: "mdi:lamp"
+
+# -----------------------------------------------
+

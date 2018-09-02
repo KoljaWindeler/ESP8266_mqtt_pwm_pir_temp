@@ -9,7 +9,7 @@
       #- group.temperatures
       - group.bed_room
       - group.hallway
-      - group.room_carlo
+      #- group.room_carlo
 
   cams:
     control: hidden
@@ -111,6 +111,7 @@
       - sensor.dev7_temperature
       - sensor.dev1_temperature
       - sensor.dev16_temperature
+      - sensor.dev32_temperature
       - sensor.dev6_temperature
       - sensor.dev2_temperature
       - sensor.dev10_temperature
@@ -138,6 +139,9 @@
     view: no
     entities:
       - light.joiner_bedroom
+      - light.dev32
+      - light.dev31
+      - light.dev23
       # - light.dev12
       # - light.dev20
       # - binary_sensor.dev16_motion
@@ -147,13 +151,12 @@
     control: hidden
     view: no
     entities:
-      - light.joiner_hallwayU
-      - light.joiner_hallwayD
       #- light.dev102
+      - light.dev54
+      - light.dev54_2
       - light.dev6
-      - binary_sensor.dev10_motion
-      - binary_sensor.dev15_motion
-      - binary_sensor.dev6_motion
+      - light.dev56
+      - light.dev15
       #- sensor.dev10_temperature
 
 
@@ -185,11 +188,11 @@
       - camera.cam_xia2
       - camera.cam_xia3
       - camera.cam_xia4
-      - camera.cam_xia5
-      - camera.cam_101
+     # - camera.cam_xia5
+     # - camera.cam_101
      # - camera.cam_102
-      - camera.cam_103
-      - camera.cam_106
+     # - camera.cam_103
+     # - camera.cam_106
 
 
   media_player:
@@ -212,15 +215,10 @@
       - input_boolean.Alarm_System
       - automation.rearm_alarm_system
       - automation.alarm_system
-      - automation.alarm_system_cxia1
-      - automation.alarm_system_c101
-      - automation.alarm_system_c102
-      - automation.alarm_system_c103
-      - automation.alarm_system_c106
       - automation.over_temp
       - automation.leakage
-      - switch.cam5_up_down
-      - switch.cam5_left_right
+     # - switch.cam5_up_down
+     # - switch.cam5_left_right
 
 
   Motion:
@@ -232,7 +230,9 @@
       - binary_sensor.dev10_motion
       - binary_sensor.dev14_motion
       - binary_sensor.dev15_motion
-#      - binary_sensor.dev22_motion
+      - binary_sensor.dev54_motion_1
+      - binary_sensor.dev54_motion_2
+      - binary_sensor.dev22_motion
 
   Outside:
     control: hidden
@@ -244,6 +244,7 @@
     control: hidden
     entities:
       - input_boolean.irrigation
+      - sensor.dev30_state
       - light.dev17
       - light.dev30_pow
       - light.dev30_1
@@ -295,7 +296,10 @@
       - sensor.dev21_info
       - sensor.dev22_info
       - sensor.dev23_info
+      - sensor.dev29_info
       - sensor.dev30_info
+      - sensor.dev31_info
+      - sensor.dev32_info
       - sensor.dev55_info
       - sensor.dev56_info
 #      - sensor.dev57_info
@@ -330,7 +334,10 @@
       - sensor.dev21_bssid
       - sensor.dev22_bssid
       - sensor.dev23_bssid
+      - sensor.dev29_bssid
       - sensor.dev30_bssid
+      - sensor.dev31_bssid
+      - sensor.dev32_bssid
       - sensor.dev54_bssid
       - sensor.dev55_bssid
       - sensor.dev56_bssid
@@ -366,7 +373,10 @@
       - sensor.dev21_ssid
       - sensor.dev22_ssid
       - sensor.dev23_ssid
+      - sensor.dev29_ssid
       - sensor.dev30_ssid
+      - sensor.dev31_ssid
+      - sensor.dev32_ssid
       - sensor.dev54_ssid
       - sensor.dev55_ssid
       - sensor.dev56_ssid
@@ -402,7 +412,10 @@
       - sensor.dev21_capability
       - sensor.dev22_capability
       - sensor.dev23_capability
+      - sensor.dev29_capability
       - sensor.dev30_capability
+      - sensor.dev31_capability
+      - sensor.dev32_capability
       - sensor.dev54_capability
       - sensor.dev55_capability
       - sensor.dev56_capability
@@ -439,7 +452,10 @@
       - sensor.dev21_rssi
       - sensor.dev22_rssi
       - sensor.dev23_rssi
+      - sensor.dev29_rssi
       - sensor.dev30_rssi
+      - sensor.dev31_rssi
+      - sensor.dev32_rssi
       - sensor.dev54_rssi
       - sensor.dev55_rssi
       - sensor.dev56_rssi
@@ -475,7 +491,10 @@
       - sensor.dev21_update
       - sensor.dev22_update
       - sensor.dev23_update
+      - sensor.dev29_update
       - sensor.dev30_update
+      - sensor.dev31_update
+      - sensor.dev32_update
       - sensor.dev54_update
       - sensor.dev55_update
       - sensor.dev56_update
@@ -509,7 +528,10 @@
       - sensor.dev21
       - sensor.dev22
       - sensor.dev23
+      - sensor.dev29
       - sensor.dev30
+      - sensor.dev31
+      - sensor.dev32
       - sensor.dev54
       - sensor.dev55
       - sensor.dev56
@@ -521,9 +543,8 @@
     icon: mdi:wrench
     view: yes
     entities:
-      - sensor.dev9_temperature
       - sensor.dev13_adc
-      - light.dev9
+      - light.dev29
 
 
   system:

@@ -9,58 +9,7 @@
       data:
         name: darkorange
 # ------------------- autoload theme ------------------------
-# ------------------- entrance Room HAUSTUER ----------------
-  - alias: entrance_frontdoor_inside
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 2 min
-      - platform: state
-        entity_id: binary_sensor.dev6_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 2
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev6_motion
-        to: 'on'
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev6_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev12
-# ------------------- entrance Room HAUSTUER ----------------
-# ------------------- carlo --------------------------------
-  - alias: carlo_light_on_motion
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
-      - platform: state
-        entity_id: binary_sensor.dev8_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev8_motion
-        to: 'on'
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev8_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev55
-#          - light.dev18_simple_rainbow
-# ------------------- carlo --------------------------------
-# ------------------- cellar --------------------------------
+# ------------------- cellar new --------------------------------
   - alias: cellar_light_on_motion
     initial_state: True
     hide_entity: False
@@ -73,41 +22,29 @@
           minutes: 5
           seconds: 0
       - platform: state
+        entity_id: binary_sensor.dev54_motion_2
+        to: 'off'
+        for: 
+          hours: 0
+          minutes: 5
+          seconds: 0
+      - platform: state
         entity_id: binary_sensor.dev6_motion
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.dev54_motion_2
         to: 'on'
     action:
       - service_template: >
-          {% if is_state('binary_sensor.dev6_motion','on') %}
+          {% if is_state('binary_sensor.dev6_motion','on') or is_state('binary_sensor.dev54_motion_2','on') %}
             light.turn_on
           {% else %}
             light.turn_off
           {% endif %}
         entity_id: 
           - light.dev6
-# ------------------- cellar --------------------------------
-# ------------------- living room sunset -------------------
-  - alias: joiner_livingroom_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev23/r/button"
-    action:
-      service: light.toggle
-      entity_id: light.joiner_livingroom
-# ----------------------------------------------------------
-  - alias: livingroom_off
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev23/r/button_1s"
-    action:
-      service: homeassistant.turn_off
-      entity_id: 
-        - light.joiner_livingroom
-        - switch.fernseher
-# ----------------------------------------------------------
+# ------------------- cellar new --------------------------------
+# ------------------- living room sunset new -------------------
   - alias: joiner_livingroom_in2
     initial_state: True
     hide_entity: False
@@ -129,296 +66,12 @@
         entity_id: 
           - light.joiner_livingroom
 # ----------------------------------------------------------
-# --------------- bedroom ----------------------------------
-  - alias: joiner_bedroom_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev16/r/button"
-      - platform: mqtt
-        topic: "dev20/r/button"
-    action:
-      service: light.toggle
-      entity_id: light.joiner_bedroom
-# ----------------------------------------------------------
-  - alias: joiner_bedroom_in2
-    initial_state: True
-    hide_entity: False
-    trigger:
-      platform: sun
-      event: sunrise
-      offset: "+00:15:00"
-    action:
-      - service: homeassistant.turn_off
-        entity_id: 
-          - light.joiner_bedroom
-# ----------------------------------------------------------
-# ------------------- kueche -------------------------------
-  - alias: joiner_kitchen_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev4_motion
-    action:
-      service: light.turn_on
-      entity_id: light.joiner_kitchen
-# ----------------------------------------------------------
-  - alias: joiner_kitchen_in2
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
-      - platform: state
-        entity_id: binary_sensor.dev4_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev14_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    condition: # make sure that BOTH sensors show off
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.dev4_motion
-          state: 'off'
-          for: 
-              hours: 0
-              minutes: 10
-              seconds: 0
-        - condition: state
-          entity_id: binary_sensor.dev14_motion
-          state: 'off'
-          for: 
-              hours: 0
-              minutes: 10
-              seconds: 0
-    action:
-      service: light.turn_off
-      entity_id: light.joiner_kitchen
-# ------------------- kitchen movement ---------------------
-# ----------------------------------------------------------
-# ------------------- couch  movement ---------------------
-  - alias: couch_automation
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev101_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev101_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev101_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev101 
-# ------------------- couch  movement ---------------------
-# ----------------------------------------------------------
-# ------------------- palette  movement ---------------------
-  - alias: palette_automation
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.joiner_livingroom
-      - platform: state
-        entity_id: binary_sensor.dev22_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev22_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev22_motion','on') or is_state('light.joiner_livingroom','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev22
-# ------------------- palette  movement ---------------------
-# ----------------------------------------------------------
-# ------------------- entrance  movement -------------------
-  - alias: entrance_automation
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev102_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev102_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev102_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev102 
-# ------------------- entrace  movement -------------------
-# ----------------------------------------------------------
-# ------------------- tv  movement -------------------
-  - alias: tv_light_automation
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev103_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev103_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev103_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev103 
-# ------------------- tv  movement -------------------
-# ----------------------------------------------------------
-# ------------------- dragonfly  movement -------------------
-  - alias: dragonfly_automation
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev106_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev106_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev106_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev106 
-# ------------------- dragonfly  movement -------------------
-# ----------------------------------------------------------
-# -------------------- hallway movement --------------------
-# ------ Turn_on_hallwayU_lights_when_there_is_movement ----
-  - alias: joiner_hallwayU_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev10_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev10_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 2
-          seconds: 0
-    condition:
-      condition: or
-      conditions:
-        - condition: state
-          entity_id: light.dev54
-          state: 'on'
-        - condition: time
-          before: '23:00:00'
-          after: '06:00:00'
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev10_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev54
-# ----------------------------------------------------------
-# -- alias: Turn_off_hallwayU_lights_10min_after_movement --
-  - alias: joiner_hallwayU_in2
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev16/r/button"
-    condition:
-      - condition: state
-        entity_id: light.joiner_bedroom
-        state: 'on'
-    action:
-      service: homeassistant.turn_off
-      entity_id: light.joiner_hallwayU
-# ----------------------------------------------------------
-# ----------------------------------------------------------
-# -- alias: Turn_on_hallwayD_lights_when_there_is_movement -
-  - alias: joiner_hallwayD_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev15_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev15_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 5
-          seconds: 0
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev15_motion','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.joiner_hallwayD
-# ----------------------------------------------------------
 # ----------------------------------------------------------
 
 # ----------------------------------------------------------
 # -------------------- alarm system ------------------------
 # ----------------------------------------------------------
-# --------------------- rearm ------------------------------
+# --------------------- rearm new ------------------------------
   - alias: rearm_alarm_system
     initial_state: True
     hide_entity: False
@@ -429,8 +82,8 @@
     action:
       - service: homeassistant.turn_on
         entity_id: input_boolean.alarm_System
-# --------------------- rearm ------------------------------
-# --------------------- un-arm ------------------------------
+# --------------------- rearm new ------------------------------
+# --------------------- un-arm new ------------------------------
   - alias: dearm_alarm_system
     initial_state: True
     hide_entity: False
@@ -446,9 +99,8 @@
           {% endif %} 
         entity_id: input_boolean.alarm_System
 # --------------------- un-arm ------------------------------
-# ----------------------------------------------------------
-
-# ------------------- value trigger for leakage ------------
+# ---------------------------------------------------------
+# ------------------- value trigger for leakage new ------------
   - alias: 'leakage'
     initial_state: 'on'
     trigger:
@@ -461,7 +113,7 @@
        title: "Leakage detected"
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------
-# ------------------- value trigger for over temp ----------
+# ------------------- value trigger for over temp new ----------
   - alias: 'over temp'
     initial_state: 'on'
     trigger:
@@ -492,9 +144,9 @@
        title: "over temp detected"
        message: "over temp triggered"
 # ------------------- value trigger for over temp ----------
-# ------------------- outdoor light ------------------------
+# ------------------- outdoor light new ------------------------
   - alias: outdoor_light3
-    initial_state: True
+    initial_state: False
     hide_entity: False
     trigger:
       - platform: time          # on at 6:30
@@ -543,7 +195,7 @@
 # ------------------- outdoor light ------------------------
 # -------------------- alarm system ------------------------
 # ----------------------------------------------------------
-# --------------------- gmotion ----------------------------
+# --------------------- gmotion new ----------------------------
 # send message as soon as there is movement and nobody is home
   - alias: alarm_system
     initial_state: True
@@ -574,106 +226,22 @@
          {% endif %}
          {%- endfor %}
 # --------------------- gmotion ---------------------------- 
-# --------------------- 101 --------------------------------
-  - alias: alarm_system_c101 
-    initial_state: False
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev101_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_101
-# --------------------- 101 --------------------------------
-# --------------------- 102 --------------------------------
-  - alias: alarm_system_c102 
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev102_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_102
-# --------------------- 102 --------------------------------
-# --------------------- 103 --------------------------------
-  - alias: alarm_system_c103 
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev103_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_103
-# --------------------- 103 --------------------------------
-# --------------------- 106 --------------------------------
-  - alias: alarm_system_c106 
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev106_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_106
-# --------------------- 106 --------------------------------
 # --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
-# ------------------- drivetime kolja ----------------------
+# ------------------- drivetime kolja new ----------------------
   - alias: inform_tavel_kolja
     initial_state: True
     hide_entity: False
     trigger:
       - platform: time
         hours: 7
-        minutes: 30
+        minutes: 00
         seconds: 00
     condition: # make sure that BOTH sensors show off
       - condition: numeric_state
         entity_id: sensor.to_baker
-        above: 17
+        above: 22
     action:
      service: notify.pb
      data_template:
