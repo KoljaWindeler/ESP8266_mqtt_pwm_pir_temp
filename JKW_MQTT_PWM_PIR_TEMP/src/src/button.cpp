@@ -85,16 +85,16 @@ bool button::publish(){
 		boolean ret = false;
 		if(m_state.get_value()==0){ // right after push
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), (char*)"");
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_0S);
 		} else if(m_state.get_value()==1){ // after 1 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 1s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), (char*)"");
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_1S);
 		} else if(m_state.get_value()==2){ // after 2 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 2s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), (char*)"");
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_2S);
 		} else if(m_state.get_value()==3){ // after 3 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 3s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)"");
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_3S);
 		}
 		else if(m_state.get_value() > BUTTON_RELEASE_OFFSET){ // release after > 1
 			sprintf(m_msg_buffer, "%i", m_state.get_value()-BUTTON_RELEASE_OFFSET);
@@ -131,7 +131,6 @@ void button::interrupt(){
 			Serial.println(m_counter);
 		};
 		// Serial.print(".");
-		m_timer_button_down = millis();
 	} else {
 		// release button after holding for n*BUTTON_LONG_PUSH (1000ms)
 		if(millis() - m_timer_button_down > BUTTON_LONG_PUSH) {
@@ -139,4 +138,5 @@ void button::interrupt(){
 			m_state.set( BUTTON_RELEASE_OFFSET + (millis() - m_timer_button_down) / BUTTON_LONG_PUSH );
 		}
 	};
+	m_timer_button_down = millis();
 }

@@ -1,3 +1,5 @@
+20180803
+	-button hold will publish text instead of ""
 20180722
   - wifimanager will accept 60 chars for dev_short now
 	- wifimanager will not try to parse v1 blindly anymore

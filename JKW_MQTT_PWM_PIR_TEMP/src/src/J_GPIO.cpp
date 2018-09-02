@@ -132,15 +132,15 @@ bool J_GPIO::loop(){
 			// if parameter is high: set state to 1 and increase once per second
 			// publish will send this to the server
 			// we reset this as soon as the pin goes low
-			if (digitalRead(i) != m_invert[i]) {
+			if (digitalRead(i) != m_invert[i]) { // in hold mode, or pin is active
 				if (m_timing_parameter[i] == 0) {
-					m_state[i].set(1);
-					m_timing_parameter[i] = millis();
+					m_state[i].set(1); // 1 == on
+					m_timing_parameter[i] = millis(); // timestamp of first push
 				} else {
-					m_state[i].check_set(min(10, (uint8_t) ((millis() - m_timing_parameter[i]) / 1000) + 1));
+					m_state[i].check_set(min(10, (uint8_t) ((millis() - m_timing_parameter[i]) / 1000) + 1)); // will count the hold seconds up to 10
 				}
 			}
-			// reset timing paramter once the pin changes again
+			// reset timing paramter once the pin was released again
 			else if (m_timing_parameter[i]) {
 				m_timing_parameter[i] = 0;
 				m_state[i].check_set(0);
