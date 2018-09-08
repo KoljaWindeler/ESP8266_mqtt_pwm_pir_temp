@@ -340,6 +340,14 @@ void reconnect(){
 				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
+				// IP publishing
+				IPAddress ip = WiFi.localIP();
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3],AUDIO_PORT);
+				network.publish(build_topic("IP", UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic("IP", UNIT_TO_PC), COLOR_GREEN);
+				logger.p((char *) " -> ");
+				logger.pln(m_msg_buffer);
+
 				// CAP publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 				network.publish(build_topic(MQTT_CAPABILITY_TOPIC, UNIT_TO_PC), mqtt.cap);
@@ -492,6 +500,7 @@ void loadPheripherals(uint8_t * config){
 	bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
+	bake(new audio(), &p_audio, config);
 
 
 	// logger.p("RAM after init objects ");

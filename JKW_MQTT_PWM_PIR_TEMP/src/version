@@ -1,5 +1,12 @@
+20180908
+ - added audio streaming, see cmd to run below
+ 		avconv -i file.mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 24000 tcp://192.168.2.59:5522
+		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)
+		PROGRAM: [========= ]  94.2% (used 409004 bytes from 434160 bytes)
 20180803
 	-button hold will publish text instead of ""
+		DATA:    [=====     ]  54.6% (used 44704 bytes from 81920 bytes)
+  	PROGRAM: [========= ]  93.5% (used 406004 bytes from 434160 bytes)
 20180722
   - wifimanager will accept 60 chars for dev_short now
 	- wifimanager will not try to parse v1 blindly anymore
