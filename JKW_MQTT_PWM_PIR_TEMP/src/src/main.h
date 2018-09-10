@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180908" DEV
+	#define VERSION               "20180910" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -143,30 +143,32 @@ public:
 	extern peripheral * p_no_mesh;
 	extern peripheral * p_uptime;
 	extern peripheral * p_audio;
+	extern peripheral * p_freq;
 
 	extern const uint8_t intens[100];
 
 
-#include "ADC.h"
-#include "PIR.h"
-#include "button.h"
-#include "simple_light.h"
-#include "rssi.h"
-#include "PWM.h"
-#include "J_DHT22.h"
-#include "J_DS.h"
-#include "J_hlw8012.h"
-#include "AI.h"
-#include "BOne.h"
-#include "NeoStrip.h"
+#include "cap_ADC.h"
+#include "cap_PIR.h"
+#include "cap_button.h"
+#include "cap_simple_light.h"
+#include "cap_rssi.h"
+#include "cap_PWM.h"
+#include "cap_DHT22.h"
+#include "cap_DS.h"
+#include "cap_hlw8012.h"
+#include "cap_AI.h"
+#include "cap_BOne.h"
+#include "cap_NeoStrip.h"
 #include "light.h"
-#include "night_light.h"
-#include "bridge.h"
-#include "J_GPIO.h"
-#include "husqvarna.h"
+#include "cap_night_light.h"
+#include "cap_bridge.h"
+#include "cap_GPIO.h"
+#include "cap_husqvarna.h"
 #include "no_mesh.h"
-#include "uptime.h"
-#include "audio.h"
+#include "cap_uptime.h"
+#include "cap_audio.h"
+#include "cap_freq.h"
 
 #endif // ifndef main_h
 
@@ -186,7 +188,7 @@ public:
  * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS
  * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS  	// DO NOT USE, on board pull down
  * 14	GPIO02		D4; UART Tx during flash programming; internal LED
- * 15	GPIO00		D3; SPI_CS2; Button pin, needs to be high during startup
+ * 15	GPIO00		D3; SPI_CS2; Button pin, needs to be high during startup, will be checked 10 sec afterboot, if low-> wifimanager start
  * 16	GPIO04		D2
  *
  * 17	VDDPST		Digital / IO power supply (1.8 V ~ 3.3 V)

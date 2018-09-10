@@ -1,4 +1,4 @@
-#include <J_DHT22.h>
+#include <cap_DHT22.h>
 
 DHT dht(DHT_PIN, DHT22);        // J_DHT22
 

@@ -1,4 +1,4 @@
-#include <NeoStrip.h>
+#include <cap_NeoStrip.h>
 
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, 5); // this version only works on gpio3 / D9 (RX)
 

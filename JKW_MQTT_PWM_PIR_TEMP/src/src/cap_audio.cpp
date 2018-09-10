@@ -1,4 +1,4 @@
-#include <audio.h>
+#include <cap_audio.h>
 
 // simply the constructor
 audio::audio(){

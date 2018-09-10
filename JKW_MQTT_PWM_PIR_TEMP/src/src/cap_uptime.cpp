@@ -1,4 +1,4 @@
-#include <uptime.h>
+#include <cap_uptime.h>
 
 // simply the constructor
 uptime::uptime(){

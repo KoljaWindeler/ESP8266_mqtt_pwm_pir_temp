@@ -1,4 +1,4 @@
-#include <button.h>
+#include <cap_button.h>
 
 button::button(){
 	m_timer_button_down=0;

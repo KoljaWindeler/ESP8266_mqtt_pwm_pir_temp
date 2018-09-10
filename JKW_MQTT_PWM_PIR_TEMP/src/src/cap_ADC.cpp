@@ -1,4 +1,4 @@
-#include <ADC.h>
+#include <cap_ADC.h>
 
 ADC::ADC(){};
 ADC::~ADC(){

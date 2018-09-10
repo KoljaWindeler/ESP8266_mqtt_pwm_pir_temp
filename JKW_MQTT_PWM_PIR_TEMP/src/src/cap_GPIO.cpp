@@ -1,4 +1,4 @@
-#include <J_GPIO.h>
+#include <cap_GPIO.h>
 // R,PI2,PW3,M3
 // REMEMBER: we're talking about GPIO5 and NOT Arduino D5!!
 // simply the constructor

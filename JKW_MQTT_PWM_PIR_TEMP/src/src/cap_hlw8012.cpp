@@ -1,4 +1,4 @@
-#include <J_hlw8012.h>
+#include <cap_hlw8012.h>
 
 J_hlw8012::J_hlw8012(){
 	sprintf((char*)key,"HLW");

@@ -371,13 +371,23 @@ void reconnect(){
 			if (relationship_timeout(1, (char *) "AP")) {
 				// time to start the AP
 				logger.pln(F("Can't connect, starting AP"));
-				if (p_neo) { // restart Serial if neopixel are connected (they've reconfigured the RX pin/interrupt)
+				// restart Serial if neopixel/audio are connected (they've reconfigured the RX pin/interrupt)
+				if (p_neo || p_audio) {
 					Serial.end();
 					delay(500);
 					Serial.begin(115200);
 				}
+				// run wifi manager
 				wifiManager.startConfigPortal(CONFIG_SSID);
-				timer_connected_stop  = millis(); // resets timer
+				// reinit peripheral if needed
+				if(p_neo){
+					p_neo->init();
+				}
+				if(p_audio){
+					p_audio->init();
+				}
+				// resets timer
+				timer_connected_stop  = millis();
 				timer_connected_start = millis();
 				logger.pln(F("Config AP closed"));
 				// debug
@@ -470,14 +480,20 @@ void loadPheripherals(uint8_t * config){
 			active_p[i] = 0x00;
 		}
 	}
+	// hanky: activate button just to see if we should go to setup
+	logger.println(TOPIC_GENERIC_INFO, F("checking direct setup"), COLOR_PURPLE);
+	p_button = new button();
+	p_button->init();
+	delete p_button;
+	p_button = 0x00;
+
+	// create objects for real
 	// activate
 	active_p_pointer = 0;
 	active_p_intervall_counter = 0;
 	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
-
 	// logger.p("RAM before creating objects ");
 	// logger.pln(system_get_free_heap_size());
-	// create objects
 	bake(new ADC(), &p_adc, config);
 	bake(new button(), &p_button, config);
 	bake(new simple_light(), &p_simple_light, config);
@@ -501,6 +517,7 @@ void loadPheripherals(uint8_t * config){
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
 	bake(new audio(), &p_audio, config);
+	bake(new audio(), &p_freq, config);
 
 
 	// logger.p("RAM after init objects ");
@@ -614,6 +631,18 @@ void setup(){
 	for (uint8_t i = 0; i < MAX_PERIPHERALS; i++) {
 		active_intervall_p[i] = 0x00;
 	}
+
+	// //// start wifi manager
+	wifiManager.setAPCallback(configModeCallback);
+	wifiManager.setLightToggleCallback(toggleCallback);
+	wifiManager.setSaveConfigCallback(saveConfigCallback);
+	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
+	wifiManager.setConnectTimeout(MAX_CON_TIME);
+	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
+
+	// init the MQTT connection
+	randomSeed(millis());
+
 	// load all paramters!
 	loadConfig();
 	// get reset reason
@@ -630,16 +659,6 @@ void setup(){
 		}
 	}
 
-	// //// start wifi manager
-	wifiManager.setAPCallback(configModeCallback);
-	wifiManager.setLightToggleCallback(toggleCallback);
-	wifiManager.setSaveConfigCallback(saveConfigCallback);
-	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
-	wifiManager.setConnectTimeout(MAX_CON_TIME);
-	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
-
-	// init the MQTT connection
-	randomSeed(millis());
 	logger.pln(F("=== End of Setup ==="));
 	logger.pln(F(" "));
 } // setup

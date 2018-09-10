@@ -1,4 +1,4 @@
-#include <husqvarna.h>
+#include <cap_husqvarna.h>
 
 // simply the constructor
 husqvarna::husqvarna(){

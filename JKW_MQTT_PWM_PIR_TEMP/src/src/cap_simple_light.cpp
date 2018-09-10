@@ -1,4 +1,4 @@
-#include <simple_light.h>
+#include <cap_simple_light.h>
 
 simple_light::simple_light(){};
 simple_light::~simple_light(){

@@ -1,4 +1,4 @@
-#include <PIR.h>
+#include <cap_PIR.h>
 
 PIR::PIR(uint8_t* k,uint8_t pin){
 	m_pin = pin;

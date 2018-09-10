@@ -1,4 +1,4 @@
-#include <PWM.h>
+#include <cap_PWM.h>
 
 PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4){
 	m_pins[0] = pin0;

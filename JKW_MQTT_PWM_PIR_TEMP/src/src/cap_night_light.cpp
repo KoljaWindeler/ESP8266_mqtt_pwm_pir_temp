@@ -1,4 +1,4 @@
-#include <night_light.h>
+#include <cap_night_light.h>
 
 // simply the constructor
 night_light::night_light(){

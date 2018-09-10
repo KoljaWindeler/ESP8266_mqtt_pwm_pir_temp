@@ -1,4 +1,4 @@
-#include <rssi.h>
+#include <cap_rssi.h>
 
 rssi::rssi(){};
 rssi::~rssi(){

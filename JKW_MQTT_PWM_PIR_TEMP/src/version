@@ -1,10 +1,16 @@
+
+20190910
+	- added frequency measurement (cap: fre_s_4, fre_h_8, fre_m_12)
+	- renamed all files to "cap_" if they are pure capabilities
+		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)
+		PROGRAM: [========= ]  94.2% (used 409160 bytes from 434160 bytes)
 20180908
- - added audio streaming, see cmd to run below
+	- added audio streaming, see cmd to run below (cap: AUD)
  		avconv -i file.mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 24000 tcp://192.168.2.59:5522
 		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)
 		PROGRAM: [========= ]  94.2% (used 409004 bytes from 434160 bytes)
 20180803
-	-button hold will publish text instead of ""
+	- button hold will publish text instead of ""
 		DATA:    [=====     ]  54.6% (used 44704 bytes from 81920 bytes)
   	PROGRAM: [========= ]  93.5% (used 406004 bytes from 434160 bytes)
 20180722
@@ -15,7 +21,7 @@
 	- added auto off feature for light
 			instead of "ON" send "ONFOR10" for 10 sec light
 20180624
-	- added uptime component
+	- added uptime component (UTP3 uptime, positiv (high active), gpio3)
 	- Text size 405648 [93.4%]
 20180618
 	- added "button_release" feature
@@ -38,7 +44,7 @@
 		- Config string GOP4 = GPIO, Output, Positive (active high), Pin GPIO4
 		- Config string GIN3 = GPIO, input, Negative (active low), Pin GPIO3
 		- Publishing limited to 9 Messages: devXX/r/gpio_X_hold with payload 1..9 (seconds hold)
-20180403
+20180403 (*** LTS tested with disabled mesh :D )
 	- Mesh Host SSID pattern: JKW_relay_dev99_L1 = opened by dev99 and Level
 		one aka directly connected to the WIFI, next level would be L2 and so on ...
 	- Configure Mesh options via Capability string M0/1/2/3 (Full, Host only, client only, off)
