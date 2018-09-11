@@ -82,6 +82,27 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Mentioning the config string "B1" will autoload the light class which takes care of all commands
 	Sub-Topic(s): none, is sub-peripheral to light class
 
+### Ai
+	Configuration string: "AI"
+	Purpose: will consume all light commands (dimm/color) and forward it the the IC used in the Thinker AI
+	Mentioning the config string "AI" will autoload the light class which takes care of all commands
+	Sub-Topic(s): none, is sub-peripheral to light class
+
+### PWM
+	Configuration string: "PWM / PW2 / PW3" (Pin 4/5/16,0,0    4/4/4,0,0      15,13,12,14,4)
+	Purpose: will consume all light commands (dimm/color) and forward it to the selected outputs (R,G,B,W,WW)
+	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
+
+### Neopixel
+	Configuration string: "NEO"
+	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
+	Sub-Topic(s): none, is sub-peripheral to light class
+	
+### Simple light / relay
+	Configuration string: "SL"
+	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
+	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
+
 ### DHT22
 	Configuration string: "DHT"
 	Purpose: publishs Temperature and humidity once per minute
@@ -97,30 +118,15 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Purpose: this chip is used in the Sonoff POW, it publishes Voltage, current and Power once per minute
 	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only)
 
-### Neopixel
-	Configuration string: "NEO"
-	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
-	Sub-Topic(s): none, is sub-peripheral to light class
-
 ### PIR
 	Configuration string: "PIR / PI2" (PIR uses input-pin 14, PI2 pin 5)
 	Purpose: publishes motion events instantly
 	Sub-Topic(s): "motion"
 
-### PWM
-	Configuration string: "PWM / PW2 / PW3" (Pin 4/5/16,0,0    4/4/4,0,0      15,13,12,14,4)
-	Purpose: will consume all light commands (dimm/color) and forward it to the selected outputs (R,G,B,W,WW)
-	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
-
 ### RF bridge
 	Configuration string: "RFB"
 	Purpose: forwards 433Mhz packages
 	Sub-Topic(s): "bridge"
-
-### Simple light / relay
-	Configuration string: "SL"
-	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
-	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 
 ### GPIO
 	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]"
@@ -166,7 +172,31 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		    optimistic: false
 		    brightness_scale: 99
 
+### Audio
+	Configuration string: "AUD"
+	Purpose: will provide a server (port 5522) that consumes special audio streams (send by a Raspberry). Output is the RX pin.
+	Sub-Topic(s): Sub-Topic(s): none, consumes direct streams
+	
+### Frequency counter
+	Configuration string: "FRE"
+	Purpose: Counts pin toggles on a definable GPIO and reports them once a minute. E.g. count kw/h via LED pulse
+	Sub-Topic(s): "freq"
 
+### Husqvarna
+	Configuration string: "HUS"
+	Purpose: Can controll a husqvarna automover via soft serial. This is untested.
+	Sub-Topic(s): "husqvarna_mode_[...]"
+	
+### Night light
+	Configuration string: "NL"
+	Purpose: Sets the mini LED on the SonOff Touch, subscribs to a global non device specific topic
+	Sub-Topic(s): "nightlight"
+
+### Uptime
+	Configuration string: "UT"
+	Purpose: Counts the time that a pin is in a defined state (e.g. counts seconds of "there is rain" from my rain sensor)
+	Sub-Topic(s): "uptime"
+	
 
 ### WiFi Configuration Access Point
 Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.
