@@ -10,7 +10,13 @@ button::~button(){
 
 
 bool button::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	if(cap.parse(config,get_key())){
+		m_pin = BUTTON_INPUT_PIN;
+		return true;
+	} else if(cap.parse(config,get_key(),&m_pin)){
+		return true;
+	}
+	return false;
 }
 
 uint8_t* button::get_key(){
@@ -27,11 +33,11 @@ void fooButton(){
 bool button::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("Button init"), COLOR_GREEN);
 	// attache interrupt codepwm for button
-	pinMode(BUTTON_INPUT_PIN, INPUT);
-	digitalWrite(BUTTON_INPUT_PIN, HIGH); // pull up to avoid interrupts without sensor
-	attachInterrupt(digitalPinToInterrupt(BUTTON_INPUT_PIN), fooButton, CHANGE);
+	pinMode(m_pin, INPUT);
+	digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
+	attachInterrupt(digitalPinToInterrupt(m_pin), fooButton, CHANGE);
 
-	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
+	if (digitalRead(m_pin) == LOW) {
 		wifiManager.startConfigPortal(CONFIG_SSID);
 	}
 	m_timer_checked=0;
@@ -50,7 +56,7 @@ bool button::loop(){
 	// check once every 1s if the button is down and if so for how long
 	if(millis()-m_timer_checked > BUTTON_CHECK_INTERVALL){
 		m_timer_checked=millis();
-		if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
+		if (digitalRead(m_pin) == LOW) {
 			for(int i=3;i>0;i--){
 				// if the button is down for more then n seconds, set the state accordingly
 				if(millis()-m_timer_button_down>i*BUTTON_LONG_PUSH){
@@ -113,7 +119,7 @@ bool button::publish(){
 // external button push
 void button::interrupt(){
 	// toggle, write to pin, publish to server
-	if (digitalRead(BUTTON_INPUT_PIN) == LOW) {
+	if (digitalRead(m_pin) == LOW) {
 		if (millis() - m_timer_button_down > BUTTON_DEBOUNCE) { // avoid bouncing
 			// button down
 			m_state.set(0);
