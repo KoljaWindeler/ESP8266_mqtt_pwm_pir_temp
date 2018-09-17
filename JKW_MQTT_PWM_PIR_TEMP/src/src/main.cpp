@@ -511,23 +511,23 @@ void loadPheripherals(uint8_t * config){
 	bake(new light(), &p_light, config);
 	bake(new J_hlw8012(), &p_hlw, config);
 	bake(new night_light(), &p_nl, config);
-	bake(new bridge(), &p_rfb, config);
+	//bake(new bridge(), &p_rfb, config);
 	bake(new J_GPIO(), &p_gpio, config);
-	bake(new husqvarna(), &p_husqvarna, config);
+	//bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
 	bake(new audio(), &p_audio, config);
-	bake(new audio(), &p_freq, config);
+	bake(new freq(), &p_freq, config);
 
 
 	// logger.p("RAM after init objects ");
 	// logger.pln(system_get_free_heap_size());
 
 	// disable serial interface if rf bridge was activated
-	if (p_rfb != 0x00) {
-		logger.enable_serial_trace(false);
-		logger.enable_mqtt_trace(true); // for debugging
-	}
+	//if (p_rfb != 0x00) {
+	//	logger.enable_serial_trace(false);
+	//	logger.enable_mqtt_trace(true); // for debugging
+	//}
 	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
 
 	// make this more generic .... like ...

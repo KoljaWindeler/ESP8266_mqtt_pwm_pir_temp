@@ -51,7 +51,7 @@ bool husqvarna::loop(){
 			char_in=swSer1->read();
 
 			// DBG
-			sprintf(m_msg_buffer,"received husqvarna cmd[%i]=%02x",char_num,char_in);
+			sprintf_P(m_msg_buffer,PSTR("received husqvarna cmd[%i]=%02x"),char_num,char_in);
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_YELLOW);
 
 			response[char_num]=char_in;
@@ -60,7 +60,7 @@ bool husqvarna::loop(){
 		// only set the state if we received enough data
 		if(char_num==4){
 			// DBG
-			sprintf(m_msg_buffer,"received husqvarna cmd %02x %02x %02x %02x %02x",response[0],response[1],response[2],response[3],response[4]);
+			sprintf_P(m_msg_buffer,PSTR("received husqvarna cmd %02x %02x %02x %02x %02x"),response[0],response[1],response[2],response[3],response[4]);
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_YELLOW);
 
 			// (auto, manual, home) only first 3 byte, yes (all 5 byte)
@@ -124,7 +124,7 @@ bool husqvarna::subscribe(){
 
 void husqvarna::send_cmd(uint8_t* cmd){
 	// DBG
-	sprintf(m_msg_buffer,"sending husqvarna cmd %02x %02x %02x %02x %02x",cmd[0],cmd[1],cmd[2],cmd[3],cmd[4]);
+	sprintf_P(m_msg_buffer,PSTR("sending husqvarna cmd %02x %02x %02x %02x %02x"),cmd[0],cmd[1],cmd[2],cmd[3],cmd[4]);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_YELLOW);
 
 	swSer1->write(cmd[0]);

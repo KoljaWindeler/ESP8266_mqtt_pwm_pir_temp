@@ -57,7 +57,7 @@ public:
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20180910" DEV
+	#define VERSION               "20180912" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -139,7 +139,7 @@ public:
 	extern peripheral * p_nl;
 	extern peripheral * p_rfb;
 	extern peripheral * p_gpio;
-	extern peripheral * p_husqvarna;
+	//extern peripheral * p_husqvarna;
 	extern peripheral * p_no_mesh;
 	extern peripheral * p_uptime;
 	extern peripheral * p_audio;
@@ -162,9 +162,9 @@ public:
 #include "cap_NeoStrip.h"
 #include "light.h"
 #include "cap_night_light.h"
-#include "cap_bridge.h"
+//#include "cap_bridge.h"
 #include "cap_GPIO.h"
-#include "cap_husqvarna.h"
+//#include "cap_husqvarna.h"
 #include "no_mesh.h"
 #include "cap_uptime.h"
 #include "cap_audio.h"
