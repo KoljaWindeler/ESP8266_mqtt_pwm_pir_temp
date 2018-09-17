@@ -576,14 +576,14 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 				*v2_p = EEPROM.read(i);
 				v2_p++;
 			}*/
-			v2.login[0]=0x00;
-			v2.pw[0]=0x00;
-			v2.dev_short[0]=0x00;
-			v2.server_ip[0]=0x00;
-			v2.server_port[0]=0x00;
-			v2.cap[0]=0x00;
-			v2.nw_pw[0]=0x00;
-			v2.nw_ssid[0]=0x00;
+			sprintf_P(v2.login,PSTR("-"));
+			sprintf_P(v2.pw,PSTR("-"));
+			sprintf_P(v2.dev_short,PSTR("-"));
+			sprintf_P(v2.server_ip,PSTR("192.168.2.84"));
+			sprintf_P(v2.server_port,PSTR("1883"));
+			sprintf_P(v2.cap,PSTR(""));
+			sprintf_P(v2.nw_pw,PSTR("-"));
+			sprintf_P(v2.nw_ssid,PSTR("-"));
 		//}
 		v2_p = (char*)&v2; // rewind
 		// try legacy V1 to v2 conversion
@@ -623,7 +623,7 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 			mqtt->cap[i]=0x00;
 		}
 	}
-	for(uint8_t i=0; i<7; i++){
+	for(uint8_t i=0; i<8; i++){
 		explainMqttStruct(i, false);
 		Serial.println(getMQTTelement(i,mqtt));
 	}

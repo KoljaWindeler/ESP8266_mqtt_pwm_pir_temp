@@ -54,7 +54,7 @@ bool connection_relay::DirectConnect(){
 	logger.pln(mqtt.nw_ssid);
 
 	if (wifiManager.connectWifi(mqtt.nw_ssid, mqtt.nw_pw) == WL_CONNECTED) {
-		sprintf(m_msg_buffer,"Direct connection with %s estabilshed, IP: %i.%i.%i.%i",
+		sprintf_P(m_msg_buffer,PSTR("Direct connection with %s estabilshed, IP: %i.%i.%i.%i"),
 			(char*)WiFi.SSID().c_str(),WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
 		logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 		m_connection_type = CONNECTION_DIRECT_CONNECTED;
@@ -114,7 +114,7 @@ bool connection_relay::MeshConnect(){
 		}
 
 		if (best_AP > -1) {
-			sprintf(m_msg_buffer, "%i Networks found, incl mesh '%s' [%idbm]. Connecting", scan_count, WiFi.SSID(best_AP).c_str(),
+			sprintf_P(m_msg_buffer, PSTR("%i Networks found, incl mesh '%s' [%idbm]. Connecting"), scan_count, WiFi.SSID(best_AP).c_str(),
 			  WiFi.RSSI(best_AP));
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 
@@ -123,17 +123,17 @@ bool connection_relay::MeshConnect(){
 			WiFi.begin(WiFi.SSID(best_AP).c_str(), AP_PW, WiFi.channel(best_AP), WiFi.BSSID(best_AP), true);
 			WiFi.waitForConnectResult();
 			if (WiFi.status() == WL_CONNECTED) {
-				sprintf(m_msg_buffer, "Mesh connection established %i.%i.%i.%i", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP(
+				sprintf_P(m_msg_buffer, PSTR("Mesh connection established %i.%i.%i.%i"), WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP(
 				  )[2], WiFi.localIP()[3]);
 				logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
 				m_connection_type = CONNECTION_MESH_CONNECTED;
 				return true;
 			} else {
-				sprintf(m_msg_buffer, "Mesh connection failed");
+				sprintf_P(m_msg_buffer, PSTR("Mesh connection failed"));
 				logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_RED);
 			}
 		} else {
-			sprintf(m_msg_buffer, ("No mesh node (%s) in range"), AP_SSID);
+			sprintf_P(m_msg_buffer, PSTR("No mesh node (%s) in range"), AP_SSID);
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_RED);
 		}
 	}
@@ -189,7 +189,7 @@ bool connection_relay::loopCheck(){
 		char msg[50];
 		uint8_t mac[6];
 		WiFi.macAddress(mac);
-		sprintf(msg, "%c%02x:%02x:%02x:%02x:%02x:%02x", MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2], mac[1],
+		sprintf_P(msg, PSTR("%c%02x:%02x:%02x:%02x:%02x:%02x"), MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2], mac[1],
 		  mac[0]);
 		enqueue_up(msg, strlen(msg));
 		// send_up(msg,strlen(msg));
@@ -202,8 +202,8 @@ bool connection_relay::publishRouting(){
 	char msg[50];
 	char topic[50];
 
-	sprintf(topic, "%s", build_topic("routing", UNIT_TO_PC));
-	sprintf(msg, "%c%c%c%s%c%s", MSG_TYPE_ROUTING, strlen(topic) + 1, strlen(
+	sprintf_P(topic, PSTR("%s"), build_topic("routing", UNIT_TO_PC));
+	sprintf_P(msg, PSTR("%c%c%c%s%c%s"), MSG_TYPE_ROUTING, strlen(topic) + 1, strlen(
 	   mqtt.dev_short) + 1, topic, 0, mqtt.dev_short);
 
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
@@ -302,7 +302,7 @@ bool connection_relay::publish(char * topic, char * mqtt_msg, bool enqueue){
 		uint16_t len = strlen(topic) + strlen(mqtt_msg) + 5;
 		char msg[len];
 		// a bit strange to add 0x00 in the middle of a string, but help to display this later
-		sprintf(msg, "%c%c%c%s%c%s", MSG_TYPE_PUBLISH, strlen(topic) + 1, strlen(mqtt_msg) + 1, topic, 0, mqtt_msg); // last 0x00 will be added automatically
+		sprintf_P(msg, PSTR("%c%c%c%s%c%s"), MSG_TYPE_PUBLISH, strlen(topic) + 1, strlen(mqtt_msg) + 1, topic, 0, mqtt_msg); // last 0x00 will be added automatically
 
 		// for(uint8_t i=0; i<strlen(topic)+strlen(mqtt_msg)+5; i++){
 		//	.printf("[%i] %c %i\r\n",i,msg[i],msg[i]);
@@ -341,9 +341,9 @@ bool connection_relay::broadcast_publish_down(char * topic, char * mqtt_msg, uin
 	msg[msg_size - 1] = '\0';
 
 	if (msg_size < 100) {
-		sprintf(m_msg_buffer, "(down) FWD '%s' -> '%s'", topic, mqtt_msg);
+		sprintf_P(m_msg_buffer, PSTR("(down) FWD '%s' -> '%s'"), topic, mqtt_msg);
 	} else {
-		sprintf(m_msg_buffer, "(down) FWD '%s' %i bytes", topic, msg_size);
+		sprintf_P(m_msg_buffer, PSTR("(down) FWD '%s' %i bytes"), topic, msg_size);
 	}
 	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
@@ -451,8 +451,8 @@ void connection_relay::startAP(){
 		ip[2] = ip[2] + 1; // increase 3rd octed for each sublevel
 		ip[3] = 1;
 		char ssid[strlen(AP_SSID)+4+strlen(mqtt.dev_short)]; // max 32?
-		sprintf(ssid,"%s_%s_L%i",AP_SSID,mqtt.dev_short,m_mesh_level+1);
-		sprintf(m_msg_buffer, "Set AP IP to %i.%i.%i.%i and SSID to %s", ip[0], ip[1], ip[2], ip[3], ssid);
+		sprintf_P(ssid,PSTR("%s_%s_L%i"),AP_SSID,mqtt.dev_short,m_mesh_level+1);
+		sprintf_P(m_msg_buffer, PSTR("Set AP IP to %i.%i.%i.%i and SSID to %s"), ip[0], ip[1], ip[2], ip[3], ssid);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 		WiFi.softAPConfig(ip, ip, apSM);
 		WiFi.softAP(ssid, AP_PW, WiFi.channel(), 0); // 1 == hidden SSID
@@ -495,7 +495,7 @@ void connection_relay::receive_loop(){
 		uint16_t size = espUplink.available();
 		while (size) {
 			uint8_t buf[2];
-			sprintf(m_msg_buffer, "Received %i byte from Uplink", size);
+			sprintf_P(m_msg_buffer, PSTR("Received %i byte from Uplink"), size);
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 			espUplink.readBytes(buf, 1);
 			if (buf[0] == MSG_TYPE_PUBLISH) {
@@ -535,7 +535,7 @@ void connection_relay::receive_loop(){
 		// MSG_TYPE_ACK will be send to a subnode whenever we receive data
 		// if we haven't received a response in time .. disconnect
 		if((millis()-espLastcomm) / 1000 > COMM_TIMEOUT ){
-			sprintf(m_msg_buffer, "Connection to server timed out. Disconnecting");
+			sprintf_P(m_msg_buffer, PSTR("Connection to server timed out. Disconnecting"));
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 			disconnectServer();
 		}
@@ -560,14 +560,14 @@ void connection_relay::receive_loop(){
 					espClientsLastComm[i] = millis();
 					onData(espClients[i], i);
 				} else if (espClientsLastComm[i] > 0 && (millis() - espClientsLastComm[i]) / 1000 > COMM_TIMEOUT * 1.2) { // 1.2 to be able to miss one and have 20% headroom
-					sprintf(m_msg_buffer, "Client %i timed out. Disconnecting", i);
+					sprintf_P(m_msg_buffer, PSTR("Client %i timed out. Disconnecting"), i);
 					logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 					espClients[i]->stop();
 					delete espClients[i];
 					espClients[i] = NULL;
 				}
 			} else {
-				sprintf(m_msg_buffer, "Client %i disconnected", i);
+				sprintf_P(m_msg_buffer, PSTR("Client %i disconnected"), i);
 				logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 				delete espClients[i];
 				espClients[i] = NULL;
@@ -579,11 +579,11 @@ void connection_relay::receive_loop(){
 // will be callen by the receive_loop if the server has new espClients
 // purpose is to link the client to the pointer structure
 void connection_relay::onClient(WiFiClient * c){
-	sprintf(m_msg_buffer, "(%s) Incoming client connection", c->remoteIP().toString().c_str());
+	sprintf_P(m_msg_buffer, PSTR("(%s) Incoming client connection"), c->remoteIP().toString().c_str());
 	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
 	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
 		if (espClients[i] == NULL) {
-			sprintf(m_msg_buffer, "Assign id: %i", i);
+			sprintf_P(m_msg_buffer, PSTR("Assign id: %i"), i);
 			logger.println(TOPIC_CON_REL, m_msg_buffer);
 
 			espClients[i] = c;
@@ -605,7 +605,7 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 	uint8_t data[len];
 
 	c->read(data, len);
-	// sprintf(m_msg_buffer,"Got data from %s",c->remoteIP().toString().c_str());
+	// sprintf_P(m_msg_buffer,"Got data from %s",c->remoteIP().toString().c_str());
 	// logger.println(TOPIC_CON_REL, m_msg_buffer,COLOR_YELLOW);
 	char msg_ack[2];
 	msg_ack[0] = MSG_TYPE_ACK;
@@ -616,7 +616,7 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 		// [0] type
 		// [1..] topic
 		uint8_t * topic_start = ((uint8_t *) data) + 1;
-		sprintf(m_msg_buffer, "[%i](%s) FWD subscription '%s'", client_nr, c->remoteIP().toString().c_str(), topic_start);
+		sprintf_P(m_msg_buffer, PSTR("[%i](%s) FWD subscription '%s'"), client_nr, c->remoteIP().toString().c_str(), topic_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
 		subscribe((char *) topic_start, true); // subscribe via enqueue
@@ -634,7 +634,7 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 			msg_start = (uint8_t *) mqtt.dev_short;
 		}
 
-		sprintf(m_msg_buffer, "[%i](%s) FWD '%s' -> '%s'", client_nr,
+		sprintf_P(m_msg_buffer, PSTR("[%i](%s) FWD '%s' -> '%s'"), client_nr,
 		  c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
@@ -650,10 +650,10 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 			char msg_check[20]; // 1 + 2*6 + 5
 			uint8_t mac[6];
 			WiFi.macAddress(mac);
-			sprintf(msg_check, "%c%02x:%02x:%02x:%02x:%02x:%02x", MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2], mac[1],
+			sprintf_P(msg_check, PSTR("%c%02x:%02x:%02x:%02x:%02x:%02x"), MSG_TYPE_NW_LOOP_CHECK, mac[5], mac[4], mac[3], mac[2], mac[1],
 			  mac[0]);
 
-			sprintf(m_msg_buffer, "[%i](%s) NETLOOP check '%s' vs '%s'", client_nr,
+			sprintf_P(m_msg_buffer, PSTR("[%i](%s) NETLOOP check '%s' vs '%s'"), client_nr,
 			  c->remoteIP().toString().c_str(), msg + 1, msg_check + 1);
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
 
@@ -687,7 +687,7 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 		uint8_t * topic_start = ((uint8_t *) msg) + 3;
 		uint8_t * msg_start   = ((uint8_t *) msg) + ((uint8_t *) msg)[1] + 3;
 		logger.println(TOPIC_CON_REL, F("Adding my name to routing chain"), COLOR_PURPLE);
-		sprintf(m_msg_buffer, "[%i](%s) FWD routing '%s' -> '%s'", client_nr,
+		sprintf_P(m_msg_buffer, PSTR("[%i](%s) FWD routing '%s' -> '%s'"), client_nr,
 		  c->remoteIP().toString().c_str(), topic_start, msg_start);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 
@@ -697,10 +697,10 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 			enqueue_up(msg, len + 4 + strlen(mqtt.dev_short)); // len-1+4+strlen()+1
 		}
 	} else if (((char *) data)[0] == MSG_TYPE_PING) {
-		sprintf(m_msg_buffer, "[%i](%s) Received keep alive", client_nr, c->remoteIP().toString().c_str());
+		sprintf_P(m_msg_buffer, PSTR("[%i](%s) Received keep alive"), client_nr, c->remoteIP().toString().c_str());
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_GREEN);
 	} else {
-		sprintf(m_msg_buffer, "[%i](%s) Received unsupported message type '%i'", client_nr, c->remoteIP().toString().c_str(),
+		sprintf_P(m_msg_buffer,PSTR("[%i](%s) Received unsupported message type '%i'"), client_nr, c->remoteIP().toString().c_str(),
 		  ((char *) data)[0]);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 	}
@@ -718,7 +718,7 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 		m_ota_bytes_in = 0;
 		m_ota_seq      = 0;
 		uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-		sprintf(m_msg_buffer, "Total: %i, %i available", m_ota_total_update_size, maxSketchSpace);
+		sprintf_P(m_msg_buffer, PSTR("Total: %i, %i available"), m_ota_total_update_size, maxSketchSpace);
 		if (maxSketchSpace > m_ota_total_update_size) {
 			if (!Update.begin(m_ota_total_update_size)) { // start with max available size
 				logger.println(TOPIC_OTA, F("Begin failed"), COLOR_RED);
@@ -745,11 +745,11 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 		if (seq == m_ota_seq) {
 			logger.resetSerialLine(); // erase the[mqtt in] line
 			uint16_t p = ((uint32_t) m_ota_bytes_in * 1000) / m_ota_total_update_size;
-			sprintf(m_msg_buffer, "%02x%02x%02x.. %2i.%01i%% of %i byte", data[3], data[4], data[5], p / 10, p % 10,
+			sprintf_P(m_msg_buffer, PSTR("%02x%02x%02x.. %2i.%01i%% of %i byte"), data[3], data[4], data[5], p / 10, p % 10,
 			  m_ota_total_update_size);
 			logger.println(TOPIC_OTA, m_msg_buffer, COLOR_GREEN);
 
-			sprintf(m_msg_buffer, " %2i.%01i%%", p / 10, p % 10);
+			sprintf_P(m_msg_buffer, PSTR(" %2i.%01i%%"), p / 10, p % 10);
 			network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 
 			if (Update.write(data + 3, size - 3) != size - 3) {
@@ -762,7 +762,7 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 			m_ota_status = OTA_STATUS_SEQ_FAILED;
 			logger.println(TOPIC_OTA, F("Seq failed"), COLOR_RED);
 
-			sprintf(m_msg_buffer, "update failed 3");
+			sprintf_P(m_msg_buffer, PSTR("update failed 3"));
 			network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 		}
 		return m_ota_status;
@@ -770,7 +770,7 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 	// ////// end of OTA transmission ////////
 	else if (data[0] == MQTT_OTA_END) {
 		if (m_ota_status != OTA_STATUS_OK) {
-			sprintf(m_msg_buffer, "update failed 1");
+			sprintf_P(m_msg_buffer, PSTR("update failed 1"));
 			network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 
 			return m_ota_status;
@@ -781,7 +781,7 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 		if (Update.end(true)) {   // true for whatever reason, will reboot the new sketch
 			logger.println(TOPIC_OTA, F("Update Success\r\nRebooting..."), COLOR_PURPLE);
 
-			sprintf(m_msg_buffer, "update success");
+			sprintf_P(m_msg_buffer, PSTR("update success"));
 			network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 
 			delay(1000);
@@ -791,7 +791,7 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 			logger.println(TOPIC_OTA, F("Update failed..."), COLOR_RED);
 			Update.printError(Serial);
 
-			sprintf(m_msg_buffer, "update failed 2");
+			sprintf_P(m_msg_buffer, PSTR("update failed 2"));
 			network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 
 			m_ota_status = OTA_STATUS_END_FAILED;
@@ -825,7 +825,7 @@ blacklist_entry::~blacklist_entry(){ };
 // and return the init value 0
 uint8_t blacklist_entry::get_fails(uint8_t * MAC){
 	if (strncmp((char *) m_mac, (char *) MAC, 6) == 0) {
-		// sprintf(m_msg_buffer, "Blacklist for this WiFi is %i", m_fails);
+		// sprintf_P(m_msg_buffer, "Blacklist for this WiFi is %i", m_fails);
 		// logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_YELLOW);
 		if (m_fails > 0 && ((millis() / 1000) - m_last_change > BLACKLIST_RECOVER_TIME_SEC)) { // if node was unable to connect more then 6 hours ago: give it another chance ..
 			m_fails--;
@@ -852,7 +852,7 @@ void blacklist_entry::set_fails(uint8_t * MAC, uint8_t v){
 			m_fails = 0;
 		} else {
 			m_fails++;
-			sprintf(m_msg_buffer, "Setting blacklist for current BSSID to %i", m_fails);
+			sprintf_P(m_msg_buffer, PSTR("Setting blacklist for current BSSID to %i"), m_fails);
 			logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 		}
 		m_last_change = millis() / 1000;
