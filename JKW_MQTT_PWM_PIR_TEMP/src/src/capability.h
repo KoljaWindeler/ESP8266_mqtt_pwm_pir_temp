@@ -11,6 +11,9 @@ class capability {
 		bool parse(unsigned char* input, uint8_t* key, uint8_t* dep);
 		bool parse(unsigned char* input, uint8_t* key);
 		bool ensure_dep(unsigned char* input, uint8_t* dep);
+		bool parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res);
+		bool parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res, uint8_t* dep);
+		bool parse_wide(unsigned char* input, uint8_t* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep);
 };
 
 extern capability cap;
