@@ -11,11 +11,20 @@ uint8_t* simple_light::get_key(){
 }
 
 bool simple_light::parse(uint8_t* config){
-	return cap.parse(config,get_key(),(uint8_t*)"LIG");
+	if(cap.parse(config,get_key(),(uint8_t*)"LIG")){
+		m_pin = SIMPLE_LIGHT_PIN;
+		return true;
+	}
+	// check for all pins with dedicated string
+	else if(cap.parse_wide(config, get_key(),&m_pin, (uint8_t*)"LIG")){
+		return true;
+	}
+	
+	return false;
 }
 
 bool simple_light::init(){
-	pinMode(SIMPLE_LIGHT_PIN, OUTPUT);
+	pinMode(m_pin, OUTPUT);
 	logger.println(TOPIC_GENERIC_INFO, F("Simple light init"), COLOR_GREEN);
 	//setState();
 }
@@ -47,10 +56,10 @@ bool simple_light::publish(){	return false;}
 void simple_light::setColor(uint8_t r, uint8_t g, uint8_t b){
 	m_state.set(r);
 	if (r) {
-		digitalWrite(SIMPLE_LIGHT_PIN, HIGH);
+		digitalWrite(m_pin, HIGH);
 		logger.println(TOPIC_INFO_SL, F("Simple pin on"), COLOR_PURPLE);
 	} else {
-		digitalWrite(SIMPLE_LIGHT_PIN, LOW);
+		digitalWrite(m_pin, LOW);
 		logger.println(TOPIC_INFO_SL, F("Simple light off"), COLOR_PURPLE);
 	}
 }
