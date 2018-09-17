@@ -53,6 +53,40 @@ bool capability::parse(unsigned char * input, uint8_t* key){
 	return parse(input,key,(uint8_t*)"");
 }
 
+// e.g. to check if B4 is in the config, run: parse_wide(config,"B",&m_pin)
+bool capability::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res){
+	return parse_wide(input,"%s%i", key_word, 0, 16, key_res, (uint8_t*)"");
+}
+
+// e.g. to check if B4 is in the config and you have a dependency, run: parse_wide(config,"B",&m_pin,"LIG")
+bool capability::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res, uint8_t* dep){
+	return parse_wide(input,"%s%i", key_word, 0, 16, key_res, dep);
+}
+
+// input is the haystack
+// key_schema will patch the key word and the key together, e.g. "%s%i"
+// key_word is the first part e.g. "B"
+// key_start defines the first pin nr
+// key_end defines the last pin we're using
+// key_res is a pointer, if we find something, we're going to write it to this pin
+// dep is a dependency as always
+bool capability::parse_wide(unsigned char* input, uint8_t* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep){
+	uint8_t temp_key[15]; // max key width is 15 byte (way to long)
+	// loop over all possible pins (limit upper end to 16)
+	for (uint8_t i = key_start; i <= min(16,key_end); i++) {
+		if(i>=6 && i<=11){
+			// gpio 6 to 11 should not be used, connection toward flash, controller will crash
+			continue;
+		}
+		sprintf(temp_key, key_schema,key_word,i);
+		if (cap.parse(input, (uint8_t *) temp_key , dep)) {
+			*key_res = i;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool capability::ensure_dep(unsigned char* input, uint8_t* dep){
 	//Serial.printf("ensure parsing. input: %s vs. dep %s\r\n",input,dep);
 	if(parse(input,dep)){
