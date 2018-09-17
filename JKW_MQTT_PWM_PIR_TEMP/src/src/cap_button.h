@@ -37,6 +37,7 @@ private:
 		uint32_t m_timer_button_down;
 		uint32_t m_timer_checked;
 		uint8_t key[2];
+		uint8_t m_pin;
 	};
 
 
