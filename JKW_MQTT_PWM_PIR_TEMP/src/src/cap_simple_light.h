@@ -21,6 +21,7 @@ class simple_light : public peripheral {
 	private:
 		mqtt_parameter_8 m_state;
 		uint8_t key[3];
+		uint8_t m_pin;
 
 };
 
