@@ -1,4 +1,9 @@
-
+20190917
+ 	- added parse wide, SL and Button accept any GPIO now
+	- added option for Button to be actually a switch (aka a change from H>L is like a button push + release)
+	- disabled husqvarna and bridge, never used, not tested and no need
+		DATA:    [=====     ]  54.0% (used 43424 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.3% (used 405168 bytes from 434160 bytes)
 20190910
 	- added frequency measurement (cap: fre_s_4, fre_h_8, fre_m_12)
 	- renamed all files to "cap_" if they are pure capabilities

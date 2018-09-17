@@ -3,6 +3,7 @@
 
 #include "main.h"
 
+#define FREQ_KEEPOUT_MS 40 // each pulse is 86 msec
 static constexpr char MQTT_FREQ_TOPIC[]   = "freq";
 
 
@@ -20,12 +21,13 @@ class freq : public peripheral {
 		bool publish();
 		uint8_t* get_key();
 	private:
-		uint16_t m_update;
-		uint32_t m_last_update;
+		uint16_t m_unit;
+		uint32_t m_first_toggle;
+		uint32_t m_last_toggle; // debounce
 		bool m_pin_state;
 		uint8_t key[3];
 		uint8_t m_pin;
-		mqtt_parameter_16 m_counter;
+		uint16_t m_counter;
 };
 
 

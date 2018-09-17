@@ -10,6 +10,9 @@
 	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
 	#define BUTTON_RELEASE_OFFSET  10   // internal use
 
+	#define BUTTON_MODE_PUSH_BUTTON 1
+	#define BUTTON_MODE_SWITCH 2
+
 
 	static constexpr char MQTT_BUTTON_TOPIC_0S[] = "button";   // publish
 	static constexpr char MQTT_BUTTON_TOPIC_1S[] = "button1s"; // publish
@@ -38,6 +41,7 @@ private:
 		uint32_t m_timer_checked;
 		uint8_t key[2];
 		uint8_t m_pin;
+		uint8_t m_mode_toggle_switch;
 	};
 
 

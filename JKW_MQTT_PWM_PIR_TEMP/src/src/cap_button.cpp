@@ -1,6 +1,8 @@
 #include <cap_button.h>
 
 button::button(){
+	m_pin = BUTTON_INPUT_PIN;
+	m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 	m_timer_button_down=0;
 	m_counter=0;
 };
@@ -13,7 +15,11 @@ bool button::parse(uint8_t* config){
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;
 		return true;
-	} else if(cap.parse(config,get_key(),&m_pin)){
+	} else if(cap.parse_wide(config,get_key(),&m_pin)){
+		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
+		return true;
+	} else if(cap.parse_wide(config,(uint8_t*)"BS",&m_pin)){
+		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch
 		return true;
 	}
 	return false;
@@ -31,13 +37,20 @@ void fooButton(){
 }
 
 bool button::init(){
-	logger.println(TOPIC_GENERIC_INFO, F("Button init"), COLOR_GREEN);
+	logger.print(TOPIC_GENERIC_INFO, F("Button init: "), COLOR_GREEN);
+	if(m_mode_toggle_switch == BUTTON_MODE_SWITCH){
+		sprintf_P(m_msg_buffer,PSTR("switch on GPIO %i"),m_pin);
+		logger.pln(m_msg_buffer);
+	} else {
+		sprintf_P(m_msg_buffer,PSTR("push button on GPIO %i"),m_pin);
+		logger.pln(m_msg_buffer);
+	}
 	// attache interrupt codepwm for button
 	pinMode(m_pin, INPUT);
 	digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
 	attachInterrupt(digitalPinToInterrupt(m_pin), fooButton, CHANGE);
 
-	if (digitalRead(m_pin) == LOW) {
+	if (digitalRead(m_pin) == LOW && m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON) {
 		wifiManager.startConfigPortal(CONFIG_SSID);
 	}
 	m_timer_checked=0;
@@ -119,15 +132,16 @@ bool button::publish(){
 // external button push
 void button::interrupt(){
 	// toggle, write to pin, publish to server
-	if (digitalRead(m_pin) == LOW) {
+	if (digitalRead(m_pin) == LOW || m_mode_toggle_switch == BUTTON_MODE_SWITCH) {
 		if (millis() - m_timer_button_down > BUTTON_DEBOUNCE) { // avoid bouncing
-			// button down
+			// button down, m_state saves button push time
 			m_state.set(0);
 			// toggle status of both lights
 			if(p_light){
 				((light*)p_light)->toggle();
 			}
 
+			// keep counting if we're fast enough
 			if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
 				m_counter++;
 			} else {

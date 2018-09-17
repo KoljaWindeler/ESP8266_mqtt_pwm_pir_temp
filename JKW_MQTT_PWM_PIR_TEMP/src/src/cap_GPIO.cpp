@@ -31,7 +31,7 @@ bool J_GPIO::parse(uint8_t * config){
 			continue;
 		}
 		// output non inverted
-		sprintf(m_msg_buffer, "GOP%i", i);
+		sprintf_P(m_msg_buffer, PSTR("GOP%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = false;
@@ -40,7 +40,7 @@ bool J_GPIO::parse(uint8_t * config){
 			continue;
 		}
 		// output inverted
-		sprintf(m_msg_buffer, "GON%i", i);
+		sprintf_P(m_msg_buffer, PSTR("GON%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = true;
@@ -49,7 +49,7 @@ bool J_GPIO::parse(uint8_t * config){
 			continue;
 		}
 		// input non inverted
-		sprintf(m_msg_buffer, "GIP%i", i);
+		sprintf_P(m_msg_buffer, PSTR("GIP%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_in[i] = true; // mark pin as "in use"
 			m_invert[i] = false;
@@ -57,7 +57,7 @@ bool J_GPIO::parse(uint8_t * config){
 			continue;
 		}
 		// input inverted
-		sprintf(m_msg_buffer, "GIN%i", i);
+		sprintf_P(m_msg_buffer, PSTR("GIN%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_in[i] = true; // mark pin as "in use"
 			m_invert[i] = true;
@@ -83,9 +83,9 @@ bool J_GPIO::init(){
 			pinMode(i, OUTPUT);
 			digitalWrite(i, m_invert[i]);
 			if (m_invert[i]) {
-				sprintf(m_msg_buffer, "J_GPIO active low output on pin %i", i);
+				sprintf_P(m_msg_buffer, PSTR("J_GPIO active low output on pin %i"), i);
 			} else {
-				sprintf(m_msg_buffer, "J_GPIO active high output on pin %i", i);
+				sprintf_P(m_msg_buffer, PSTR("J_GPIO active high output on pin %i"), i);
 			}
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 		}
@@ -93,9 +93,9 @@ bool J_GPIO::init(){
 			pinMode(i, INPUT);
 			digitalWrite(i, m_invert[i]); // inverted input gets pull-up
 			if (m_invert[i]) {
-				sprintf(m_msg_buffer, "J_GPIO active low input on pin %i", i);
+				sprintf_P(m_msg_buffer, PSTR("J_GPIO active low input on pin %i"), i);
 			} else {
-				sprintf(m_msg_buffer, "J_GPIO active high input on pin %i", i);
+				sprintf_P(m_msg_buffer, PSTR("J_GPIO active high input on pin %i"), i);
 			}
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 		}

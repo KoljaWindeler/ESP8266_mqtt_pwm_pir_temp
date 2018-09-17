@@ -19,13 +19,15 @@ bool simple_light::parse(uint8_t* config){
 	else if(cap.parse_wide(config, get_key(),&m_pin, (uint8_t*)"LIG")){
 		return true;
 	}
-	
+
 	return false;
 }
 
 bool simple_light::init(){
 	pinMode(m_pin, OUTPUT);
-	logger.println(TOPIC_GENERIC_INFO, F("Simple light init"), COLOR_GREEN);
+	logger.print(TOPIC_GENERIC_INFO, F("Simple light init "), COLOR_GREEN);
+	sprintf(m_msg_buffer,"GPIO %i",m_pin);
+	logger.pln(m_msg_buffer);
 	//setState();
 }
 
