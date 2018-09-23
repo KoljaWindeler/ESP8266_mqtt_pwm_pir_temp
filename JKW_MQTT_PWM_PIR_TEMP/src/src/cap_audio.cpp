@@ -12,6 +12,9 @@ audio::~audio(){
 		delete [] buffer8b;
 		buffer8b = NULL;
 	}
+	server->close();
+	i2s_end();
+	digitalWrite(AMP_ENABLE_PIN, LOW);
 	logger.println(TOPIC_GENERIC_INFO, F("audio deleted"), COLOR_YELLOW);
 };
 
@@ -36,12 +39,7 @@ bool audio::init(){
 	 * timer0_write(ESP.getCycleCount() + 160000000);
 	 * interrupts();
 	 */
-
-
 	i2s_begin();
-	// i2s_set_rate(96000);      // 33 ksps
-
-	// neu //
 	// gainF2P6 = (uint8_t)(1.0*(1<<6));
 	// parameter 64
 	i2s_set_rate((44100 * 64 / 32));
@@ -131,7 +129,6 @@ bool audio::publish(){
 // ctrl = 2 : direct 8-bit value output
 //
 inline void audio::doPWM(uint8_t ctrl, uint8_t value8b){
-	static uint8_t dly     = 0;
 	static uint8_t sample  = 0;
 	static uint8_t dWordNr = 0;
 	static uint32_t i2sbuf32b[4];
@@ -210,25 +207,20 @@ inline void audio::doPWM(uint8_t ctrl, uint8_t value8b){
 	}
 } // doPWM
 
+// aplification ..
 int16_t audio::Amplify(int16_t s){
 	int32_t v = (s * gainF2P6) >> 6;
-
 	if (v < -32767) return -32767;
 	else if (v > 32767) return 32767;
 	else return (int16_t) (v & 0xffff);
 }
 
 bool audio::ConsumeSample(int16_t sample){
-	// int16_t ms[2];
-	// ms[0] = sample[0];
-	// ms[1] = sample[1];
-	// MakeSampleStereo16( ms );
-
 	// Make delta-sigma filled buffer
 	uint32_t dsBuff[8];
 	// Not shift 8 because addition takes care of one mult x 2
 
-	fixed24p8_t newSamp = ( (int32_t) Amplify(sample) ) << 8;
+	fixed24p8_t newSamp = ((int32_t)Amplify(sample)) << 8; //( (int32_t) sample ) << 8;
 
 	int oversample32 = 64 / 32;
 	// How much the comparison signal changes each oversample step
@@ -237,13 +229,14 @@ bool audio::ConsumeSample(int16_t sample){
 	// Don't need lastSamp anymore, store this one for next round
 	lastSamp = newSamp;
 
+	uint32_t bits; // The bits we convert the sample into, MSB to go on the wire first
 	for (int j = 0; j < oversample32; j++) {
-		uint32_t bits = 0; // The bits we convert the sample into, MSB to go on the wire first
-
+		bits = 0;
+		// loop over all bits
 		for (int i = 32; i > 0; i--) {
 			bits = bits << 1;
 			if (cumErr < 0) {
-				bits   |= 1;
+				bits   |= 1; // set if difference is neg
 				cumErr += fixedPosValue - newSamp;
 			} else {
 				// Bits[0] = 0 handled already by left shift
@@ -251,20 +244,20 @@ bool audio::ConsumeSample(int16_t sample){
 			}
 			newSamp += diffPerStep; // Move the reference signal towards destination
 		}
-		dsBuff[j] = bits;
+		dsBuff[j] = bits; // bit is sample to play
 	}
 
 	// DeltaSigma(ms, dsBuff);
 	yield();
 	// Either send complete pulse stream or nothing
 	if (!i2s_write_sample_nb(dsBuff[0])) return false;  // No room at the inn
-
 	//
 	yield();
 	// At this point we've sent in first of possibly 8 32-bits, need to send
 	// remaining ones even if they block.
-	for (int i = 32; i < 64; i += 32)
+	for (int i = 32; i < 64; i += 32){
 		i2s_write_sample(dsBuff[i / 32]);
+	}
 	return true;
 } // ConsumeSample
 
@@ -304,7 +297,6 @@ inline void audio::startStreaming(WiFiClient * client){
 	ultimeout = millis() + 500;
 	do {
 		// yield();
-
 		if (client->available()) {
 			buffer8b[bufferPtrIn] = client->read();
 			bufferPtrIn = (bufferPtrIn + 1) & (BUFFER_SIZE - 1);
@@ -317,12 +309,10 @@ inline void audio::startStreaming(WiFiClient * client){
 
 	// ===================================================================================
 	// ramp-up PWM to 50% (=Vspeaker/2) to avoid "blops"
-
 	rampPWM(UP, buffer8b[bufferPtrIn]);
 	digitalWrite(AMP_ENABLE_PIN, HIGH);
 	// ===================================================================================
 	// start playback
-
 	ultimeout = millis() + 500;
 	do {
 		// doPWM(PWM_NORMAL,0);
