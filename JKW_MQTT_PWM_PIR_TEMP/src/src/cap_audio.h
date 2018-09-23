@@ -6,6 +6,8 @@
 
 // avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 24000 tcp://192.168.2.59:5522
 
+// avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 22050 tcp://192.168.2.59:5522
+
 // valid buffer Sizes are e.g. 0x1000, 0x2000, 0x4000
 #define BUFFER_SIZE    	0x4000
 #define AMP_ENABLE_PIN 	15
@@ -38,9 +40,18 @@ class audio : public peripheral {
 		uint16_t bufferPtrOut;
 		uint32_t ultimeout;
 
+		uint8_t gainF2P6; // Fixed point 2.6
+		typedef int32_t fixed24p8_t;
+		fixed24p8_t lastSamp; // Last sample value
+    fixed24p8_t cumErr;   // Running cumulative error since time began
+		enum {fixedPosValue=0x007fff00}; /* 24.8 of max-signed-int */
+		bool ConsumeSample(int16_t sample);
+		int16_t Amplify(int16_t s);
+
 		uint8_t key[3];
 		inline void doPWM(uint8_t ctrl, uint8_t value8b);
-		void rampPWM(uint8_t direction);
+		//void rampPWM(uint8_t direction);
+		void rampPWM(uint8_t direction,uint16_t target);
 		inline void startStreaming(WiFiClient *client);
 };
 

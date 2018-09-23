@@ -37,8 +37,17 @@ bool audio::init(){
   interrupts();
 	*/
 
+
   i2s_begin();
-  i2s_set_rate(96000);      // 33 ksps
+  //i2s_set_rate(96000);      // 33 ksps
+
+	// neu //
+	//gainF2P6 = (uint8_t)(1.0*(1<<6));
+	// parameter 64
+	i2s_set_rate((44100 * 64/32));
+	lastSamp = 0;
+	cumErr = 0;
+	// neu //
 
   pinMode(AMP_ENABLE_PIN, OUTPUT);
   digitalWrite(AMP_ENABLE_PIN, LOW);
@@ -213,24 +222,80 @@ inline void audio::doPWM(uint8_t ctrl, uint8_t value8b)
   }
 }
 
-// **************************************************
-// **************************************************
-// **************************************************
-void audio::rampPWM(uint8_t direction)
-{
-  uint8_t dl = 0;
+int16_t audio::Amplify(int16_t s) {
+	int32_t v = (s * gainF2P6)>>6;
+	if (v < -32767) return -32767;
+	else if (v > 32767) return 32767;
+	else return (int16_t)(v&0xffff);
+}
 
-  for (uint8_t value = 0; value < 0x80; value++)
-  {
-    while (dl++ < 250)
-    {
-      if (direction == UP)
-        doPWM(PWM_DIRECT, value);
-      else
-        doPWM(PWM_DIRECT, 0x80 - value);
-    }
-    dl = 0;
-  }
+bool audio::ConsumeSample(int16_t sample)
+{
+  //int16_t ms[2];
+  //ms[0] = sample[0];
+  //ms[1] = sample[1];
+  //MakeSampleStereo16( ms );
+
+  // Make delta-sigma filled buffer
+  uint32_t dsBuff[8];
+	// Not shift 8 because addition takes care of one mult x 2
+
+	fixed24p8_t newSamp = ( (int32_t)Amplify(sample) ) << 8;
+
+	int oversample32 = 64 / 32;
+	// How much the comparison signal changes each oversample step
+	fixed24p8_t diffPerStep = (newSamp - lastSamp) >> (4 + oversample32);
+
+	// Don't need lastSamp anymore, store this one for next round
+	lastSamp = newSamp;
+
+	for (int j = 0; j < oversample32; j++) {
+		uint32_t bits = 0; // The bits we convert the sample into, MSB to go on the wire first
+
+		for (int i = 32; i > 0; i--) {
+			bits = bits << 1;
+			if (cumErr < 0) {
+				bits |= 1;
+				cumErr += fixedPosValue - newSamp;
+			} else {
+				// Bits[0] = 0 handled already by left shift
+				cumErr -= fixedPosValue + newSamp;
+			}
+			newSamp += diffPerStep; // Move the reference signal towards destination
+		}
+		dsBuff[j] = bits;
+	}
+
+  //DeltaSigma(ms, dsBuff);
+	yield();
+  // Either send complete pulse stream or nothing
+  if (!i2s_write_sample_nb(dsBuff[0])) return false; // No room at the inn
+	//
+	yield();
+  // At this point we've sent in first of possibly 8 32-bits, need to send
+  // remaining ones even if they block.
+  for (int i = 32; i < 64; i+=32)
+    i2s_write_sample( dsBuff[i / 32]);
+  return true;
+}
+
+// **************************************************
+// **************************************************
+// **************************************************
+void audio::rampPWM(uint8_t direction,uint16_t target){
+	if (direction == UP){
+		for (uint8_t value = 0; value < target; value++){
+				for(uint8_t dl=0;dl<=250;dl++){
+					doPWM(PWM_DIRECT, value);
+				}
+			}
+	} else {
+		for (uint8_t value = target; value > 0; value--){
+				for(uint8_t dl=0;dl<=250;dl++){
+					doPWM(PWM_DIRECT, value);
+				}
+			}
+	}
 }
 
 // **************************************************
@@ -268,7 +333,7 @@ inline void audio::startStreaming(WiFiClient *client)
   // ===================================================================================
   // ramp-up PWM to 50% (=Vspeaker/2) to avoid "blops"
 
-  rampPWM(UP);
+  rampPWM(UP,buffer8b[bufferPtrIn]);
 
   // ===================================================================================
   // start playback
@@ -276,7 +341,13 @@ inline void audio::startStreaming(WiFiClient *client)
   ultimeout = millis() + 500;
   do
   {
-    doPWM(PWM_NORMAL,0);
+    //doPWM(PWM_NORMAL,0);
+		if (bufferPtrOut != bufferPtrIn)
+		{
+			if(ConsumeSample(buffer8b[bufferPtrOut]<<6)){
+				bufferPtrOut = (bufferPtrOut + 1) & (BUFFER_SIZE - 1);
+			}
+		}
 
     // new data in wifi rx-buffer?
     if (client->available())
@@ -289,8 +360,9 @@ inline void audio::startStreaming(WiFiClient *client)
       }
     }
 
-    if (bufferPtrOut != bufferPtrIn)
-      ultimeout = millis() + 500;
+    if (bufferPtrOut != bufferPtrIn){
+			ultimeout = millis() + 500;
+		}
 
   } while (client->available() || (millis() < ultimeout) || (bufferPtrOut != bufferPtrIn));
 
@@ -299,5 +371,5 @@ inline void audio::startStreaming(WiFiClient *client)
 
   // ===================================================================================
   // ramp-down PWM to 0% (=0Vdc) to avoid "blops"
-  rampPWM(DOWN);
+  rampPWM(DOWN,buffer8b[(bufferPtrIn+BUFFER_SIZE-1)%BUFFER_SIZE]);
 }
