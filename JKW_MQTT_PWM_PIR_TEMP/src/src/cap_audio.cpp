@@ -41,8 +41,8 @@ bool audio::init(){
 	 */
 	i2s_begin();
 	// gainF2P6 = (uint8_t)(1.0*(1<<6));
-	// parameter 64
-	i2s_set_rate((44100 * 64 / 32));
+	// parameter 96
+	i2s_set_rate((44100 * 96 / 32));
 	lastSamp = 0;
 	cumErr   = 0;
 	// neu //
@@ -222,7 +222,7 @@ bool audio::ConsumeSample(int16_t sample){
 
 	fixed24p8_t newSamp = ((int32_t)Amplify(sample)) << 8; //( (int32_t) sample ) << 8;
 
-	int oversample32 = 64 / 32;
+	int oversample32 = 96 / 32;
 	// How much the comparison signal changes each oversample step
 	fixed24p8_t diffPerStep = (newSamp - lastSamp) >> (4 + oversample32);
 
@@ -255,7 +255,7 @@ bool audio::ConsumeSample(int16_t sample){
 	yield();
 	// At this point we've sent in first of possibly 8 32-bits, need to send
 	// remaining ones even if they block.
-	for (int i = 32; i < 64; i += 32){
+	for (int i = 32; i < 96; i += 32){
 		i2s_write_sample(dsBuff[i / 32]);
 	}
 	return true;
