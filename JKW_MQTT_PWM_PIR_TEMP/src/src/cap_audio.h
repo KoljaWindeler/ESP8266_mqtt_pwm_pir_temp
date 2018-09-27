@@ -39,6 +39,7 @@ class audio : public peripheral {
 		uint16_t bufferPtrIn;
 		uint16_t bufferPtrOut;
 		uint32_t ultimeout;
+		uint8_t bit_mode;
 
 		uint8_t gainF2P6; // Fixed point 2.6
 		//typedef int32_t fixed24p8_t;

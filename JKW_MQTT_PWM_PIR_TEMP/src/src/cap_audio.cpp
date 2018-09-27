@@ -3,7 +3,11 @@
 // simply the constructor
 audio::audio(){
 	buffer8b = NULL;
+	server = NULL;
 	sprintf((char *) key, "AUD");
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
+	// either AUD16 for 16 bit or AUD1,2,3,4,5,12,13,14,15 for 8 bit, AUD6..11 are not allowed
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 };
 
 // simply the destructor
@@ -14,12 +18,11 @@ audio::~audio(){
 	}
 	if (server) {
 		server->close();
+		i2s_end(); // i2s was only started when the server is running so we only have to end it now
 	}
-	i2s_end();
 
 	pinMode(AMP_ENABLE_PIN, OUTPUT);
 	digitalWrite(AMP_ENABLE_PIN, LOW);
-
 	logger.println(TOPIC_GENERIC_INFO, F("audio deleted"), COLOR_YELLOW);
 };
 
@@ -28,7 +31,7 @@ audio::~audio(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded under all circumstances
 bool audio::parse(uint8_t * config){
-	return cap.parse(config, get_key());
+	return cap.parse_wide(config,get_key(),&bit_mode); // should really only accept AUD8 and AUD16 but hey ..
 }
 
 // the will be requested to check if the key is in the config strim
@@ -163,19 +166,27 @@ inline void audio::startStreaming(WiFiClient * client){
 	// ===================================================================================
 	// start playback
 	ultimeout = millis() + 500;
-	do {
+	bool play = true;
+	while(play){
 		if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE)>=2) {
 			// scale down by 4 (>>2) otherwise the output overshoots significantly
 			uint16_t t = buffer8b[bufferPtrOut] << 6;
-			//if 16 bit
-			t |= buffer8b[(bufferPtrOut+1)%BUFFER_SIZE]>>2;
+			if(bit_mode == 16){
+				t |= buffer8b[(bufferPtrOut+1)%BUFFER_SIZE]>>2;
+			}
 			// play
 			if (ConsumeSample(t)){
-				// if 16 bit
-				bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
-				// else
-				//bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+				if(bit_mode == 16){
+					bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
+				} else {
+					bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+				}
 			}
+
+			// no timeout, we still have data, playback stops once we didn't have data for 500ms
+			ultimeout = millis() + 500;
+		} else if( millis() > ultimeout ) {
+			play = false; // timeout! can stll overridden by new data
 		}
 
 		// new data in wifi rx-buffer?
@@ -185,15 +196,10 @@ inline void audio::startStreaming(WiFiClient * client){
 				buffer8b[bufferPtrIn] = client->read();
 				bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
 			}
+			play = true;
 		}
+	}
 
-		if (bufferPtrOut != bufferPtrIn) {
-			ultimeout = millis() + 500;
-			// } else {
-			// no data left, exit
-			// break;
-		}
-	} while (client->available() || (millis() < ultimeout) || (bufferPtrOut != bufferPtrIn));
 	// ===================================================================================
 	pinMode(AMP_ENABLE_PIN, OUTPUT); // drive it to power down
 	digitalWrite(AMP_ENABLE_PIN, LOW);
