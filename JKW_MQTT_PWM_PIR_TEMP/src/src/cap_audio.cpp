@@ -189,9 +189,9 @@ inline void audio::startStreaming(WiFiClient * client){
 
 		if (bufferPtrOut != bufferPtrIn) {
 			ultimeout = millis() + 500;
-			 } else {
+			// } else {
 			// no data left, exit
-			 break;
+			// break;
 		}
 	} while (client->available() || (millis() < ultimeout) || (bufferPtrOut != bufferPtrIn));
 	// ===================================================================================
