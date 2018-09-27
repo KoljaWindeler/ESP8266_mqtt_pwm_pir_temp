@@ -1,3 +1,8 @@
+20190927
+	- added support for I2S DAC/AMP 
+	- Streaming with 44.1khz and 8 (AUD1) or 16 (AUD16) bit/sample
+		DATA:    [=====     ]  53.0% (used 43408 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.3% (used 404960 bytes from 434160 bytes)
 20190917
  	- added parse wide, SL and Button accept any GPIO now
 	- added option for Button to be actually a switch (aka a change from H>L is like a button push + release)
