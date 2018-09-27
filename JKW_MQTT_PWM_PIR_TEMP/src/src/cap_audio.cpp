@@ -148,7 +148,7 @@ inline void audio::startStreaming(WiFiClient * client){
 		// yield();
 		if (client->available()) {
 			buffer8b[bufferPtrIn] = client->read();
-			bufferPtrIn = (bufferPtrIn + 1) & (BUFFER_SIZE - 1);
+			bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
 			ultimeout   = millis() + 500;
 		}
 	} while ((bufferPtrIn < (BUFFER_SIZE - 1)) && (client->connected()) && (millis() < ultimeout));
@@ -164,10 +164,17 @@ inline void audio::startStreaming(WiFiClient * client){
 	// start playback
 	ultimeout = millis() + 500;
 	do {
-		if (bufferPtrOut != bufferPtrIn) {
-			//if (ConsumeSample(buffer8b[bufferPtrOut] << 6)) {
-			if (ConsumeSample(buffer8b[bufferPtrOut] << 6)) {
-				bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+		if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE)>=2) {
+			// scale down by 4 (>>2) otherwise the output overshoots significantly
+			uint16_t t = buffer8b[bufferPtrOut] << 6;
+			//if 16 bit
+			t |= buffer8b[(bufferPtrOut+1)%BUFFER_SIZE]>>2;
+			// play
+			if (ConsumeSample(t)){
+				// if 16 bit
+				bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
+				// else
+				//bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
 			}
 		}
 
@@ -182,9 +189,9 @@ inline void audio::startStreaming(WiFiClient * client){
 
 		if (bufferPtrOut != bufferPtrIn) {
 			ultimeout = millis() + 500;
-			// } else {
+			 } else {
 			// no data left, exit
-			// break;
+			 break;
 		}
 	} while (client->available() || (millis() < ultimeout) || (bufferPtrOut != bufferPtrIn));
 	// ===================================================================================

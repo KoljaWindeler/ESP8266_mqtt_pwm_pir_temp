@@ -4,9 +4,8 @@
 #include "main.h"
 #include "i2s.h"
 
-// avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 24000 tcp://192.168.2.59:5522
-
-// avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 22050 tcp://192.168.2.59:5522
+// avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u16be -ac 1 -ar 44100 tcp://192.168.2.27:5522
+// avconv -i https://c1icy.prod.playlists.ihrhls.com/2281_icy -f s32be -acodec pcm_u16be -ac 1 -ar 44000 tcp://192.168.2.27:5522
 
 // I2S_LRS -  GPIO 02
 // I2S_BCLK - GPIO 15
