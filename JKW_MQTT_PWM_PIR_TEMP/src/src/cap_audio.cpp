@@ -143,11 +143,13 @@ bool audio::loop(){
 				logger.println(TOPIC_GENERIC_INFO, F("Audio timeout"), COLOR_RED);
 			}
 
+			/*
 			samples_played++;
 			if(samples_played>5000){
 				samples_played=0;
 				Serial.printf("%i\r\n",((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE));
 			}
+			*/
 
 			// read new data to buffer
 			for(uint8_t s=0; s<bit_mode; s+=8){
@@ -176,6 +178,7 @@ bool audio::loop(){
 	}
 } // loop
 
+// shut the AMP down via PIN, fastest and Plopp avoiding
 void audio::shutdown(){
 	logger.println(TOPIC_GENERIC_INFO, F("Audio shutting down"), COLOR_RED);
 	// ===================================================================================
@@ -229,6 +232,7 @@ bool audio::publish(){
 	return false;
 }
 
+// some sort of amplification concept
 bool audio::SetGain(float f) {
 	if (f>4.0){
 		f = 4.0;
@@ -240,7 +244,7 @@ bool audio::SetGain(float f) {
 	return true;
 }
 
-// aplification ..
+// amplification ..
 int16_t audio::Amplify(int16_t s){
 	int32_t v = (s * gainF2P6) >> 6;
 
