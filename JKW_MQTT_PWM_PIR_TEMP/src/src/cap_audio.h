@@ -17,6 +17,7 @@
 #define AMP_ENABLE_PIN 	14 // D5
 #define AUDIO_PORT 			5522
 static constexpr char MQTT_AUDIO_TOPIC[]           = "audio";         // publish
+static constexpr char MQTT_AUDIO_VOL_TOPIC[]           = "audio_vol";         // publish
 
 
 class audio : public peripheral {
@@ -35,16 +36,24 @@ class audio : public peripheral {
 	private:
 
 		WiFiServer *server;
+		WiFiClient client;
 		uint8_t *buffer8b;
 		uint16_t bufferPtrIn;
+		uint16_t bufferPtrIn2;
 		uint16_t bufferPtrOut;
+		uint16_t bufferPtrOut2;
 		uint32_t ultimeout;
 		uint8_t bit_mode;
+		uint16_t samples_played;
+		bool connected;
+		bool run_noninterrupted;
+		uint32_t last_call;
 
 		uint8_t gainF2P6; // Fixed point 2.6
 		//typedef int32_t fixed24p8_t;
-		bool ConsumeSample(int16_t sample);
+		void shutdown();
 		int16_t Amplify(int16_t s);
+		bool SetGain(float f);
 
 		uint8_t key[3];
 		inline void startStreaming(WiFiClient *client);
