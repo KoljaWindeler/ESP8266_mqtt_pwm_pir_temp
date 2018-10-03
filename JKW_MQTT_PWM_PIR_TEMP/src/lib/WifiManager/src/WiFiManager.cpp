@@ -487,107 +487,18 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
-		return false;/*
-		v4=temp; // rewind
-		Serial.println(F("========== ERROR ========== "));
-		Serial.println(F("EEPROM read v4 failed, try v3"));
-		mqtt_data_v3 v3;
-		bool ret = loadMqttStruct_v3((char*)&v3,sizeof(mqtt_data_v3));
-
-		if(ret){
-			Serial.println(F("EEPROM read v3 passed"));
-		}
-		memcpy(((mqtt_data*)v4)->login, v3.login, sizeof(v3.login));
-		memcpy(((mqtt_data*)v4)->pw, v3.pw, sizeof(v3.pw));
-		memcpy(((mqtt_data*)v4)->dev_short, v3.dev_short, sizeof(v3.dev_short));
-		memcpy(((mqtt_data*)v4)->server_ip, v3.server_ip, sizeof(v3.server_ip));
-		memcpy(((mqtt_data*)v4)->server_port, v3.server_port, sizeof(v3.server_port));
-		memcpy(((mqtt_data*)v4)->cap, v3.cap, sizeof(v3.cap));
-
-		explainFullMqttStruct((mqtt_data*)v4);
-		Serial.println(F("saving to EEPROM with new struct"));
-		storeMqttStruct(v4, size);
-		Serial.println(F("========== ERROR ========== "));
-		return ret;
-		*/
-	}
-}
-/*
-boolean WiFiManager::loadMqttStruct_v3(char * temp, uint8_t size){
-	EEPROM.begin(512); // can be up to 4096
-	uint8_t checksum = CHK_FORMAT_V3;
-	char* temp2=temp;
-	for (int i = 0; i < size; i++) {
-		*temp = EEPROM.read(i);
-		//Serial.printf(" (%i)",i);
-		//Serial.print(char(*temp));
-		checksum ^= *temp;
-		temp++;
-	}
-	checksum ^= EEPROM.read(size);
-	if (checksum == 0x00) {
-		// Serial.println("EEok");
-		return true;
-	}	else {
-		temp=temp2; // rewind
-		Serial.println(F("///////////////////////"));
-		Serial.println(F("EEPROM read v3 failed, try v2"));
-		bool ret = loadMqttStruct_v2(temp,94); // 94 hardcoded is size of v2
-		explainFullMqttStruct((mqtt_data*)temp);
-		if(ret){
-			Serial.println(F("saving to EEPROM with new struct"));
-			Serial.println(F("///////////////////////"));
-			storeMqttStruct(temp, size);
-		}
-		return ret;
+		sprintf(((mqtt_data*)v4)->dev_short, "new");
+		sprintf(((mqtt_data*)v4)->server_ip, "1.2.3.4");
+		sprintf(((mqtt_data*)v4)->server_port, "1883");
+		sprintf(((mqtt_data*)v4)->login, "new");
+		sprintf(((mqtt_data*)v4)->pw, "new");
+		sprintf(((mqtt_data*)v4)->cap, "");
+		sprintf(((mqtt_data*)v4)->nw_ssid, "new");
+		sprintf(((mqtt_data*)v4)->nw_pw, "new");
+		return false;
 	}
 }
 
-boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
-	mqtt_data_v2 v2; // object that we are filling
-	char* v2_p = (char*)&v2;	//	will be used as pointer to the v2 obj
-	EEPROM.begin(512); // can be up to 4096
-	uint8_t checksum = CHK_FORMAT_V2;
-	for (int i = 0; i < size; i++) {
-		*v2_p = EEPROM.read(i);
-		//Serial.printf(" (%i)",i);
-		//Serial.print(char(*temp));
-		checksum ^= *v2_p;
-		v2_p++;
-	}
-	checksum ^= EEPROM.read(size);
-	if (checksum == 0x00) {
-		Serial.println(F("v2 checksum ok"));
-	} else {
-		Serial.println(F("v2 checksum failed"));
-
-		// try legacy V1 to v2 conversion
-		v2_p = (char*)&v2; // rewind
-		//for(int i=0;i<(16+16+6+20+16+6);i++){
-			//Serial.printf(" (%i)",i);
-			//Serial.print(char(*temp));
-
-			sprintf_P(v2.login,PSTR("-"));
-			sprintf_P(v2.pw,PSTR("-"));
-			sprintf_P(v2.dev_short,PSTR("-"));
-			sprintf_P(v2.server_ip,PSTR("192.168.2.84"));
-			sprintf_P(v2.server_port,PSTR("1883"));
-			sprintf_P(v2.cap,PSTR(""));
-			sprintf_P(v2.nw_pw,PSTR("-"));
-			sprintf_P(v2.nw_ssid,PSTR("-"));
-		//}
-		v2_p = (char*)&v2; // rewind
-		// try legacy V1 to v2 conversion
-	}
-	memcpy(((mqtt_data*)v3)->login, v2.login, sizeof(v2.login));
-	memcpy(((mqtt_data*)v3)->pw, v2.pw, sizeof(v2.pw));
-	memcpy(((mqtt_data*)v3)->dev_short, v2.dev_short, sizeof(v2.dev_short));
-	memcpy(((mqtt_data*)v3)->server_ip, v2.server_ip, sizeof(v2.server_ip));
-	memcpy(((mqtt_data*)v3)->server_port, v2.server_port, sizeof(v2.server_port));
-	memcpy(((mqtt_data*)v3)->cap, v2.cap, sizeof(v2.cap));
-	return false;
-}
-*/
 char* WiFiManager::getMQTTelement(uint8_t i, mqtt_data * mqtt){
 	if(i==0){
 		return mqtt->login;

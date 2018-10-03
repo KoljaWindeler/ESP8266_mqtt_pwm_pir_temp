@@ -240,7 +240,11 @@ void reconnect(){
 		// check if we have valid credentials for a WiFi at all
 		// the ssid and pw will be set to "" if the EEPROM was empty / invalid
 		// if this is the case: start config Portal without waiting
-		if (strlen(mqtt.nw_ssid) == 0 && strlen(mqtt.nw_pw) == 0) {
+		if ((strlen(mqtt.nw_ssid) == 0 && strlen(mqtt.nw_pw) == 0) ||
+		(!strcmp(mqtt.nw_ssid,"new") && !strcmp(mqtt.nw_pw,"new"))) {
+			Serial.println("entering");
+			Serial.println(CONFIG_SSID);
+			delay(500);
 			wifiManager.startConfigPortal(CONFIG_SSID);
 		}
 		// each round, check wifi first
@@ -461,9 +465,6 @@ void loadConfig(){
 	} else {
 		wifiManager.setCustomIdElement("");
 		logger.pln(F("Config load failed"));
-		sprintf(mqtt.dev_short, "new");
-		mqtt.nw_ssid[0] = 0x00;
-		mqtt.nw_pw[0]   = 0x00;
 	}
 	logger.pln(F("=== Loaded parameters: ==="));
 	wifiManager.explainFullMqttStruct(&mqtt);
@@ -516,9 +517,9 @@ void loadPheripherals(uint8_t * config){
 	//bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
-	bake(new play(), &p_play, config);
 	bake(new freq(), &p_freq, config);
-	bake(new record(), &p_rec, config);
+	//bake(new play(), &p_play, config);
+	//bake(new record(), &p_rec, config);
 
 
 	// logger.p("RAM after init objects ");

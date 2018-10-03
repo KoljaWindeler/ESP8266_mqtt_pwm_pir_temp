@@ -235,6 +235,11 @@ void ICACHE_RAM_ATTR record::sample_isr(void){
 
 
 uint8_t* record::delta7_sample(uint16_t last, uint16_t *readptr, uint8_t *writeptr){
+	//12 to 8
+	const uint16_t val = (*readptr)>>4; // 12 to 8 bits
+	*writeptr++ = val&0x00ff;
+	return writeptr;
+	/*
 	const uint8_t lowbyte1 = *((uint8_t *)readptr);
 	const uint8_t highbyte1 = *((uint8_t *)readptr+1);
 	const uint16_t val = *readptr;
@@ -253,4 +258,5 @@ uint8_t* record::delta7_sample(uint16_t last, uint16_t *readptr, uint8_t *writep
 	}
 
 	return writeptr;
+	*/
 }
