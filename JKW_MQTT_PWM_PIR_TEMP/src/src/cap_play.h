@@ -3,6 +3,8 @@
 
 #include "main.h"
 #include "i2s.h"
+#include <WiFiUdp.h>
+
 
 // avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u16be -ac 1 -ar 44100 tcp://192.168.2.27:5522
 // avconv -i https://c1icy.prod.playlists.ihrhls.com/2281_icy -f s32be -acodec pcm_u16be -ac 1 -ar 44000 tcp://192.168.2.27:5522
@@ -15,7 +17,7 @@
 // valid buffer Sizes are e.g. 0x1000, 0x2000, 0x4000
 #define BUFFER_SIZE    	0x4000
 #define AMP_ENABLE_PIN 	14 // D5
-#define PLAY_PORT 			5522
+#define PLAY_PORT 			5523
 static constexpr char MQTT_play_TOPIC[]           = "play";         // publish
 static constexpr char MQTT_play_VOL_TOPIC[]           = "play_vol";         // publish
 
@@ -26,6 +28,7 @@ class play : public peripheral {
 		~play();
 		bool init();
 		bool loop();
+		bool loop_tcp();
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t* config);
@@ -34,9 +37,8 @@ class play : public peripheral {
 		bool publish();
 		uint8_t* get_key();
 	private:
+		WiFiUDP *udp_server;
 
-		WiFiServer *server;
-		WiFiClient client;
 		uint8_t *buffer8b;
 		uint16_t bufferPtrIn;
 		uint16_t bufferPtrIn2;
@@ -56,7 +58,6 @@ class play : public peripheral {
 		bool SetGain(float f);
 
 		uint8_t key[3];
-		inline void startStreaming(WiFiClient *client);
 };
 
 

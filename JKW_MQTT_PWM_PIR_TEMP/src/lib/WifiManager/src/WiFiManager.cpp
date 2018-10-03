@@ -487,6 +487,7 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
+		return false;/*
 		v4=temp; // rewind
 		Serial.println(F("========== ERROR ========== "));
 		Serial.println(F("EEPROM read v4 failed, try v3"));
@@ -508,9 +509,10 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		storeMqttStruct(v4, size);
 		Serial.println(F("========== ERROR ========== "));
 		return ret;
+		*/
 	}
 }
-
+/*
 boolean WiFiManager::loadMqttStruct_v3(char * temp, uint8_t size){
 	EEPROM.begin(512); // can be up to 4096
 	uint8_t checksum = CHK_FORMAT_V3;
@@ -564,18 +566,7 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 		//for(int i=0;i<(16+16+6+20+16+6);i++){
 			//Serial.printf(" (%i)",i);
 			//Serial.print(char(*temp));
-			/*if(i<16+16+6){
-				*v2_p = EEPROM.read(i);
-				v2_p++;
-			} else if(i == 16+16+6){
-				*v2_p = '0';         // write cap
-				v2_p++;
-				*v2_p= 0;
-				v2_p++;
-			} else if(i >= 16+16+6+20){
-				*v2_p = EEPROM.read(i);
-				v2_p++;
-			}*/
+
 			sprintf_P(v2.login,PSTR("-"));
 			sprintf_P(v2.pw,PSTR("-"));
 			sprintf_P(v2.dev_short,PSTR("-"));
@@ -596,7 +587,7 @@ boolean WiFiManager::loadMqttStruct_v2(char * v3, uint8_t size){
 	memcpy(((mqtt_data*)v3)->cap, v2.cap, sizeof(v2.cap));
 	return false;
 }
-
+*/
 char* WiFiManager::getMQTTelement(uint8_t i, mqtt_data * mqtt){
 	if(i==0){
 		return mqtt->login;

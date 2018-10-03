@@ -342,7 +342,7 @@ void reconnect(){
 
 				// IP publishing
 				IPAddress ip = WiFi.localIP();
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3],AUDIO_PORT);
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3],PLAY_PORT);
 				network.publish(build_topic("IP", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("IP", UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
@@ -372,7 +372,7 @@ void reconnect(){
 				// time to start the AP
 				logger.pln(F("Can't connect, starting AP"));
 				// restart Serial if neopixel/audio are connected (they've reconfigured the RX pin/interrupt)
-				if (p_neo || p_audio) {
+				if (p_neo || p_play) {
 					Serial.end();
 					delay(500);
 					Serial.begin(115200);
@@ -383,8 +383,8 @@ void reconnect(){
 				if(p_neo){
 					p_neo->init();
 				}
-				if(p_audio){
-					p_audio->init();
+				if(p_play){
+					p_play->init();
 				}
 				// resets timer
 				timer_connected_stop  = millis();
@@ -516,8 +516,9 @@ void loadPheripherals(uint8_t * config){
 	//bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
-	bake(new audio(), &p_audio, config);
+	bake(new play(), &p_play, config);
 	bake(new freq(), &p_freq, config);
+	bake(new record(), &p_rec, config);
 
 
 	// logger.p("RAM after init objects ");

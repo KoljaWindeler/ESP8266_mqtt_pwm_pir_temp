@@ -142,8 +142,9 @@ public:
 	//extern peripheral * p_husqvarna;
 	extern peripheral * p_no_mesh;
 	extern peripheral * p_uptime;
-	extern peripheral * p_audio;
+	extern peripheral * p_play;
 	extern peripheral * p_freq;
+	extern peripheral * p_rec;
 
 	extern const uint8_t intens[100];
 
@@ -167,8 +168,9 @@ public:
 //#include "cap_husqvarna.h"
 #include "no_mesh.h"
 #include "cap_uptime.h"
-#include "cap_audio.h"
+#include "cap_play.h"
 #include "cap_freq.h"
+#include "cap_record.h"
 
 #endif // ifndef main_h
 

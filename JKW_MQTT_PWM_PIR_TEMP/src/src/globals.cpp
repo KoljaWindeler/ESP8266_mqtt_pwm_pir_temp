@@ -23,8 +23,9 @@ peripheral *p_gpio;
 //peripheral *p_husqvarna;
 peripheral *p_no_mesh;
 peripheral *p_uptime;
-peripheral *p_audio;
+peripheral *p_play;
 peripheral *p_freq;
+peripheral *p_rec;
 
 connection_relay network;
 WiFiClient wifiClient;
