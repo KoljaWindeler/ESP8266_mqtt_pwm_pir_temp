@@ -242,9 +242,6 @@ void reconnect(){
 		// if this is the case: start config Portal without waiting
 		if ((strlen(mqtt.nw_ssid) == 0 && strlen(mqtt.nw_pw) == 0) ||
 		(!strcmp(mqtt.nw_ssid,"new") && !strcmp(mqtt.nw_pw,"new"))) {
-			Serial.println("entering");
-			Serial.println(CONFIG_SSID);
-			delay(500);
 			wifiManager.startConfigPortal(CONFIG_SSID);
 		}
 		// each round, check wifi first

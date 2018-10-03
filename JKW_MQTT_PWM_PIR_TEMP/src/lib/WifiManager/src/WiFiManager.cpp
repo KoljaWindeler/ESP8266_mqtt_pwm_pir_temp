@@ -487,6 +487,7 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
+		v4=temp;
 		sprintf(((mqtt_data*)v4)->dev_short, "new");
 		sprintf(((mqtt_data*)v4)->server_ip, "1.2.3.4");
 		sprintf(((mqtt_data*)v4)->server_port, "1883");
@@ -495,6 +496,7 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		sprintf(((mqtt_data*)v4)->cap, "");
 		sprintf(((mqtt_data*)v4)->nw_ssid, "new");
 		sprintf(((mqtt_data*)v4)->nw_pw, "new");
+		storeMqttStruct_universal(v4, 200,CHK_FORMAT_V4);
 		return false;
 	}
 }
