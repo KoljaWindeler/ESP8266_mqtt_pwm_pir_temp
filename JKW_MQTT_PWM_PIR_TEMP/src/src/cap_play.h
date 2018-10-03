@@ -1,5 +1,5 @@
-#ifndef audio_h
-#define audio_h
+#ifndef play_h
+#define play_h
 
 #include "main.h"
 #include "i2s.h"
@@ -15,15 +15,15 @@
 // valid buffer Sizes are e.g. 0x1000, 0x2000, 0x4000
 #define BUFFER_SIZE    	0x4000
 #define AMP_ENABLE_PIN 	14 // D5
-#define AUDIO_PORT 			5522
-static constexpr char MQTT_AUDIO_TOPIC[]           = "audio";         // publish
-static constexpr char MQTT_AUDIO_VOL_TOPIC[]           = "audio_vol";         // publish
+#define PLAY_PORT 			5522
+static constexpr char MQTT_play_TOPIC[]           = "play";         // publish
+static constexpr char MQTT_play_VOL_TOPIC[]           = "play_vol";         // publish
 
 
-class audio : public peripheral {
+class play : public peripheral {
 	public:
-		audio();
-		~audio();
+		play();
+		~play();
 		bool init();
 		bool loop();
 		bool intervall_update(uint8_t slot);
