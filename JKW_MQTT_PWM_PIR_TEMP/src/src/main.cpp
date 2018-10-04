@@ -658,6 +658,9 @@ void setup(){
 		}
 	}
 
+	logger.pln(F("+ RAM:"));
+	sprintf_P(m_msg_buffer, (const char *) F("  available  %i"), system_get_free_heap_size());
+	logger.pln(m_msg_buffer);
 	logger.pln(F("=== End of Setup ==="));
 	logger.pln(F(" "));
 } // setup
