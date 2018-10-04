@@ -440,12 +440,12 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 boolean WiFiManager::storeMqttStruct(char * temp, uint8_t size){
 	//return true;
 	//return storeMqttStruct_universal(temp, sizeof(mqtt_data_v3),CHK_FORMAT_V3);
-	return storeMqttStruct_universal(temp, sizeof(mqtt_data),CHK_FORMAT_V4);
+	return storeMqttStruct_universal(temp, LEN_FORMAT_V4, CHK_FORMAT_V4);
 }
 boolean WiFiManager::loadMqttStruct(char * temp, uint8_t size){
 	//return loadMqttStruct_v2(temp, sizeof(mqtt_data_v2));
 	//return loadMqttStruct_v3(temp, sizeof(mqtt_data_v3));
-	return loadMqttStruct_v4(temp, sizeof(mqtt_data));
+	return loadMqttStruct_universal(temp, LEN_FORMAT_V4, CHK_FORMAT_V4);
 }
 
 boolean WiFiManager::storeMqttStruct_universal(char * temp, uint8_t size, uint8_t chk){
@@ -468,16 +468,16 @@ boolean WiFiManager::storeMqttStruct_universal(char * temp, uint8_t size, uint8_
 	return true;
 }
 
-boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
+boolean WiFiManager::loadMqttStruct_universal(char * p_mqtt, uint8_t size, uint8_t chk){
 	EEPROM.begin(512); // can be up to 4096
-	uint8_t checksum = CHK_FORMAT_V4;
-	char* temp=v4;
+	uint8_t checksum = chk;
+	char* temp=p_mqtt;
 	for (int i = 0; i < size; i++) {
-		*v4 = EEPROM.read(i);
+		*p_mqtt = EEPROM.read(i);
 		//Serial.printf(" (%i)",i);
-		//Serial.print(char(*v4));
-		checksum ^= *v4;
-		v4++;
+		//Serial.print(char(*p_mqtt));
+		checksum ^= *p_mqtt;
+		p_mqtt++;
 	}
 	uint8_t c1 = EEPROM.read(size);
 	uint8_t c2 = EEPROM.read(size+1);
@@ -487,16 +487,16 @@ boolean WiFiManager::loadMqttStruct_v4(char * v4, uint8_t size){
 		// Serial.println("EEok");
 		return true;
 	} else {
-		v4=temp;
-		sprintf(((mqtt_data*)v4)->dev_short, "new");
-		sprintf(((mqtt_data*)v4)->server_ip, "1.2.3.4");
-		sprintf(((mqtt_data*)v4)->server_port, "1883");
-		sprintf(((mqtt_data*)v4)->login, "new");
-		sprintf(((mqtt_data*)v4)->pw, "new");
-		sprintf(((mqtt_data*)v4)->cap, "");
-		sprintf(((mqtt_data*)v4)->nw_ssid, "new");
-		sprintf(((mqtt_data*)v4)->nw_pw, "new");
-		storeMqttStruct_universal(v4, 200,CHK_FORMAT_V4);
+		p_mqtt=temp;
+		sprintf(((mqtt_data*)p_mqtt)->dev_short, "new");
+		sprintf(((mqtt_data*)p_mqtt)->server_ip, "1.2.3.4");
+		sprintf(((mqtt_data*)p_mqtt)->server_port, "1883");
+		sprintf(((mqtt_data*)p_mqtt)->login, "new");
+		sprintf(((mqtt_data*)p_mqtt)->pw, "new");
+		sprintf(((mqtt_data*)p_mqtt)->cap, "");
+		sprintf(((mqtt_data*)p_mqtt)->nw_ssid, "new");
+		sprintf(((mqtt_data*)p_mqtt)->nw_pw, "new");
+		storeMqttStruct_universal(p_mqtt, size, chk);
 		return false;
 	}
 }
