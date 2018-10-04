@@ -515,8 +515,8 @@ void loadPheripherals(uint8_t * config){
 	bake(new no_mesh(), &p_no_mesh, config);
 	bake(new uptime(), &p_uptime, config);
 	bake(new freq(), &p_freq, config);
-	//bake(new play(), &p_play, config);
-	//bake(new record(), &p_rec, config);
+	bake(new play(), &p_play, config);
+	bake(new record(), &p_rec, config);
 
 
 	// logger.p("RAM after init objects ");
