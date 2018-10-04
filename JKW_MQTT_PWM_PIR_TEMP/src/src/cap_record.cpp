@@ -44,16 +44,16 @@ bool record::init(){
 	envelope_threshold = 150; // envelope threshold to trigger data sending
 	send_sound_util = 0; // date until sound transmission ends after an envelope threshold has triggered sound transmission
 	enable_highpass_filter = 0;
+	current_adc_buf = 0;
 
 	spiBegin();
+
 	timer1_isr_init();
 	timer1_attachInterrupt(sample_isr_rec);
 	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
 	timer1_write(clockCyclesPerMicrosecond() / 16 * 50); //80us = 12.5kHz sampling freq
 
-	//udp.begin(TARGET_PORT);
-
-	logger.println(TOPIC_GENERIC_INFO, F("HLW init"), COLOR_GREEN);
+	logger.println(TOPIC_GENERIC_INFO, F("REC init"), COLOR_GREEN);
 	return true;
 }
 
@@ -67,60 +67,68 @@ uint8_t record::count_intervall_update(){
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
 bool record::loop(){
-	udp.parsePacket();
 	if (send_samples_now) {
-		/* We're ready to send a buffer of samples over wifi. Decide if it has to happen or not,
-		   that is, if the sound level is above a certain threshold. */
 
-		// Update silence and envelope computations
-		uint16_t number_of_samples = REC_BUFFER_SIZE;
-		int32_t accum_silence = 0;
-		int32_t envelope_value = 0;
-
-		int32_t now = millis();
-		uint8_t *writeptr = (uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]);
-		uint16_t *readptr;
-		uint16_t last = 0;
-		for (unsigned int i = 0; i < number_of_samples; i++) {
-			readptr = &adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+i];
-			int32_t val = *readptr;
-			int32_t rectified;
-
-			/*if (enable_highpass_filter) {
-				*readptr = filterloop(val) + 2048;
-				val = *readptr;
-			}*/
-
-			rectified = abs(val - silence_value);
-
-			accum_silence += val;
-			envelope_value += rectified;
-
-			// delta7-compress the data
-			writeptr = delta7_sample(last, readptr, writeptr);
-			last = val;
-		}
-		accum_silence /= number_of_samples;
-		envelope_value /= number_of_samples;
-		silence_value = (SILENCE_EMA_WEIGHT * silence_value + accum_silence) / (SILENCE_EMA_WEIGHT + 1);
-		envelope_value = envelope_value;
-
-		if (envelope_value > envelope_threshold) {
-			send_sound_util = millis() + 15000;
+		if(!tcp_client.connected()){
+			tcp_client.connect(IPAddress(192,168,2,27),5523);
 		}
 
-		if (millis() < send_sound_util) {
-			Serial.print("sending ");
-			udp.beginPacket(IPAddress(192,168,2,59), 5523);
-			uint16_t len = writeptr - (uint8_t *)&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0];
-			Serial.println(len);
-			udp.write((const uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]), len);
-			udp.endPacket();
+
+		if(tcp_client.connected()){
+			/* We're ready to send a buffer of samples over wifi. Decide if it has to happen or not,
+			   that is, if the sound level is above a certain threshold. */
+
+			// Update silence and envelope computations
+			uint16_t number_of_samples = REC_BUFFER_SIZE;
+			int32_t accum_silence = 0;
+			int32_t envelope_value = 0;
+
+			int32_t now = millis();
+			uint8_t *writeptr = (uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]);
+			uint16_t *readptr;
+			uint16_t last = 0;
+			for (unsigned int i = 0; i < number_of_samples; i++) {
+				readptr = &adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+i];
+				int32_t val = *readptr;
+				int32_t rectified;
+
+				/*if (enable_highpass_filter) {
+					*readptr = filterloop(val) + 2048;
+					val = *readptr;
+				}*/
+
+				rectified = abs(val - silence_value);
+
+				accum_silence += val;
+				envelope_value += rectified;
+
+				// delta7-compress the data
+				writeptr = delta7_sample(last, readptr, writeptr);
+				last = val;
+			}
+			accum_silence /= number_of_samples;
+			envelope_value /= number_of_samples;
+			silence_value = (SILENCE_EMA_WEIGHT * silence_value + accum_silence) / (SILENCE_EMA_WEIGHT + 1);
+			envelope_value = envelope_value;
+
+			if (envelope_value > envelope_threshold) {
+				send_sound_util = millis() + 15000;
+			}
+
+			if (millis() < send_sound_util) {
+				Serial.print("sending ");
+				//udp.beginPacket(IPAddress(192,168,2,59), 5523);
+				uint16_t len = writeptr - (uint8_t *)&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0];
+				tcp_client.write((const uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]), len);
+				Serial.println(len);
+				//udp.write(
+				//udp.endPacket();
+			}
+			send_samples_now = 0;
+			Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
+			Serial.print("delay "); Serial.print(millis() - now);
+			Serial.println("");
 		}
-		send_samples_now = 0;
-		Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
-		Serial.print("delay "); Serial.print(millis() - now);
-		Serial.println("");
 	}
 	return false; // i did nothing
 }

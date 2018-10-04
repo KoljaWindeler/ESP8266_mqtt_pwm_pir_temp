@@ -3,11 +3,12 @@
 // simply the constructor
 play::play(){
 	buffer8b  = NULL;
+	tcp_server    = NULL;
 	connected = false;
 	sprintf((char *) key, "PLY");
 	SetGain(0.35);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	// either PLY16 for 16 bit or PLY1,2,3,4,5,12,13,14,15 for 8 bit, PLY6..11 are not allowed
+	// either AUD16 for 16 bit or AUD1,2,3,4,5,12,13,14,15 for 8 bit, AUD6..11 are not allowed
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 };
 
@@ -16,6 +17,9 @@ play::~play(){
 	if (buffer8b) {
 		delete [] buffer8b;
 		buffer8b = NULL;
+	}
+	if (tcp_server) {
+		tcp_server->close();
 		i2s_end(); // i2s was only started when the tcp_server is running so we only have to end it now
 	}
 
@@ -51,16 +55,14 @@ bool play::init(){
 	pinMode(AMP_ENABLE_PIN, OUTPUT);
 	digitalWrite(AMP_ENABLE_PIN, LOW);
 
-	udp_server = new WiFiUDP;
-	//udp_server->beginMulticast(WiFi.localIP(), IPAddress(224,244,244,244), PLAY_PORT);
-	udp_server->begin(PLAY_PORT);
-
-	logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
+	tcp_server = new WiFiServer(PLAY_PORT);
+	tcp_server->begin();
 
 	buffer8b = new uint8_t[BUFFER_SIZE];
+	logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
+	sprintf(m_msg_buffer,"%i bit",bit_mode);
+	logger.pln(m_msg_buffer);
 	if (buffer8b) {
-		sprintf(m_msg_buffer,"%i bit",bit_mode);
-		logger.pln(m_msg_buffer);
 		return true;
 	}
 	return false;
@@ -75,106 +77,124 @@ uint8_t play::count_intervall_update(){
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
-
 bool play::loop(){
 	run_noninterrupted = true; // get high priority
 
-	// was not connected as of now
-	if(!connected && udp_server->parsePacket()){
-		logger.println(TOPIC_GENERIC_INFO, F("play buffering"), COLOR_GREEN);
-		bufferPtrIn  = 0;
-		bufferPtrOut = 0;
-		// ===================================================================================
-		// fill buffer
-		// 16384 byte buffer, 44100 hz = 371 ms playtime
-		ultimeout = millis() + 500;
-			// yield();
-		do {
-			if (udp_server->available() || udp_server->parsePacket()) {
-				buffer8b[bufferPtrIn] = udp_server->read();
-				bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
-				ultimeout   = millis() + 500;
-			}
-		} while ((bufferPtrIn < (BUFFER_SIZE - 1)) && (millis() < ultimeout));
-
-		if (millis() >= ultimeout) {
-			logger.println(TOPIC_GENERIC_INFO, F("play buffering failed"), COLOR_RED);
-			return false;
+	// new tcp_client?
+	if (!connected) {
+		tcp_client = tcp_server->available();
+		if(tcp_client.connected()){
+			logger.println(TOPIC_GENERIC_INFO, F("New play tcp_client"), COLOR_GREEN);
 		}
-
-
-		logger.println(TOPIC_GENERIC_INFO, F("play starts playing"), COLOR_GREEN);
-		// still running, prepare playback
-		// ===================================================================================
-		digitalWrite(AMP_ENABLE_PIN, LOW); // drive low, to disable pull up
-		pinMode(AMP_ENABLE_PIN, INPUT);    // floating to reanable the sample
-		// ===================================================================================
-		ultimeout = millis() + 500;
-		connected = true;
-		samples_played = 0;
-			// start playback
 	}
-
-	if (connected) {
-		// playback
-		if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) {
-			// scale down by 4 (>>2) otherwise the output overshoots significantly
-			uint16_t t = Amplify(buffer8b[bufferPtrOut]) << 6;
-			if (bit_mode == 16) {
-				t |= Amplify(buffer8b[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
-			}
-			// play
-			uint32_t s32 = (t << 16) & 0xffff0000 | (t & 0xffff);
-
-			if (i2s_write_sample_nb(s32)) { // If we can't store it, return false.  OTW true
-				run_noninterrupted = false; // our chance, i2s just received new samples, see if we have to publish something
-				if (bit_mode == 16) {
-					bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
-				} else {
-					bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
-				}
-			}
-			// no timeout, we still have data, playback stops once we didn't have data for 500ms
+	if (tcp_client.connected()) {
+		if (!connected) {
+			bufferPtrIn  = 0;
+			bufferPtrOut = 0;
+			// ===================================================================================
+			// fill buffer
+			// 16384 byte buffer, 44100 hz = 371 ms playtime
 			ultimeout = millis() + 500;
-		}
-		// timeout! can stll overridden by new data
-		else if (millis() > ultimeout) {
-			connected = false; // didn't have samples for a long time
-			logger.println(TOPIC_GENERIC_INFO, F("play timeout"), COLOR_RED);
-		}
-
-		/*
-		samples_played++;
-		if(samples_played>5000){
-			samples_played=0;
-			Serial.printf("%i\r\n",((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE));
-		}
-		*/
-
-		// read new data to buffer
-		for(uint8_t s=0; s<bit_mode; s+=8){
-			udp_server->parsePacket();
-			if (udp_server->available()) {
-				// ring-buffer free?
-				if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
-					buffer8b[bufferPtrIn] = udp_server->read();
+				// yield();
+			do {
+				if (tcp_client.available()) {
+					buffer8b[bufferPtrIn] = tcp_client.read();
 					bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
+					ultimeout   = millis() + 500;
 				}
-				connected = true;
+			} while ((bufferPtrIn < (BUFFER_SIZE - 1)) && (tcp_client.connected()) && (millis() < ultimeout));
+
+			if ((!tcp_client.connected()) || (millis() >= ultimeout)) {
+				logger.println(TOPIC_GENERIC_INFO, F("play buffering failed"), COLOR_RED);
+				return false;
+			}
+
+			logger.println(TOPIC_GENERIC_INFO, F("play starts playing"), COLOR_GREEN);
+			// still running, prepare playback
+			// ===================================================================================
+			digitalWrite(AMP_ENABLE_PIN, LOW); // drive low, to disable pull up
+			pinMode(AMP_ENABLE_PIN, INPUT);    // floating to reanable the sample
+			// ===================================================================================
+			ultimeout = millis() + 500;
+			connected = true;
+			samples_played = 0;
+			// start playback
+		}
+
+		if (connected) {
+			// playback
+			if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) {
+				// scale down by 4 (>>2) otherwise the output overshoots significantly
+				uint16_t t = Amplify(buffer8b[bufferPtrOut]) << 6;
+				if (bit_mode == 16) {
+					t |= Amplify(buffer8b[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
+				}
+				// play
+				uint32_t s32 = (t << 16) & 0xffff0000 | (t & 0xffff);
+
+				if (i2s_write_sample_nb(s32)) { // If we can't store it, return false.  OTW true
+					run_noninterrupted = false; // our chance, i2s just received new samples, see if we have to publish something
+					if (bit_mode == 16) {
+						bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
+					} else {
+						bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+					}
+				}
+				// no timeout, we still have data, playback stops once we didn't have data for 500ms
+				ultimeout = millis() + 500;
+			}
+			// timeout! can stll overridden by new data
+			else if (millis() > ultimeout) {
+				connected = false;
+				logger.println(TOPIC_GENERIC_INFO, F("play timeout"), COLOR_RED);
+			}
+
+			/*
+			samples_played++;
+			if(samples_played>5000){
+				samples_played=0;
+				Serial.printf("%i\r\n",((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE));
+			}
+			*/
+
+			// read new data to buffer
+			for(uint8_t s=0; s<bit_mode; s+=8){
+				if (tcp_client.available()) {
+					// ring-buffer free?
+					if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
+						buffer8b[bufferPtrIn] = tcp_client.read();
+						bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
+					}
+					connected = true;
+				}
+			}
+
+			// on disconnect
+			if (!connected ) {
+				shutdown();
 			}
 		}
-		// on disconnect
-		if (!connected ) {
-			logger.println(TOPIC_GENERIC_INFO, F("play shutting down"), COLOR_RED);
-			// ===================================================================================
-			pinMode(AMP_ENABLE_PIN, OUTPUT); // drive it to power down
-			digitalWrite(AMP_ENABLE_PIN, LOW);
-			// ===================================================================================
+		return run_noninterrupted; // i played music leave me running
+	} else   {
+		if(connected){
+			shutdown();
 		}
+		// nnope, did nothing, go on
+		return false;
 	}
-	return false; // i played music leave me running
 } // loop
 
+
+// shut the AMP down via PIN, fastest and Plopp avoiding
+void play::shutdown(){
+	logger.println(TOPIC_GENERIC_INFO, F("play shutting down"), COLOR_RED);
+	// ===================================================================================
+	pinMode(AMP_ENABLE_PIN, OUTPUT); // drive it to power down
+	digitalWrite(AMP_ENABLE_PIN, LOW);
+	// ===================================================================================
+	tcp_client.stop();
+	connected = false;
+}
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever

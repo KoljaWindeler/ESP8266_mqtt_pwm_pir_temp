@@ -492,9 +492,7 @@ void connection_relay::stopAP(){
 void connection_relay::receive_loop(){
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
 		// handle data from MQTT link if any (function 6)
-		for (uint8_t i=0; i < 10; i++) {
-			client.loop();
-		}
+		client.loop();
 	}
 	else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		// handle data from uplink (function 1)

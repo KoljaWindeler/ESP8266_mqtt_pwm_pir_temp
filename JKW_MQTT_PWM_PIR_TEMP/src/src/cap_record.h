@@ -31,7 +31,7 @@ class record : public peripheral {
 
 	private:
 		uint8_t key[3];
-		WiFiUDP udp;
+		WiFiClient tcp_client;
 		uint16_t* adc_buf; // ADC data buffer, double buffered
 		bool current_adc_buf; // which data buffer is being used for the ADC (the other is being sent)
 		unsigned int adc_buf_pos; // position in the ADC data buffer

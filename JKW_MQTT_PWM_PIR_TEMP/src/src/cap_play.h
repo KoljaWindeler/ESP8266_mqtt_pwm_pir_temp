@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "i2s.h"
-#include <WiFiUdp.h>
+//#include <WiFiUdp.h>
 
 
 // avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u16be -ac 1 -ar 44100 tcp://192.168.2.27:5522
@@ -37,7 +37,9 @@ class play : public peripheral {
 		bool publish();
 		uint8_t* get_key();
 	private:
-		WiFiUDP *udp_server;
+		//WiFiUDP *udp_server;
+		WiFiServer *tcp_server;
+		WiFiClient tcp_client;
 
 		uint8_t *buffer8b;
 		uint16_t bufferPtrIn;
