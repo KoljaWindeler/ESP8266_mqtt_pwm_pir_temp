@@ -23,7 +23,7 @@ class PIR : public peripheral {
 		mqtt_parameter_8 m_state;
 		uint8_t key[4];
 		uint8_t m_pin;
-
+		bool init_done;
 };
 
 
