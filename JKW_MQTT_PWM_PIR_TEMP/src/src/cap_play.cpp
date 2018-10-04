@@ -7,7 +7,7 @@ play::play(){
 	sprintf((char *) key, "PLY");
 	SetGain(0.35);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
-	// either AUD16 for 16 bit or AUD1,2,3,4,5,12,13,14,15 for 8 bit, AUD6..11 are not allowed
+	// either PLY16 for 16 bit or PLY1,2,3,4,5,12,13,14,15 for 8 bit, PLY6..11 are not allowed
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 };
 
@@ -29,7 +29,13 @@ play::~play(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded under all circumstances
 bool play::parse(uint8_t * config){
-	return cap.parse_wide(config, get_key(), &bit_mode); // should really only accept AUD8 and AUD16 but hey ..
+	if(cap.parse_wide(config, get_key(), &bit_mode)){
+			// should really only accept AUD8 and AUD16 but hey ..
+			if(bit_mode!=16){
+				bit_mode=8;
+			}
+			return true;
+	}
 }
 
 // the will be requested to check if the key is in the config strim
@@ -46,13 +52,15 @@ bool play::init(){
 	digitalWrite(AMP_ENABLE_PIN, LOW);
 
 	udp_server = new WiFiUDP;
+	//udp_server->beginMulticast(WiFi.localIP(), IPAddress(224,244,244,244), PLAY_PORT);
 	udp_server->begin(PLAY_PORT);
 
-	buffer8b = new uint8_t[BUFFER_SIZE];
 	logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
-	sprintf(m_msg_buffer,"%i bit",bit_mode);
-	logger.pln(m_msg_buffer);
+
+	buffer8b = new uint8_t[BUFFER_SIZE];
 	if (buffer8b) {
+		sprintf(m_msg_buffer,"%i bit",bit_mode);
+		logger.pln(m_msg_buffer);
 		return true;
 	}
 	return false;
@@ -145,7 +153,8 @@ bool play::loop(){
 
 		// read new data to buffer
 		for(uint8_t s=0; s<bit_mode; s+=8){
-			if (udp_server->available() || udp_server->parsePacket()) {
+			udp_server->parsePacket();
+			if (udp_server->available()) {
 				// ring-buffer free?
 				if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
 					buffer8b[bufferPtrIn] = udp_server->read();

@@ -15,7 +15,7 @@
 // Enable -   GPIO 14
 
 // valid buffer Sizes are e.g. 0x1000, 0x2000, 0x4000
-#define BUFFER_SIZE    	0x4000
+#define BUFFER_SIZE    	0x4000 // 4k, 8k, 16k byte
 #define AMP_ENABLE_PIN 	14 // D5
 #define PLAY_PORT 			5523
 static constexpr char MQTT_play_TOPIC[]           = "play";         // publish
