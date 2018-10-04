@@ -141,7 +141,7 @@ bool play::loop(){
 					}
 				}
 				// no timeout, we still have data, playback stops once we didn't have data for 500ms
-				ultimeout = millis() + 500;
+				ultimeout = millis() + 1500;
 			}
 			// timeout! can stll overridden by new data
 			else if (millis() > ultimeout) {

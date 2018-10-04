@@ -1,6 +1,8 @@
 #ifndef record_h
 #define record_h
 
+// based on large parts on https://github.com/sven337/jeenode/blob/master/babymonitor/recv/recv.ino
+
 #include "main.h"
 #include <SPI.h>
 #include <WiFiUdp.h>
