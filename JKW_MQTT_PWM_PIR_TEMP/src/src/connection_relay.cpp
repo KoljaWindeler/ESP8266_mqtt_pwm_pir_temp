@@ -47,7 +47,7 @@ int8_t connection_relay::scan(bool blocking){
 // we are the last node and should directly connect to the WIFI
 bool connection_relay::DirectConnect(){
 	logger.println(TOPIC_WIFI, F("Currently not connected, initiate direct connection ..."), COLOR_RED);
-	logger.println(TOPIC_WIFI, F("Removing  all old credentials ..."), COLOR_YELLOW);
+	logger.println(TOPIC_WIFI, F("Removing all old credentials ..."), COLOR_YELLOW);
 	// mqtt.nw_ssid, mqtt.nw_pw or autoconnect?
 	WiFi.disconnect();
 	logger.print(TOPIC_WIFI, F("Connecting to: "), COLOR_YELLOW);
@@ -490,7 +490,13 @@ void connection_relay::stopAP(){
 // 6. if we are directly connected to the MQTT, loop our mqtt client
 // 7. disconnect dead mesh clients
 void connection_relay::receive_loop(){
-	if (m_connection_type == CONNECTION_MESH_CONNECTED) {
+	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
+		// handle data from MQTT link if any (function 6)
+		for (uint8_t i=0; i < 10; i++) {
+			client.loop();
+		}
+	}
+	else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		// handle data from uplink (function 1)
 		uint16_t size = espUplink.available();
 		while (size) {
@@ -541,9 +547,6 @@ void connection_relay::receive_loop(){
 		}
 		// send messages upstream (function 5)
 		dequeue_up();
-	} else if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
-		// handle data from MQTT link if any (function 6)
-		client.loop();
 	}
 	// new client (function 2)
 	if (espServer != NULL) {
