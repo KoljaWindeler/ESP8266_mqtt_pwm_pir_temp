@@ -7,6 +7,7 @@ button::button(){
 	m_counter=0;
 };
 button::~button(){
+	detachInterrupt(digitalPinToInterrupt(m_pin));
 	logger.println(TOPIC_GENERIC_INFO, F("Button deleted"), COLOR_YELLOW);
 };
 
@@ -38,16 +39,18 @@ void fooButton(){
 
 bool button::init(){
 	logger.print(TOPIC_GENERIC_INFO, F("Button init: "), COLOR_GREEN);
+	pinMode(m_pin, INPUT);
+
 	if(m_mode_toggle_switch == BUTTON_MODE_SWITCH){
 		sprintf_P(m_msg_buffer,PSTR("switch on GPIO %i"),m_pin);
 		logger.pln(m_msg_buffer);
+		digitalWrite(m_pin,LOW); // disable pull up, shelly seams to have a super low curent driver
 	} else {
 		sprintf_P(m_msg_buffer,PSTR("push button on GPIO %i"),m_pin);
 		logger.pln(m_msg_buffer);
+		digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
 	}
 	// attache interrupt codepwm for button
-	pinMode(m_pin, INPUT);
-	digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
 	attachInterrupt(digitalPinToInterrupt(m_pin), fooButton, CHANGE);
 
 	if (digitalRead(m_pin) == LOW && m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON) {
@@ -67,7 +70,8 @@ bool button::loop(){
 	}
 
 	// check once every 1s if the button is down and if so for how long
-	if(millis()-m_timer_checked > BUTTON_CHECK_INTERVALL){
+	if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON &&
+			(millis()-m_timer_checked > BUTTON_CHECK_INTERVALL)){
 		m_timer_checked=millis();
 		if (digitalRead(m_pin) == LOW) {
 			for(int i=3;i>0;i--){
@@ -134,21 +138,24 @@ void button::interrupt(){
 	// toggle, write to pin, publish to server
 	if (digitalRead(m_pin) == LOW || m_mode_toggle_switch == BUTTON_MODE_SWITCH) {
 		if (millis() - m_timer_button_down > BUTTON_DEBOUNCE) { // avoid bouncing
-			// button down, m_state saves button push time
-			m_state.set(0);
 			// toggle status of both lights
 			if(p_light){
 				((light*)p_light)->toggle();
 			}
 
-			// keep counting if we're fast enough
-			if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
-				m_counter++;
-			} else {
-				m_counter = 1;
+			if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
+				// button down, m_state saves button push time
+				m_state.set(0);
+
+				// keep counting if we're fast enough
+				if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
+					m_counter++;
+				} else {
+					m_counter = 1;
+				}
+				logger.print(TOPIC_BUTTON, F("push nr "));
+				Serial.println(m_counter);
 			}
-			logger.print(TOPIC_BUTTON, F("push nr "));
-			Serial.println(m_counter);
 		};
 		// Serial.print(".");
 	} else {
