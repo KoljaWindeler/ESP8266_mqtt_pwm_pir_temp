@@ -11,6 +11,8 @@ record::~record(){
 	if(adc_buf){
 		delete [] adc_buf;
 		adc_buf = NULL;
+
+		timer1_detachInterrupt();
 	}
 	logger.println(TOPIC_GENERIC_INFO, F("record deleted"), COLOR_YELLOW);
 };
@@ -65,6 +67,7 @@ uint8_t record::count_intervall_update(){
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
 bool record::loop(){
+	udp.parsePacket();
 	if (send_samples_now) {
 		/* We're ready to send a buffer of samples over wifi. Decide if it has to happen or not,
 		   that is, if the sound level is above a certain threshold. */
