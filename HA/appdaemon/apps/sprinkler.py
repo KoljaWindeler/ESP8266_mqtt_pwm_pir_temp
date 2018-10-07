@@ -32,6 +32,7 @@ class SprinklerWorld(hass.Hass):
     def initialize(self):
         self.log("Starting Sprinkler Service")
         self.listen_state(self.start,"input_boolean.irrigation", new = "on")
+        self.turn_off("light.dev17")
 
 
     def start(self, entity, attribute, old, new,kwargs):
@@ -39,7 +40,7 @@ class SprinklerWorld(hass.Hass):
         self.log("################################################")
         self.log("Starting Sprinker call")
         self.set_state("sensor.dev30_state",state="Starting")
-        max_time = 20 #30
+        max_time = 15 #30
 
         config = [
             [['light.dev30_4'],1], # one valve, 2xt200, regular time
@@ -47,14 +48,14 @@ class SprinklerWorld(hass.Hass):
             [['light.dev30_1','light.dev30_3'],1.5] # two valves, 150% time
                 ]
 
-        today_max_temp = int(float(self.g("sensor.dark_sky_daily_high_temperature","28")))
+        today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
         if(today_max_temp > 28):
             max_time = 30
-        elif(today_max_temp < 15):
+        elif(today_max_temp < 22):
             max_time = 0
 
         self.log("Today max temp is "+str(today_max_temp)+", will irrigate for "+str(max_time)+ " min")
-        rain_today = int(float(self.g("sensor.dev30_uptime","0")))
+        rain_today = int(float(self.g("sensor.dev30_uptime","0"))/5)
         max_time = max(max_time - rain_today,0)
         self.log("There was already "+str(rain_today)+" min of rain, so I'll irrigate for "+str(max_time)+" now")
 

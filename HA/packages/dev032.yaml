@@ -1,3 +1,4 @@
+
 ### touch bedroom
 # SL
 # -----------------------------------------------
@@ -23,6 +24,10 @@ sensor:
     state_topic: "dev32/r/temperature"
     name: "dev32_temperature"
     unit_of_measurement: "ºC"
+
+  - platform: mqtt
+    state_topic: "dev32/r/button1s"
+    name: "dev32_button1s"
 
 # -----------------------------------------------
 

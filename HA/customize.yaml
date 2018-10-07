@@ -61,23 +61,6 @@
       friendly_name: "TV"
       icon: "mdi:television-classic"
 # -----------------------------------------------
-    sensor.dark_sky_apparent_temperature:
-      friendly_name: "Outside Apparent Temp"
-    sensor.dark_sky_cloud_coverage:
-      friendly_name: "Cloud coverage"
-    sensor.dark_sky_daily_high_temperature:
-      friendly_name: "Outside max today"
-    sensor.dark_sky_daily_low_temperature:
-      friendly_name: "Outside min today"
-    sensor.dark_sky_precip_intensity:
-      friendly_name: "Rain intensity"
-    sensor.dark_sky_precip_probability:
-      friendly_name: "Rain probability"
-    sensor.dark_sky_temperature:
-      friendly_name: "Current Temp"
-    sensor.dark_sky_daily_summary:
-      friendly_name: " "
-# -----------------------------------------------
     device_tracker.7c11cba3f1d1:
       friendly_name: "Kolja MAC"
     device_tracker.64bc0c4df830:

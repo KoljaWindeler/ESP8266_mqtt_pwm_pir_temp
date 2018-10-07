@@ -5,6 +5,7 @@
     name: "joiner_kitchen"
     entities:
       - light.dev21
+      - light.dev14
       - light.dev3
 # --------------------------------------------------
   - platform: group

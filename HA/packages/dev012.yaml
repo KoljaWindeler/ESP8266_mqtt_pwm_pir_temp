@@ -30,27 +30,18 @@ light:
 homeassistant:
   customize:
     light.dev12:
-      friendly_name: "Entrance B1"
+      friendly_name: "Hallway D"
       icon: "mdi:lamp"
     light.dev12_simple_rainbow:
       icon: "mdi:traffic-light"
-      friendly_name: "B1 Simple Rainbow"
+      friendly_name: "Hallway B1 Simple Rainbow"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev12"
-    fname: "12 EntranceB1"
-
-# -----------------------------------------------
-
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev12/r/motion"
-    name: "dev12_motion"
-    device_class: motion
-
+    fname: "12 Hallway D B1"
 
 # -----------------------------------------------
 

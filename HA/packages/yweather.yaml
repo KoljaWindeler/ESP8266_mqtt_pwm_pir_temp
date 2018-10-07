@@ -1,0 +1,8 @@
+sensor:
+  - platform: yweather
+    monitored_conditions:
+      - weather
+      - weather_current
+      - temp_min
+      - temp_max
+

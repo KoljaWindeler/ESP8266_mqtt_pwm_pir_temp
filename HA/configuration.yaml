@@ -120,8 +120,5 @@ camera:
     still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}
     limit_refetch_to_url_change: true
 
-weather:
-  - platform: darksky
-    api_key: !secret darksky_key
 
 

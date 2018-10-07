@@ -3,7 +3,7 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### carlo lampinions
+  - platform: mqtt ###  lampinions flur oben
     name: "dev55"
     state_topic: "dev55/r/light"
     command_topic: "dev55/s/light/dimm"
@@ -21,14 +21,20 @@ light:
 homeassistant:
   customize:
     light.dev55:
-      friendly_name: "Lampinions"
+      friendly_name: "Lampinions carlo"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev55"
-    fname: "55 Lampinions C"
+    fname: "55 Lampinions carlo"
 
 # -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev55/r/gpio_13_state"
+    name: "dev55_motion"
+    device_class: motion
 

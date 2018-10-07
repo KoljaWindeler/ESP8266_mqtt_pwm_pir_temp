@@ -18,6 +18,11 @@ sensor:
   - platform: mqtt_jkw
     name: "dev31"
     fname: "31 Bedroom caro"
+
+  - platform: mqtt
+    state_topic: "dev31/r/button1s"
+    name: "dev31_button1s"
+
 # -----------------------------------------------
 
 homeassistant:
