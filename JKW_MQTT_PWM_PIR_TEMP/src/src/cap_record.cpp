@@ -40,6 +40,8 @@ void ICACHE_RAM_ATTR sample_isr_rec(void){
 bool record::init(){
 	adc_buf = new uint16_t[2*REC_BUFFER_SIZE];
 
+	serverIP_available = false;
+
 	silence_value = 2048; // computed as an exponential moving average of the signal
 	envelope_threshold = 150; // envelope threshold to trigger data sending
 	send_sound_util = 0; // date until sound transmission ends after an envelope threshold has triggered sound transmission
@@ -51,7 +53,7 @@ bool record::init(){
 	timer1_isr_init();
 	timer1_attachInterrupt(sample_isr_rec);
 	timer1_enable(TIM_DIV16, TIM_EDGE, TIM_LOOP);
-	timer1_write(clockCyclesPerMicrosecond() / 16 * 50); //80us = 12.5kHz sampling freq
+	timer1_write(clockCyclesPerMicrosecond() / 18 * 50); //80us = 12.5kHz sampling freq
 
 	logger.println(TOPIC_GENERIC_INFO, F("REC init"), COLOR_GREEN);
 	return true;
@@ -70,9 +72,13 @@ bool record::loop(){
 	if (send_samples_now) {
 
 		if(!tcp_client.connected()){
-			tcp_client.connect(IPAddress(192,168,2,27),5523);
+			m_state.check_set(NOT_CONNECTED); // assume not connected
+			if(serverIP_available){
+				if(tcp_client.connect(serverIP,5523)){
+					m_state.check_set(CONNECTED);
+				}
+			}
 		}
-
 
 		if(tcp_client.connected()){
 			/* We're ready to send a buffer of samples over wifi. Decide if it has to happen or not,
@@ -116,11 +122,15 @@ bool record::loop(){
 			}
 
 			if (millis() < send_sound_util) {
-				Serial.print("sending ");
+				//Serial.print("sending ");
 				//udp.beginPacket(IPAddress(192,168,2,59), 5523);
 				uint16_t len = writeptr - (uint8_t *)&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0];
-				tcp_client.write((const uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]), len);
-				Serial.println(len);
+				if(tcp_client.write((const uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]), len)!=len){
+						//Serial.println("to many dots");
+						m_state.check_set(NOT_CONNECTED); // assume not connected
+						tcp_client.stop();
+				};
+				//Serial.println(len);
 				//udp.write(
 				//udp.endPacket();
 			}
@@ -154,24 +164,67 @@ bool record::intervall_update(uint8_t slot){
 // this is the chance to fire some subsctions
 // return is ignored
 bool record::subscribe(){
-	//network.subscribe(build_topic(MQTT_record_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
-	//logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_record_TOPIC,PC_TO_UNIT), COLOR_GREEN);
+	network.subscribe(build_topic(MQTT_RECORD_SERVER_TOPIC,PC_TO_UNIT)); // simple rainbow  topic
+	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_RECORD_SERVER_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	return true;
 }
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool record::receive(uint8_t* p_topic, uint8_t* p_payload){
-	/*if (!strcmp((const char *) p_topic, build_topic(MQTT_record_TOPIC,PC_TO_UNIT))) { // on / off with dimming
-		logger.println(TOPIC_MQTT, F("received record command"),COLOR_PURPLE);
-		// do something
+	if (!strcmp((const char *) p_topic, build_topic(MQTT_RECORD_SERVER_TOPIC,PC_TO_UNIT))) { // on / off with dimming
+		logger.println(TOPIC_MQTT, F("received record server ip command"),COLOR_PURPLE);
+		// convert a to ip
+		uint8_t ip[4]={0};
+		uint8_t nr=0;
+		bool valid_ip = true;
+		while(*p_payload){
+			if(*p_payload == '.'){
+				if(nr>=3){
+					valid_ip = false;
+					break;
+				}
+				nr++;
+			} else {
+				if(ip[nr]>25){
+					valid_ip = false;
+					break;
+				}
+				ip[nr] = ip[nr]*10 + *p_payload - '0';
+			}
+			p_payload++;
+		}
+		// check conversion
+		if(valid_ip && nr == 3){
+			serverIP = IPAddress(ip[0],ip[1],ip[2],ip[3]);
+			logger.println(TOPIC_MQTT, F("ip accepted"),COLOR_GREEN);
+			serverIP_available = true;
+		} else {
+			logger.println(TOPIC_MQTT, F("ip conversion failed"),COLOR_RED);
+			serverIP_available = false;
+		}
 		return true;
-	}*/
+	}
 	return false; // not for me
 }
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
 bool record::publish(){
+	if (m_state.get_outdated()) {
+		boolean ret = false;
+		logger.print(TOPIC_MQTT_PUBLISH, F("connection state "), COLOR_GREEN);
+		if (m_state.get_value() == CONNECTED) {
+			logger.pln(F("connected"));
+			ret = network.publish(build_topic(MQTT_RECORD_STATUS_TOPIC,UNIT_TO_PC), (char*)STATE_ON);
+		} else {
+			logger.pln(F("not connected"));
+			ret = network.publish(build_topic(MQTT_RECORD_STATUS_TOPIC,UNIT_TO_PC), (char*)STATE_OFF);
+		}
+		if (ret) {
+			m_state.outdated(false);
+		};
+		return true;
+	}
 	return false;
 }
 

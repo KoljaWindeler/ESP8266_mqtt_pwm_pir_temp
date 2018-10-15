@@ -7,7 +7,8 @@
 #include <SPI.h>
 #include <WiFiUdp.h>
 
-static constexpr char MQTT_RECORD_TOPIC[]   = "topic1";
+static constexpr char MQTT_RECORD_SERVER_TOPIC[]   = "server_ip";
+static constexpr char MQTT_RECORD_STATUS_TOPIC[]   = "record_status";
 
 #define TARGET_PORT 45990
 #define CS_PIN = 15; // d8
@@ -15,6 +16,9 @@ static constexpr char MQTT_RECORD_TOPIC[]   = "topic1";
 #define REC_BUFFER_SIZE 700
 #define ENVELOPE_EMA_WEIGHT 2
 #define ICACHE_RAM_ATTR     __attribute__((section(".iram.text")))
+
+#define NOT_CONNECTED 1
+#define CONNECTED 2
 
 class record : public peripheral {
 	public:
@@ -42,6 +46,10 @@ class record : public peripheral {
 		uint16_t envelope_threshold; // envelope threshold to trigger data sending
 		uint32_t send_sound_util; // date until sound transmission ends after an envelope threshold has triggered sound transmission
 		bool enable_highpass_filter;
+		bool serverIP_available;
+		IPAddress serverIP;
+
+		mqtt_parameter_8 m_state;
 
 		static inline ICACHE_RAM_ATTR uint16_t transfer16(void);
 		void spiBegin(void);
