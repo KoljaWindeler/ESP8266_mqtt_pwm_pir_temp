@@ -20,6 +20,7 @@
 #define PLAY_PORT 			5523
 static constexpr char MQTT_play_TOPIC[]           = "play";         // publish
 static constexpr char MQTT_play_VOL_TOPIC[]           = "play_vol";         // publish
+static constexpr char MQTT_play_SR_TOPIC[]           = "play_sr";         // publish
 
 
 class play : public peripheral {
