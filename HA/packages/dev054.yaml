@@ -108,22 +108,24 @@ automation:
         entity_id: script.seq_dingdong
 
 #------- Toggle LED -----------
-  - alias: Toggle_entrance_LED
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: "dev54/r/gpio_14_state"
-    action:
-      - service: light.toggle
-        entity_id: light.dev54
-#------- Toggle Chandelier -----------
-  - alias: Toggle_entrance_chanelier
+  - alias: Toggle_entrance_LED_by_switch
     initial_state: True
     hide_entity: False
     trigger:
       - platform: mqtt
         topic: "dev54/r/gpio_14_hold"
+        payload: "1"
+    action:
+      - service: light.toggle
+        entity_id: light.dev54
+#------- Toggle Chandelier -----------
+  - alias: Toggle_entrance_chanelier_by_switch
+    initial_state: True
+    hide_entity: False
+    trigger:
+      - platform: mqtt
+        topic: "dev54/r/gpio_14_hold"
+        payload: "2"
     action:
       - service: light.toggle
         entity_id: light.dev54_2

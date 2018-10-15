@@ -12,8 +12,8 @@ light:
     payload_on: "now"
     payload_off: "OFF"
 
-  - platform: mqtt ### valve 1
-    name: "dev30_1"
+  - platform: mqtt ### valve power
+    name: "dev30_pow"
     command_topic: "dev30/s/gpio_2_state"
     state_topic: "dev30/r/gpio_2_state"
     qos: 0
@@ -21,8 +21,8 @@ light:
     payload_on: "ON"
     payload_off: "OFF"
 
-  - platform: mqtt ### valve 2
-    name: "dev30_2"
+  - platform: mqtt ### valve 1
+    name: "dev30_1"
     command_topic: "dev30/s/gpio_16_state"
     state_topic: "dev30/r/gpio_16_state"
     qos: 0
@@ -30,8 +30,8 @@ light:
     payload_on: "ON"
     payload_off: "OFF"
 
-  - platform: mqtt ### valve 3
-    name: "dev30_3"
+  - platform: mqtt ### valve 2
+    name: "dev30_2"
     command_topic: "dev30/s/gpio_4_state"
     state_topic: "dev30/r/gpio_4_state"
     qos: 0
@@ -39,8 +39,8 @@ light:
     payload_on: "ON"
     payload_off: "OFF"
 
-  - platform: mqtt ### valve 4
-    name: "dev30_4"
+  - platform: mqtt ### valve 3
+    name: "dev30_3"
     command_topic: "dev30/s/gpio_5_state"
     state_topic: "dev30/r/gpio_5_state"
     qos: 0
@@ -48,8 +48,18 @@ light:
     payload_on: "ON"
     payload_off: "OFF"
 
-  - platform: mqtt ### valve power
-    name: "dev30_pow"
+  - platform: mqtt ### valve 4
+    name: "dev30_4"
+    command_topic: "dev30/s/gpio_15_state"
+    state_topic: "dev30/r/gpio_15_state"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+
+  - platform: mqtt ### valve 5
+    name: "dev30_5"
     command_topic: "dev30/s/gpio_14_state"
     state_topic: "dev30/r/gpio_14_state"
     qos: 0

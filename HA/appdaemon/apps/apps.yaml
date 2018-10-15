@@ -1,4 +1,4 @@
----
+--- 
 entrance2:
   module: dev54_entrance2
   class: EntranceWorld2
@@ -8,6 +8,12 @@ sprinkler:
 warmwater:
   module: dev29_warmwater
   class: warm_waterWorld
+map:
+  module: dev15_map
+  class: MapWorld
+floor_up:
+  module: dev55_floor_upstairs 
+  class: floor_upWorld
 bedroom:
   module: bedroom
   class: bedroomWorld

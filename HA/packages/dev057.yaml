@@ -3,38 +3,40 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### weihnachtskette
+  - platform: mqtt ###  lampinions flur oben
     name: "dev57"
     state_topic: "dev57/r/light"
-    command_topic: "dev57/s/light"
+    command_topic: "dev57/s/light/dimm"
+    brightness_state_topic: 'dev57/r/light/brightness'
+    brightness_command_topic: 'dev57/s/light/brightness'
     retain: True
+    qos: 0
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
+    brightness_scale: 99
 
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev57:
-      friendly_name: "x-mas"
+      friendly_name: "Lampinions oben"
     binary_sensor.dev57_motion:
-      friendly_name: "x-mas"
+      friendly_name: "57 Floor upstairs"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev57"
-    fname: "57 x-mas tree"
+    fname: "57 Lampinions up"
 
 # -----------------------------------------------
 
 binary_sensor:
   - platform: mqtt
-    state_topic: "dev57/r/motion"
+    state_topic: "dev57/r/gpio_13_state"
     name: "dev57_motion"
     device_class: motion
-
-# -----------------------------------------------
 

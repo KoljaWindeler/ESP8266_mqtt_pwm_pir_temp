@@ -1,10 +1,9 @@
-secrets: /config/secrets.yaml
 log:
   logfile: STDOUT
   errorfile: STDERR
 appdaemon:
   threads: 10
-  app_dir: /config/appdaemon/apps
+  app_dir: /home/homeassistant/.homeassistant/appdaemon/apps
   plugins:
     HASS:
       type: hass
@@ -12,4 +11,4 @@ appdaemon:
       ha_key: hapw
 hadashboard:
   dash_url: http://127.0.0.1:5050
-  dash_dir: /config/appdaemon/dashboards
+  dash_dir: /home/homeassistant/.homeassistant/appdaemon/dashboards

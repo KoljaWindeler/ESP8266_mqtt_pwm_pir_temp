@@ -116,9 +116,6 @@
       - sensor.dev2_temperature
       - sensor.dev10_temperature
       - sensor.dev9_temperature
-      - sensor.dark_sky_apparent_temperature
-      - sensor.dark_sky_daily_high_temperature
-      - sensor.dark_sky_daily_low_temperature
 
 
   Kitchen:
@@ -142,10 +139,11 @@
       - light.dev32
       - light.dev31
       - light.dev23
-      # - light.dev12
       # - light.dev20
       # - binary_sensor.dev16_motion
       # - sensor.dev16_temperature
+      - light.dev55
+
 
   Hallway:
     control: hidden
@@ -154,6 +152,7 @@
       #- light.dev102
       - light.dev54
       - light.dev54_2
+      - light.dev12
       - light.dev6
       - light.dev56
       - light.dev15
@@ -226,7 +225,7 @@
     view: no
     entities:
       - binary_sensor.dev6_motion
-#      - binary_sensor.dev8_motion
+      - binary_sensor.dev8_motion
       - binary_sensor.dev10_motion
       - binary_sensor.dev14_motion
       - binary_sensor.dev15_motion
@@ -252,8 +251,7 @@
       - light.dev30_3
       - light.dev30_4
       - sensor.dev30_uptime
-      - sensor.dark_sky_precip_probability
-      - sensor.dark_sky_precip_intensity
+      - sensor.yweather_temperature_max
 
   rssi:
     name: Signals
@@ -302,7 +300,7 @@
       - sensor.dev32_info
       - sensor.dev55_info
       - sensor.dev56_info
-#      - sensor.dev57_info
+      - sensor.dev57_info
 #      - sensor.dev77_info
       # - sensor.dev18_info
       # - sensor.dev42_info
@@ -341,7 +339,7 @@
       - sensor.dev54_bssid
       - sensor.dev55_bssid
       - sensor.dev56_bssid
-#      - sensor.dev57_bssid
+      - sensor.dev57_bssid
 #      - sensor.dev77_bssid
       # - sensor.dev18_bssid
       # - sensor.dev42_bssid
@@ -380,7 +378,7 @@
       - sensor.dev54_ssid
       - sensor.dev55_ssid
       - sensor.dev56_ssid
-#      - sensor.dev57_ssid
+      - sensor.dev57_ssid
 #      - sensor.dev77_ssid
       # - sensor.dev18_ssid
       # - sensor.dev42_ssid
@@ -419,7 +417,7 @@
       - sensor.dev54_capability
       - sensor.dev55_capability
       - sensor.dev56_capability
-#      - sensor.dev57_capability
+      - sensor.dev57_capability
 #      - sensor.dev77_capability
       # - sensor.dev18_capability
       # - sensor.dev42_capability
@@ -459,7 +457,7 @@
       - sensor.dev54_rssi
       - sensor.dev55_rssi
       - sensor.dev56_rssi
-#      - sensor.dev57_rssi
+      - sensor.dev57_rssi
 #      - sensor.dev77_rssi
       # - sensor.dev18_rssi
       # - sensor.dev42_rssi
@@ -498,7 +496,7 @@
       - sensor.dev54_update
       - sensor.dev55_update
       - sensor.dev56_update
-#      - sensor.dev57_update
+      - sensor.dev57_update
 #      - sensor.dev77_update
 
   all_status:
@@ -535,7 +533,7 @@
       - sensor.dev54
       - sensor.dev55
       - sensor.dev56
-#      - sensor.dev57
+      - sensor.dev57
 #      - sensor.dev77
 
   shop:
@@ -544,6 +542,7 @@
     view: yes
     entities:
       - sensor.dev13_adc
+      - sensor.dev16_kwh
       - light.dev29
 
 

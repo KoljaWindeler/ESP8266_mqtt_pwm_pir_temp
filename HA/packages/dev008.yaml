@@ -1,21 +1,41 @@
 ### ball living room
 # SL, DS18B20
 # -----------------------------------------------
+light:
+  - platform: mqtt ### tower dinning
+    name: "dev8"
+    command_topic: "dev8/s/gpio_12_pulse"
+    state_topic: "dev8/r/light"
+    qos: 0
+    retain: True
+    payload_on: "300"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
 
 homeassistant:
   customize:
     sensor.dev8_temperature:
-      friendly_name: "Carlo PIR"
+      friendly_name: "08 Garage"
       icon: "mdi:thermometer"
     binary_sensor.dev8_motion:
-      friendly_name: "Carlo PIR"
+      friendly_name: "08 Garage"
+    light.dev8:
+      friendly_name: "Garage"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev8"
-    fname: "08 CarloPIR"
+    fname: "08 Garage"
+
+  - platform: mqtt
+    state_topic: "dev8/r/temperature"
+    name: "dev8_temperature"
+    sensor_class: "temperature"
+    unit_of_measurement: "ºC"
 
 # -----------------------------------------------
 

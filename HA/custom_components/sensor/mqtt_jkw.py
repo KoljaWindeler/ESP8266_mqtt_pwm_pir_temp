@@ -57,7 +57,7 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     # entries update
       JkwMqttSensor(hass, name+"_update",name+"/r/#",qos,'min',update,"mdi:timer-sand",friendly),
     # entries all
-      JkwMqttSensor(hass, name,name+"/r/#",qos,'',no_update,"mdi:information-outline",friendly),
+    #  JkwMqttSensor(hass, name,name+"/r/#",qos,'',no_update,"mdi:information-outline",friendly),
     # end of entries
     ])
 

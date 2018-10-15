@@ -54,32 +54,6 @@
     sensor_class: "temperature"
     unit_of_measurement: "ºC"
 # -----------------------------------------------------------
-  - platform: darksky
-    api_key: !secret darksky_key
-    update_interval:
-        # At least one of these must be specified:
-        minutes: 3
-        seconds: 30
-    monitored_conditions:
-      - temperature_max
-      - temperature_min
-      - precip_intensity
-      - precip_probability
-      - temperature
-      - apparent_temperature
-      - cloud_cover
-      - daily_summary
-#      - summary
-#      - icon
-#      - precip_type
-#      - wind_speed
-#      - wind_bearing
-#      - humidity
-#      - visibility
-#      - apparent_temperature_max
-#      - apparent_temperature_min
-#      - precip_intensity_max
-# -----------------------------------------------------------
   - platform: systemmonitor
     resources:
       - type: disk_use_percent
