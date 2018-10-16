@@ -40,7 +40,7 @@ class play : public peripheral {
 	private:
 		//WiFiUDP *udp_server;
 		WiFiServer *tcp_server;
-		WiFiClient tcp_client;
+		WiFiClient tcp_socket;
 
 		uint8_t *buffer8b;
 		uint16_t bufferPtrIn;
@@ -48,17 +48,20 @@ class play : public peripheral {
 		uint16_t bufferPtrOut;
 		uint16_t bufferPtrOut2;
 		uint32_t ultimeout;
+		uint32_t last_data_in;
 		uint8_t bit_mode;
 		uint16_t samples_played;
-		bool connected;
+		bool client_connected;
+		bool amp_active;
 		bool run_noninterrupted;
 		uint32_t last_call;
 
 		uint8_t gainF2P6; // Fixed point 2.6
 		//typedef int32_t fixed24p8_t;
-		void shutdown();
+		void power_amp(bool status);
 		int16_t Amplify(int16_t s);
 		bool SetGain(float f);
+		void handle_client_disconnect();
 
 		uint8_t key[3];
 };

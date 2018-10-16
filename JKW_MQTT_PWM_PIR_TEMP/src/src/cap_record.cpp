@@ -43,7 +43,7 @@ bool record::init(){
 	serverIP_available = false;
 
 	silence_value = 2048; // computed as an exponential moving average of the signal
-	envelope_threshold = 150; // envelope threshold to trigger data sending
+	envelope_threshold = 240; // envelope threshold to trigger data sending
 	send_sound_util = 0; // date until sound transmission ends after an envelope threshold has triggered sound transmission
 	enable_highpass_filter = 0;
 	current_adc_buf = 0;
@@ -133,11 +133,20 @@ bool record::loop(){
 				//Serial.println(len);
 				//udp.write(
 				//udp.endPacket();
+			} else if(millis()-send_sound_util>1000){
+				send_sound_util = millis();
+				uint16_t len = 1;
+				if(tcp_client.write((const uint8_t *)(&adc_buf[(!current_adc_buf*REC_BUFFER_SIZE)+0]), len)!=len){
+						//Serial.println("to many dots");
+						m_state.check_set(NOT_CONNECTED); // assume not connected
+						tcp_client.stop();
+				};
+				Serial.print(".");
 			}
 			send_samples_now = 0;
-			Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
-			Serial.print("delay "); Serial.print(millis() - now);
-			Serial.println("");
+			//Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
+			//Serial.print("delay "); Serial.print(millis() - now);
+			//Serial.println("");
 		}
 	}
 	return false; // i did nothing

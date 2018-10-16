@@ -4,7 +4,8 @@
 play::play(){
 	buffer8b   = NULL;
 	tcp_server = NULL;
-	connected  = false;
+	amp_active = false;
+	client_connected  = false;
 	sprintf((char *) key, "PLY");
 	SetGain(0.35);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
@@ -23,8 +24,7 @@ play::~play(){
 		i2s_end(); // i2s was only started when the tcp_server is running so we only have to end it now
 	}
 
-	pinMode(AMP_ENABLE_PIN, OUTPUT);
-	digitalWrite(AMP_ENABLE_PIN, LOW);
+	power_amp(false); // power amp down
 	logger.println(TOPIC_GENERIC_INFO, F("play deleted"), COLOR_YELLOW);
 };
 
@@ -50,20 +50,20 @@ uint8_t * play::get_key(){
 // will be callen if the key is part of the config
 bool play::init(){
 	i2s_begin();
-	i2s_set_rate(44100);
-	pinMode(AMP_ENABLE_PIN, OUTPUT);
-	digitalWrite(AMP_ENABLE_PIN, LOW);
+	i2s_set_rate(44100); // default, can be change via mqtt
+	power_amp(false); // amp power down state
 
 	tcp_server = new WiFiServer(PLAY_PORT);
 	tcp_server->begin();
 
 	buffer8b = new uint8_t[BUFFER_SIZE];
-	logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
-	sprintf(m_msg_buffer, "%i bit", bit_mode);
-	logger.pln(m_msg_buffer);
 	if (buffer8b) {
+		logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
+		sprintf(m_msg_buffer, "%i bit", bit_mode);
+		logger.pln(m_msg_buffer);
 		return true;
 	}
+	logger.println(TOPIC_GENERIC_INFO, F("play init failed"), COLOR_RED);
 	return false;
 }
 
@@ -80,14 +80,16 @@ bool play::loop(){
 	run_noninterrupted = true; // get high priority
 
 	// new tcp_client?
-	if (!connected) {
-		tcp_client = tcp_server->available();
-		if (tcp_client.connected()) {
-			logger.println(TOPIC_GENERIC_INFO, F("New play tcp_client"), COLOR_GREEN);
+	if (!client_connected) {
+		tcp_socket = tcp_server->available();
+		if (tcp_socket.connected()) {
+			logger.println(TOPIC_GENERIC_INFO, F("(PLY) New tcp_client"), COLOR_GREEN);
+			last_data_in = millis();
 		}
 	}
-	if (tcp_client.connected()) {
-		if (!connected) {
+
+	if (tcp_socket.connected()) { // timeout default: 1000ms
+		if (!client_connected) { // if client is connected now, but the amp is off or the client wasn't connected before
 			bufferPtrIn  = 0;
 			bufferPtrOut = 0;
 			// ===================================================================================
@@ -96,56 +98,59 @@ bool play::loop(){
 			ultimeout = millis() + 500;
 			// yield();
 			do {
-				if (tcp_client.available()) {
-					buffer8b[bufferPtrIn] = tcp_client.read();
+				if (tcp_socket.available()) {
+					buffer8b[bufferPtrIn] = tcp_socket.read();
 					bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
 					ultimeout   = millis() + 500;
 				}
-			} while ((bufferPtrIn < (BUFFER_SIZE - 1)) && (tcp_client.connected()) && (millis() < ultimeout));
+			} while ((bufferPtrIn < (BUFFER_SIZE - 1)) && (tcp_socket.connected()) && (millis() < ultimeout));
 
-			if ((!tcp_client.connected()) || (millis() >= ultimeout)) {
-				logger.println(TOPIC_GENERIC_INFO, F("play buffering failed"), COLOR_RED);
-				return false;
+			// error handling
+			if ((!tcp_socket.connected()) || (millis() >= ultimeout)) {
+				logger.println(TOPIC_GENERIC_INFO, F("(PLY) full buffering failed"), COLOR_RED);
+				//return false;
 			}
 
-			logger.println(TOPIC_GENERIC_INFO, F("play starts playing"), COLOR_GREEN);
+			logger.println(TOPIC_GENERIC_INFO, F("(PLY) start playing"), COLOR_GREEN);
 			// still running, prepare playback
 			// ===================================================================================
-			digitalWrite(AMP_ENABLE_PIN, LOW); // drive low, to disable pull up
-			pinMode(AMP_ENABLE_PIN, INPUT);    // floating to reanable the sample
+			power_amp(true); // power up
 			// ===================================================================================
 			ultimeout      = millis() + 500;
-			connected      = true;
-			samples_played = 0;
+			last_data_in   = millis();
+			client_connected      = true;
+			// samples_played = 0;
 			// start playback
 		}
 
-		if (connected) {
-			// playback -- keep playing the same sample on buffer underrun
+		if (client_connected) {
+			// playback -- keep playing the same sample on buffer underrun up to 1.5sec
 			// scale down by 4 (>>2) otherwise the output overshoots significantly
-			uint16_t t = Amplify(buffer8b[bufferPtrOut]) << 6;
-			if (bit_mode == 16) {
-				t |= Amplify(buffer8b[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
-			}
-			// play
-			uint32_t s32 = (t << 16) & 0xffff0000 | (t & 0xffff);
-
-			if (i2s_write_sample_nb(s32)) { // If we can't store it, return false.  OTW true
-				run_noninterrupted = false;    // our chance, i2s just received new samples, see if we have to publish something
-				if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) { // not close to buffer end, step forward
-					if (bit_mode == 16) {
-						bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
-					} else {
-						bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
-					}
-					ultimeout = millis() + 1500; // we still have data, no timeout
+			if(amp_active){
+				uint16_t t = Amplify(buffer8b[bufferPtrOut]) << 6;
+				if (bit_mode == 16) {
+					t |= Amplify(buffer8b[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
 				}
-			}
+				// play
+				uint32_t s32 = (t << 16) & 0xffff0000 | (t & 0xffff);
 
-			// timeout! can stll overridden by new data
-			if (millis() > ultimeout) {
-				connected = false;
-				logger.println(TOPIC_GENERIC_INFO, F("play timeout"), COLOR_RED);
+				if (i2s_write_sample_nb(s32)) { // If we can't store it, return false.  OTW true
+					//run_noninterrupted = false;    // our chance, i2s just received new samples, see if we have to publish something
+					if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) { // not close to buffer end, step forward
+						if (bit_mode == 16) {
+							bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
+						} else {
+							bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+						}
+						ultimeout = millis() + 1500; // we still have data, no timeout
+					}
+				}
+
+				// timeout, no new data. Not a disconnect .. neccessarly.
+				if (millis() > ultimeout) {
+					power_amp(false); // power down
+					logger.println(TOPIC_GENERIC_INFO, F("(PLY) timeout"), COLOR_RED);
+				}
 			}
 
 			/*
@@ -158,41 +163,35 @@ bool play::loop(){
 
 			// read new data to buffer
 			for (uint8_t s = 0; s < bit_mode; s += 8) {
-				if (tcp_client.available()) {
+				if (tcp_socket.available()>1) {
+					last_data_in   = millis();
 					// ring-buffer free?
 					if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
-						buffer8b[bufferPtrIn] = tcp_client.read();
+						buffer8b[bufferPtrIn] = tcp_socket.read();
 						bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
 					}
-					connected = true;
+					if(!amp_active){ // re-enable amp if there are still more data available
+						power_amp(true);
+					}
+				} else if (tcp_socket.available()==1) { // single sample, just a keep alive
+					//Serial.println(".");
+					last_data_in   = millis();
+					tcp_socket.read();
 				}
 			}
 
-			// on disconnect
-			if (!connected) {
-				shutdown();
+			// disconnect
+			if(millis()-last_data_in > 1500){
+				handle_client_disconnect();
 			}
 		}
 		return run_noninterrupted; // i played music leave me running
-	} else {
-		if (connected) {
-			shutdown();
-		}
-		// nnope, did nothing, go on
-		return false;
+	} else if (client_connected) {
+		handle_client_disconnect();
 	}
+	return false; // catch
 } // loop
 
-// shut the AMP down via PIN, fastest and Plopp avoiding
-void play::shutdown(){
-	logger.println(TOPIC_GENERIC_INFO, F("play shutting down"), COLOR_RED);
-	// ===================================================================================
-	pinMode(AMP_ENABLE_PIN, OUTPUT); // drive it to power down
-	digitalWrite(AMP_ENABLE_PIN, LOW);
-	// ===================================================================================
-	tcp_client.stop();
-	connected = false;
-}
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever
@@ -217,7 +216,6 @@ bool play::subscribe(){
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_play_VOL_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 	network.subscribe(build_topic(MQTT_play_SR_TOPIC, PC_TO_UNIT)); // simple rainbow  topic
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_play_SR_TOPIC, PC_TO_UNIT), COLOR_GREEN);
-
 	return true;
 }
 
@@ -233,12 +231,32 @@ bool play::receive(uint8_t * p_topic, uint8_t * p_payload){
 	} else if (!strcmp((const char *) p_topic, build_topic(MQTT_play_SR_TOPIC, PC_TO_UNIT)))    { // on / off with dimming
 		uint16_t sample_rate = atoi((const char *) p_payload);
 		logger.print(TOPIC_MQTT, F("received sample rate command: "), COLOR_PURPLE);
-		sprintf(m_msg_buffer, "%i%%", sample_rate);
+		sprintf(m_msg_buffer, "%i", sample_rate);
 		logger.pln(m_msg_buffer);
 		i2s_set_rate(sample_rate);
 		return true;
 	}
 	return false; // not for me
+}
+
+// turn amplifier on / off
+void play::power_amp(bool status){
+	if(status){
+		digitalWrite(AMP_ENABLE_PIN, LOW); // drive low, to disable pull up
+		pinMode(AMP_ENABLE_PIN, INPUT);    // floating to reanable the sample
+		logger.println(TOPIC_GENERIC_INFO, F("(PLY) amp power up"), COLOR_GREEN);
+	} else {
+		pinMode(AMP_ENABLE_PIN, OUTPUT); // drive it to power down
+		digitalWrite(AMP_ENABLE_PIN, LOW);
+		logger.println(TOPIC_GENERIC_INFO, F("(PLY) amp shutting down"), COLOR_RED);
+	}
+	amp_active = status;
+}
+
+void play::handle_client_disconnect(){
+	power_amp(false); // power down
+	client_connected = false;
+	logger.println(TOPIC_GENERIC_INFO, F("(PLY) tcp_client disconnect"), COLOR_YELLOW);
 }
 
 // if you have something very urgent, do this in this method and return true
