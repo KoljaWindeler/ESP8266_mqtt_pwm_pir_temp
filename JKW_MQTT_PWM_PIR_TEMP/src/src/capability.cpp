@@ -11,6 +11,7 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	uint8_t p=0;
 	uint8_t len = 0;
 	uint8_t temp[10];
+	uint8_t* cap_start;
 	unsigned char * p_input=input;
 
 	// add trainig comma
@@ -22,6 +23,7 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	}
 	//Serial.printf("cap parsing. input: %s vs. key %s\r\n",input,key);
 	p=0;
+	cap_start = input; // start of string
 	while (*input) {
 		if(*input!=','){
 			temp[p]=*input;
@@ -29,19 +31,22 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 		} else {
 			temp[p]=0x00;
 			//Serial.printf("parsing. input: %s vs. key %s\r\n",temp,key);
-			if(!strcmp((const char*)key,(const char*)temp)){
-				if(strcmp((const char*)dep,(const char*)"")){
-					if(ensure_dep(p_input,dep)){
+			if(!strcmp((const char*)key,(const char*)temp)){ // if this is my key
+				if(strcmp((const char*)dep,(const char*)"")){ // if i have a dependency
+					if(ensure_dep(p_input,dep)){ // ensure depency is part of the config string or add it
 						logger.print(TOPIC_GENERIC_INFO, F(""),COLOR_PURPLE);
 						logger.addColor(COLOR_PURPLE);
 						Serial.printf("%s added dependency %s\r\n",key,dep);
 						logger.remColor(COLOR_PURPLE);
 					}
 				}
+				// remove my token from config string, so only the non consumed token remain
+				memset(cap_start, 'x', strlen((const char*)key));
 				//Serial.println("parse return true");
 				return true;
 			}
 			p=0;
+			cap_start = input+1;
 		}
 		input++;
 	}

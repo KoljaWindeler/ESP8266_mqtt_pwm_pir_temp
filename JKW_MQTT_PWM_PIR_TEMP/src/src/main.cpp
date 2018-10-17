@@ -306,6 +306,30 @@ void reconnect(){
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
+				// capability error checking
+				uint8_t p_fill=0;
+				for(uint8_t i=0; mqtt.cap[i]; i++){
+					if(mqtt.cap[i]!='x'){
+						if(mqtt.cap[i]==',' && (p_fill==0 || mqtt.cap[p_fill-1]==',')){ // only move meaningful comma
+							continue;
+						}
+						mqtt.cap[p_fill] = mqtt.cap[i];
+						p_fill++;
+					}
+				}
+				if(p_fill>1){ // at least one letter + ','
+					mqtt.cap[p_fill-1]=0x00; // remove last ','
+					snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Unsatisfied config: %s"), (char*)mqtt.cap);
+					logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
+					logger.p((char *) " -> ");
+					logger.pln(m_msg_buffer);
+				} else {
+					m_msg_buffer[0]=0x00; // clear previously reported retained errors
+				}
+				network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
+				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
+
+
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
@@ -565,7 +589,6 @@ void loadPheripherals(uint8_t * config){
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
-	wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
 } // loadPheripherals
 
 // build topics with device id on the fly
