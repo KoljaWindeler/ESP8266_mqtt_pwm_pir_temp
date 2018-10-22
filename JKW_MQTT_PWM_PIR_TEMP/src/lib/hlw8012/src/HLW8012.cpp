@@ -53,9 +53,7 @@ void HLW8012::begin(
 void HLW8012::setMode(hlw8012_mode_t mode) {
     _mode = (mode == MODE_CURRENT) ? _current_mode : 1 - _current_mode;
     digitalWrite(_sel_pin, _mode);
-    if (_use_interrupts) {
-        _last_cf1_interrupt = _first_cf1_interrupt = micros();
-    }
+    _last_cf1_interrupt = _first_cf1_interrupt = micros();
 }
 
 hlw8012_mode_t HLW8012::getMode() {
@@ -75,11 +73,8 @@ double HLW8012::getCurrent() {
     if (_power == 0) {
         _current_pulse_width = 0;
 
-    } else if (_use_interrupts) {
+    } else {
         _checkCF1Signal();
-
-    } else if (_mode == _current_mode) {
-        _current_pulse_width = pulseIn(_cf1_pin, HIGH, _pulse_timeout);
     }
 
     _current = (_current_pulse_width > 0) ? _current_multiplier / _current_pulse_width / 2 : 0;
@@ -88,21 +83,13 @@ double HLW8012::getCurrent() {
 }
 
 unsigned int HLW8012::getVoltage() {
-    if (_use_interrupts) {
-        _checkCF1Signal();
-    } else if (_mode != _current_mode) {
-        _voltage_pulse_width = pulseIn(_cf1_pin, HIGH, _pulse_timeout);
-    }
+    _checkCF1Signal();
     _voltage = (_voltage_pulse_width > 0) ? _voltage_multiplier / _voltage_pulse_width / 2 : 0;
     return _voltage;
 }
 
 unsigned int HLW8012::getActivePower() {
-    if (_use_interrupts) {
-        _checkCFSignal();
-    } else {
-        _power_pulse_width = pulseIn(_cf_pin, HIGH, _pulse_timeout);
-    }
+		_checkCFSignal();
     _power = (_power_pulse_width > 0) ? _power_multiplier / _power_pulse_width / 2 : 0;
     return _power;
 }
@@ -134,8 +121,6 @@ double HLW8012::getPowerFactor() {
 unsigned long HLW8012::getEnergy() {
 
     // Counting pulses only works in IRQ mode
-    if (!_use_interrupts) return 0;
-
     /*
     Pulse count is directly proportional to energy:
     P = m*f (m=power multiplier, f = Frequency)
