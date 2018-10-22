@@ -27,12 +27,16 @@ light:
 
   - platform: mqtt ### kronleuchter
     name: "dev54_2"
-    command_topic: "dev54/s/gpio_5_state"
     state_topic: "dev54/r/gpio_5_state"
-    qos: 0
+    command_topic: "dev54/s/gpio_5_dimm"
+    brightness_state_topic: 'dev54/r/gpio_5_brightness'
+    brightness_command_topic: 'dev54/s/gpio_5_brightness'
     retain: True
+    qos: 0
     payload_on: "ON"
     payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99
 
   - platform: mqtt ### aussen-ecken-licht
     name: "dev54_3"

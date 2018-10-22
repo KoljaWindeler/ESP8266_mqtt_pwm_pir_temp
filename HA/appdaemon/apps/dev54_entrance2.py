@@ -11,7 +11,7 @@ class EntranceWorld2(hass.Hass):
         self.listen_state(self.inside_on, "binary_sensor.dev54_motion_1", new = "on")
         self.inside_off()
 
-        self.run_daily(self.outside_on, time(6, 30, 0))
+        self.run_daily(self.outside_on, time(6, 0, 0))
         self.run_daily(self.outside, time(22, 0, 0))
         self.run_daily(self.outside, time(23, 0, 0))
         self.run_at_sunrise(self.outside, offset = 30 * 60)

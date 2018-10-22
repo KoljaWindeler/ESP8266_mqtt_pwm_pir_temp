@@ -50,8 +50,8 @@ automation:
     initial_state: 'on'
     trigger:
       - platform: time
-        hours: 21 #19
-        minutes: 15 #30
+        hours: 19
+        minutes: 00
         seconds: 00
     condition:
       condition: or

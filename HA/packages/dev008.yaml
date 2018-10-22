@@ -7,7 +7,7 @@ light:
     command_topic: "dev8/s/gpio_12_pulse"
     state_topic: "dev8/r/light"
     qos: 0
-    retain: True
+    retain: False
     payload_on: "300"
     payload_off: "OFF"
 
