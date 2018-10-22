@@ -7,7 +7,7 @@
 #define MY9291_DI_PIN          12 // mtdi 12
 #define MY9291_DCKI_PIN        14 // mtms gpio 14?
 
-class BOne : public peripheral {
+class BOne : public capability {
 	public:
 		BOne();
 		~BOne();
@@ -25,7 +25,7 @@ class BOne : public peripheral {
 		uint8_t* get_dep();
 	private:
 		mqtt_parameter_8 m_state;
-		uint8_t key[3];
+		// uint8_t key[3];
 		led m_light_current;
 		my92x1 _my92x1_b1;
 };

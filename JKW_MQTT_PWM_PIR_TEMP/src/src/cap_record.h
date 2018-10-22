@@ -20,7 +20,7 @@ static constexpr char MQTT_RECORD_STATUS_TOPIC[]   = "record_status";
 #define NOT_CONNECTED 1
 #define CONNECTED 2
 
-class record : public peripheral {
+class record : public capability {
 	public:
 		record();
 		~record();
@@ -35,7 +35,6 @@ class record : public peripheral {
 		void sample_isr();
 
 	private:
-		uint8_t key[3];
 		WiFiClient tcp_client;
 		uint16_t* adc_buf; // ADC data buffer, double buffered
 		bool current_adc_buf; // which data buffer is being used for the ADC (the other is being sent)

@@ -1,15 +1,13 @@
 #include <cap_hlw8012.h>
 #ifdef WITH_HLW
-J_hlw8012::J_hlw8012(){
-	sprintf((char*)key,"HLW");
-};
+J_hlw8012::J_hlw8012(){};
 
 J_hlw8012::~J_hlw8012(){
 	logger.println(TOPIC_GENERIC_INFO, F("J_hlw8012 deleted"), COLOR_YELLOW);
 };
 
 uint8_t* J_hlw8012::get_key(){
-	return key;
+	return (uint8_t*)"HLW";
 }
 
 void ICACHE_RAM_ATTR J_hlw8012_cf1_interrupt() {

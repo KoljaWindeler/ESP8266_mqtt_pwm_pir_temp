@@ -19,11 +19,11 @@ WiFiManagerParameter WiFiManager_mqtt_server_pw("pw", "mqtt pw", "", 15);
 
 uint8_t active_p_pointer = 0;
 uint8_t active_p_intervall_counter = 0;
-peripheral ** active_p[MAX_PERIPHERALS];
-peripheral ** active_intervall_p[MAX_PERIPHERALS];
+capability ** active_p[MAX_CAPS];
+capability ** active_intervall_p[MAX_CAPS];
 char * p_trace;
 
-// bool (*intervall_p[MAX_PERIPHERALS]);
+// bool (*intervall_p[MAX_CAPS]);
 
 // //////////////////////////////////////////////////////////////////////////////////////
 // /////////////////////// helper to calc times a bit easier ///////////////////////////
@@ -65,7 +65,7 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	logger.remColor(COLOR_PURPLE);
 
 	// / will find the right component and execute the input
-	for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_PERIPHERALS - 1; i++) {
+	for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_CAPS - 1; i++) {
 		if ((*active_p[i])->receive((uint8_t *) p_topic, p_payload)) {
 			return;
 		}
@@ -301,7 +301,7 @@ void reconnect(){
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false), COLOR_GREEN);
 
 
-				for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_PERIPHERALS - 1; i++) {
+				for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_CAPS - 1; i++) {
 					// Serial.printf("subscibe e%i\r\n",i);
 					// delay(500);
 					(*active_p[i])->subscribe();
@@ -333,7 +333,7 @@ void reconnect(){
 
 
 				// INFO publishing
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
 				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
@@ -376,7 +376,6 @@ void reconnect(){
 				logger.pln(m_msg_buffer);
 
 				// CAP publishing
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s %s", PINOUT, VERSION);
 				network.publish(build_topic(MQTT_CAPABILITY_TOPIC, UNIT_TO_PC), mqtt.cap);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_CAPABILITY_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
@@ -408,7 +407,7 @@ void reconnect(){
 				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
 				// run wifi manager
 				wifiManager.startConfigPortal(CONFIG_SSID);
-				// reinit peripheral if needed
+				// reinit capability if needed
 				if(p_neo){
 					p_neo->init();
 				}
@@ -500,7 +499,7 @@ void loadConfig(){
 
 void loadPheripherals(uint8_t * config){
 	// erase
-	for (uint8_t i = 0; i < MAX_PERIPHERALS; i++) {
+	for (uint8_t i = 0; i < MAX_CAPS; i++) {
 		if (active_p[i]) {
 			delete *active_p[i];
 			active_p[i] = 0x00;
@@ -519,7 +518,7 @@ void loadPheripherals(uint8_t * config){
 	// activate
 	active_p_pointer = 0;
 	active_p_intervall_counter = 0;
-	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
+	logger.println(TOPIC_GENERIC_INFO, F("activating capabilities"), COLOR_PURPLE);
 	// logger.p("RAM before creating objects ");
 	// logger.pln(system_get_free_heap_size());
 #ifdef WITH_ADC
@@ -588,7 +587,7 @@ void loadPheripherals(uint8_t * config){
 	// logger.p("RAM after init objects ");
 	// logger.pln(system_get_free_heap_size());
 
-	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
+	logger.println(TOPIC_GENERIC_INFO, F("linking capabilities"), COLOR_PURPLE);
 
 	for(uint8_t i=0; i<active_p_pointer; i++){
 		//Serial.printf("check if component %s has a dep\r\n",(*active_p[i])->get_key());
@@ -607,7 +606,7 @@ void loadPheripherals(uint8_t * config){
  		}
 	}
 
-	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);
+	logger.println(TOPIC_GENERIC_INFO, F("capabilities loaded"), COLOR_PURPLE);
 } // loadPheripherals
 
 // build topics with device id on the fly
@@ -646,8 +645,6 @@ void setup(){
 	logger.pln(F("========== INFO ========== "));
 	logger.p(F("Startup v"));
 	logger.pln(F(VERSION));
-	logger.p(F("Pinout "));
-	logger.pln(F(PINOUT));
 	logger.pln(F("+ Flash:"));
 	if (ESP.getFlashChipRealSize() != ESP.getFlashChipSize()) {
 		if (ESP.getFlashChipRealSize() > ESP.getFlashChipSize()) {
@@ -669,7 +666,7 @@ void setup(){
 	// /// init the serial and print debug /////
 
 	// /// init the led /////
-	for (uint8_t i = 0; i < MAX_PERIPHERALS; i++) {
+	for (uint8_t i = 0; i < MAX_CAPS; i++) {
 		active_intervall_p[i] = 0x00;
 	}
 
@@ -785,19 +782,19 @@ void loop(){
 
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////
-bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config){
+bool bake(capability * p_obj, capability ** p_handle, uint8_t * config){
 	if (p_obj->parse(config)) { // true = obj active
 		*p_handle = p_obj;
 		(*p_handle)->init();
-		// store object in active peripheral list
+		// store object in active capability list
 		active_p[active_p_pointer] = p_handle;
-		if (active_p_pointer < MAX_PERIPHERALS - 1) {
+		if (active_p_pointer < MAX_CAPS - 1) {
 			active_p_pointer++;
 		}
 		// get the amount of intervall updates and store a pointer to the object
 		for (uint8_t ii = 0; ii < p_obj->count_intervall_update(); ii++) {
 			active_intervall_p[active_p_intervall_counter] = p_handle;
-			if (active_p_intervall_counter < MAX_PERIPHERALS - 1) {
+			if (active_p_intervall_counter < MAX_CAPS - 1) {
 				active_p_intervall_counter++;
 			}
 		}

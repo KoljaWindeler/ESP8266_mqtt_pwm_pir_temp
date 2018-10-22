@@ -20,7 +20,7 @@
 	static constexpr char MQTT_BUTTON_TOPIC_3S[] = "button3s"; // publish
 	static constexpr char MQTT_BUTTON_RELEASE_TOPIC[] = "button_release"; // publish
 
-	class button : public peripheral {
+	class button : public capability {
 public:
 		button();
 		~button();
@@ -38,7 +38,7 @@ private:
 		uint8_t m_counter;
 		uint32_t m_timer_button_down;
 		uint32_t m_timer_checked;
-		uint8_t key[2];
+		// uint8_t key[2];
 		uint8_t m_pin;
 		uint8_t m_mode_toggle_switch;
 	};

@@ -9,8 +9,7 @@ NeoStrip::~NeoStrip(){
 };
 
 uint8_t* NeoStrip::get_key(){
-	sprintf((char*)key,"NEO");
-	return key;
+	return (uint8_t*)"NEO";
 }
 
 uint8_t* NeoStrip::get_dep(){

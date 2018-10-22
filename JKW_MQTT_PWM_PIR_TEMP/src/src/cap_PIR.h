@@ -5,7 +5,7 @@
 static constexpr char MQTT_MOTION_TOPIC[]        = "motion";      // publish
 
 
-class PIR : public peripheral {
+class PIR : public capability {
 	public:
 		PIR(uint8_t* k,uint8_t pin);
 		~PIR();

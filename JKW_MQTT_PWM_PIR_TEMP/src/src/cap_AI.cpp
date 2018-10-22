@@ -22,8 +22,7 @@ my92x1* AI::getmy929x1(){
 }
 
 uint8_t* AI::get_key(){
-	sprintf((char*)key,"AI");
-	return key;
+	return (uint8_t*)"AI";
 }
 
 bool AI::init(){

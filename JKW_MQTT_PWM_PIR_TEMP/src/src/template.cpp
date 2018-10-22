@@ -1,9 +1,8 @@
+#ifdef NEVER_COMPILE_ME
 #include <template.h>
 
 // simply the constructor
-template::template(){
-	sprintf((char*)key,"TMP");
-};
+template::template(){};
 
 // simply the destructor
 template::~template(){
@@ -20,13 +19,13 @@ bool template::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* template::get_key(){
-	return key;
+	return (uint8_t*)"TMP";
 }
 
 // will be callen if the key is part of the config
 bool template::init(){
-logger.println(TOPIC_GENERIC_INFO, F("HLW init"), COLOR_GREEN);
-return true;
+	logger.println(TOPIC_GENERIC_INFO, F("TMP init"), COLOR_GREEN);
+	return true;
 }
 
 // override-methode, only implement when needed
@@ -99,3 +98,4 @@ return true;
 //bool template::publish(){
 //	return false;
 //}
+#endif

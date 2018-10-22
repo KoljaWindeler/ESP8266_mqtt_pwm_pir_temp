@@ -20,8 +20,7 @@ uint8_t* BOne::get_dep(){
 }
 
 uint8_t* BOne::get_key(){
-	sprintf((char*)key,"B1");
-	return key;
+	return (uint8_t*)"B1";
 }
 
 my92x1* BOne::getmy929x1(){

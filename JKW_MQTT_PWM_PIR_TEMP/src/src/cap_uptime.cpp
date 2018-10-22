@@ -2,9 +2,7 @@
 #ifdef WITH_UPTIME
 
 // simply the constructor
-uptime::uptime(){
-	sprintf((char*)key,"UT");
-};
+uptime::uptime(){};
 
 // simply the destructor
 uptime::~uptime(){
@@ -37,7 +35,7 @@ bool uptime::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* uptime::get_key(){
-	return key;
+	return (uint8_t*)"UT";
 }
 
 // will be callen if the key is part of the config

@@ -1,9 +1,7 @@
 #include <cap_night_light.h>
 #ifdef WITH_NL
 // simply the constructor
-night_light::night_light(){
-	sprintf((char*)key,"NL");
-};
+night_light::night_light(){};
 
 // simply the destructor
 night_light::~night_light(){
@@ -20,7 +18,7 @@ bool night_light::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* night_light::get_key(){
-	return key;
+	return (uint8_t*)"NL";
 }
 
 // will be callen if the key is part of the config

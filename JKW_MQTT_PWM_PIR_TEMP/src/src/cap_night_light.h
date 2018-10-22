@@ -4,7 +4,7 @@
 #include "main.h"
 #define PIN_NIGHT_LIGHT 13
 
-class night_light : public peripheral {
+class night_light : public capability {
 	public:
 		night_light();
 		~night_light();
@@ -18,8 +18,6 @@ class night_light : public peripheral {
 		uint8_t* get_key();
 	private:
 		// bool publish();
-		uint8_t key[4];
-
 };
 
 

@@ -28,7 +28,7 @@ static constexpr char MQTT_HLW_VOLTAGE_TOPIC[]   = "voltage";
 static constexpr char MQTT_HLW_POWER_TOPIC[]     = "power";
 
 
-class J_hlw8012 : public peripheral {
+class J_hlw8012 : public capability {
 	public:
 		J_hlw8012();
 		~J_hlw8012();
@@ -43,7 +43,6 @@ class J_hlw8012 : public peripheral {
 		// bool publish();
 		HLW8012 m_hlw8012;
 	private:
-		uint8_t key[4];
 };
 
 

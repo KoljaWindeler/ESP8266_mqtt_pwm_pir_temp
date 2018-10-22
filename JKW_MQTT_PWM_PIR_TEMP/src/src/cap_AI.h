@@ -8,7 +8,7 @@
 #define AI_DI_PIN          13 // mtdi 12
 #define AI_DCKI_PIN        15 // mtms gpio 14?
 
-class AI : public peripheral {
+class AI : public capability {
 	public:
 		AI();
 		~AI();
@@ -27,7 +27,7 @@ class AI : public peripheral {
 		//my9291* my9291;
 	private:
 		mqtt_parameter_8 m_state;
-		uint8_t key[3];
+		// uint8_t key[3];
 		led m_light_current;
 		my92x1 _my92x1;
 };

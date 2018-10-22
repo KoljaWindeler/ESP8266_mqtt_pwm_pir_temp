@@ -1,6 +1,5 @@
 #include <cap_DS.h>
 #ifdef WITH_DS
-OneWire ds(DS_PIN);
 
 J_DS::J_DS(){};
 J_DS::~J_DS(){
@@ -8,11 +7,11 @@ J_DS::~J_DS(){
 };
 
 uint8_t* J_DS::get_key(){
-	sprintf((char*)key,"DS");
-	return key;
+	return (uint8_t*)"DS";
 }
 
 bool J_DS::init(){
+	p_ds = new OneWire(DS_PIN);
 	logger.println(TOPIC_GENERIC_INFO, F("DS init"), COLOR_GREEN);
 	return true;
 }
@@ -70,9 +69,9 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 	byte data[12];
 	byte addr[8];
 
-	if (!ds.search(addr)) {
+	if (!p_ds->search(addr)) {
 		// no more sensors on chain, reset search
-		ds.reset_search();
+		p_ds->reset_search();
 		return -999;
 	}
 
@@ -86,20 +85,20 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 		return -777;
 	}
 
-	ds.reset();
-	ds.select(addr);
-	ds.write(0x44, 1); // start conversion, with parasite power on at the end
+	p_ds->reset();
+	p_ds->select(addr);
+	p_ds->write(0x44, 1); // start conversion, with parasite power on at the end
 
-	byte present = ds.reset();
-	ds.select(addr);
-	ds.write(0xBE); // Read Scratchpad
+	byte present = p_ds->reset();
+	p_ds->select(addr);
+	p_ds->write(0xBE); // Read Scratchpad
 
 
 	for (int i = 0; i < 9; i++) { // we need 9 bytes
-		data[i] = ds.read();
+		data[i] = p_ds->read();
 	}
 
-	ds.reset_search();
+	p_ds->reset_search();
 
 	byte MSB = data[1];
 	byte LSB = data[0];

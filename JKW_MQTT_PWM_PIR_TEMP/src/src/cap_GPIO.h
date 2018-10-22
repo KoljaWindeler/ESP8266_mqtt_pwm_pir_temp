@@ -38,7 +38,7 @@ private:
 		uint8_t m_step_time   = 0;
 	};
 
-	class J_GPIO : public peripheral {
+	class J_GPIO : public capability {
 public:
 		J_GPIO();
 		~J_GPIO();

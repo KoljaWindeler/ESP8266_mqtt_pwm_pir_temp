@@ -1,6 +1,5 @@
 #include <cap_DHT22.h>
 #ifdef WITH_DHT22
-DHT dht(DHT_PIN, DHT22);        // J_DHT22
 
 J_DHT22::J_DHT22(){};
 J_DHT22::~J_DHT22(){
@@ -8,13 +7,13 @@ J_DHT22::~J_DHT22(){
 };
 
 uint8_t* J_DHT22::get_key(){
-	sprintf((char*)key,"DHT");
-	return key;
+	return (uint8_t*)"DHT";
 }
 
 bool J_DHT22::init(){
 	// dht
-	dht.begin();
+	p_dht = new DHT(DHT_PIN, DHT22);        // J_DHT22
+	p_dht->begin();
 	logger.println(TOPIC_GENERIC_INFO, F("DHT init"), COLOR_GREEN);
 	return true;
 }
@@ -27,13 +26,10 @@ bool J_DHT22::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
 
-// bool J_DHT22::loop(){
-// 	return false; // i did nothing
-// }
 
 bool J_DHT22::intervall_update(uint8_t slot){
 	if(slot==0){
-		float temp = dht.readTemperature();
+		float temp = p_dht->readTemperature();
 		if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
 			logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);
 			if (isnan(temp)) {
@@ -51,7 +47,7 @@ bool J_DHT22::intervall_update(uint8_t slot){
 		return network.publish(build_topic(MQTT_TEMPARATURE_TOPIC,UNIT_TO_PC), m_msg_buffer);
 	}
 	else if(slot==1){
-		float hum = dht.readHumidity();
+		float hum = p_dht->readHumidity();
 		if (isnan(hum)) {
 			logger.println(TOPIC_GENERIC_INFO, F("no publish humidiy"), COLOR_YELLOW);
 			return false;
@@ -64,6 +60,10 @@ bool J_DHT22::intervall_update(uint8_t slot){
 	return false;
 }
 
+
+// bool J_DHT22::loop(){
+// 	return false; // i did nothing
+// }
 // bool J_DHT22::subscribe(){
 // 	return true;
 // }

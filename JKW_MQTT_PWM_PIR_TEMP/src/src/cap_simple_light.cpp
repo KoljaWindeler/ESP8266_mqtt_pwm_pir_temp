@@ -6,8 +6,7 @@ simple_light::~simple_light(){
 };
 
 uint8_t* simple_light::get_key(){
-	sprintf((char*)key,"SL");
-	return key;
+	return (uint8_t*)"SL";
 }
 
 uint8_t* simple_light::get_dep(){

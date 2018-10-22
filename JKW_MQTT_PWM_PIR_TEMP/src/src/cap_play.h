@@ -23,7 +23,7 @@ static constexpr char MQTT_play_VOL_TOPIC[]           = "play_vol";         // p
 static constexpr char MQTT_play_SR_TOPIC[]           = "play_sr";         // publish
 
 
-class play : public peripheral {
+class play : public capability {
 	public:
 		play();
 		~play();
@@ -61,8 +61,6 @@ class play : public peripheral {
 		int16_t Amplify(int16_t s);
 		bool SetGain(float f);
 		void handle_client_disconnect();
-
-		uint8_t key[3];
 };
 
 

@@ -4,7 +4,7 @@
 #include "main.h"
 static constexpr char MQTT_RSSI_TOPIC[]          = "rssi";        // publish
 
-class rssi : public peripheral {
+class rssi : public capability {
 	public:
 		rssi();
 		~rssi();
@@ -19,8 +19,6 @@ class rssi : public peripheral {
 		// bool publish();
 	private:
 		mqtt_parameter_8 m_state;
-		uint8_t key[2];
-
 };
 
 

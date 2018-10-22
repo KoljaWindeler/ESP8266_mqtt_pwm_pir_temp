@@ -32,7 +32,7 @@
 	#define STATE_ONFOR 						"ONFOR"
 
 
-	class light : public peripheral {
+	class light : public capability {
 public:
 		light();
 		~light();
@@ -49,7 +49,7 @@ public:
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		void toggle();
 		void setState(bool state);
-		bool reg_provider(peripheral * p, uint8_t *source);
+		bool reg_provider(capability * p, uint8_t *source);
 
 private:
 		mqtt_parameter_8 m_state;                // on / off
@@ -68,8 +68,7 @@ private:
 		led m_light_backup;  // to be able to resume "dimm on" to the last set color
 
 		uint16_t m_pwm_dimm_time; // 10ms per Step, 255*0.01 = 2.5 sec
-		uint8_t key[4];
-		peripheral * provider;
+		capability * provider;
 		uint8_t type;
 		uint8_t m_animation_pos; // pointer im wheel
 		uint32_t m_animation_dimm_time;

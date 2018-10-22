@@ -34,7 +34,7 @@
 	static constexpr uint8_t goHome_cmd[5] = { 0x0F, 0x81, 0x2C, 0x00, 0x03 };
 	static constexpr uint8_t battery_voltage_cmd[5] = { 0x0F, 0x2E, 0xF4, 0x00, 0x00 };
 
-	class husqvarna : public peripheral {
+	class husqvarna : public capability {
 public:
 		husqvarna();
 		~husqvarna();

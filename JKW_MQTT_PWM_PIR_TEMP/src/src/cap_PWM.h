@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-class PWM : public peripheral {
+class PWM : public capability {
 	public:
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2);
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);

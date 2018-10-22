@@ -7,8 +7,7 @@ rssi::~rssi(){
 };
 
 uint8_t* rssi::get_key(){
-	sprintf((char*)key,"R");
-	return key;
+	return (uint8_t*)"R";
 }
 
 bool rssi::init(){

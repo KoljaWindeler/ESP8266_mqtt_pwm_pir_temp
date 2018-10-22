@@ -1,12 +1,12 @@
-#include "capability.h"
+#include "capability_parser.h"
 
 // 342094
 // 341550
 
-capability::capability(){};
+capability_parser::capability_parser(){};
 
 
-bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
+bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	// in: P,S,...
 	uint8_t p=0;
 	uint8_t len = 0;
@@ -54,17 +54,17 @@ bool capability::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	return false;
 }
 
-bool capability::parse(unsigned char * input, uint8_t* key){
+bool capability_parser::parse(unsigned char * input, uint8_t* key){
 	return parse(input,key,(uint8_t*)"");
 }
 
 // e.g. to check if B4 is in the config, run: parse_wide(config,"B",&m_pin)
-bool capability::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res){
+bool capability_parser::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res){
 	return parse_wide(input,"%s%i", key_word, 0, 16, key_res, (uint8_t*)"");
 }
 
 // e.g. to check if B4 is in the config and you have a dependency, run: parse_wide(config,"B",&m_pin,"LIG")
-bool capability::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res, uint8_t* dep){
+bool capability_parser::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res, uint8_t* dep){
 	return parse_wide(input,"%s%i", key_word, 0, 16, key_res, dep);
 }
 
@@ -75,7 +75,7 @@ bool capability::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* ke
 // key_end defines the last pin we're using
 // key_res is a pointer, if we find something, we're going to write it to this pin
 // dep is a dependency as always
-bool capability::parse_wide(unsigned char* input, const char* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep){
+bool capability_parser::parse_wide(unsigned char* input, const char* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep){
 	char temp_key[15]; // max key width is 15 byte (way to long)
 	if(key_end>16){
 		key_end = 16;
@@ -95,7 +95,7 @@ bool capability::parse_wide(unsigned char* input, const char* key_schema, uint8_
 	return false;
 }
 
-bool capability::ensure_dep(unsigned char* input, uint8_t* dep){
+bool capability_parser::ensure_dep(unsigned char* input, uint8_t* dep){
 	//Serial.printf("ensure parsing. input: %s vs. dep %s\r\n",input,dep);
 	if(parse(input,dep)){
 		//Serial.println("ensure return false");

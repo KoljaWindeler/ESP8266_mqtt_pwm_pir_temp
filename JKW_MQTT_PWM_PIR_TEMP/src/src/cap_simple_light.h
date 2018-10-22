@@ -4,7 +4,7 @@
 #include "main.h"
 #define SIMPLE_LIGHT_PIN 12 // D6
 
-class simple_light : public peripheral {
+class simple_light : public capability {
 	public:
 		simple_light();
 		~simple_light();
@@ -20,7 +20,6 @@ class simple_light : public peripheral {
 		uint8_t* get_dep();
 	private:
 		mqtt_parameter_8 m_state;
-		uint8_t key[3];
 		uint8_t m_pin;
 
 };

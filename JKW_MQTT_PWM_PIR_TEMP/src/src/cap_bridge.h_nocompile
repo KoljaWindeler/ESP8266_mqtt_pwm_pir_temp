@@ -24,7 +24,7 @@ static constexpr char MQTT_BRIDGE_TRAIN[]     = "bridge/train";      // publish
 
 
 
-class bridge : public peripheral {
+class bridge : public capability {
 	public:
 		bridge();
 		~bridge();

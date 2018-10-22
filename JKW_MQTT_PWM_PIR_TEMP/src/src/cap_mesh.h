@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-class no_mesh : public peripheral {
+class no_mesh : public capability {
 	public:
 		no_mesh();
 		~no_mesh();

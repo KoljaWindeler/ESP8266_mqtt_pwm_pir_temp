@@ -6,7 +6,6 @@ play::play(){
 	tcp_server = NULL;
 	amp_active = false;
 	client_connected  = false;
-	sprintf((char *) key, "PLY");
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 	// either AUD16 for 16 bit or AUD1,2,3,4,5,12,13,14,15 for 8 bit, AUD6..11 are not allowed
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
@@ -44,7 +43,7 @@ bool play::parse(uint8_t * config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t * play::get_key(){
-	return key;
+	return (uint8_t*)"PLY";
 }
 
 // will be callen if the key is part of the config

@@ -7,7 +7,7 @@ static constexpr char MQTT_UPTIME_TOPIC[]   = "uptime";
 static constexpr char MQTT_UPTIME_RESET_TOPIC[]   = "uptime_reset";
 
 
-class uptime : public peripheral {
+class uptime : public capability {
 	public:
 		uptime();
 		~uptime();
@@ -22,7 +22,6 @@ class uptime : public peripheral {
 		uint8_t* get_key();
 	private:
 		bool m_active_high;
-		uint8_t key[3];
 		uint8_t m_pin;
 		mqtt_parameter_16 m_counter;
 };

@@ -30,7 +30,7 @@
 
 #include "mqtt_parameter.h"
 #include "logging.h"
-#include "capability.h"
+#include "capability_parser.h"
 #include "connection_relay.h"
 #include "cap.h"
 
@@ -52,11 +52,10 @@
 	#define MAX_RECONNECT_TIME    20 * 60      // even if we've been happliy connected to this network for weeks: start AP after 20 min of trying to reconnect
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
 
-	#define PINOUT                   "SONOFF"
-	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
+		#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
-	#define MAX_PERIPHERALS          20
+	#define MAX_CAPS          			 20
 
 	struct led {
 		uint8_t r;
@@ -74,7 +73,7 @@
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
-	bool bake(peripheral * p_obj, peripheral ** p_handle, uint8_t * config);
+	bool bake(capability * p_obj, capability ** p_handle, uint8_t * config);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
@@ -104,33 +103,33 @@
 	extern connection_relay network;
 	extern char m_topic_buffer[TOPIC_BUFFER_SIZE];
 	extern char m_msg_buffer[MSG_BUFFER_SIZE];
-	extern peripheral * p_adc;
-	extern peripheral * p_bOne;
-	extern peripheral * p_button;
-	extern peripheral * p_neo;
-	extern peripheral * p_pir;
-	extern peripheral * p_pir2;
-	extern peripheral * p_pwm;
-	extern peripheral * p_pwm2;
-	extern peripheral * p_pwm3;
-	extern peripheral * p_rssi;
-	extern peripheral * p_simple_light;
-	extern peripheral * p_dht;
-	extern peripheral * p_ds;
-	extern peripheral * p_ai;
-	extern peripheral * p_bOne;
-	extern peripheral * p_neo;
-	extern peripheral * p_light;
-	extern peripheral * p_hlw;
-	extern peripheral * p_nl;
-	extern peripheral * p_rfb;
-	extern peripheral * p_gpio;
-	//extern peripheral * p_husqvarna;
-	extern peripheral * p_no_mesh;
-	extern peripheral * p_uptime;
-	extern peripheral * p_play;
-	extern peripheral * p_freq;
-	extern peripheral * p_rec;
+	extern capability * p_adc;
+	extern capability * p_bOne;
+	extern capability * p_button;
+	extern capability * p_neo;
+	extern capability * p_pir;
+	extern capability * p_pir2;
+	extern capability * p_pwm;
+	extern capability * p_pwm2;
+	extern capability * p_pwm3;
+	extern capability * p_rssi;
+	extern capability * p_simple_light;
+	extern capability * p_dht;
+	extern capability * p_ds;
+	extern capability * p_ai;
+	extern capability * p_bOne;
+	extern capability * p_neo;
+	extern capability * p_light;
+	extern capability * p_hlw;
+	extern capability * p_nl;
+	extern capability * p_rfb;
+	extern capability * p_gpio;
+	//extern capability * p_husqvarna;
+	extern capability * p_no_mesh;
+	extern capability * p_uptime;
+	extern capability * p_play;
+	extern capability * p_freq;
+	extern capability * p_rec;
 
 	extern const uint8_t intens[100];
 
@@ -147,7 +146,7 @@
 #include "cap_AI.h"
 #include "cap_BOne.h"
 #include "cap_NeoStrip.h"
-#include "light.h"
+#include "cap_light.h"
 #include "cap_night_light.h"
 //#include "cap_bridge.h"
 #include "cap_GPIO.h"

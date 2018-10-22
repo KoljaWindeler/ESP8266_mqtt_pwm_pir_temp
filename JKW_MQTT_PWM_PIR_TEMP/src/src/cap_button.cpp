@@ -29,8 +29,7 @@ bool button::parse(uint8_t* config){
 }
 
 uint8_t* button::get_key(){
-	sprintf((char*)key,"B");
-	return key;
+	return (uint8_t*)"B";
 }
 
 void fooButton(){

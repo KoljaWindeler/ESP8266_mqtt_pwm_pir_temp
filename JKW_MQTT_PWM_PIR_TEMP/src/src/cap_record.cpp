@@ -3,7 +3,6 @@
 // simply the constructor
 record::record(){
 	adc_buf = NULL;
-	sprintf((char*)key,"REC");
 };
 
 // simply the destructor
@@ -27,7 +26,7 @@ bool record::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* record::get_key(){
-	return key;
+	return (uint8_t*)"REC";
 }
 
 void ICACHE_RAM_ATTR sample_isr_rec(void){

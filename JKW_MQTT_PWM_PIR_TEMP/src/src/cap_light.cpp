@@ -1,4 +1,4 @@
-#include <light.h>
+#include <cap_light.h>
 
 light::light(){
 	m_light_target  = { 99, 99, 99 };
@@ -12,8 +12,7 @@ light::~light(){
 };
 
 uint8_t * light::get_key(){
-	sprintf((char *) key, "LIG");
-	return key;
+	return (uint8_t*)"LIG";
 }
 
 
@@ -32,7 +31,7 @@ bool light::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
 }
 
-bool light::reg_provider(peripheral * p, uint8_t* t){
+bool light::reg_provider(capability * p, uint8_t* t){
 	provider = p;
 	logger.print(TOPIC_GENERIC_INFO, F("light registered provider: "), COLOR_GREEN);
 	if(!strcmp((char*)t,"SL")){

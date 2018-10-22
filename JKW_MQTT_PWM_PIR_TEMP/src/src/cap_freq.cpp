@@ -1,9 +1,7 @@
 #include <cap_freq.h>
 #ifdef WITH_FREQ
 // simply the constructor
-freq::freq(){
-	sprintf((char*)key,"FRE");
-};
+freq::freq(){};
 
 // simply the destructor
 freq::~freq(){
@@ -30,7 +28,7 @@ bool freq::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* freq::get_key(){
-	return key;
+	return (uint8_t*)"FRE";
 }
 
 // will be callen if the key is part of the config
