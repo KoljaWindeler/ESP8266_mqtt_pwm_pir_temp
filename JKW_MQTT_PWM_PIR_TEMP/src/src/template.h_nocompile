@@ -19,6 +19,8 @@ class template : public peripheral {
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		bool publish();
 		uint8_t* get_key();
+		bool reg_provider(peripheral * p, uint8_t *source);
+		uint8_t* get_dep();
 	private:
 		uint8_t key[3];
 };
