@@ -1,5 +1,5 @@
 #include <cap_BOne.h>
-
+#ifdef WITH_BONE
 
 BOne::BOne(){};
 BOne::~BOne(){
@@ -7,12 +7,16 @@ BOne::~BOne(){
 };
 
 bool BOne::parse(uint8_t* config){
-	return cap.parse(config,get_key(),(uint8_t*)"LIG");
+	return cap.parse(config,get_key(),get_dep());
 }
 
 bool BOne::init(){
 	_my92x1_b1.init(true,MY9291_DI_PIN, MY9291_DCKI_PIN,6); // true = B1
 	logger.println(TOPIC_GENERIC_INFO, F("B1 init"), COLOR_GREEN);
+}
+
+uint8_t* BOne::get_dep(){
+	return (uint8_t*)"LIG";
 }
 
 uint8_t* BOne::get_key(){
@@ -24,13 +28,13 @@ my92x1* BOne::getmy929x1(){
 	return &_my92x1_b1;
 }
 
-bool BOne::loop(){
-	return false; // i did nothing
-}
-
-bool BOne::intervall_update(uint8_t slot){
-	return false;
-}
+// bool BOne::loop(){
+// 	return false; // i did nothing
+// }
+//
+// bool BOne::intervall_update(uint8_t slot){
+// 	return false;
+// }
 
 uint8_t BOne::getState(led* color){
 	color->r = m_light_current.r;
@@ -50,19 +54,17 @@ void BOne::setColor(uint8_t r, uint8_t g, uint8_t b){
 	_my92x1_b1.setColor((my92x1_color_t) { r, g, b, w, 0 });          // last two: warm white, cold white
 }
 
-bool BOne::subscribe(){
-	return true;
-}
-
-uint8_t BOne::count_intervall_update(){
-	return 0; // we have 1 value that we want to publish per minute
-}
-
-bool BOne::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
-
-
-bool BOne::publish(){
-	return false; // i did notihgin
-}
+// bool BOne::subscribe(){
+// 	return true;
+// }
+//
+//
+// bool BOne::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
+//
+//
+// bool BOne::publish(){
+// 	return false; // i did notihgin
+// }
+#endif

@@ -33,14 +33,14 @@ class J_hlw8012 : public peripheral {
 		J_hlw8012();
 		~J_hlw8012();
 		bool init();
-		bool loop();
+		// bool loop();
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
 		uint8_t count_intervall_update();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		bool parse(uint8_t* config);
 		uint8_t* get_key();
-		bool publish();
+		// bool publish();
 		HLW8012 m_hlw8012;
 	private:
 		uint8_t key[4];

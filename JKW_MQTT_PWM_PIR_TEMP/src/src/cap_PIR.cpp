@@ -1,4 +1,5 @@
 #include <cap_PIR.h>
+#ifdef WITH_PIR
 
 PIR::PIR(uint8_t* k,uint8_t pin){
 	m_pin = pin;
@@ -15,7 +16,6 @@ PIR::~PIR(){
 	sprintf((char*)buffer,"%s deleted",get_key());
 	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
 };
-
 
 uint8_t* PIR::get_key(){
 	return key;
@@ -46,25 +46,21 @@ void PIR::interrupt(){
 	m_state.check_set(digitalRead(m_pin));
 }
 
-bool PIR::loop(){
-	return false;
-}
-
-uint8_t PIR::count_intervall_update(){
-	return 0; // we have 0 value that we want to publish per minute
-}
-
-bool PIR::intervall_update(uint8_t slot){
-	return false;
-}
-
-bool PIR::subscribe(){
-	return true;
-}
-
-bool PIR::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
+// bool PIR::loop(){
+// 	return false;
+// }
+//
+// bool PIR::intervall_update(uint8_t slot){
+// 	return false;
+// }
+//
+// bool PIR::subscribe(){
+// 	return true;
+// }
+//
+// bool PIR::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
 
 
 bool PIR::publish(){
@@ -87,3 +83,5 @@ bool PIR::publish(){
 	}
 	return false;
 }
+
+#endif

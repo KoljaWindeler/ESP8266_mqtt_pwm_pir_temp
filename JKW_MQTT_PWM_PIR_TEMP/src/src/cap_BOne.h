@@ -12,17 +12,17 @@ class BOne : public peripheral {
 		BOne();
 		~BOne();
 		bool init();
-		bool loop();
-		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		// bool loop();
+		// bool intervall_update(uint8_t slot);
+		// bool subscribe();
 		bool parse(uint8_t* config);
-		uint8_t count_intervall_update();
-		bool receive(uint8_t* p_topic, uint8_t* p_payload);
-		bool publish();
+		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		// bool publish();
 		uint8_t* get_key();
 		my92x1* getmy929x1();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		uint8_t getState(led* color);
+		uint8_t* get_dep();
 	private:
 		mqtt_parameter_8 m_state;
 		uint8_t key[3];

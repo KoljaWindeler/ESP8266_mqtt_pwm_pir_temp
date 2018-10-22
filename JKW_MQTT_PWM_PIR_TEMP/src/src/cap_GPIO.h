@@ -44,10 +44,9 @@ public:
 		~J_GPIO();
 		bool init();
 		bool loop();
-		bool intervall_update(uint8_t slot);
+		// bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t * config);
-		uint8_t count_intervall_update();
 		bool receive(uint8_t * p_topic, uint8_t * p_payload);
 		bool publish();
 		uint8_t * get_key();

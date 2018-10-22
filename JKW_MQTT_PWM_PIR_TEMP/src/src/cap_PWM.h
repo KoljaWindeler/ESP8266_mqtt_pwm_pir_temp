@@ -9,12 +9,11 @@ class PWM : public peripheral {
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
 		~PWM();
 		bool init();
-		bool loop();
-		uint8_t count_intervall_update();
-		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		// bool loop();
+		// bool intervall_update(uint8_t slot);
+		// bool subscribe();
 		bool parse(uint8_t* config);
-		bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
 		uint8_t* get_dep();
 		bool publish();

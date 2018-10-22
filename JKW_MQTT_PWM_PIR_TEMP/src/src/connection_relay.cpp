@@ -1,6 +1,7 @@
 #include "connection_relay.h"
 
 connection_relay::connection_relay(){
+#ifdef WITH_MESH
 	// reset clients
 	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
 		espClients[i]         = NULL;
@@ -8,13 +9,15 @@ connection_relay::connection_relay(){
 	}
 	espLastcomm       = 0;
 	m_AP_running      = false;
-	m_connection_type = CONNECTION_DIRECT_CONNECTED; // wifi STA connection can survive reboots
 	m_ota_status      = OTA_STATUS_END_FAILED;       // avoid start in middle
 
 	// root node with own MAC, kind of pointless but we have to start somewhere
 	uint8_t mac[6];
 	WiFi.macAddress(mac);
 	bl = new blacklist_entry(mac);
+#endif
+
+	m_connection_type = CONNECTION_DIRECT_CONNECTED; // wifi STA connection can survive reboots
 
 	// mesh is a bit tricky. first test failed misably, due to super long chaining
 	// 8 devices lined up in a row and the connection was bad.
@@ -25,6 +28,8 @@ connection_relay::~connection_relay(){ };
 
 // scan can return [blocking] the nr of APs
 int8_t connection_relay::scan(bool blocking){
+
+#ifdef WITH_MESH
 	int8_t status;
 
 	if (blocking) {
@@ -41,6 +46,8 @@ int8_t connection_relay::scan(bool blocking){
 		}
 		return status; // complete
 	}
+#endif
+
 	return 0;
 }
 
@@ -75,6 +82,8 @@ uint8_t connection_relay::getMeshMode(){
 
 // direct wifi didn't work, connect via mesh
 bool connection_relay::MeshConnect(){
+
+#ifdef WITH_MESH
 	int8_t scan_count = scan(true); // will start with blocking scan
 	int8_t best_AP  = -1;
 	uint8_t best_sig = 0;
@@ -137,6 +146,8 @@ bool connection_relay::MeshConnect(){
 			logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_RED);
 		}
 	}
+#endif
+
 	return false;
 } // MeshConnect
 
@@ -150,7 +161,10 @@ bool connection_relay::connectServer(char * dev_short, char * login, char * pw){
 		client.setServer(mqtt.server_ip, atoi(mqtt.server_port));
 		client.setCallback(callback); // in main.cpp
 		return client.connect(dev_short, login, pw, build_topic("INFO", UNIT_TO_PC), 0, true, "lost signal");
-	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
+	}
+
+#ifdef WITH_MESH
+	else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		logger.println(TOPIC_MQTT, F("Establishing indirect MESH-MQTT link"), COLOR_YELLOW);
 
 		IPAddress apIP = WiFi.localIP();
@@ -177,12 +191,15 @@ bool connection_relay::connectServer(char * dev_short, char * login, char * pw){
 			disconnectServer();             // stop wifi to force reconnect
 		}
 	}
+#endif
+
 	return false;
 } // connectServer
 
 // suppose to send a raw message around in the network
 // second purpose is to start the rounting message which will concat all station on the way
 bool connection_relay::loopCheck(){
+#ifdef WITH_MESH
 	if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		logger.println(TOPIC_CON_REL, F("sending NETLOOP check up the chain"), COLOR_PURPLE);
 
@@ -193,8 +210,8 @@ bool connection_relay::loopCheck(){
 		  mac[0]);
 		enqueue_up(msg, strlen(msg));
 		// send_up(msg,strlen(msg));
-	}
-	;
+	};
+#endif
 };
 
 // publish the routing
@@ -267,7 +284,10 @@ bool connection_relay::subscribe(char * topic, bool enqueue){
 			client.loop();
 		}
 		return connected();
-	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
+	}
+
+#ifdef WITH_MESH
+	 else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		uint16_t len = strlen(topic) + 2;
 		char msg[len];
 		msg[0] = MSG_TYPE_SUBSCRPTION;
@@ -280,6 +300,8 @@ bool connection_relay::subscribe(char * topic, bool enqueue){
 			return send_up(msg, len);
 		}
 	}
+#endif
+
 	return false;
 }
 
@@ -298,7 +320,10 @@ bool connection_relay::publish(char * topic, char * mqtt_msg, bool enqueue){
 		client.loop();
 		client.loop();
 		return client.connected();
-	} else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
+	}
+
+#ifdef WITH_MESH
+	 else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		uint16_t len = strlen(topic) + strlen(mqtt_msg) + 5;
 		char msg[len];
 		// a bit strange to add 0x00 in the middle of a string, but help to display this later
@@ -314,11 +339,14 @@ bool connection_relay::publish(char * topic, char * mqtt_msg, bool enqueue){
 			return send_up(msg, len);
 		}
 	}
+#endif
+
 	return false;
 }
 
 // used to send messages from the mqtt server downstream to all connected clients
 bool connection_relay::broadcast_publish_down(char * topic, char * mqtt_msg, uint16_t payload_size){
+#ifdef WITH_MESH
 	uint8_t client_count = 0;
 
 	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
@@ -352,11 +380,13 @@ bool connection_relay::broadcast_publish_down(char * topic, char * mqtt_msg, uin
 			espClients[i]->write(msg, msg_size);
 		}
 	}
+#endif
 	return true;
 } // broadcast_publish_down
 
 // send pre-encoded messages (subscriptions/pubish's) UP to our mesh server
 bool connection_relay::send_up(char * msg, uint16_t size){
+#ifdef WITH_MESH
 	// erial.println("1..");
 	// delay(100);
 	if (!connected()) {
@@ -388,11 +418,13 @@ bool connection_relay::send_up(char * msg, uint16_t size){
 			}
 		}
 	}
+#endif
 	return false;
 } // send_up
 
 // add messages to the queueus
 bool connection_relay::enqueue_up(char * msg, uint16_t size){
+#ifdef WITH_MESH
 	uint8_t * buf;
 
 	buf = new uint8_t[size + 3];
@@ -412,12 +444,14 @@ bool connection_relay::enqueue_up(char * msg, uint16_t size){
 		}
 	}
 	logger.println(TOPIC_CON_REL, F("Send queue overflow"), COLOR_RED);
+#endif
 	return false;
 }
 
 // check if there are messages to send (previously needed due to async server, now flowcontroll)
 // send one message at the time (still fast)
 bool connection_relay::dequeue_up(){
+#ifdef WITH_MESH
 	uint32_t start;
 	uint16_t size;
 	uint8_t buf;
@@ -437,12 +471,14 @@ bool connection_relay::dequeue_up(){
 			}
 		}
 	}
+#endif
 	return true;
 }
 
 // start ap, set IP to "same as main connection +1" master 192.168.N.1 -> AP 192.168.(N+1).1
 // create and start wifiserver on port 1883
 void connection_relay::startAP(){
+#ifdef WITH_MESH
 	if (!m_AP_running) {
 		logger.println(TOPIC_CON_REL, F("Starting AP"));
 		WiFi.mode(WIFI_AP_STA);
@@ -463,10 +499,12 @@ void connection_relay::startAP(){
 
 		logger.println(TOPIC_CON_REL, F("AP started"), COLOR_GREEN);
 	}
+#endif
 }
 
 // stop access point and stop server
 void connection_relay::stopAP(){
+#ifdef WITH_MESH
 	if (m_AP_running) {
 		logger.println(TOPIC_CON_REL, F("Stopping AP"));
 		if (espServer) {
@@ -479,6 +517,7 @@ void connection_relay::stopAP(){
 		m_AP_running = false;
 		logger.println(TOPIC_CON_REL, F("AP stopped"));
 	}
+#endif
 }
 
 // this will be called from the main loop
@@ -494,6 +533,8 @@ void connection_relay::receive_loop(){
 		// handle data from MQTT link if any (function 6)
 		client.loop();
 	}
+
+#ifdef WITH_MESH
 	else if (m_connection_type == CONNECTION_MESH_CONNECTED) {
 		// handle data from uplink (function 1)
 		uint16_t size = espUplink.available();
@@ -546,6 +587,7 @@ void connection_relay::receive_loop(){
 		// send messages upstream (function 5)
 		dequeue_up();
 	}
+
 	// new client (function 2)
 	if (espServer != NULL) {
 		if (espServer->hasClient()) {
@@ -575,11 +617,13 @@ void connection_relay::receive_loop(){
 			}
 		}
 	}
+#endif
 } // receive_loop
 
 // will be callen by the receive_loop if the server has new espClients
 // purpose is to link the client to the pointer structure
 void connection_relay::onClient(WiFiClient * c){
+#ifdef WITH_MESH
 	sprintf_P(m_msg_buffer, PSTR("(%s) Incoming client connection"), c->remoteIP().toString().c_str());
 	logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_PURPLE);
 	for (int i = 0; i < ESP8266_NUM_CLIENTS; i++) {
@@ -597,11 +641,13 @@ void connection_relay::onClient(WiFiClient * c){
 			break;
 		}
 	}
+#endif
 }
 
 // will be callen by the receive_loop if the client has data available
 // should do the parsing and enqueue_up the response
 void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
+#ifdef WITH_MESH
 	size_t len = c->available();
 	uint8_t data[len];
 
@@ -705,11 +751,13 @@ void connection_relay::onData(WiFiClient * c, uint8_t client_nr){
 		  ((char *) data)[0]);
 		logger.println(TOPIC_CON_REL, m_msg_buffer, COLOR_RED);
 	}
+#endif
 } // onData
 
 // funcion to handle updates via MQTT
 // not completed
 uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
+#ifdef WITH_MESH
 	// [0] CMD
 	// [1] if CMD = WRITE: length
 	// [2] data
@@ -802,12 +850,13 @@ uint8_t connection_relay::mqtt_ota(uint8_t * data, uint16_t size){
 
 	// ////// catch ////////
 	m_ota_status = OTA_STATUS_UNKNOWN_CMD;
+#endif
 	return m_ota_status;
 } // mqtt_ota
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#ifdef WITH_MESH
 
 // a blacklist is a self organized data structure that can store and retrieve information about unsuccessfl connects to a BSSID
 blacklist_entry::blacklist_entry(uint8_t * MAC){
@@ -865,5 +914,6 @@ void blacklist_entry::set_fails(uint8_t * MAC, uint8_t v){
 	}
 }
 
+#endif
 // ////////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////

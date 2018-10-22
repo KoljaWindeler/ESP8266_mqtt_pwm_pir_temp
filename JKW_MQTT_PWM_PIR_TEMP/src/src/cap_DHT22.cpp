@@ -1,5 +1,5 @@
 #include <cap_DHT22.h>
-
+#ifdef WITH_DHT22
 DHT dht(DHT_PIN, DHT22);        // J_DHT22
 
 J_DHT22::J_DHT22(){};
@@ -27,9 +27,9 @@ bool J_DHT22::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
 
-bool J_DHT22::loop(){
-	return false; // i did nothing
-}
+// bool J_DHT22::loop(){
+// 	return false; // i did nothing
+// }
 
 bool J_DHT22::intervall_update(uint8_t slot){
 	if(slot==0){
@@ -64,14 +64,15 @@ bool J_DHT22::intervall_update(uint8_t slot){
 	return false;
 }
 
-bool J_DHT22::subscribe(){
-	return true;
-}
-
-bool J_DHT22::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
-
-bool J_DHT22::publish(){
-	return false; // did nothing
-}
+// bool J_DHT22::subscribe(){
+// 	return true;
+// }
+//
+// bool J_DHT22::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
+//
+// bool J_DHT22::publish(){
+// 	return false; // did nothing
+// }
+#endif

@@ -9,15 +9,15 @@ class simple_light : public peripheral {
 		simple_light();
 		~simple_light();
 		bool init();
-		bool loop();
-		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		// bool loop();
+		// bool intervall_update(uint8_t slot);
+		// bool subscribe();
 		bool parse(uint8_t* config);
-		uint8_t count_intervall_update();
-		bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
-		bool publish();
+		// bool publish();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
+		uint8_t* get_dep();
 	private:
 		mqtt_parameter_8 m_state;
 		uint8_t key[3];

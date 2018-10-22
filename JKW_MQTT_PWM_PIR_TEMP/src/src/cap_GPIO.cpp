@@ -1,4 +1,5 @@
 #include <cap_GPIO.h>
+#ifdef WITH_GPIO
 // R,PI2,PW3,M3
 // REMEMBER: we're talking about GPIO5 and NOT Arduino D5!!
 // simply the constructor
@@ -73,7 +74,7 @@ bool J_GPIO::parse(uint8_t * config){
 } // parse
 
 uint8_t * J_GPIO::get_key(){
-	return 0;
+	return (uint8_t*)"GPO";
 }
 
 // will be callen if the m_pin_out is part of the config
@@ -103,11 +104,6 @@ bool J_GPIO::init(){
 	return true;
 }
 
-// return how many value you want to publish per second
-// e.g. DHT22: Humidity + Temp = 2
-uint8_t J_GPIO::count_intervall_update(){
-	return 0;
-}
 
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
@@ -154,9 +150,9 @@ bool J_GPIO::loop(){
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-bool J_GPIO::intervall_update(uint8_t slot){
-	return false;
-}
+// bool J_GPIO::intervall_update(uint8_t slot){
+// 	return false;
+// }
 
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
@@ -510,3 +506,4 @@ void dimmer::set_state(bool s){
 //  ---------------------------------------- ///
 //  ---------------- DIMMER ---------------- ///
 //  ---------------------------------------- ///
+#endif

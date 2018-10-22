@@ -9,16 +9,15 @@ class night_light : public peripheral {
 		night_light();
 		~night_light();
 		bool init();
-		bool loop();
-		bool intervall_update(uint8_t slot);
+		// bool loop();
+		// bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t* config);
 		void interrupt();
-		uint8_t count_intervall_update();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
 	private:
-		bool publish();
+		// bool publish();
 		uint8_t key[4];
 
 };

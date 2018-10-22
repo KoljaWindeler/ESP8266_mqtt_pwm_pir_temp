@@ -1,3 +1,4 @@
+#ifdef WITH_NEOSTRIP
 #include <cap_NeoStrip.h>
 
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, 5); // this version only works on gpio3 / D9 (RX)
@@ -12,8 +13,12 @@ uint8_t* NeoStrip::get_key(){
 	return key;
 }
 
+uint8_t* NeoStrip::get_dep(){
+	return (uint8_t*)"LIG";
+}
+
 bool NeoStrip::parse(uint8_t* config){
-	return cap.parse(config,get_key(),(uint8_t*)"LIG");
+	return cap.parse(config,get_key(),get_dep());
 }
 
 bool NeoStrip::init(){
@@ -22,12 +27,12 @@ bool NeoStrip::init(){
 	return true;
 }
 
-bool NeoStrip::loop(){																					return false; }// i did nothing
-bool NeoStrip::intervall_update(uint8_t slot){									return false; }
-bool NeoStrip::subscribe(){																			return true;  }
-bool NeoStrip::receive(uint8_t* p_topic, uint8_t* p_payload){		return false; }// not for me
-bool NeoStrip::publish(){																				return false; } // noting to say
-uint8_t NeoStrip::count_intervall_update(){											return 0;		 	};
+// bool NeoStrip::loop(){																					return false; }// i did nothing
+// bool NeoStrip::intervall_update(uint8_t slot){									return false; }
+// bool NeoStrip::subscribe(){																			return true;  }
+// bool NeoStrip::receive(uint8_t* p_topic, uint8_t* p_payload){		return false; }// not for me
+// bool NeoStrip::publish(){																				return false; } // noting to say
+
 
 uint8_t NeoStrip::getState(led* color){
 	color->r = m_light_current.r;
@@ -71,3 +76,5 @@ void NeoStrip::setPixelColor(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 void NeoStrip::show(){
 	strip.Show();
 }
+
+#endif

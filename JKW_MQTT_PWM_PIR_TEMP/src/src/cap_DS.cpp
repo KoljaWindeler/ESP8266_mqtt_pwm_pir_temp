@@ -1,5 +1,5 @@
 #include <cap_DS.h>
-
+#ifdef WITH_DS
 OneWire ds(DS_PIN);
 
 J_DS::J_DS(){};
@@ -21,9 +21,9 @@ uint8_t J_DS::count_intervall_update(){
 	return 1; // we have 1 values; temp that we want to publish per minute
 }
 
-bool J_DS::loop(){
-	return false; // i did nothing
-}
+// bool J_DS::loop(){
+// 	return false; // i did nothing
+// }
 
 bool J_DS::intervall_update(uint8_t slot){
 	// function called to publish the brightness of the led
@@ -47,21 +47,21 @@ bool J_DS::intervall_update(uint8_t slot){
 	return network.publish(build_topic(MQTT_TEMPARATURE_TOPIC,UNIT_TO_PC), m_msg_buffer);
 }
 
-bool J_DS::subscribe(){
-	return true;
-}
-
-bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
+// bool J_DS::subscribe(){
+// 	return true;
+// }
+//
+// bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
 
 bool J_DS::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
 
-bool J_DS::publish(){
-	return false;
-}
+// bool J_DS::publish(){
+// 	return false;
+// }
 
 
 float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
@@ -109,3 +109,4 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 
 	return TemperatureSum;
 } // getDsTemp
+#endif

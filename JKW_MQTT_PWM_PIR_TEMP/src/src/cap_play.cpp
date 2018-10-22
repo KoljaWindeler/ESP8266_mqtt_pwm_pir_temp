@@ -1,5 +1,5 @@
 #include <cap_play.h>
-
+#ifdef WITH_PLAY
 // simply the constructor
 play::play(){
 	buffer8b   = NULL;
@@ -7,7 +7,6 @@ play::play(){
 	amp_active = false;
 	client_connected  = false;
 	sprintf((char *) key, "PLY");
-	SetGain(0.35);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 	// either AUD16 for 16 bit or AUD1,2,3,4,5,12,13,14,15 for 8 bit, AUD6..11 are not allowed
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
@@ -22,9 +21,9 @@ play::~play(){
 	if (tcp_server) {
 		tcp_server->close();
 		i2s_end(); // i2s was only started when the tcp_server is running so we only have to end it now
+		power_amp(false); // power amp down
 	}
 
-	power_amp(false); // power amp down
 	logger.println(TOPIC_GENERIC_INFO, F("play deleted"), COLOR_YELLOW);
 };
 
@@ -42,6 +41,7 @@ bool play::parse(uint8_t * config){
 	}
 }
 
+
 // the will be requested to check if the key is in the config strim
 uint8_t * play::get_key(){
 	return key;
@@ -49,6 +49,7 @@ uint8_t * play::get_key(){
 
 // will be callen if the key is part of the config
 bool play::init(){
+	SetGain(0.35);
 	i2s_begin();
 	i2s_set_rate(44100); // default, can be change via mqtt
 	power_amp(false); // amp power down state
@@ -67,11 +68,6 @@ bool play::init(){
 	return false;
 }
 
-// return how many value you want to publish per minute
-// e.g. DHT22: Humidity + Temp = 2
-uint8_t play::count_intervall_update(){
-	return 0;
-}
 
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
@@ -197,16 +193,16 @@ bool play::loop(){
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-bool play::intervall_update(uint8_t slot){
-	/*if(slot%count_intervall_update()==0){
-	 * logger.print(TOPIC_MQTT_PUBLISH, F(""));
-	 * dtostrf(play.getSomething(), 3, 2, m_msg_buffer);
-	 * logger.p(F("play "));
-	 * logger.pln(m_msg_buffer);
-	 * return network.publish(build_topic(MQTT_play_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
-	 * }*/
-	return false;
-}
+// bool play::intervall_update(uint8_t slot){
+// 	/*if(slot%count_intervall_update()==0){
+// 	 * logger.print(TOPIC_MQTT_PUBLISH, F(""));
+// 	 * dtostrf(play.getSomething(), 3, 2, m_msg_buffer);
+// 	 * logger.p(F("play "));
+// 	 * logger.pln(m_msg_buffer);
+// 	 * return network.publish(build_topic(MQTT_play_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
+// 	 * }*/
+// 	return false;
+// }
 
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
@@ -261,9 +257,9 @@ void play::handle_client_disconnect(){
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
-bool play::publish(){
-	return false;
-}
+// bool play::publish(){
+// 	return false;
+// }
 
 // some sort of amplification concept
 bool play::SetGain(float f){
@@ -285,3 +281,4 @@ int16_t play::Amplify(int16_t s){
 	else if (v > 32767) return 32767;
 	else return (int16_t) (v & 0xffff);
 }
+#endif

@@ -1,6 +1,6 @@
 #include <cap_AI.h>
 
-
+#ifdef WITH_AI
 
 
 AI::AI(){};
@@ -9,7 +9,12 @@ AI::~AI(){
 };
 
 bool AI::parse(uint8_t* config){
-	return cap.parse(config,get_key(),(uint8_t*)"LIG");
+	return cap.parse(config,get_key(),get_dep());
+}
+
+
+uint8_t* AI::get_dep(){
+	return (uint8_t*)"LIG";
 }
 
 my92x1* AI::getmy929x1(){
@@ -28,13 +33,10 @@ bool AI::init(){
 }
 
 
-bool AI::loop(){
-	return false; // i did nothing
-}
+// bool AI::loop(){
+// 	return false; // i did nothing
+// }
 
-uint8_t AI::count_intervall_update(){
-	return 0; // we have 1 value that we want to publish per minute
-}
 
 void AI::setColor(uint8_t r, uint8_t g, uint8_t b){
 	uint8_t w=0;
@@ -54,19 +56,17 @@ uint8_t AI::getState(led* color){
 	return m_state.get_value();
 }
 
-bool AI::intervall_update(uint8_t slot){
-	return false;
-}
+// bool AI::subscribe(){
+// 	return true;
+// }
+//
+// bool AI::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
+//
+//
+// bool AI::publish(){
+// 	return false; // i did notihgin
+// }
 
-bool AI::subscribe(){
-	return true;
-}
-
-bool AI::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
-
-
-bool AI::publish(){
-	return false; // i did notihgin
-}
+#endif

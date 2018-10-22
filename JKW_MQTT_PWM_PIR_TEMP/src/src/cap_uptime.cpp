@@ -1,4 +1,5 @@
 #include <cap_uptime.h>
+#ifdef WITH_UPTIME
 
 // simply the constructor
 uptime::uptime(){
@@ -65,9 +66,9 @@ uint8_t uptime::count_intervall_update(){
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
-bool uptime::loop(){
-	return false; // i did nothing
-}
+// bool uptime::loop(){
+// 	return false; // i did nothing
+// }
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever
@@ -114,3 +115,5 @@ bool uptime::publish(){
 	}
 	return false;
 }
+
+#endif

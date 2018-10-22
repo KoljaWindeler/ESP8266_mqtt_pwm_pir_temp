@@ -11,14 +11,14 @@ class NeoStrip : public peripheral {
 		NeoStrip();
 		~NeoStrip();
 		bool init();
-		bool loop();
-		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		// bool loop();
+		// bool intervall_update(uint8_t slot);
+		// bool subscribe();
 		bool parse(uint8_t* config);
-		uint8_t count_intervall_update();
-		bool receive(uint8_t* p_topic, uint8_t* p_payload);
-		bool publish();
+		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		// bool publish();
 		uint8_t* get_key();
+		uint8_t* get_dep();
 
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		uint8_t getState(led* color);
@@ -31,6 +31,5 @@ class NeoStrip : public peripheral {
 		led m_light_current;
 		//NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(NEOPIXEL_LED_COUNT, PWM_LIGHT_PIN2); // this version only works on gpio3 / D9 (RX)
 };
-
 
 #endif

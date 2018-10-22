@@ -1,4 +1,5 @@
 #include <cap_PWM.h>
+#ifdef WITH_PWM
 
 PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4){
 	m_pins[0] = pin0;
@@ -20,8 +21,7 @@ uint8_t* PWM::get_key(){
 }
 
 uint8_t* PWM::get_dep(){
-	sprintf((char*)dep,"LIG");
-	return dep;
+	return (uint8_t*)"LIG";
 }
 
 bool PWM::parse(uint8_t* config){
@@ -44,25 +44,21 @@ bool PWM::init(){
 }
 
 
-bool PWM::loop(){
-	return false;
-}
-
-uint8_t PWM::count_intervall_update(){
-	return 0; // we have 0 value that we want to publish per minute
-}
-
-bool PWM::intervall_update(uint8_t slot){
-	return false;
-}
-
-bool PWM::subscribe(){
-	return true;
-}
-
-bool PWM::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false;
-}
+// bool PWM::loop(){
+// 	return false;
+// }
+//
+// bool PWM::intervall_update(uint8_t slot){
+// 	return false;
+// }
+//
+// bool PWM::subscribe(){
+// 	return true;
+// }
+//
+// bool PWM::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false;
+// }
 
 uint8_t PWM::getState(led* color){
 	color->r = m_light_current.r;
@@ -101,3 +97,5 @@ void PWM::setColor(uint8_t r, uint8_t g, uint8_t b){
 	snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d,%d,%d", r, g, b);
 	logger.pln(m_msg_buffer);
 } // setState
+
+#endif

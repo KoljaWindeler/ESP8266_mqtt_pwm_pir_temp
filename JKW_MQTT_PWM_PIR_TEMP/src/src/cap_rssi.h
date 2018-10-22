@@ -9,14 +9,14 @@ class rssi : public peripheral {
 		rssi();
 		~rssi();
 		bool init();
-		bool loop();
+		// bool loop();
 		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		// bool subscribe();
 		uint8_t count_intervall_update();
 		bool parse(uint8_t* config);
-		bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
-		bool publish();
+		// bool publish();
 	private:
 		mqtt_parameter_8 m_state;
 		uint8_t key[2];

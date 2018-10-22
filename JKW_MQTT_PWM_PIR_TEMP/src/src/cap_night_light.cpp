@@ -1,5 +1,5 @@
 #include <cap_night_light.h>
-
+#ifdef WITH_NL
 // simply the constructor
 night_light::night_light(){
 	sprintf((char*)key,"NL");
@@ -30,26 +30,21 @@ bool night_light::init(){
 	return true;
 }
 
-// return how many value you want to publish per second
-// e.g. DHT22: Humidity + Temp = 2
-uint8_t night_light::count_intervall_update(){
-	return 0;
-}
 
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
-bool night_light::loop(){
-	return false; // i did nothing
-}
+// bool night_light::loop(){
+// 	return false; // i did nothing
+// }
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-bool night_light::intervall_update(uint8_t slot){
-	return false;
-}
+// bool night_light::intervall_update(uint8_t slot){
+// 	return false;
+// }
 
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
@@ -77,6 +72,7 @@ bool night_light::receive(uint8_t* p_topic, uint8_t* p_payload){
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
-bool night_light::publish(){
-	return false;
-}
+// bool night_light::publish(){
+// 	return false;
+// }
+#endif

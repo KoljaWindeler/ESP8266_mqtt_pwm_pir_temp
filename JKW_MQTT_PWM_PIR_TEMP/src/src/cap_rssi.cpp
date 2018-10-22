@@ -1,4 +1,5 @@
 #include <cap_rssi.h>
+#ifdef WITH_RSSI
 
 rssi::rssi(){};
 rssi::~rssi(){
@@ -18,9 +19,9 @@ bool rssi::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
 
-bool rssi::loop(){
-	return false; // i did nothing
-}
+// bool rssi::loop(){
+// 	return false; // i did nothing
+// }
 
 uint8_t rssi::count_intervall_update(){
 	return 1; // we have 1 value that we want to publish per minute
@@ -38,15 +39,17 @@ bool rssi::intervall_update(uint8_t slot){
 	return network.publish(build_topic(MQTT_RSSI_TOPIC,UNIT_TO_PC), m_msg_buffer);
 }
 
-bool rssi::subscribe(){
-	return true;
-}
+// bool rssi::subscribe(){
+// 	return true;
+// }
+//
+// bool rssi::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
+//
+//
+// bool rssi::publish(){
+// 	return false;
+// }
 
-bool rssi::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
-
-
-bool rssi::publish(){
-	return false;
-}
+#endif

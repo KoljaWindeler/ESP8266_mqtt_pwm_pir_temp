@@ -12,7 +12,7 @@ class uptime : public peripheral {
 		uptime();
 		~uptime();
 		bool init();
-		bool loop();
+		// bool loop();
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t* config);

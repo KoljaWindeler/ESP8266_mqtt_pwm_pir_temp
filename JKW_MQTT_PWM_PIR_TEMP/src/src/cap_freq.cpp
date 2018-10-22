@@ -1,5 +1,5 @@
 #include <cap_freq.h>
-
+#ifdef WITH_FREQ
 // simply the constructor
 freq::freq(){
 	sprintf((char*)key,"FRE");
@@ -13,7 +13,7 @@ freq::~freq(){
 // helper function that is really just calling another function .. somewhat useless at the moment
 // it is in charge of deciding if the object is loaded or not, but as of now it is just formwarding the
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
-// will be loaded under all circumstances 
+// will be loaded under all circumstances
 bool freq::parse(uint8_t* config){
 	if(cap.parse_wide(config, "%s_s_%i", get_key(), 0, 16, &m_pin, (uint8_t*)"")){
 		m_unit = 1;
@@ -102,17 +102,18 @@ bool freq::intervall_update(uint8_t slot){
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
 // return is ignored
-bool freq::subscribe(){
-	return true;
-}
+// bool freq::subscribe(){
+// 	return true;
+// }
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
-bool freq::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
+// bool freq::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
-bool freq::publish(){
-	return false;
-}
+// bool freq::publish(){
+// 	return false;
+// }
+#endif

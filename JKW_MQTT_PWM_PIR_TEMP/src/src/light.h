@@ -38,19 +38,19 @@ public:
 		~light();
 		bool init();
 		bool loop();
-		bool intervall_update(uint8_t slot);
+		// bool intervall_update(uint8_t slot);
 		bool subscribe();
 		bool parse(uint8_t * config);
-		uint8_t count_intervall_update();
 		bool receive(uint8_t * p_topic, uint8_t * p_payload);
 		bool publish();
 		uint8_t * get_key();
 
-		bool reg_provider(peripheral * p, uint8_t type);
 		void send_current_light();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		void toggle();
 		void setState(bool state);
+		bool reg_provider(peripheral * p, uint8_t *source);
+
 private:
 		mqtt_parameter_8 m_state;                // on / off
 		mqtt_parameter_32 m_light_color;         // r,g,b code

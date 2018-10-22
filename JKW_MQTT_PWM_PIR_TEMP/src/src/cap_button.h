@@ -27,10 +27,9 @@ public:
 		bool init();
 		bool loop();
 		void interrupt();
-		bool intervall_update(uint8_t slot);
-		bool subscribe();
-		uint8_t count_intervall_update();
-		bool receive(uint8_t * p_topic, uint8_t * p_payload);
+		// bool intervall_update(uint8_t slot);
+		// bool subscribe();
+		// bool receive(uint8_t * p_topic, uint8_t * p_payload);
 		bool parse(uint8_t * config);
 		uint8_t * get_key();
 		bool publish();

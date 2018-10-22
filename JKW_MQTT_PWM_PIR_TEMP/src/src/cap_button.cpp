@@ -1,4 +1,5 @@
 #include <cap_button.h>
+#ifdef WITH_BUTTON
 
 button::button(){
 	m_pin = BUTTON_INPUT_PIN;
@@ -6,6 +7,7 @@ button::button(){
 	m_timer_button_down=0;
 	m_counter=0;
 };
+
 button::~button(){
 	detachInterrupt(digitalPinToInterrupt(m_pin));
 	logger.println(TOPIC_GENERIC_INFO, F("Button deleted"), COLOR_YELLOW);
@@ -86,21 +88,18 @@ bool button::loop(){
 	return false; // i did nothing that should be none interrupted
 }
 
-uint8_t button::count_intervall_update(){
-	return 0; // we have 0 value that we want to publish per minute
-}
 
-bool button::intervall_update(uint8_t slot){
-	return false;
-}
-
-bool button::subscribe(){
-	return true;
-}
-
-bool button::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
+// bool button::intervall_update(uint8_t slot){
+// 	return false;
+// }
+//
+// bool button::subscribe(){
+// 	return true;
+// }
+//
+// bool button::receive(uint8_t* p_topic, uint8_t* p_payload){
+// 	return false; // not for me
+// }
 
 
 bool button::publish(){
@@ -167,3 +166,5 @@ void button::interrupt(){
 	};
 	m_timer_button_down = millis();
 }
+
+#endif

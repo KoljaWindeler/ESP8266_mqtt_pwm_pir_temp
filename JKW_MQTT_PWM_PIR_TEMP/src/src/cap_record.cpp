@@ -1,5 +1,5 @@
 #include <cap_record.h>
-
+#ifdef WITH_REC
 // simply the constructor
 record::record(){
 	adc_buf = NULL;
@@ -57,12 +57,6 @@ bool record::init(){
 
 	logger.println(TOPIC_GENERIC_INFO, F("REC init"), COLOR_GREEN);
 	return true;
-}
-
-// return how many value you want to publish per minute
-// e.g. DHT22: Humidity + Temp = 2
-uint8_t record::count_intervall_update(){
-	return 0;
 }
 
 // will be called in loop, if you return true here, every else will be skipped !!
@@ -156,18 +150,18 @@ bool record::loop(){
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-bool record::intervall_update(uint8_t slot){
-	/*
-	if(slot%count_intervall_update()==0){
-		logger.print(TOPIC_MQTT_PUBLISH, F(""));
-		dtostrf(record.getSomething(), 3, 2, m_msg_buffer);
-		logger.p(F("record "));
-		logger.pln(m_msg_buffer);
-		return network.publish(build_topic(MQTT_record_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
-	}
-	*/
-	return false;
-}
+// bool record::intervall_update(uint8_t slot){
+// 	/*
+// 	if(slot%count_intervall_update()==0){
+// 		logger.print(TOPIC_MQTT_PUBLISH, F(""));
+// 		dtostrf(record.getSomething(), 3, 2, m_msg_buffer);
+// 		logger.p(F("record "));
+// 		logger.pln(m_msg_buffer);
+// 		return network.publish(build_topic(MQTT_record_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
+// 	}
+// 	*/
+// 	return false;
+// }
 
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
@@ -333,3 +327,4 @@ uint8_t* record::delta7_sample(uint16_t last, uint16_t *readptr, uint8_t *writep
 	return writeptr;
 	*/
 }
+#endif

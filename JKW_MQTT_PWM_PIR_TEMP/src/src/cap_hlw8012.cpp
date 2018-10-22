@@ -1,5 +1,5 @@
 #include <cap_hlw8012.h>
-
+#ifdef WITH_HLW
 J_hlw8012::J_hlw8012(){
 	sprintf((char*)key,"HLW");
 };
@@ -38,9 +38,9 @@ uint8_t J_hlw8012::count_intervall_update(){
 	return 3; // we have 1 values; temp that we want to publish per minute
 }
 
-bool J_hlw8012::loop(){
-	return false; // i did nothing
-}
+// bool J_hlw8012::loop(){
+// 	return false; // i did nothing
+// }
 
 bool J_hlw8012::intervall_update(uint8_t slot){
 	if(slot == 0){
@@ -103,6 +103,7 @@ bool J_hlw8012::parse(uint8_t* config){
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
-bool J_hlw8012::publish(){
-	return false;
-}
+// bool J_hlw8012::publish(){
+// 	return false;
+// }
+#endif
