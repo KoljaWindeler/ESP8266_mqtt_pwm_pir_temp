@@ -23,31 +23,17 @@
 #include <WiFiManager.h> // local modified version          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
 #include <ESP8266httpUpdate.h>
-#include <NeoPixelBus.h>
+
+#ifdef WITH_NEOSTRIP
+	#include <NeoPixelBus.h>
+#endif
 
 #include "mqtt_parameter.h"
 #include "logging.h"
 #include "capability.h"
 #include "connection_relay.h"
+#include "cap.h"
 
-
-	class peripheral
-	{
-public:
-		peripheral(){ }
-
-		virtual ~peripheral(){ }
-
-		virtual bool init() = 0;
-		virtual bool loop() = 0;
-		virtual bool intervall_update(uint8_t slot) = 0;
-		virtual uint8_t count_intervall_update()    = 0;
-		virtual bool subscribe() = 0;
-		virtual bool receive(uint8_t * p_topic, uint8_t * p_payload) = 0;
-		virtual bool parse(uint8_t * config) = 0;
-		virtual uint8_t * get_key() = 0;
-		virtual bool publish()      = 0;
-	};
 
 	// ////////////////////////////////////////////////// defines //////////////////////////////////////////////
 	#define SERIAL_DEBUG
@@ -166,7 +152,7 @@ public:
 //#include "cap_bridge.h"
 #include "cap_GPIO.h"
 //#include "cap_husqvarna.h"
-#include "no_mesh.h"
+#include "cap_mesh.h"
 #include "cap_uptime.h"
 #include "cap_play.h"
 #include "cap_freq.h"

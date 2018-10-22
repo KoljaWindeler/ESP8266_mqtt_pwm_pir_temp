@@ -260,12 +260,14 @@ void reconnect(){
 				// try mesh if wifi directly did not work after some time
 				// this will be true after (min 45*0.8=35 sec)
 				// or when the ssid is not programmed, set SSID to
+#ifdef WITH_MESH
 				if (network.getMeshMode() == MESH_MODE_FULL_MESH || network.getMeshMode() == MESH_MODE_CLIENT_ONLY) {
 					if (relationship_timeout(0.8, (char *) "MESH")) {
 						logger.println(TOPIC_WIFI, F("Can't connect directly fast enough, trying mesh in addition"), COLOR_YELLOW);
 						network.MeshConnect();
 					}
 				}
+#endif
 			}
 			// //////////////// MESH CONNECTION ///////////////////////
 		} else {
@@ -402,6 +404,8 @@ void reconnect(){
 					delay(500);
 					Serial.begin(115200);
 				}
+				// reload mqtt data
+				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
 				// run wifi manager
 				wifiManager.startConfigPortal(CONFIG_SSID);
 				// reinit peripheral if needed
@@ -503,11 +507,13 @@ void loadPheripherals(uint8_t * config){
 		}
 	}
 	// hanky: activate button just to see if we should go to setup
+#ifdef WITH_BUTTON
 	logger.println(TOPIC_GENERIC_INFO, F("checking direct setup"), COLOR_PURPLE);
 	p_button = new button();
 	p_button->init();
 	delete p_button;
 	p_button = 0x00;
+#endif
 
 	// create objects for real
 	// activate
@@ -516,76 +522,89 @@ void loadPheripherals(uint8_t * config){
 	logger.println(TOPIC_GENERIC_INFO, F("activating peripherals"), COLOR_PURPLE);
 	// logger.p("RAM before creating objects ");
 	// logger.pln(system_get_free_heap_size());
+#ifdef WITH_ADC
 	bake(new ADC(), &p_adc, config);
+#endif
+#ifdef WITH_BUTTON
 	bake(new button(), &p_button, config);
+#endif
+#ifdef WITH_SL
 	bake(new simple_light(), &p_simple_light, config);
+#endif
+#ifdef WITH_RSSI
 	bake(new rssi(), &p_rssi, config);
+#endif
+#ifdef WITH_PWM
 	bake(new PWM(((uint8_t *) "PWM"), 4, 5, 16, 0, 0), &p_pwm, config);     // SONOFF PWM TODO: THIS IS LIKELY NOT WORKING AS EXPECTED
 	bake(new PWM(((uint8_t *) "PW2"), 4, 4, 4, 0, 0), &p_pwm2, config);     // kolja 2
 	bake(new PWM(((uint8_t *) "PW3"), 15, 13, 12, 14, 4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
+#endif
+#ifdef WITH_PIR
 	bake(new PIR(((uint8_t *) "PIR"), 14), &p_pir, config);                 // SONOFF PIR
 	bake(new PIR(((uint8_t *) "PI2"), 5), &p_pir2, config);                 // Kolja_v2
+#endif
+#ifdef WITH_DHT22
 	bake(new J_DHT22(), &p_dht, config);
+#endif
+#ifdef WITH_DS
 	bake(new J_DS(), &p_ds, config);
+#endif
+#ifdef WITH_AI
 	bake(new AI(), &p_ai, config);
+#endif
+#ifdef WITH_BONE
 	bake(new BOne(), &p_bOne, config);
+#endif
+#ifdef WITH_NEOSTRIP
 	bake(new NeoStrip(), &p_neo, config);
+#endif
 	bake(new light(), &p_light, config);
+#ifdef WITH_HLW
 	bake(new J_hlw8012(), &p_hlw, config);
+#endif
+#ifdef WITH_NL
 	bake(new night_light(), &p_nl, config);
+#endif
 	//bake(new bridge(), &p_rfb, config);
+#ifdef WITH_GPIO
 	bake(new J_GPIO(), &p_gpio, config);
+#endif
 	//bake(new husqvarna(), &p_husqvarna, config);
 	bake(new no_mesh(), &p_no_mesh, config);
+#ifdef WITH_UPTIME
 	bake(new uptime(), &p_uptime, config);
+#endif
+#ifdef WITH_FREQ
 	bake(new freq(), &p_freq, config);
+#endif
+#ifdef WITH_PLAY
 	bake(new play(), &p_play, config);
+#endif
+#ifdef WITH_REC
 	bake(new record(), &p_rec, config);
+#endif
 
 
 	// logger.p("RAM after init objects ");
 	// logger.pln(system_get_free_heap_size());
 
-	// disable serial interface if rf bridge was activated
-	//if (p_rfb != 0x00) {
-	//	logger.enable_serial_trace(false);
-	//	logger.enable_mqtt_trace(true); // for debugging
-	//}
 	logger.println(TOPIC_GENERIC_INFO, F("linking peripherals"), COLOR_PURPLE);
 
-	// make this more generic .... like ...
-	// go through all entities, check if they have a dependency if so
-	// call the dependency with this opbject
-
-	/*
-	 * for(uint8_t i=0; i<active_p_pointer; i++){
-	 * // check of all objects if they had a dependency
-	 * if(strlen(active_p[i]->get_dep())>0){
-	 * // if so, find the dependency and tell them that we're depending on them
-	 * for(uint8_t ii=0; ii<active_p_pointer; ii++){
-	 * if(strcmp(active_p[i]->get_dep(), active_p[ii]->get_key())){
-	 *  // so everyone and their sister need, get_key and reg_provider?
-	 *  ((light*)active_p[ii])->reg_provider(active_p[i],active_p[i]->get_key()));
-	 * }
-	 * }
-	 * }
-	 * }
-	 */
-	// set one provider
-	if (p_simple_light) {
-		((light *) p_light)->reg_provider(p_simple_light, T_SL);
-	} else if (p_pwm) {
-		((light *) p_light)->reg_provider(p_pwm, T_PWM);
-	} else if (p_pwm2) {
-		((light *) p_light)->reg_provider(p_pwm2, T_PWM);
-	} else if (p_pwm3) {
-		((light *) p_light)->reg_provider(p_pwm3, T_PWM);
-	} else if (p_neo) {
-		((light *) p_light)->reg_provider(p_neo, T_NEO);
-	} else if (p_bOne) {
-		((light *) p_light)->reg_provider(p_bOne, T_BOne);
-	} else if (p_ai) {
-		((light *) p_light)->reg_provider(p_ai, T_AI);
+	for(uint8_t i=0; i<active_p_pointer; i++){
+		//Serial.printf("check if component %s has a dep\r\n",(*active_p[i])->get_key());
+		// check of all objects if they had a dependency
+		if(strlen((char*)((*active_p[i])->get_dep()))>0){
+			//Serial.printf("yes: %s\r\n",(*active_p[i])->get_dep());
+			// if so, find the dependency and tell them that we're depending on them
+			for(uint8_t ii=0; ii<active_p_pointer; ii++){
+				//Serial.printf("compare to key %s\r\n",(*active_p[ii])->get_key());
+	 			if(!strcmp((char*)((*active_p[i])->get_dep()), (char*)((*active_p[ii])->get_key()))){
+					//Serial.println("register");
+	 				// so everyone and their sister need, get_key and reg_provider?
+	 				(*active_p[ii])->reg_provider(*active_p[i],(*active_p[i])->get_key());
+	 			}
+	 		}
+ 		}
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("peripherals loaded"), COLOR_PURPLE);

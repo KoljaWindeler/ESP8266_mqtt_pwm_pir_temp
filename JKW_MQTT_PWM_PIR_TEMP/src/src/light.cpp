@@ -16,6 +16,7 @@ uint8_t * light::get_key(){
 	return key;
 }
 
+
 bool light::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
@@ -31,25 +32,28 @@ bool light::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
 }
 
-uint8_t light::count_intervall_update(){	return 0;	};
-
-bool light::reg_provider(peripheral * p, uint8_t t){
-	type     = t;
+bool light::reg_provider(peripheral * p, uint8_t* t){
 	provider = p;
 	logger.print(TOPIC_GENERIC_INFO, F("light registered provider: "), COLOR_GREEN);
-	if(t==T_SL){
+	if(!strcmp((char*)t,"SL")){
+		type     = T_SL;
 		logger.pln(F("simple light"));
-	} else if(t==T_PWM){
+	} else if(!strcmp((char*)t,"PWM") || !strcmp((char*)t,"PW2") || !strcmp((char*)t,"PW3")){
+		type     = T_PWM;
 		logger.pln(F("PWM light"));
-	} else if(t==T_NEO){
+	} else if(!strcmp((char*)t,"NEO")){
+		type     = T_NEO;
 		logger.pln(F("neostrip light"));
-	} else if(t==T_BOne){
+	} else if(!strcmp((char*)t,"B1")){
+		type     = T_BOne;
 		logger.pln(F("B1 light"));
-	} else if(t==T_AI){
+	} else if(!strcmp((char*)t,"AI")){
+		type     = T_AI;
 		logger.pln(F("AI light"));
 	} else {
+		type     =  0;
 		logger.pln(F("UNKNOWN "));
-		logger.pln(t);
+		logger.pln((char*)t);
 	}
 
 }
@@ -130,6 +134,7 @@ bool light::loop(){
 	// // RGB circle ////
 	if (m_animation_type.get_value()) {
 		if (millis() >= m_animation_dimm_time) {
+#ifdef WITH_NEOSTRIP
 			if (type == T_NEO) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
 					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
@@ -165,19 +170,29 @@ bool light::loop(){
 					((NeoStrip *) provider)->show();
 					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 				}
-			} else if (type == T_PWM || type == T_BOne || type == T_AI) {
+			} else
+#endif
+			if (type == T_PWM || type == T_BOne || type == T_AI) {
 				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
 					RgbColor c = Wheel(m_animation_pos & 255);
 					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
 					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
 					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+#ifdef WITH_PWM
 					if(type == T_PWM){
 						((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-					} else if (type == T_BOne) {
+					}
+#endif
+#ifdef WITH_BONE
+					if (type == T_BOne) {
 						((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-					} else if (type == T_AI) {
+					}
+#endif
+#ifdef WITH_AI
+					if (type == T_AI) {
 						((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
 					}
+#endif
 					m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
 					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
 				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
@@ -187,13 +202,21 @@ bool light::loop(){
 					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
 					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
 					if(m_animation_pos % NEOPIXEL_LED_COUNT == 0){
+#ifdef WITH_PWM
 						if(type == T_PWM){
 							((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-						} else if (type == T_BOne) {
+						}
+#endif
+#ifdef WITH_BONE
+						if (type == T_BOne) {
 							((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-						} else if (type == T_AI) {
+						}
+#endif
+#ifdef WITH_AI
+						if (type == T_AI) {
 							((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
 						}
+#endif
 					}
 					// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
 					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
@@ -218,7 +241,7 @@ bool light::loop(){
 	return false; // i did nothing
 } // loop
 
-bool light::intervall_update(uint8_t slot){  return false; }
+// bool light::intervall_update(uint8_t slot){  return false; }
 
 bool light::subscribe(){
 	network.subscribe(build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT)); // on off
@@ -722,15 +745,30 @@ void light::setAnimationType(int type){
 	m_animation_type.set(type);
 	// switch off
 	if (m_animation_type.get_value() == ANIMATION_OFF) {
+#ifdef WITH_PWM
 		if (type == T_PWM) {
 			((PWM *) provider)->setColor(0, 0, 0);
-		} else if (type == T_NEO) {
-			((NeoStrip *) provider)->setColor(0, 0, 0);
-		} else if (type == T_BOne) {
-			((BOne *) provider)->setColor(0, 0, 0);
-		} else if (type == T_AI) {
-			((AI *) provider)->setColor(0, 0, 0);
+			return;
 		}
+#endif
+#ifdef WITH_NEOSTRIP
+		if (type == T_NEO) {
+			((NeoStrip *) provider)->setColor(0, 0, 0);
+			return;
+		}
+#endif
+#ifdef WITH_BONE
+		if (type == T_BOne) {
+			((BOne *) provider)->setColor(0, 0, 0);
+			return;
+		}
+#endif
+#ifdef WITH_AI
+		if (type == T_AI) {
+			((AI *) provider)->setColor(0, 0, 0);
+			return;
+		}
+#endif
 	}
 }
 
@@ -739,17 +777,36 @@ void light::send_current_light(){
 	temp.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
 	temp.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
 	temp.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
+#ifdef WITH_SL
 	if (type == T_SL) {
 		((simple_light *) provider)->setColor(temp.r, temp.g, temp.b);
-	} else if (type == T_PWM) {
-		((PWM *) provider)->setColor(temp.r, temp.g, temp.b);
-	} else if (type == T_NEO) {
-		((NeoStrip *) provider)->setColor(temp.r, temp.g, temp.b);
-	} else if (type == T_BOne) {
-		((BOne *) provider)->setColor(temp.r, temp.g, temp.b);
-	} else if (type == T_AI) {
-		((AI *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
 	}
+#endif
+#ifdef WITH_PWM
+	if (type == T_PWM) {
+		((PWM *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
+	}
+#endif
+#ifdef WITH_NEOSTRIP
+	if (type == T_NEO) {
+		((NeoStrip *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
+	}
+#endif
+#ifdef WITH_BONE
+	if (type == T_BOne) {
+		((BOne *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
+	}
+#endif
+#ifdef WITH_AI
+	if (type == T_AI) {
+		((AI *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
+	}
+#endif
 }
 
 RgbColor light::Wheel(byte WheelPos){
