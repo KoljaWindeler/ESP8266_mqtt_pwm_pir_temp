@@ -1,0 +1,53 @@
+#ifndef bridge_h
+#define bridge_h
+
+
+#include "main.h"
+
+static constexpr char MQTT_BRIDGE_TOPIC[]     = "bridge";      // publish
+static constexpr char MQTT_BRIDGE_TRAIN[]     = "bridge/train";      // publish
+
+
+#define RFB_START 10
+#define RFB_ACTION 11
+#define RFB_END 12
+#define RFB_SYNC_1 13
+#define RFB_SYNC_2 14
+#define RFB_LOW_1 15
+#define RFB_LOW_2 16
+#define RFB_HIGH_1 17
+#define RFB_HIGH_2 18
+#define RFB_D0 19
+#define RFB_D1 20
+#define RFB_D2 21
+#define RFB_TIMEOUT 1000
+
+
+
+class bridge : public capability {
+	public:
+		bridge();
+		~bridge();
+		bool init();
+		bool loop();
+		void interrupt();
+		bool intervall_update(uint8_t slot);
+		bool subscribe();
+		uint8_t count_intervall_update();
+		bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		bool parse(uint8_t* config);
+		uint8_t* get_key();
+		bool publish();
+	private:
+		void send_cmd(uint8_t cmd);
+		uint8_t m_state;
+		uint32_t rfb_last_received;
+		uint8_t key[4];
+		bool rfb_data_rdy;
+		uint8_t rfb_data[11];
+		uint8_t t; // temporary serial byte
+
+};
+
+
+#endif

@@ -1,0 +1,168 @@
+20190927
+	- added support for I2S DAC/AMP 
+	- Streaming with 44.1khz and 8 (AUD1) or 16 (AUD16) bit/sample
+		DATA:    [=====     ]  53.0% (used 43408 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.3% (used 404960 bytes from 434160 bytes)
+20190917
+ 	- added parse wide, SL and Button accept any GPIO now
+	- added option for Button to be actually a switch (aka a change from H>L is like a button push + release)
+	- disabled husqvarna and bridge, never used, not tested and no need
+		DATA:    [=====     ]  54.0% (used 43424 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.3% (used 405168 bytes from 434160 bytes)
+20190910
+	- added frequency measurement (cap: fre_s_4, fre_h_8, fre_m_12)
+	- renamed all files to "cap_" if they are pure capabilities
+		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)
+		PROGRAM: [========= ]  94.2% (used 409160 bytes from 434160 bytes)
+20180908
+	- added audio streaming, see cmd to run below (cap: AUD)
+ 		avconv -i file.mp3 -f s32be -acodec pcm_u8 -ac 1 -ar 24000 tcp://192.168.2.59:5522
+		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)
+		PROGRAM: [========= ]  94.2% (used 409004 bytes from 434160 bytes)
+20180803
+	- button hold will publish text instead of ""
+		DATA:    [=====     ]  54.6% (used 44704 bytes from 81920 bytes)
+  	PROGRAM: [========= ]  93.5% (used 406004 bytes from 434160 bytes)
+20180722
+  - wifimanager will accept 60 chars for dev_short now
+	- wifimanager will not try to parse v1 blindly anymore
+	- gpio skipps unusable pins 6 - 11
+20180627
+	- added auto off feature for light
+			instead of "ON" send "ONFOR10" for 10 sec light
+20180624
+	- added uptime component (UTP3 uptime, positiv (high active), gpio3)
+	- Text size 405648 [93.4%]
+20180618
+	- added "button_release" feature
+20180424
+	- Added Last-Will and testament feature
+	- Enhance GPIO dimming feature
+20180423
+	- Enlarged dev_short to 50 chars
+20180417
+	- Added dimming capability to the gpio class
+		-	set e.g. "gpio_2_brightness" to "50" [%] {default is 100%}
+		- activate e.g. "gpio_2_dimm" to "ON"
+		- if you need synchronous dimming:
+			- activate "gpio_255_dimm" -> "ON,2,3,4,5" / "OFF,3,5"
+	- Text size 393876
+20180413
+	- Added pwm capability to gpio class
+20180408
+	- GPIO class extended, provides output / input / input-hold capability
+		- Config string GOP4 = GPIO, Output, Positive (active high), Pin GPIO4
+		- Config string GIN3 = GPIO, input, Negative (active low), Pin GPIO3
+		- Publishing limited to 9 Messages: devXX/r/gpio_X_hold with payload 1..9 (seconds hold)
+20180403 (*** LTS tested with disabled mesh :D )
+	- Mesh Host SSID pattern: JKW_relay_dev99_L1 = opened by dev99 and Level
+		one aka directly connected to the WIFI, next level would be L2 and so on ...
+	- Configure Mesh options via Capability string M0/1/2/3 (Full, Host only, client only, off)
+	- increased wifi connect time from 15 o 25 sec
+	- explicitly set STA mode before connecting to any WiFi (test showed significant improvement)
+	- explicitly set Mesh Channel on Mesh connect (again, way higher connection chances)
+20180402
+	- Added inverse option for GPIO (e.g. Relay shield is active LOW)
+	-	No Mesh function added:
+		- updated all nodes after having 20180310 on four nodes for a month
+		- Had multiple disconnects / offline nodes
+	- Added Mesh disconnect if no response is received within full "Timeout"
+		- We send a PING to our Uplink when we haven't send a message for Timeout/2 = 70 sec
+		- The uplink should immediately respond with a ACK
+		- We disconnect when we don't receive an ACK within 140 sec
+20180310
+	- added peripheral husqvarna UNTESTED
+	- text size 390460
+20180303
+	- added peripheral gpio
+	- text size 386244
+20180302
+	-	Removed "uninterrupt check" from network receive -> relay msg as quick as possible instead of "after dimming"
+	- Replace the generic Client mesh AP SSID with parent node name to enhance visibility of routing
+20180227
+	-	Added OTA via MQTT
+		- Including MD5 and seqence nr checking
+		- can be routed to single dev or to all "s/ota"
+	- Changed MQTT buffer to 1024 (was 128)
+	- text size 384716
+20180225
+	- Added station blacklisting
+	- text size 382820
+20180224
+	- Added Mesh option
+	- Wifi will try to connect for x seconds after boot or disconnect
+	  After 0.8*X sec have passed: Try to connect alternating. Mesh and regular WIFI
+	- If connection (no matter what kind) was established: Switch to WiFi station + AP
+	- Start server on port 1883 to accept incoming connections
+	- Send regular keepalive up, so each server can detected dead clients and disconnect them
+	- Send "loop_detect" to see if I receive my own MAC from the net. If that happens: disconnect / no blacklist added as of now
+	- Send routing message up the chain. Each node on the way will add its name so we get a nice tree
+	- If we get data (from upstream) that we didn't consume, send it on to all clients
+	- text size 381960 not optimized
+20180206
+	- reverted inital connect with timeout .. init connection fails too often
+	- remove all wifi connections before connect to dedicated NW
+20180120 *** (LTS tested)
+	- fixed getting SSID and password from WiFiManger
+	- changed WiFiManger to use timeout on initial connect
+	- text size 354206
+20180119
+	- added checksum to NW config
+20180118
+	- added ability to change server IP
+	- added repoting of MAC on startup
+20180113
+	- added hold button for 1s,2s,3s
+	- moved topics to connected classes
+20180108
+	- Added Nightlight class for sonoff touch, broadcast topic
+	- Fixed resistor value a bit to match expected voltage without calibration
+20171229
+	- Fixed bug that crashed WifiManager after 2nd call
+20171227
+	- Removed checkboxes from WiFiManager
+	- readded capability string to GUI
+	- skipped capability reading from config console
+20171220
+	- fixed h801 pinout
+	- added support for 5 PWMs
+20171217
+	-	added support for hlw8012, power IC from SONOFF POW
+	- each entity will receive slot count 0-based
+	- text size 352942
+20171211
+	-	moved all pins to the objects
+	- live support for Kolja_v2 and sonoff at once
+20171210
+	- added brightness scale for animation
+2017104
+	- fixed AI light pinout
+20171125
+	- clear separation between PC to unit and unit to pc topics
+	- publish capability to recover on PC site
+20171111
+	- readded config via serial to mqtt struct v3
+	- added 2nd adc slot to remove delay
+	- added factory pattern to init obj
+	- fixed flash/ram display
+20171115
+	- fixed reporting of animation status
+20171114
+	-	fixed button directly toggle light
+20171111
+	- trace added
+20171108
+	- v4 ready
+20171102
+	- improve topic subscription order
+	- subscribe color before brightness
+20171031
+	- fixed URL upload
+20171030
+	- reconnect time based on previously connection time
+		up to 20min reconnect
+20171029
+	- OTA working
+	- no wifi communication during dimming
+	- supports sonoff b1
+	- colorized serial outout for screen

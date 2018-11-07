@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.6.0">
+<eagle version="7.7.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -1069,6 +1069,40 @@ MICRO</text>
 <wire x1="-6.35" y1="-17.78" x2="-6.35" y2="-12.7" width="0.2032" layer="21"/>
 <text x="-8.255" y="-15.24" size="0.635" layer="25" align="center">RESET
 SWITCH</text>
+</package>
+<package name="WEMOS_D1_MINI_NOTXT">
+<pad name="5V" x="11.43" y="-11.43" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="GND" x="11.43" y="-8.89" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="D4" x="11.43" y="-6.35" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="D3" x="11.43" y="-3.81" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="D2" x="11.43" y="-1.27" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="D1" x="11.43" y="1.27" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="RX" x="11.43" y="3.81" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="TX" x="11.43" y="6.35" drill="1.016" diameter="1.8288" shape="long"/>
+<pad name="3V3" x="-11.43" y="-11.43" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="D8" x="-11.43" y="-8.89" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="D7" x="-11.43" y="-6.35" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="D6" x="-11.43" y="-3.81" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="D5" x="-11.43" y="-1.27" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="D0" x="-11.43" y="1.27" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="A0" x="-11.43" y="3.81" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<pad name="RESET" x="-11.43" y="6.35" drill="1.016" diameter="1.8288" shape="long" rot="R180"/>
+<text x="-10.16" y="6.35" size="0.762" layer="25" align="center-left">RST</text>
+<text x="-10.16" y="3.81" size="0.762" layer="25" align="center-left">A0</text>
+<text x="-10.16" y="1.27" size="0.762" layer="25" align="center-left">D0</text>
+<text x="-10.16" y="-1.27" size="0.762" layer="25" align="center-left">D5</text>
+<text x="-10.16" y="-3.81" size="0.762" layer="25" align="center-left">D6</text>
+<text x="-10.16" y="-6.35" size="0.762" layer="25" align="center-left">D7</text>
+<text x="-10.16" y="-8.89" size="0.762" layer="25" align="center-left">D8</text>
+<text x="-10.16" y="-11.43" size="0.762" layer="25" align="center-left">3V3</text>
+<text x="10.16" y="-11.43" size="0.762" layer="25" rot="R180" align="center-left">5V</text>
+<text x="10.16" y="-8.89" size="0.762" layer="25" rot="R180" align="center-left">GND</text>
+<text x="10.16" y="-6.35" size="0.762" layer="25" rot="R180" align="center-left">D4</text>
+<text x="10.16" y="-3.81" size="0.762" layer="25" rot="R180" align="center-left">D3</text>
+<text x="10.16" y="-1.27" size="0.762" layer="25" rot="R180" align="center-left">D2</text>
+<text x="10.16" y="1.27" size="0.762" layer="25" rot="R180" align="center-left">D1</text>
+<text x="10.16" y="3.81" size="0.762" layer="25" rot="R180" align="center-left">RX</text>
+<text x="10.16" y="6.35" size="0.762" layer="25" rot="R180" align="center-left">TX</text>
 </package>
 </packages>
 <symbols>
@@ -2258,7 +2292,30 @@ ESP8266 module</description>
 <gate name="D1" symbol="WEMOS-D1-MINI" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="WEMOS-D1-MINI">
+<device name="TXT" package="WEMOS-D1-MINI">
+<connects>
+<connect gate="D1" pin="3V3" pad="3V3"/>
+<connect gate="D1" pin="5V" pad="5V"/>
+<connect gate="D1" pin="A0" pad="A0"/>
+<connect gate="D1" pin="D0" pad="D0"/>
+<connect gate="D1" pin="D1" pad="D1"/>
+<connect gate="D1" pin="D2" pad="D2"/>
+<connect gate="D1" pin="D3" pad="D3"/>
+<connect gate="D1" pin="D4" pad="D4"/>
+<connect gate="D1" pin="D5" pad="D5"/>
+<connect gate="D1" pin="D6" pad="D6"/>
+<connect gate="D1" pin="D7" pad="D7"/>
+<connect gate="D1" pin="D8" pad="D8"/>
+<connect gate="D1" pin="GND" pad="GND"/>
+<connect gate="D1" pin="RESET" pad="RESET"/>
+<connect gate="D1" pin="RX" pad="RX"/>
+<connect gate="D1" pin="TX" pad="TX"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="NOTXT" package="WEMOS_D1_MINI_NOTXT">
 <connects>
 <connect gate="D1" pin="3V3" pad="3V3"/>
 <connect gate="D1" pin="5V" pad="5V"/>
