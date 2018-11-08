@@ -56,18 +56,18 @@ bool play::init(){
 #ifdef ESP32
 	// ESP32
 	//i2s configuration
-	i2s_config_t i2s_config = {
-     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
-     .sample_rate = 44100,
-     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // 16 bit per channel
-     .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-     .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // high interrupt priority
-     .dma_buf_count = 8,
-     .dma_buf_len = 64   //Interrupt level 1
-    };
+	// i2s_config_t i2s_config = {
+  //    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
+  //    .sample_rate = 44100,
+  //    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // 16 bit per channel
+  //    .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+  //    .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
+  //    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // high interrupt priority
+  //    .dma_buf_count = 8,
+  //    .dma_buf_len = 64   //Interrupt level 1
+  //   };
 
-	  i2s_config = {
+	  i2s_config_t i2s_config = {
      .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN),
      .sample_rate = 44100,
      .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, /* the DAC module will only take the 8bits from MSB, but setting it to 8bit won't work :( */
@@ -75,7 +75,7 @@ bool play::init(){
      .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB,
      .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // high interrupt priority
      .dma_buf_count = 8, // 8 buffer queues
-     .dma_buf_len = 64, // each 64 byte, 512 byte
+     .dma_buf_len = 55, // each 64 byte, 512 byte
      .use_apll = 0
     };
 
@@ -195,6 +195,32 @@ bool play::loop(){
 			uint16_t byte_received_per_second = 0;
 			uint16_t byte_played_per_second = 0;
 			uint32_t last_calc_stamp = millis();
+
+			// BEEPTEST
+			// 44100 hz, 1khz tone
+			#define AMPLITUDE 0x7e
+			uint16_t f=2000;
+			uint16_t samplerate = 44000; // for the sake of trying -> 440 samples for one sine wave
+			while(1){
+				uint16_t samples=samplerate/f;
+				for(uint16_t i=0; i<samples; i++){
+					float a=i*2*3.14;
+					a /= samples;
+					samplebuffer_scaled[i]=((uint16_t)(AMPLITUDE*sin(a)+AMPLITUDE))<<8;
+					//Serial.println(samplebuffer_scaled[i]);
+					//Serial.print(a);
+					// Serial.print(", ");
+					// Serial.print(sin(i*2*3.14/SAMPLES));
+					// Serial.print(", ");
+					Serial.println(samplebuffer_scaled[i]);
+				}
+				i2s_write_bytes((i2s_port_t)0, (const char *)samplebuffer_scaled, samples, 100);
+				delay(2000);
+				f=f+1000;
+			}
+			// BEEPTEST
+
+
 			while(1){
 			// playback -- keep playing the same sample on buffer underrun up to 1.5sec
 			// scale down by 4 (>>2) otherwise the output overshoots significantly
@@ -208,6 +234,7 @@ bool play::loop(){
 					} else {
 						c = BUFFER_SIZE-bufferPtrOut;
 					}
+					c= _max(4000,c); // 8 buffer each 500
 					c *= 2;
 					// c= param size     Size of buffer (in bytes) = (number of channels) * bits_per_sample / 8.
 					uint32_t t = i2s_write_bytes((i2s_port_t)0, (const char *)&samplebuffer_scaled[bufferPtrOut], c, 100);
@@ -276,18 +303,17 @@ bool play::loop(){
 				} else { // fill from the IN to the OUT
 					c = bufferPtrOut-bufferPtrIn;
 				}
-				//uint16_t d = tcp_socket.read((uint8_t*)&samplebuffer[bufferPtrIn],_min(tcp_socket.available(),c));
-				uint16_t d = tcp_socket.read((uint8_t*)samplebuffer,_min(tcp_socket.available(),BUFFER_SIZE));
+				uint16_t d = tcp_socket.read((uint8_t*)&samplebuffer[bufferPtrIn],_min(tcp_socket.available(),c));
+				//uint16_t d = tcp_socket.read((uint8_t*)samplebuffer,_min(tcp_socket.available(),BUFFER_SIZE));
 				for(uint16_t i=bufferPtrIn; i<bufferPtrIn+d; i++){
 					//samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<24 | samplebuffer[bufferPtrIn]<<8;
-					samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<8;
+					//samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<8;
 				}
 				bufferPtrIn=(bufferPtrIn+d)%BUFFER_SIZE;
-				byte_received_per_second+=d;
+				byte_received_per_second+=d; // stats
 
 				// force
-				bufferPtrOut = 0;
-				bufferPtrIn = d;
+
 
 
 				/*} else {
