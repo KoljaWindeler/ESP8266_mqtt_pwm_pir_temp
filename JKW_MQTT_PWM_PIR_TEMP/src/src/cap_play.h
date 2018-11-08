@@ -9,10 +9,10 @@
 // avconv -i Downloads/Madonna\ -\ Hung\ Up\ www.my-free-mp3.net\ .mp3 -f s32be -acodec pcm_u16be -ac 1 -ar 44100 tcp://192.168.2.27:5522
 // avconv -i https://c1icy.prod.playlists.ihrhls.com/2281_icy -f s32be -acodec pcm_u16be -ac 1 -ar 44000 tcp://192.168.2.27:5522
 
-// I2S_LRS -  GPIO 02
-// I2S_BCLK - GPIO 15
-// I2S_DIN -  GPIO 03
-// Enable -   GPIO 14
+// I2S_LRS -  GPIO 02 / D4
+// I2S_BCLK - GPIO 15 / D8
+// I2S_DOUT - GPIO 03 / D9 / RX
+// Enable -   GPIO 14 / D5
 
 // valid buffer Sizes are e.g. 0x1000, 0x2000, 0x4000
 #define BUFFER_SIZE    	0x4000 // 4k, 8k, 16k byte
