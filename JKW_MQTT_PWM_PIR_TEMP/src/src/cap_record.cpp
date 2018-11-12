@@ -288,6 +288,10 @@ void ICACHE_RAM_ATTR record::sample_isr(void){
 
 	// Read a sample from ADC
 	val = transfer16();
+	//
+	old_value =  (old_value<<3 + val)>>3;
+	val = old_value;
+	//
 	adc_buf[(current_adc_buf*REC_BUFFER_SIZE)+adc_buf_pos] = val & 0xFFF;
 	adc_buf_pos++;
 

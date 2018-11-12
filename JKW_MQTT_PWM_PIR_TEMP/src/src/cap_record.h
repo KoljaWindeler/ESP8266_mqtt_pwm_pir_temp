@@ -3,6 +3,23 @@
 
 // based on large parts on https://github.com/sven337/jeenode/blob/master/babymonitor/recv/recv.ino
 
+// nc -l 5523 > test # record
+// play -t raw -r 12000 -b 8 -c 1  -e unsigned test # play on laptop
+// nc -w 3 192.168.2.99 5523 <test # send to speaker
+
+
+/*  Hardware:
+      MCP3201 Pin   ---------------- ESP8266 Pin
+-       1-VREF      ----------------  3,3V
+-       2-IN+       ----------------  ANALOG SIGNAL +
+-       3-IN-       ----------------  GND
+-       4-GND       ----------------  GND
+-       5-CS        ----CS----------  GPIO15/CS   / D8
+-       6-Dout(MISO)----MISO--------  GPIO12/MISO / D6
+-       7-CLK       ----SCLK--------  GPIO14      / D5
+-       8-VDD       ----------------  3.3V
+*/
+
 #include "main.h"
 #include <SPI.h>
 #include <WiFiUdp.h>
@@ -43,6 +60,7 @@ class record : public capability {
 		int32_t silence_value; // computed as an exponential moving average of the signal
 		uint16_t envelope_threshold; // envelope threshold to trigger data sending
 		uint32_t send_sound_util; // date until sound transmission ends after an envelope threshold has triggered sound transmission
+		uint32_t old_value; // computed as an exponential moving average of the signal
 		bool enable_highpass_filter;
 		bool serverIP_available;
 		IPAddress serverIP;

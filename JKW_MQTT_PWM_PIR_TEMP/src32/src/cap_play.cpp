@@ -2,8 +2,9 @@
 #ifdef WITH_PLAY
 // simply the constructor
 play::play(){
-	samplebuffer   = NULL;
+	buffer8b   = NULL;
 	tcp_server = NULL;
+	i2s_active = false;
 	amp_active = false;
 	client_connected  = false;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
@@ -13,19 +14,29 @@ play::play(){
 
 // simply the destructor
 play::~play(){
-	if (samplebuffer) {
-		delete [] samplebuffer;
-		samplebuffer = NULL;
+	if (buffer8b) {
+		delete [] buffer8b;
+		buffer8b = NULL;
 	}
-	if (tcp_server) {
+
+	if(tcp_server){
 		tcp_server->close();
-#ifdef ESP32
-		i2s_driver_uninstall((i2s_port_t)0);
-#else
-		i2s_end(); // i2s was only started when the tcp_server is running so we only have to end it now
-#endif
+		delete [] tcp_server;
+		tcp_server = NULL;
+	}
+
+	if (i2s_active) {
+	#ifdef ESP32
+	  Serial.printf("UNINSTALL I2S\n");
+	  i2s_driver_uninstall((i2s_port_t)0); //stop & destroy i2s driver
+	#else
+	  i2s_end();
+	#endif
+	  i2s_active = false;
 		power_amp(false); // power amp down
 	}
+
+
 
 	logger.println(TOPIC_GENERIC_INFO, F("play deleted"), COLOR_YELLOW);
 };
@@ -53,58 +64,66 @@ uint8_t * play::get_key(){
 // will be callen if the key is part of the config
 bool play::init(){
 	SetGain(0.35);
+	if (!i2s_active) {
+		i2s_active = true;
 #ifdef ESP32
-	// ESP32
-	//i2s configuration
-	// i2s_config_t i2s_config = {
-  //    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX),
-  //    .sample_rate = 44100,
-  //    .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // 16 bit per channel
-  //    .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-  //    .communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-  //    .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // high interrupt priority
-  //    .dma_buf_count = 8,
-  //    .dma_buf_len = 64   //Interrupt level 1
-  //   };
+		bool use_apll = false;
+		uint8_t output_mode =  INTERNAL_DAC;
+    if (use_apll) {
+      // don't use audio pll on buggy rev0 chips
+      use_apll = false;
+      esp_chip_info_t out_info;
+      esp_chip_info(&out_info);
+      if(out_info.revision > 0) {
+        use_apll = true;
+      }
+    }
 
-	  i2s_config_t i2s_config = {
-     .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN),
-     .sample_rate = 44100,
-     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, /* the DAC module will only take the 8bits from MSB, but setting it to 8bit won't work :( */
-     .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-     .communication_format = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB,
-     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // high interrupt priority
-     .dma_buf_count = 8, // 8 buffer queues
-     .dma_buf_len = 55, // each 64 byte, 512 byte
-     .use_apll = 0
+		i2s_mode_t mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX);
+    if (output_mode == INTERNAL_DAC) {
+      mode = (i2s_mode_t)(mode | I2S_MODE_DAC_BUILT_IN);
+    } else if (output_mode == INTERNAL_PDM) {
+      mode = (i2s_mode_t)(mode | I2S_MODE_PDM);
+    }
+
+    i2s_comm_format_t comm_fmt = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB);
+    if (output_mode == INTERNAL_DAC) {
+      comm_fmt = (i2s_comm_format_t)I2S_COMM_FORMAT_I2S_MSB;
+    }
+
+    i2s_config_t i2s_config_dac = {
+      .mode = mode,
+      .sample_rate = 44100,
+      .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+      .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+      .communication_format = comm_fmt,
+      .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1, // lowest interrupt priority
+      .dma_buf_count = 8, //dma_buf_count,
+      .dma_buf_len = 64,
+      .use_apll = use_apll // Use audio PLL
     };
-
-	i2s_pin_config_t pin_config = {
-    .bck_io_num = 26, //this is BCK pin
-    .ws_io_num = 25, // this is LRCK pin
-    .data_out_num = 22, // this is DATA output pin
-    .data_in_num = -1   //Not used
-	};
-	//initialize i2s with configurations above on channel 0
-  i2s_driver_install((i2s_port_t)0, &i2s_config, 0, NULL);
-  i2s_set_pin((i2s_port_t)0, NULL); //&pin_config);
-  //set sample rates of i2s to sample rate of wav file
-  //i2s_set_sample_rates((i2s_port_t)0, 44100);
-	i2s_set_clk((i2s_port_t)0, 44100, (i2s_bits_per_sample_t)I2S_BITS_PER_SAMPLE_16BIT, (i2s_channel_t)I2S_CHANNEL_MONO);
-
-	// ESP32
+    if (i2s_driver_install((i2s_port_t)0, &i2s_config_dac, 0, NULL) != ESP_OK) {
+      Serial.println("ERROR: Unable to install I2S drives\n");
+    }
+		if (output_mode == INTERNAL_DAC || output_mode == INTERNAL_PDM) {
+      i2s_set_pin((i2s_port_t)0, NULL);
+      i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
+    } else {
+      //SetPinout(26, 25, 22);
+    }
+    i2s_zero_dma_buffer((i2s_port_t)0);
 #else
-	// ESP8266
-	i2s_begin();
-	i2s_set_rate(44100); // default, can be change via mqtt
-	// ESP8266
+    i2s_begin();
 #endif
+	}
+
+	SetRate(44100); // default, can be change via mqtt
 	power_amp(false); // amp power down state
 
-	samplebuffer = new uint8_t[BUFFER_SIZE];
-	samplebuffer_scaled = new uint16_t[BUFFER_SIZE]; // fucked up
+	tcp_server = NULL;
 
-	if (samplebuffer) {
+	buffer8b = new uint8_t[BUFFER_SIZE];
+	if (buffer8b) {
 		logger.print(TOPIC_GENERIC_INFO, F("play init "), COLOR_GREEN);
 		sprintf(m_msg_buffer, "%i bit", bit_mode);
 		logger.pln(m_msg_buffer);
@@ -115,40 +134,49 @@ bool play::init(){
 }
 
 
-// will be called in loop, if you return true here, every else will be skipped !!
+bool play::SetRate(int hz){
+  // TODO - have a list of allowable rates from constructor, check them
+#ifdef ESP32
+  i2s_set_sample_rates((i2s_port_t)0, hz);
+#else
+  i2s_set_rate(hz);
+#endif
+  return true;
+}// will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
+
+
+void helper22(void * pvParameters ){
+	((play*)p_play)->coreTask(pvParameters);
+}
+
+
 bool play::loop(){
-	while(1){
 	run_noninterrupted = true; // get high priority
 
+	if(network.connected()){
+		if(!tcp_server){
+			tcp_server = new WiFiServer(PLAY_PORT);
+			tcp_server->begin();
+			logger.println(TOPIC_GENERIC_INFO, F("(PLY) Server init"), COLOR_GREEN);
+		}
+	} else {
+		if(tcp_server){
+			tcp_server->close();
+			delete [] tcp_server;
+			tcp_server = NULL;
+			logger.println(TOPIC_GENERIC_INFO, F("(PLY) Server stopped"), COLOR_GREEN);
+		}
+	}
 
-	// not yet onnected ?
+
+	// new tcp_client?
 	if (!client_connected) {
-		// are we online
-		if(network.connected()){
-			// we are online, is the server up?
-			if(!tcp_server){
-				// start server
-				logger.println(TOPIC_GENERIC_INFO, F("(PLY) Server init"), COLOR_GREEN);
-				tcp_server = new WiFiServer(PLAY_PORT);
-				tcp_server->begin();
-			}
-			// check for new clients
-			tcp_socket = tcp_server->available();
-			if (tcp_socket.connected()) {
-				logger.println(TOPIC_GENERIC_INFO, F("(PLY) New tcp_client"), COLOR_GREEN);
-				last_data_in = millis();
-			}
-		}	else {
-			// we are offline, is the server still running?
-			if(tcp_server){
-				// yes, server is running, shut it down
-				logger.println(TOPIC_GENERIC_INFO, F("(PLY) Server close"), COLOR_GREEN);
-				tcp_server->close();
-				delete tcp_server;
-				tcp_server = NULL;
-			}
+		tcp_socket = tcp_server->available();
+		if (tcp_socket.connected()) {
+			logger.println(TOPIC_GENERIC_INFO, F("(PLY) New tcp_client"), COLOR_GREEN);
+			last_data_in = millis();
 		}
 	}
 
@@ -163,11 +191,7 @@ bool play::loop(){
 			// yield();
 			do {
 				if (tcp_socket.available()) {
-					samplebuffer[bufferPtrIn] = tcp_socket.read();
-#ifdef ESP32
-					//samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<24 | samplebuffer[bufferPtrIn]<<8;
-					samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<8;
-#endif
+					buffer8b[bufferPtrIn] = tcp_socket.read();
 					bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
 					ultimeout   = millis() + 500;
 				}
@@ -187,152 +211,94 @@ bool play::loop(){
 			ultimeout      = millis() + 500;
 			last_data_in   = millis();
 			client_connected      = true;
-			// samples_played = 0;
 			// start playback
+			sample_played_timer=millis();
+			sample_played=0;
+			sample_nplayed=0;
+
+			xTaskCreatePinnedToCore(
+                    helper22,   /* Function to implement the task */
+                    "coreTask", /* Name of the task */
+                    10000,      /* Stack size in words */
+                    NULL,       /* Task input parameter */
+                    0,          /* Priority of the task */
+                    NULL,       /* Task handle. */
+                    0);  /* Core where the task should run */
 		}
 
-		if (client_connected) {
-			uint16_t byte_received_per_second = 0;
-			uint16_t byte_played_per_second = 0;
-			uint32_t last_calc_stamp = millis();
-
-			// BEEPTEST
-			// 44100 hz, 1khz tone
-			#define AMPLITUDE 0x7e
-			uint16_t f=2000;
-			uint16_t samplerate = 44000; // for the sake of trying -> 440 samples for one sine wave
-			while(1){
-				uint16_t samples=samplerate/f;
-				for(uint16_t i=0; i<samples; i++){
-					float a=i*2*3.14;
-					a /= samples;
-					samplebuffer_scaled[i]=((uint16_t)(AMPLITUDE*sin(a)+AMPLITUDE))<<8;
-					//Serial.println(samplebuffer_scaled[i]);
-					//Serial.print(a);
-					// Serial.print(", ");
-					// Serial.print(sin(i*2*3.14/SAMPLES));
-					// Serial.print(", ");
-					Serial.println(samplebuffer_scaled[i]);
-				}
-				i2s_write_bytes((i2s_port_t)0, (const char *)samplebuffer_scaled, samples, 100);
-				delay(2000);
-				f=f+1000;
-			}
-			// BEEPTEST
 
 
-			while(1){
+		//if (client_connected) {
+		while (client_connected) {
 			// playback -- keep playing the same sample on buffer underrun up to 1.5sec
 			// scale down by 4 (>>2) otherwise the output overshoots significantly
-			uint32_t a = millis();
-			//if(amp_active){
+			if(amp_active){
+				//uint16_t t = Amplify(buffer8b[bufferPtrOut]) << 6;
+				//if (bit_mode == 16) {
+				//	t |= Amplify(buffer8b[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
+				//}
+				// play
 #ifdef ESP32
-				if ((bufferPtrOut+1)%BUFFER_SIZE!=bufferPtrIn) {
-					uint16_t c=0;
-					if(bufferPtrOut<bufferPtrIn){
-						c = bufferPtrIn-bufferPtrOut;
-					} else {
-						c = BUFFER_SIZE-bufferPtrOut;
-					}
-					c= _max(4000,c); // 8 buffer each 500
-					c *= 2;
-					// c= param size     Size of buffer (in bytes) = (number of channels) * bits_per_sample / 8.
-					uint32_t t = i2s_write_bytes((i2s_port_t)0, (const char *)&samplebuffer_scaled[bufferPtrOut], c, 100);
-					if(t>0){
-						//Serial.printf("play %i / %i\r\n",t,c);
-						byte_played_per_second += t;
-						bufferPtrOut += t/2;
-						bufferPtrOut %= BUFFER_SIZE;
+		    int16_t m = (Amplify(buffer8b[bufferPtrOut])<<6) + 0x8000;
+		    uint32_t s32 = (m<<16) | (m&0xffff);
+			  if(i2s_write_bytes((i2s_port_t)0, (const char*)&s32, sizeof(uint32_t), 0)){
+#else
+			  uint32_t s32 = ((Amplify(ms[0]))<<16) | (Amplify(ms[1]) & 0xffff);
+			  if (i2s_write_sample_nb(s32)){ // If we can't store it, return false.  OTW true
+#endif
+					//run_noninterrupted = false;    // our chance, i2s just received new samples, see if we have to publish something
+					sample_played++;
+					if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) { // not close to buffer end, step forward
+						if (bit_mode == 16) {
+							bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
+						} else {
+							bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
+						}
+						//logger.print(TOPIC_GENERIC_INFO, F("."), COLOR_GREEN);
 						ultimeout = millis() + 1500; // we still have data, no timeout
+					} else {
+						logger.print(TOPIC_GENERIC_INFO, F("."), COLOR_RED);
 					}
 				}
-			//Serial.print(millis()-a);
-			//Serial.println(" ms");
-#else
-				// uint16_t t = Amplify(samplebuffer[bufferPtrOut]) << 6;
-				// if (bit_mode == 16) {
-				// 	t |= Amplify(samplebuffer[(bufferPtrOut + 1) % BUFFER_SIZE]) >> 2;
-				// }
-				// // play
-				// uint32_t s32 = (t << 16) & 0xffff0000 | (t & 0xffff);
-				// if (i2s_write_sample_nb(s32)) { // If we can't store it, return false.  OTW true
-				// 	//run_noninterrupted = false;    // our chance, i2s just received new samples, see if we have to publish something
-				// 	if (((bufferPtrIn - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE) >= 2) { // not close to buffer end, step forward
-				// 		if (bit_mode == 16) {
-				// 			bufferPtrOut = (bufferPtrOut + 2) % BUFFER_SIZE;
-				// 		} else {
-				// 			bufferPtrOut = (bufferPtrOut + 1) % BUFFER_SIZE;
-				// 		}
-				// 		ultimeout = millis() + 1500; // we still have data, no timeout
-				// 	}
-				// 	Serial.print(".");
-				// }
-#endif
 
 				// timeout, no new data. Not a disconnect .. neccessarly.
-				//if (millis() > ultimeout) {
-				//	power_amp(false); // power down
-				//	logger.println(TOPIC_GENERIC_INFO, F("(PLY) timeout"), COLOR_RED);
-				//}
-			//}
-
-			samples_played++;
-			if(samples_played>5000){
-				samples_played=0;
-				Serial.printf("%i, %i ,%i\r\n",((bufferPtrIn - 1 - bufferPtrOut + BUFFER_SIZE) % BUFFER_SIZE),bufferPtrIn,bufferPtrOut);
+				if (millis() > ultimeout) {
+					power_amp(false); // power down
+					logger.println(TOPIC_GENERIC_INFO, F("(PLY) timeout"), COLOR_RED);
+				}
+			} else {
+				sample_nplayed++;
 			}
+
+
+
+			 if(millis()-sample_played_timer>1000){
+					sample_played_timer=millis();
+					Serial.printf("%i vs %i\r\n",sample_played,sample_nplayed);
+					sample_played=0;
+					sample_nplayed=0;
+			 }
 
 
 			// read new data to buffer
-			//for (uint8_t s = 0; s < bit_mode; s += 8) {
+			// for (uint8_t s = 0; s < bit_mode; s += 8) {
+			// 	if (tcp_socket.available()>1) {
+			// 		last_data_in   = millis();
+			// 		// ring-buffer free?
+			// 		if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
+			// 			buffer8b[bufferPtrIn] = tcp_socket.read();
+			// 			bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
+			// 		}
+			// 		if(!amp_active){ // re-enable amp if there are still more data available
+			// 			power_amp(true);
+			// 		}
+			// 	} else if (tcp_socket.available()==1) { // single sample, just a keep alive
+			// 		//Serial.println(".");
+			// 		last_data_in   = millis();
+			// 		tcp_socket.read();
+			// 	}
+			// }
 
-			//while(1){
-			if(millis()-last_calc_stamp>1000){
-				Serial.printf("%i B/recv %i played\r\n",byte_received_per_second, byte_played_per_second);
-				byte_received_per_second = 0;
-				byte_played_per_second = 0;
-				last_calc_stamp = millis();
-			}
-
-			if(tcp_socket.available()) {
-				last_data_in   = millis();
-				// ring-buffer free space
-				uint16_t c=0;
-				if(bufferPtrOut<=bufferPtrIn){ // only fill to the limit of the buffer this time
-					c = BUFFER_SIZE-bufferPtrIn;
-				} else { // fill from the IN to the OUT
-					c = bufferPtrOut-bufferPtrIn;
-				}
-				uint16_t d = tcp_socket.read((uint8_t*)&samplebuffer[bufferPtrIn],_min(tcp_socket.available(),c));
-				//uint16_t d = tcp_socket.read((uint8_t*)samplebuffer,_min(tcp_socket.available(),BUFFER_SIZE));
-				for(uint16_t i=bufferPtrIn; i<bufferPtrIn+d; i++){
-					//samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<24 | samplebuffer[bufferPtrIn]<<8;
-					//samplebuffer_scaled[bufferPtrIn] = samplebuffer[bufferPtrIn]<<8;
-				}
-				bufferPtrIn=(bufferPtrIn+d)%BUFFER_SIZE;
-				byte_received_per_second+=d; // stats
-
-				// force
-
-
-
-				/*} else {
-					Serial.println("!");
-					break;
-				}*/
-				if(!amp_active){ // re-enable amp if there are still more data available
-					power_amp(true);
-				}
-			/*} else if (tcp_socket.available()==1) { // single sample, just a keep alive
-				//Serial.println(".");
-				last_data_in   = millis();
-				tcp_socket.read();
-			}*/
-			}
-			//}
-			//Serial.print(millis()-a);
-			//Serial.println(" MS");
-			}
 
 			// disconnect
 			if(millis()-last_data_in > 1500){
@@ -340,12 +306,41 @@ bool play::loop(){
 			}
 		}
 		return run_noninterrupted; // i played music leave me running
-	} else if (client_connected) {
-		handle_client_disconnect();
 	}
-}
+	// else if (client_connected) {
+	// 	handle_client_disconnect();
+	// }
 	return false; // catch
 } // loop
+
+
+
+
+void play::coreTask( void * pvParameters ){
+
+    String taskMessage = "Task running on core ";
+    taskMessage = taskMessage + xPortGetCoreID();
+
+    while(true){
+			for (uint8_t s = 0; s < bit_mode; s += 8) {
+				if (tcp_socket.available()>1) {
+					last_data_in   = millis();
+					// ring-buffer free?
+					if (((bufferPtrIn + 3) % BUFFER_SIZE) != bufferPtrOut) {
+						buffer8b[bufferPtrIn] = tcp_socket.read();
+						bufferPtrIn = (bufferPtrIn + 1) % BUFFER_SIZE;
+					}
+					if(!amp_active){ // re-enable amp if there are still more data available
+						power_amp(true);
+					}
+				} else if (tcp_socket.available()==1) { // single sample, just a keep alive
+					//Serial.println(".");
+					last_data_in   = millis();
+					tcp_socket.read();
+				}
+			}
+		}
+	}
 
 
 // will be callen as often as count_intervall_update() returned, "slot" will help
@@ -388,11 +383,7 @@ bool play::receive(uint8_t * p_topic, uint8_t * p_payload){
 		logger.print(TOPIC_MQTT, F("received sample rate command: "), COLOR_PURPLE);
 		sprintf(m_msg_buffer, "%i", sample_rate);
 		logger.pln(m_msg_buffer);
-#ifdef ESP32
-	i2s_set_sample_rates((i2s_port_t)0, sample_rate);
-#else
-	i2s_set_rate(sample_rate);
-#endif
+		SetRate(sample_rate);
 		return true;
 	}
 	return false; // not for me

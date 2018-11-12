@@ -40,27 +40,35 @@ class play : public capability {
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		// bool publish();
 		uint8_t* get_key();
+		void coreTask( void * pvParameters );
 	private:
 		//WiFiUDP *udp_server;
 		WiFiServer *tcp_server;
 		WiFiClient tcp_socket;
 
-		uint8_t *samplebuffer;
-		uint16_t *samplebuffer_scaled;
+		enum : uint8_t { APLL_AUTO = 255, APLL_ENABLE = 1, APLL_DISABLE = 0 };
+    enum : uint8_t { EXTERNAL_I2S = 0, INTERNAL_DAC = 1, INTERNAL_PDM = 2 };
+
+		uint8_t *buffer8b;
 		uint16_t bufferPtrIn;
 		uint16_t bufferPtrOut;
 		uint32_t ultimeout;
 		uint32_t last_data_in;
 		uint8_t bit_mode;
-		uint16_t samples_played;
 		bool client_connected;
 		bool amp_active;
+		bool i2s_active;
 		bool run_noninterrupted;
 		uint32_t last_call;
+
+		uint32_t sample_played_timer;
+		uint32_t sample_played;
+		uint32_t sample_nplayed;
 
 		uint8_t gainF2P6; // Fixed point 2.6
 		//typedef int32_t fixed24p8_t;
 		void power_amp(bool status);
+		bool SetRate(int hz);
 		int16_t Amplify(int16_t s);
 		bool SetGain(float f);
 		void handle_client_disconnect();
