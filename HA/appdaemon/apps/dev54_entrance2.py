@@ -56,7 +56,7 @@ class EntranceWorld2(hass.Hass):
                 self.turn_off("light.joiner_outdoor")
         elif(w=="auto"):
             self.log("request in auto mode")
-            if(ele < 2 and now >= time(18,00,00)):
+            if(ele < 2 and now >= time(13,00,00)):
                 self.log("sun is low and its evening")
                 if (now >= time(23,00,00)):
                     self.log("after 11 turn off")
@@ -81,8 +81,8 @@ class EntranceWorld2(hass.Hass):
         if(ele < 15):
             #self.log("Turn on Chandelair")
             # before 5 or after 22:30, use chandelair
-            if(self.get_state("light.dev54")=="on"):
-                self.turn_off("light.dev54")
+            #if(self.get_state("light.dev54")=="on"):
+            #    self.turn_off("light.dev54")
             if(self.get_state("light.dev54_2")=="off"):
                 self.turn_on("light.dev54_2")
         #else:

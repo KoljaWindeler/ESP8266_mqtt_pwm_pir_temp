@@ -36,7 +36,7 @@ class SprinklerWorld(hass.Hass):
 
 
     def start(self, entity, attribute, old, new,kwargs):
-        self.call_service("notify/pb", title="Irrigation", message="Starting")
+        #self.call_service("notify/pb", title="Irrigation", message="Starting")
         self.log("################################################")
         self.log("Starting Sprinker call")
         self.set_state("sensor.dev30_state",state="Starting")
@@ -65,7 +65,7 @@ class SprinklerWorld(hass.Hass):
             self.set_state("sensor.dev30_state",state="Preparing pump")
             self.log("Activating valve power")
             if(int(self.g("sensor.dev30_update","0"))>0):
-                self.call_service("notify/pb", title="Irrigation", message="Valves offline, waiting up to 5 min")
+                #self.call_service("notify/pb", title="Irrigation", message="Valves offline, waiting up to 5 min")
                 self.set_state("sensor.dev30_state",state="Valve offline, wait 0/50")
                 for wait in range(0,50):
                     time.sleep(6)
@@ -73,11 +73,11 @@ class SprinklerWorld(hass.Hass):
                     if(int(self.g("sensor.dev30_update","0"))==0):
                         break
             if(int(self.g("sensor.dev30_update","0"))>0):
-                self.call_service("notify/pb", title="Irrigation", message="Valves still offline, giving up")
+                #self.call_service("notify/pb", title="Irrigation", message="Valves still offline, giving up")
                 self.set_state("sensor.dev30_state",state="Valve offline, give up")
                 exit()
             else:
-                self.call_service("notify/pb", title="Irrigation", message="Valves online, here we go")
+                #self.call_service("notify/pb", title="Irrigation", message="Valves online, here we go")
                 self.set_state("sensor.dev30_state",state="Valve online")
 
 
@@ -154,10 +154,10 @@ class SprinklerWorld(hass.Hass):
             self.turn_off("light.dev30_pow")
             self.log("Shutting down pump")
             self.turn_off("light.dev17")
-            self.call_service("notify/pb", title="Irrigation", message="All done")
+            #self.call_service("notify/pb", title="Irrigation", message="All done")
 
-        else:
-            self.call_service("notify/pb", title="Irrigation", message="Skipping, no rain needed")
+        #else:
+            #self.call_service("notify/pb", title="Irrigation", message="Skipping, no rain needed")
 
         self.turn_on("light.dev30_reset_rain_time")
         time.sleep(1)
