@@ -5,6 +5,9 @@ entrance2:
 sprinkler:
   module: sprinkler
   class: SprinklerWorld
+adafruit:
+  module: adafruit
+  class: AdafruitWorld
 warmwater:
   module: dev29_warmwater
   class: warm_waterWorld
@@ -12,8 +15,17 @@ map:
   module: dev15_map
   class: MapWorld
 floor_up:
-  module: dev55_floor_upstairs 
+  module: dev57_floor_upstairs 
   class: floor_upWorld
 bedroom:
   module: bedroom
   class: bedroomWorld
+gmotion:
+  module: global_motion
+  class: GmotionWorld
+xiaomi_vac:
+  module: xiaomi_vac
+  class: xiaomi_vacWorld
+workshop:
+  module: dev20_workshop
+  class: workshopWorld
