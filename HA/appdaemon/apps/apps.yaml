@@ -29,3 +29,9 @@ xiaomi_vac:
 workshop:
   module: dev20_workshop
   class: workshopWorld
+carlo:
+  module: dev24_carlo
+  class: carloWorld
+pi:
+  module: dev18_pi
+  class: PiWorld

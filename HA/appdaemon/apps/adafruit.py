@@ -1,5 +1,5 @@
 import appdaemon.plugins.hass.hassapi as hass
-import datetime, time
+import datetime, time 
 
 #
 # Hellow World App
@@ -37,9 +37,14 @@ class AdafruitWorld(hass.Hass):
         elif(new=="wir_gehen_schlafen"):
            self.turn_off("light.joiner_livingroom")
            self.turn_off("light.joiner_kitchen")
+           self.turn_off("light.dev18")
            self.turn_on("script.tvoff")
            self.turn_on("light.dev54_2")
            self.turn_on("light.dev12")
            self.turn_on("light.dev15")
+        elif(new=="0"):
+           self.log("ignoring 0 ")
         else:
            self.log(":( no handle found for "+new)
+        self.set_state("sensor.adafruit",state="0")
+
