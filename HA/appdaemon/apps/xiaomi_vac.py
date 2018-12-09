@@ -51,7 +51,7 @@ class xiaomi_vacWorld(hass.Hass):
                 self.log("start cleaning")
                 self.call_service("vacuum/start", entity_id="vacuum.xiaomi_vacuum_cleaner")
 
-    def reset(self):
+    def reset(self, entity="", attribute="", old="", new="", kwargs=""):
         self.tct = 0
         self.set_state("input_boolean.cleaning_done_today",state="off")
 

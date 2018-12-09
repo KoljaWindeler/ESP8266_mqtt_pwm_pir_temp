@@ -19,8 +19,8 @@ class GmotionWorld(hass.Hass):
             m = True
             break
       if(m):
-          self.log("gmotion "+entity)
+          #self.log("gmotion "+entity)
           self.set_state("binary_sensor.g_motion",state="on")
       else:
-          self.log("no gmotion")
+          #self.log("no gmotion")
           self.set_state("binary_sensor.g_motion",state="off")
