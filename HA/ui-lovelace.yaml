@@ -1,596 +1,555 @@
-    resources:
-      - url: /local/monster-card.js
-        type: js
-
-    name: My Awesome Home
-    views:
-    #####################################################################
-        # The title of a view will be used as tab title.
-        # Might be used for other things in the future.
-      - icon: mdi:home-assistant
-        # Each view can have a different theme applied. Theme should be defined in the frontend.
-        theme: dark-mode
-        # The cards to show on this view.
+views:
+  - theme: dark-mode
+############## home #########################
+    cards:
+      - type: horizontal-stack
         cards:
-
-          - type: horizontal-stack 
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: light.joiner_livingroom
+            icon: 'mdi:sofa'
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: light.joiner_kitchen
+            icon: 'mdi:pot-mix'
+      - type: horizontal-stack
+        cards:
+          - icon: 'mdi:power'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.tvoff
+              action: call-service
+            entity: binary_sensor.always_on
+          - icon: 'mdi:volume-minus'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.tvvolumedown
+              action: call-service
+            entity: binary_sensor.harmony
+          - icon: 'mdi:volume-plus'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.tvvolumeup
+              action: call-service
+            entity: binary_sensor.harmony
+          - icon: 'mdi:cast-connected'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.start_chromaudio
+              action: call-service
+            entity: binary_sensor.always_on
+      - type: picture-entity
+        entity: camera.cam_xia4
+        name: Carlo
+      - type: horizontal-stack
+        cards:
+          - detail: 2
+            graph: line
+            entity: sensor.dev1_temperature
+            name: Livingroom
+            type: sensor
+          - detail: 2
+            graph: line
+            entity: sensor.yweather_temperature
+            name: Outside
+            type: sensor
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
             cards:
-            - type: entity-button
-              entity: light.joiner_livingroom
-              tap_action: toggle
-              icon: mdi:sofa
-            - type: entity-button
-              entity: light.joiner_kitchen
-              tap_action: toggle
-              icon: mdi:pot-mix
-
-
-#################          #########################
-#            - type: picture-entity                #
-#              image: /local/livingroom.jpg        #
-#              tap_action: toggle                  #
-#              entity: light.joiner_livingroom     #
-#            - type: picture-entity                #
-#              image: /local/kitchen.jpg           #
-#              tap_action: toggle                  #
-#              entity: light.joiner_kitchen        #
-#################          #########################
-
-
-          - type: horizontal-stack 
-            cards:
-            - type: entity-button
-              entity: script.tvoff
-              tap_action: call-service
-              service: script.turn_on
-              icon: mdi:power
-              name: " "
-            - type: entity-button
-              entity: script.tvvolumedown
-              tap_action: call-service
-              service: script.turn_on
-              icon: mdi:volume-minus
-              name: " "
-            - type: entity-button
-              entity: script.tvvolumeup
-              tap_action: call-service
-              service: script.turn_on
-              icon: mdi:volume-plus
-              name: " "
-            - type: entity-button
-              entity: script.start_chromaudio
-              tap_action: call-service
-              service: script.turn_on
-              icon: mdi:cast-connected
-              name: " "
-
-
-          - type: picture-entity
-            entity: camera.cam_xia4
-            name: Carlo
-
-          - type: horizontal-stack 
-            cards:
-            - type: sensor
-              entity: sensor.dev1_temperature
-              name: Livingroom
-              detail: 2
-            - type: sensor
-              entity: sensor.yweather_temperature
-              name: Outside
-              detail: 2
-
-
-
-          - type: vertical-stack 
-            cards:
-            - type: horizontal-stack 
-              cards:
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev2
-                tap_action: toggle
               - type: entity-button
-                entity: light.dev1
-                tap_action: toggle
+                tap_action:
+                  action: toggle
+                entity: light.dev59
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev22
-                tap_action: toggle
                 name: Lichterkette
-            - type: horizontal-stack 
-              cards:
+          - type: horizontal-stack
+            cards:
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev54
-                tap_action: toggle
-                hold_action: more-info
                 name: Ent. LED
+                hold_action: more-info
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev54_2
-                tap_action: toggle
                 name: Entrance
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev6
-                tap_action: toggle
-            - type: horizontal-stack 
-              cards:
+          - type: horizontal-stack
+            cards:
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.joiner_workshop
-                tap_action: toggle
                 name: workshop
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev55
-                tap_action: toggle
-                name: "Lampin C"
+                name: Lampin C
               - type: entity-button
+                tap_action:
+                  action: toggle
                 entity: light.dev24
-                tap_action: toggle
-
-#          - type: light
-#            entity: light.dev15
-#            name: Map
-
-
-    #####################################################################
-      - icon: mdi:cctv
-        title: Cams
+    icon: 'mdi:home-assistant'
+############# cams ##########################
+  - cards:
+      - type: picture-entity
+        entity: camera.cam_xia1
+      - type: picture-entity
+        entity: camera.cam_xia2
+      - type: picture-entity
+        entity: camera.cam_xia3
+      - type: picture-entity
+        entity: camera.cam_xia4
+    icon: 'mdi:cctv'
+    title: Cams
+################ media control #######################
+  - cards:
+      - type: vertical-stack
         cards:
-          - type: picture-entity
-            entity: camera.cam_xia1
-          - type: picture-entity
-            entity: camera.cam_xia2
-          - type: picture-entity
-            entity: camera.cam_xia3
-          - type: picture-entity
-            entity: camera.cam_xia4
-    #####################################################################
-      - icon: mdi:cast-connected
-        title: Media
-        cards:
-          - type: vertical-stack
+          - type: horizontal-stack
             cards:
-            - type: horizontal-stack 
-              cards:
-              - type: entity-button
-                entity: script.tvoff
-                tap_action: call-service
+              - icon: 'mdi:power'
+                name: All
                 service: script.turn_on
-                icon: mdi:power
-                name: "All"
-              - type: entity-button
-                entity: script.start_fire
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.tvoff
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:fire'
+                name: FireTV
                 service: script.turn_on
-                icon: mdi:fire
-                name: "FireTV"
-              - type: entity-button
-                entity: script.start_chrom
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.start_fire
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:cast-connected'
+                name: Ch TV
                 service: script.turn_on
-                icon: mdi:cast-connected
-                name: "Ch TV"
-              - type: entity-button
-                entity: script.start_chromaudio
-                tap_action: call-service
-                icon: mdi:cast-connected
+                type: entity-button
+                tap_action:
+                  service: script.start_chrom
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:cast-connected'
+                name: Ch Audio
                 service: script.turn_on
-                name: "Ch Audio"
-            - type: horizontal-stack 
-              cards:
-              - type: entity-button
-                entity: script.firehome
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.start_chromaudio
+                  action: call-service
+                entity: binary_sensor.always_on
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:menu'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:menu
-                name: "Fire"
-              - type: entity-button
-                entity: script.fireup
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.firehome
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-up-bold'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:arrow-up-bold
-                name: "Fire"
-              - type: entity-button
-                entity: script.tvvolumeup
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.fireup
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:volume-plus'
+                name: Amp
                 service: script.turn_on
-                icon: mdi:volume-plus
-                name: "Amp"
-              - type: entity-button
-                entity: script.tvup
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.tvvolumeup
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-up-bold'
+                name: TV
                 service: script.turn_on
-                icon: mdi:arrow-up-bold
-                name: "TV"
-            - type: horizontal-stack 
-              cards:
-              - type: entity-button
-                entity: script.fireleft
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.tvup
+                  action: call-service
+                entity: binary_sensor.harmony
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:arrow-left-bold'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:arrow-left-bold
-                name: "Fire"
-              - type: entity-button
-                entity: script.fireok
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.fireleft
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:check-circle'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:check-circle
-                name: "Fire"
-              - type: entity-button
-                entity: script.fireright
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.fireok
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-right-bold'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:arrow-right-bold
-                name: "Fire"
-              - type: entity-button
-                entity: script.the_buzz
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.fireright
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:music-circle'
+                name: TheBuzz
                 service: script.turn_on
-                icon: mdi:music-circle
-                name: "TheBuzz"
-            - type: horizontal-stack 
-              cards:
-              - type: entity-button
-                entity: script.tvmute
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.the_buzz
+                  action: call-service
+                entity: binary_sensor.always_on
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:volume-mute'
+                name: AMP
                 service: script.turn_on
-                icon: mdi:volume-mute
-                name: "AMP"
-              - type: entity-button
-                entity: script.firedown
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.tvmute
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-down-bold'
+                name: Fire
                 service: script.turn_on
-                icon: mdi:arrow-down-bold
-                name: "Fire"
-              - type: entity-button
-                entity: script.tvvolumedown
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.firedown
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:volume-minus'
+                name: AMP
                 service: script.turn_on
-                icon: mdi:volume-minus
-                name: "AMP"
-              - type: entity-button
-                entity: script.tvdown
-                tap_action: call-service
+                type: entity-button
+                tap_action:
+                  service: script.tvvolumedown
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-down-bold'
+                name: TV
                 service: script.turn_on
-                icon: mdi:arrow-down-bold
-                name: "TV"
+                type: entity-button
+                tap_action:
+                  service: script.tvdown
+                  action: call-service
+                entity: binary_sensor.harmony
+      - type: media-control
+        entity: media_player.jkw_cast2
+    icon: 'mdi:cast-connected'
+    title: Media
+########### outside ############################
+  - cards:
+      - type: entities
+        entities:
+          - light.dev54_3
+          - light.dev54_4
+          - light.dev18
+        show_header_toggle: false
+        title: Outside light
+      - type: entities
+        entities:
+          - vacuum.xiaomi_vacuum_cleaner
+          - input_boolean.cleaning_done_today
+          - sensor.vac_triggered
+          - automation.vac_start_cleaning_when_alone
+        show_header_toggle: false
+        title: Vacuuming
+      - type: history-graph
+        entities:
+          - sensor.dev11_temperature
+          - sensor.dev7_temperature
+          - sensor.dev1_temperature
+          - sensor.dev16_temperature
+          - sensor.dev6_temperature
+          - sensor.dev2_temperature
+          - sensor.dev10_temperature
+          - sensor.dev9_temperature
+      - type: entities
+        entities:
+          - sensor.trash_0
+          - sensor.trash_1
+          - sensor.trash_2
+          - sensor.trash_3
+        title: Trash
+      - type: entities
+        entities:
+          - input_boolean.irrigation
+          - light.dev17
+          - light.dev30_pow
+          - light.dev30_1
+          - light.dev30_2
+          - light.dev30_3
+          - light.dev30_4
+          - sensor.dev30_uptime
+          - sensor.yweather_temperature_max
+        show_header_toggle: false
+        title: Water
+    icon: 'mdi:home'
+    title: Second view
+############## security #########################
+  - cards:
+      - type: glance
+        show_state: false
+        entities:
+          - input_boolean.alarm_system
+          - binary_sensor.someone_is_home
+          - binary_sensor.everyone_is_home
+          - device_tracker.illuminum_kolja
+          - device_tracker.illuminum_caro
+        title: Alarm Status
+      - type: glance
+        entities:
+          - binary_sensor.g_motion
+          - binary_sensor.dev6_motion
+          - binary_sensor.dev8_motion
+          - binary_sensor.dev10_motion
+          - binary_sensor.dev14_motion
+          - binary_sensor.dev15_motion
+          - binary_sensor.dev54_motion_1
+          - binary_sensor.dev54_motion_2
+          - binary_sensor.dev22_motion
+        show_state: false
+      - type: map
+        entities:
+          - entity: device_tracker.illuminum_kolja
+          - entity: device_tracker.illuminum_caro
+          - zone.home
+        aspect_ratio: 90%
+    icon: 'mdi:security'
+    title: Security
 
+############ signal ###########################
+  - cards:
+      - type: entities
+        title: Update
+        entities:
+          - sensor.dev1_update
+          - sensor.dev2_update
+          - sensor.dev3_update
+          - sensor.dev6_update
+          - sensor.dev7_update
+          - sensor.dev8_update
+          - sensor.dev10_update
+          - sensor.dev11_update
+          - sensor.dev12_update
+          - sensor.dev13_update
+          - sensor.dev14_update
+          - sensor.dev15_update
+          - sensor.dev17_update
+          - sensor.dev18_update
+          - sensor.dev19_update
+          - sensor.dev20_update
+          - sensor.dev21_update
+          - sensor.dev22_update
+          - sensor.dev23_update
+          - sensor.dev29_update
+          - sensor.dev30_update
+          - sensor.dev31_update
+          - sensor.dev32_update
+          - sensor.dev54_update
+          - sensor.dev55_update
+          - sensor.dev56_update
+          - sensor.dev57_update
+      - type: entities
+        title: Rssi
+        entities:
+          - sensor.dev1_rssi
+          - sensor.dev2_rssi
+          - sensor.dev3_rssi
+          - sensor.dev6_rssi
+          - sensor.dev7_rssi
+          - sensor.dev8_rssi
+          - sensor.dev10_rssi
+          - sensor.dev11_rssi
+          - sensor.dev12_rssi
+          - sensor.dev13_rssi
+          - sensor.dev14_rssi
+          - sensor.dev15_rssi
+          - sensor.dev17_rssi
+          - sensor.dev18_rssi
+          - sensor.dev19_rssi
+          - sensor.dev20_rssi
+          - sensor.dev21_rssi
+          - sensor.dev22_rssi
+          - sensor.dev23_rssi
+          - sensor.dev29_rssi
+          - sensor.dev30_rssi
+          - sensor.dev31_rssi
+          - sensor.dev32_rssi
+          - sensor.dev54_rssi
+          - sensor.dev55_rssi
+          - sensor.dev56_rssi
+          - sensor.dev57_rssi
+      - type: entities
+        entities:
+          - sensor.dev1_info
+          - sensor.dev2_info
+          - sensor.dev3_info
+          - sensor.dev6_info
+          - sensor.dev7_info
+          - sensor.dev8_info
+          - sensor.dev10_info
+          - sensor.dev11_info
+          - sensor.dev12_info
+          - sensor.dev13_info
+          - sensor.dev14_info
+          - sensor.dev15_info
+          - sensor.dev17_info
+          - sensor.dev18_info
+          - sensor.dev19_info
+          - sensor.dev20_info
+          - sensor.dev21_info
+          - sensor.dev22_info
+          - sensor.dev23_info
+          - sensor.dev29_info
+          - sensor.dev30_info
+          - sensor.dev31_info
+          - sensor.dev32_info
+          - sensor.dev54_info
+          - sensor.dev55_info
+          - sensor.dev56_info
+          - sensor.dev57_info
+        title: Info
+      - type: entities
+        entities:
+          - sensor.dev1_bssid
+          - sensor.dev2_bssid
+          - sensor.dev3_bssid
+          - sensor.dev6_bssid
+          - sensor.dev7_bssid
+          - sensor.dev8_bssid
+          - sensor.dev10_bssid
+          - sensor.dev11_bssid
+          - sensor.dev12_bssid
+          - sensor.dev13_bssid
+          - sensor.dev14_bssid
+          - sensor.dev15_bssid
+          - sensor.dev17_bssid
+          - sensor.dev18_bssid
+          - sensor.dev19_bssid
+          - sensor.dev20_bssid
+          - sensor.dev21_bssid
+          - sensor.dev22_bssid
+          - sensor.dev23_bssid
+          - sensor.dev29_bssid
+          - sensor.dev30_bssid
+          - sensor.dev31_bssid
+          - sensor.dev32_bssid
+          - sensor.dev54_bssid
+          - sensor.dev55_bssid
+          - sensor.dev56_bssid
+          - sensor.dev57_bssid
+        title: Bssid
+      - type: entities
+        entities:
+          - sensor.dev1_ssid
+          - sensor.dev2_ssid
+          - sensor.dev3_ssid
+          - sensor.dev6_ssid
+          - sensor.dev7_ssid
+          - sensor.dev8_ssid
+          - sensor.dev10_ssid
+          - sensor.dev11_ssid
+          - sensor.dev12_ssid
+          - sensor.dev13_ssid
+          - sensor.dev14_ssid
+          - sensor.dev15_ssid
+          - sensor.dev17_ssid
+          - sensor.dev18_ssid
+          - sensor.dev19_ssid
+          - sensor.dev20_ssid
+          - sensor.dev21_ssid
+          - sensor.dev22_ssid
+          - sensor.dev23_ssid
+          - sensor.dev29_ssid
+          - sensor.dev30_ssid
+          - sensor.dev31_ssid
+          - sensor.dev32_ssid
+          - sensor.dev54_ssid
+          - sensor.dev55_ssid
+          - sensor.dev56_ssid
+          - sensor.dev57_ssid
+        title: SSID
+      - type: entities
+        entities:
+          - sensor.dev1_capability
+          - sensor.dev2_capability
+          - sensor.dev3_capability
+          - sensor.dev6_capability
+          - sensor.dev7_capability
+          - sensor.dev8_capability
+          - sensor.dev10_capability
+          - sensor.dev11_capability
+          - sensor.dev12_capability
+          - sensor.dev13_capability
+          - sensor.dev14_capability
+          - sensor.dev15_capability
+          - sensor.dev17_capability
+          - sensor.dev18_capability
+          - sensor.dev19_capability
+          - sensor.dev20_capability
+          - sensor.dev21_capability
+          - sensor.dev22_capability
+          - sensor.dev23_capability
+          - sensor.dev29_capability
+          - sensor.dev30_capability
+          - sensor.dev31_capability
+          - sensor.dev32_capability
+          - sensor.dev54_capability
+          - sensor.dev55_capability
+          - sensor.dev56_capability
+          - sensor.dev57_capability
+        title: Capability
+    icon: 'mdi:signal-variant'
+    title: Signals
+#######################################
+  - cards:
+      - show_empty: true
+        card:
+          type: entities
+          title: All lights
+        filter:
+          include:
+            - domain: light
+        type: 'custom:monster-card'
+    icon: 'mdi:settings'
+    title: All lights
+#######################################
+name: My Awesome Home
+resources:
+  - type: js
+    url: /local/monster-card.js
 
-          - type: media-control
-            entity: media_player.jkw_cast2
-
-    #####################################################################
-
-        # Specify a icon if you want the view tab to be an icon.
-      - icon: mdi:home
-        # title of the view. Will be used as the tooltip for tab icon
-        title: Second view
-        cards:
-
-          - type: entities
-            title: Outside light
-            show_header_toggle: false
-            entities:
-              - light.dev54_3
-              - light.dev54_4
-              - light.dev18
-
-          - type: entities
-            title: Vacuuming
-            show_header_toggle: false
-            entities:
-              - vacuum.xiaomi_vacuum_cleaner
-              - input_boolean.cleaning_done_today
-              - sensor.vac_triggered
-              - automation.vac_start_cleaning_when_alone
-
-
-          - type: history-graph
-            entities: 
-              - sensor.dev11_temperature
-              - sensor.dev7_temperature
-              - sensor.dev1_temperature
-              - sensor.dev16_temperature
-              - sensor.dev6_temperature
-              - sensor.dev2_temperature
-              - sensor.dev10_temperature
-              - sensor.dev9_temperature
-
-          - type: entities
-            title: Trash
-            entities:
-              - sensor.trash_0
-              - sensor.trash_1
-              - sensor.trash_2
-              - sensor.trash_3
-
-          - type: entities
-            title: Water
-            show_header_toggle: false
-            entities:
-              - input_boolean.irrigation
-              - light.dev17
-              - light.dev30_pow
-              - light.dev30_1
-              - light.dev30_2
-              - light.dev30_3
-              - light.dev30_4
-              - sensor.dev30_uptime
-              - sensor.yweather_temperature_max
-
-
-
-    #####################################################################
-
-      - icon: mdi:security
-        # title of the view. Will be used as the tooltip for tab icon
-        title: Security
-        cards:
-          - type: glance
-            title: Alarm Status
-            show_state: false
-            entities:
-              - input_boolean.alarm_system
-              - binary_sensor.someone_is_home
-              - binary_sensor.everyone_is_home
-              - device_tracker.illuminum_kolja
-              - device_tracker.illuminum_caro
-              #- sensor.g_motion_t
-
-          - type: glance
-            show_state: false
-            entities:
-             - binary_sensor.g_motion
-             - binary_sensor.dev6_motion
-             - binary_sensor.dev8_motion
-             - binary_sensor.dev10_motion
-             - binary_sensor.dev14_motion
-             - binary_sensor.dev15_motion
-             - binary_sensor.dev54_motion_1
-             - binary_sensor.dev54_motion_2
-             - binary_sensor.dev22_motion
-
-          - type: map
-            aspect_ratio: 90%
-            entities:
-                - entity: device_tracker.illuminum_kolja
-                - entity: device_tracker.illuminum_caro
-                - zone.home
-
-
-    #####################################################################
-
-      - icon: mdi:signal-variant
-        title: Signals
-        cards:
-
-          - type: entities
-            title: Update
-            entities:
-              - sensor.dev1_update
-              - sensor.dev2_update
-              - sensor.dev3_update
-#              - sensor.dev5_update
-              - sensor.dev6_update
-              - sensor.dev7_update
-              - sensor.dev8_update
-#              - sensor.dev9_update
-              - sensor.dev10_update
-              - sensor.dev11_update
-              - sensor.dev12_update
-              - sensor.dev13_update
-              - sensor.dev14_update
-              - sensor.dev15_update
-#              - sensor.dev16_update
-              - sensor.dev17_update
-              - sensor.dev18_update
-              - sensor.dev19_update
-              - sensor.dev20_update
-              - sensor.dev21_update
-              - sensor.dev22_update
-              - sensor.dev23_update
-              - sensor.dev29_update
-              - sensor.dev30_update
-              - sensor.dev31_update
-              - sensor.dev32_update
-              - sensor.dev54_update
-              - sensor.dev55_update
-              - sensor.dev56_update
-              - sensor.dev57_update
-#              - sensor.dev77_update
-
-          - type: entities
-            title: Rssi
-            entities:
-              - sensor.dev1_rssi
-              - sensor.dev2_rssi
-              - sensor.dev3_rssi
-#              - sensor.dev5_rssi
-              - sensor.dev6_rssi
-              - sensor.dev7_rssi
-              - sensor.dev8_rssi
-#              - sensor.dev9_rssi
-              - sensor.dev10_rssi
-              - sensor.dev11_rssi
-              - sensor.dev12_rssi
-              - sensor.dev13_rssi
-              - sensor.dev14_rssi
-              - sensor.dev15_rssi
-#              - sensor.dev16_rssi
-              - sensor.dev17_rssi
-              - sensor.dev18_rssi
-              - sensor.dev19_rssi
-              - sensor.dev20_rssi
-              - sensor.dev21_rssi
-              - sensor.dev22_rssi
-              - sensor.dev23_rssi
-              - sensor.dev29_rssi
-              - sensor.dev30_rssi
-              - sensor.dev31_rssi
-              - sensor.dev32_rssi
-              - sensor.dev54_rssi
-              - sensor.dev55_rssi
-              - sensor.dev56_rssi
-              - sensor.dev57_rssi
-#              - sensor.dev77_rssi
-              # - sensor.dev18_rssi
-              # - sensor.dev42_rssi
-
-
-          - type: entities
-            title: Info
-            entities:
-              - sensor.dev1_info
-              - sensor.dev2_info
-              - sensor.dev3_info
-#             - sensor.dev5_info
-              - sensor.dev6_info
-              - sensor.dev7_info
-              - sensor.dev8_info
-#              - sensor.dev9_info
-              - sensor.dev10_info
-              - sensor.dev11_info
-              - sensor.dev12_info
-              - sensor.dev13_info
-              - sensor.dev14_info
-              - sensor.dev15_info
-#              - sensor.dev16_info
-              - sensor.dev17_info
-              - sensor.dev18_info
-              - sensor.dev19_info
-              - sensor.dev20_info
-              - sensor.dev21_info
-              - sensor.dev22_info
-              - sensor.dev23_info
-              - sensor.dev29_info
-              - sensor.dev30_info
-              - sensor.dev31_info
-              - sensor.dev32_info
-              - sensor.dev55_info
-              - sensor.dev56_info
-              - sensor.dev57_info
-#              - sensor.dev77_info
-              # - sensor.dev18_info
-              # - sensor.dev42_info
-
-          - type: entities
-            title: Bssid
-            entities:
-              - sensor.dev1_bssid
-              - sensor.dev2_bssid
-              - sensor.dev3_bssid
-#              - sensor.dev5_bssid
-              - sensor.dev6_bssid
-              - sensor.dev7_bssid
-              - sensor.dev8_bssid
-#              - sensor.dev9_bssid
-              - sensor.dev10_bssid
-              - sensor.dev11_bssid
-              - sensor.dev12_bssid
-              - sensor.dev13_bssid
-              - sensor.dev14_bssid
-              - sensor.dev15_bssid
-#              - sensor.dev16_bssid
-              - sensor.dev17_bssid
-              - sensor.dev18_bssid
-              - sensor.dev19_bssid
-              - sensor.dev20_bssid
-              - sensor.dev21_bssid
-              - sensor.dev22_bssid
-              - sensor.dev23_bssid
-              - sensor.dev29_bssid
-              - sensor.dev30_bssid
-              - sensor.dev31_bssid
-              - sensor.dev32_bssid
-              - sensor.dev54_bssid
-              - sensor.dev55_bssid
-              - sensor.dev56_bssid
-              - sensor.dev57_bssid
-#              - sensor.dev77_bssid
-              # - sensor.dev18_bssid
-              # - sensor.dev42_bssid
-
-          - type: entities
-            title: SSID
-            entities:
-              - sensor.dev1_ssid
-              - sensor.dev2_ssid
-              - sensor.dev3_ssid
-#              - sensor.dev5_ssid
-              - sensor.dev6_ssid
-              - sensor.dev7_ssid
-              - sensor.dev8_ssid
-#              - sensor.dev9_ssid
-              - sensor.dev10_ssid
-              - sensor.dev11_ssid
-              - sensor.dev12_ssid
-              - sensor.dev13_ssid
-              - sensor.dev14_ssid
-              - sensor.dev15_ssid
-#              - sensor.dev16_ssid
-              - sensor.dev17_ssid
-              - sensor.dev18_ssid
-              - sensor.dev19_ssid
-              - sensor.dev20_ssid
-              - sensor.dev21_ssid
-              - sensor.dev22_ssid
-              - sensor.dev23_ssid
-              - sensor.dev29_ssid
-              - sensor.dev30_ssid
-              - sensor.dev31_ssid
-              - sensor.dev32_ssid
-              - sensor.dev54_ssid
-              - sensor.dev55_ssid
-              - sensor.dev56_ssid
-              - sensor.dev57_ssid
-#              - sensor.dev77_ssid
-              # - sensor.dev18_ssid
-              # - sensor.dev42_ssid
-
-          - type: entities
-            title: Capability
-            entities:
-              - sensor.dev1_capability
-              - sensor.dev2_capability
-              - sensor.dev3_capability
-#              - sensor.dev5_capability
-              - sensor.dev6_capability
-              - sensor.dev7_capability
-              - sensor.dev8_capability
-#              - sensor.dev9_capability
-              - sensor.dev10_capability
-              - sensor.dev11_capability
-              - sensor.dev12_capability
-              - sensor.dev13_capability
-              - sensor.dev14_capability
-              - sensor.dev15_capability
-#              - sensor.dev16_capability
-              - sensor.dev17_capability
-              - sensor.dev18_capability
-              - sensor.dev19_capability
-              - sensor.dev20_capability
-              - sensor.dev21_capability
-              - sensor.dev22_capability
-              - sensor.dev23_capability
-              - sensor.dev29_capability
-              - sensor.dev30_capability
-              - sensor.dev31_capability
-              - sensor.dev32_capability
-              - sensor.dev54_capability
-              - sensor.dev55_capability
-              - sensor.dev56_capability
-              - sensor.dev57_capability
-#              - sensor.dev77_capability
-              # - sensor.dev18_capability
-              # - sensor.dev42_capability
-
-    #####################################################################
-      - icon: mdi:security
-        # title of the view. Will be used as the tooltip for tab icon
-        title: Security
-        cards:
-          - type: custom:monster-card
-            show_empty: true
-            card:
-              type: entities
-              title: Lights
-            filter:
-              include:
-                - domain: light
