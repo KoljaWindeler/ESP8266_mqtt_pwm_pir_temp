@@ -27,16 +27,17 @@ class xiaomi_vacWorld(hass.Hass):
             return self.tct
 
     def cleaning(self, entity, attribute, old, new,kwargs):
-        self.log("new vacuum status: "+new+". tct: "+str(self.g_tct()))
-        if(new=="cleaning"):
-            self.cleaning = True
-            self.cleaning_started = time.time()
-        elif(self.cleaning):
-            self.cleaning = False
-            self.tct += time.time() - self.cleaning_started
-            self.log("cleaning stopped, total time: "+str(self.g_tct()))
-            if(self.tct > self.mct):
-                self.set_state("input_boolean.cleaning_done_today",state="on")
+        self.log("new vacuum status: "+new+". old was "+old+"+ tct: "+str(self.g_tct()))
+        if(not(new==old)):
+            if(new=="cleaning"):
+                self.cleaning = True
+                self.cleaning_started = time.time()
+            elif(self.cleaning):
+                self.cleaning = False
+                self.tct += time.time() - self.cleaning_started
+                self.log("cleaning stopped, total time: "+str(self.g_tct()))
+                if(self.tct > self.mct):
+                    self.set_state("input_boolean.cleaning_done_today",state="on")
 
 
     def presents(self, entity, attribute, old, new,kwargs):

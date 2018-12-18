@@ -35,3 +35,6 @@ carlo:
 pi:
   module: dev18_pi
   class: PiWorld
+harmony:
+  module: harmony
+  class: harmonyWorld

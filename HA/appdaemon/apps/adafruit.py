@@ -38,6 +38,7 @@ class AdafruitWorld(hass.Hass):
            self.turn_off("light.joiner_livingroom")
            self.turn_off("light.joiner_kitchen")
            self.turn_off("light.dev18")
+           self.turn_off("light.dev22")
            self.turn_on("script.tvoff")
            self.turn_on("light.dev54_2")
            self.turn_on("light.dev12")

@@ -37,6 +37,9 @@ class GmotionWorld(hass.Hass):
 
 
 	def safety(self, kwargs=""):
+			if(not(self.get_state("input_boolean.alarm_system") == "on")):
+				#self.log("Safety disabled, quitting")
+				return 0
 			#self.log("call safety") 
 			## ok, we have some motion, what to do? 
 			## 1. check if someone is home, if so, ignore it for the safety function
@@ -47,16 +50,12 @@ class GmotionWorld(hass.Hass):
 			## 2.3. the distance of us towards home
 
 			# 1.
-			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
-			if(not(vac in ["cleaning"])):
+			if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
 				# 2.
-				if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
-
+				vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
+				if(not(vac in ["cleaning"])):
 					# 2.1.
-					dist_caro = self.distance("device_tracker.illuminum_caro")
 					#self.log("motion and no-one home and vacuum not cleaning")
-
-
 					if(time.time() - self.msg_ts >= self.msg_delay[self.msg_nr]):
 						self.msg_ts = time.time()
 						if(self.msg_nr == 0):
@@ -72,7 +71,7 @@ class GmotionWorld(hass.Hass):
 							msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
 							msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
 
-							self.log(msg) 
+							self.log(msg)
 							self.call_service("notify/pb", title="Motion alert", message=msg)
 
 							self.msg_nr = self.msg_nr +1
@@ -80,13 +79,25 @@ class GmotionWorld(hass.Hass):
 					#else:
 					#	self.log("have to wait further "+str(self.msg_delay[self.msg_nr]-(time.time()-self.msg_ts))+" sec")
 					# call me again in 30 sec
-					self.run_in(self.safety,seconds=10)
-				else:
-					#self.log("someone is home, resetting counters")
+				#else: 
+				#	self.log("vacuum running")
+				self.run_in(self.safety,seconds=10)
+			else:
+				#self.log("someone is home, resetting counters")
+				if(self.msg_nr>0):
+					self.msg_nr = 0
+
+					msg = "Issue solved, "
+					if(self.get_state("device_tracker.illuminum_caro") == "home"):
+						msg = "Caro "
+					elif(self.get_state("device_tracker.illuminum_kolja") == "home"):
+						msg = "Kolja "
+					msg += "is home now"
+					self.log(msg)
+					self.call_service("notify/pb", title="Motion alert", message=msg)
+
 					for i in range(0,len(self.sensor)):
 						self.sensor_trigger_count[i]=0
-			#else: 
-			#	self.log("vacuum running")
 
 
 	def distance(self,d):
