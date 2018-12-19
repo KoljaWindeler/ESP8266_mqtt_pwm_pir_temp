@@ -43,7 +43,7 @@ bool light::reg_provider(capability * p, uint8_t* t){
 	} else if(!strcmp((char*)t,"NEO")){
 		type     = T_NEO;
 		logger.pln(F("neostrip light"));
-	} else if(!strcmp((char*)t,"B1")){
+	} else if(!strcmp((char*)t,"BONE")){
 		type     = T_BOne;
 		logger.pln(F("B1 light"));
 	} else if(!strcmp((char*)t,"AI")){

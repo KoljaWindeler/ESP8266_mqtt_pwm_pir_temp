@@ -19,10 +19,10 @@ bool button::parse(uint8_t* config){
 		m_pin = BUTTON_INPUT_PIN;
 		return true;
 	} else if(cap.parse_wide(config,get_key(),&m_pin)){
-		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
+		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster, Tippt nur an
 		return true;
 	} else if(cap.parse_wide(config,(uint8_t*)"BS",&m_pin)){
-		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch
+		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch, UMSCHALTER, dauer high oder dauer how
 		return true;
 	}
 	return false;

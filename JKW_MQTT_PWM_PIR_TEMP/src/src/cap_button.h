@@ -41,6 +41,7 @@ private:
 		// uint8_t key[2];
 		uint8_t m_pin;
 		uint8_t m_mode_toggle_switch;
+		bool m_polarity;
 	};
 
 

@@ -16,6 +16,7 @@ record::~record(){
 	logger.println(TOPIC_GENERIC_INFO, F("record deleted"), COLOR_YELLOW);
 };
 
+
 // helper function that is really just calling another function .. somewhat useless at the moment
 // it is in charge of deciding if the object is loaded or not, but as of now it is just formwarding the
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
@@ -137,9 +138,9 @@ bool record::loop(){
 				Serial.print(".");
 			}
 			send_samples_now = 0;
-			//Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
-			//Serial.print("delay "); Serial.print(millis() - now);
-			//Serial.println("");
+			Serial.print("Silence val "); Serial.print(silence_value); Serial.print(" envelope val "); Serial.print(envelope_value);
+			Serial.print("delay "); Serial.print(millis() - now);
+			Serial.println("");
 		}
 	}
 	return false; // i did nothing
@@ -289,8 +290,8 @@ void ICACHE_RAM_ATTR record::sample_isr(void){
 	// Read a sample from ADC
 	val = transfer16();
 	//
-	old_value =  (old_value<<3 + val)>>3;
-	val = old_value;
+	//old_value =  (old_value<<3 + val)>>3;
+	//val = old_value;
 	//
 	adc_buf[(current_adc_buf*REC_BUFFER_SIZE)+adc_buf_pos] = val & 0xFFF;
 	adc_buf_pos++;

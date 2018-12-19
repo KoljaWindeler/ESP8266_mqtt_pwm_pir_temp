@@ -91,8 +91,11 @@ bool J_GPIO::init(){
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 		}
 		if (m_pin_in[i]) {
-			pinMode(i, INPUT);
-			digitalWrite(i, m_invert[i]); // inverted input gets pull-up
+			if(m_invert[i]){ // inverted input gets pull-up
+				pinMode(i,INPUT_PULLUP);
+			} else {
+				pinMode(i, INPUT);
+			}
 			if (m_invert[i]) {
 				sprintf_P(m_msg_buffer, PSTR("J_GPIO active low input on pin %i"), i);
 			} else {

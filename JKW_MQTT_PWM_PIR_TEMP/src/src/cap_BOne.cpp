@@ -20,7 +20,7 @@ uint8_t* BOne::get_dep(){
 }
 
 uint8_t* BOne::get_key(){
-	return (uint8_t*)"B1";
+	return (uint8_t*)"BONE";
 }
 
 my92x1* BOne::getmy929x1(){
