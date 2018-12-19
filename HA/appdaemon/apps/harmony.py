@@ -13,10 +13,10 @@ class harmonyWorld(hass.Hass):
     def initialize(self):
         self.log("Starting harmony Service")
         self.listen_state(self.state,"remote.tvhub")
-        self.state()
+        self.state(new=self.get_state("remote.tvhub"))
 
     def state(self, entity="", attribute="", old="", new="",kwargs=""):
-        if(not(new=="PowerOff")):
+        if(not(new=="off")):
             self.set_state("binary_sensor.harmony",state="on")
             self.log("new harmony state "+new+" -> on")
         else:

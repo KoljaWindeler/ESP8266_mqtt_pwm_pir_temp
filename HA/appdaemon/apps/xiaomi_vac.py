@@ -27,8 +27,8 @@ class xiaomi_vacWorld(hass.Hass):
             return self.tct
 
     def cleaning(self, entity, attribute, old, new,kwargs):
-        self.log("new vacuum status: "+new+". old was "+old+"+ tct: "+str(self.g_tct()))
         if(not(new==old)):
+            self.log("new vacuum status: "+new+". old was "+old+". tct: "+str(self.g_tct()))
             if(new=="cleaning"):
                 self.cleaning = True
                 self.cleaning_started = time.time()

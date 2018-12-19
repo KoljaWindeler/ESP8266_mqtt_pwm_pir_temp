@@ -18,8 +18,8 @@ class EntranceWorld2(hass.Hass):
         self.run_at_sunset(self.outside, offset = 15 * 60, arg1="Sunset")
         self.listen_state(self.outside, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
         self.listen_state(self.outside, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
-        self.listen_state(self.approaching, "proximity.caro_home")
-        self.listen_state(self.approaching, "proximity.kolja_home")
+        self.listen_state(self.approaching, "proximity.caro_home", arg1="Caro approaching")
+        self.listen_state(self.approaching, "proximity.kolja_home", arg1="Kolja approaching")
 
     ######################################################
 
@@ -32,22 +32,24 @@ class EntranceWorld2(hass.Hass):
             dist = self.get_state(entity)
             if(dir == "towards" and attribute == "state"):
                 if(int(dist) < 3):
-                    self.log("=================================")
+                    self.log("========= approach ========================")
+                    self.log(repr(kwargs))
                     self.log(entity+" is approaching home")
                     self.outside_wish("on",kwargs)
 
     def outside_on(self, entity="", attribute="", old="", new="", kwargs=""):
-        self.log("=================================")
+        self.log("============= outside on ====================")
+        self.log(repr(kwargs))
         self.outside_wish("on",kwargs)
 
     def outside(self, entity="", attribute="", old="", new="", kwargs=""):
-        self.log("=================================")
-        self.log(entity+" triggered auto")
+        self.log("============== outside ===================")
+        self.log(repr(kwargs))
         self.outside_wish("auto",kwargs)
 
     def outside_wish(self,w,kwargs=""):
-        if("arg1" in kwargs.keys()):
-            self.log(kwargs["arg1"])
+        self.log(repr(kwargs))
+
         now = datetime.now().time()
         ele = float(self.get_state("sun.sun", attribute="elevation"))
         self.log("current elevation "+str(ele))

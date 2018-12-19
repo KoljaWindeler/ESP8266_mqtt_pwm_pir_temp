@@ -53,7 +53,7 @@ class GmotionWorld(hass.Hass):
 			if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
 				# 2.
 				vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
-				if(not(vac in ["cleaning"])):
+				if(not(vac in ["cleaning", "returning"])):
 					# 2.1.
 					#self.log("motion and no-one home and vacuum not cleaning")
 					if(time.time() - self.msg_ts >= self.msg_delay[self.msg_nr]):
@@ -62,18 +62,19 @@ class GmotionWorld(hass.Hass):
 							msg = "Hi, there is some motion at home, "
 						elif(self.msg_nr < 4):
 							msg = "Hi, there is still something going on, "
-						if(self.msg_nr < 4):
-							msg += "Sensors: " 
-							for i in range(0,len(self.sensor)):
-								if(self.sensor_trigger_count[i]>0):
-									msg +=self.sensor_name[i]+" ("+str(self.sensor_trigger_count[i])+"x) "
-							msg += ". Distances: "
-							msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
-							msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
 
-							self.log(msg)
-							self.call_service("notify/pb", title="Motion alert", message=msg)
+						msg += "Sensors: " 
+						for i in range(0,len(self.sensor)):
+							if(self.sensor_trigger_count[i]>0):
+								msg +=self.sensor_name[i]+" ("+str(self.sensor_trigger_count[i])+"x) "
+						msg += ". Distances: "
+						msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
+						msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
 
+						self.log(msg)
+						self.call_service("notify/pb", title="Motion alert", message=msg)
+
+						if(self.msg_nr +1 < len(self.sensor)):
 							self.msg_nr = self.msg_nr +1
 
 					#else:

@@ -43,6 +43,8 @@ class AdafruitWorld(hass.Hass):
            self.turn_on("light.dev54_2")
            self.turn_on("light.dev12")
            self.turn_on("light.dev15")
+        elif(new=="garage"):
+           self.turn_on("light.dev8")
         elif(new=="0"):
            self.log("ignoring 0 ")
         else:
