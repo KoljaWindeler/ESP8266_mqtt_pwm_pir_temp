@@ -38,3 +38,6 @@ pi:
 harmony:
   module: harmony
   class: harmonyWorld
+simulation:
+  module: present_simulation
+  class: SimulationWorld
