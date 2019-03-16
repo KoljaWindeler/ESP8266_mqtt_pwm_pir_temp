@@ -66,8 +66,8 @@ class GmotionWorld(hass.Hass):
 			#self.log("no new alarm counts, exiting")
 			return 0
 
-		#self.log("call safety") 
-		## ok, we have some motion, what to do? 
+		#self.log("call safety")
+		## ok, we have some motion, what to do?
 		## 1. check if someone is home, if so, ignore it for the safety function
 		##    if not, check if the vacuum is cleaning (more states needed?)
 		## 2. if the vac is not cleaning and no one is home, send a message that includes:
@@ -91,11 +91,13 @@ class GmotionWorld(hass.Hass):
 
 					msg += "Sensors: " 
 					for i in range(0,len(self.sensor)):
-						if(self.sensor_trigger_count[i]>0):
-							msg +=self.sensor_name[i]+" ("+str(self.sensor_trigger_count[i])+"x) "
+						if(self.sensor_trigger_count[i] - self.sensor_trigger_count_reported[i]>0):
+							msg +=self.sensor_name[i]+" ("+str(self.sensor_trigger_count[i] - self.sensor_trigger_count_reported[i])+"x) "
 					msg += ". Distances: "
 					msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
 					msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
+					msg +="Vacuum status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner")
+
 
 					self.log(msg)
 					self.call_service("notify/pb", title="Motion alert", message=msg)
@@ -103,14 +105,11 @@ class GmotionWorld(hass.Hass):
 					if(self.msg_nr +1 < len(self.sensor)):
 						self.msg_nr = self.msg_nr +1
 
-					for i in range(0,len(self.sensor)):
-						self.sensor_trigger_count_reported[i]=self.sensor_trigger_count[i]
-
 
 				#else:
 				#	self.log("have to wait further "+str(self.msg_delay[self.msg_nr]-(time.time()-self.msg_ts))+" sec")
 				# call me again in 30 sec
-			#else: 
+			#else:
 			#	self.log("vacuum running")
 			self.handle = self.run_in(self.safety,seconds=10)
 		else:
@@ -132,6 +131,9 @@ class GmotionWorld(hass.Hass):
 				for i in range(0,len(self.sensor)):
 					self.sensor_trigger_count.append(0)
 					self.sensor_trigger_count_reported.append(0)
+
+		for i in range(0,len(self.sensor)):
+			self.sensor_trigger_count_reported[i]=self.sensor_trigger_count[i]
 
 
 

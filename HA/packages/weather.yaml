@@ -1,0 +1,13 @@
+weather:
+  - platform: darksky
+    api_key: d51a09271f9df8904e3216f388a79102
+
+sensor:
+  - platform: darksky
+    api_key: d51a09271f9df8904e3216f388a79102
+    forecast:
+      - 0
+    monitored_conditions:
+      - icon
+      - temperature
+      - temperature_high

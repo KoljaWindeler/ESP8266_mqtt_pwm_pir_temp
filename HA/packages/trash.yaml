@@ -49,7 +49,7 @@ automation:
   - alias: 'trash pickup msg'
     initial_state: 'on'
     trigger:
-      - platform: time
+      - platform: time_pattern
         hours: 19
         minutes: 00
         seconds: 00

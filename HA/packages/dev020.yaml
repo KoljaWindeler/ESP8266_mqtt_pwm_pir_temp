@@ -1,0 +1,39 @@
+
+### touch bedroom
+# SL
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### 
+    name: "dev20"
+    state_topic: "dev20/r/light"
+    command_topic: "dev20/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev20"
+    fname: "20 Workshop"
+
+  - platform: mqtt
+    state_topic: "dev20/r/gpio_5_hold"
+    name: "dev20_button_hold"
+
+  - platform: mqtt
+    state_topic: "dev20/r/gpio_5_state"
+    name: "dev20_button"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev20:
+      friendly_name: "Workshop main"
+      icon: "mdi:lamp"
+
+# -----------------------------------------------

@@ -5,6 +5,7 @@ DEV4  - oben caro, temperature, PIR, simple light
 DEV6 - temp / pir keller
 DEV7 - dinng room tower, temperature, simple light
 DEV8 - Garage, PIR + ds18b20
+DEV9 - gaderoben schrank
 DEV10 - unten eingangs support, PIR, temperature, simple light
 DEV11 - living room tower, temperature, simple light
 DEV12 - b1 light bulb, flur unten
@@ -13,31 +14,35 @@ DEV14 - kitchen fridge, PIR, simple light
 DEV15 - World map, PIR dimmer
 DEV16 - power meter
 DEV17 - steckdosending pumpe
-DEV20 - shelly chandelair dinigroom
+DEV18 - love of pi
+DEV19 - workshop LED
+DEV20 - shelly workshop
 DEV21 - slampher in küche
+DEV22 - Xmas lichterkette, ehemals 57
 DEV23 - SonOff Touch Bedroom
+DEV24 - SonOff Touch carlo
+DEV27 - B1 Flur oben
 DEV29 - Warm Water trigger
 DEV30 - valve ctrl 
 DEV31 - SL bed light caro
 DEV32 - SL bed light kolja
 DEV54 - ULTRA ENTRANCE
 DEV55 - Ikea LED lampinions carlo
-DEV56 - Ikea LED lampinions Flur open
-DEV57 - Ikea LED lampinions wohnzimmer open
+DEV56 - Ikea LED lampinions caro
+DEV57 - Ikea LED lampinions flur
+DEV58 - S26_1 unused
+DEV59 - S26_2 unused
+DEV60 - S26_3 unused
+
 
 DEV5  - outdoor 1, simple light, slampher
 DEV8 - PIR carlo
 DEV9  - staubsauger im shop
 DEV16 - switch for dev20 both bedroom
-DEV18 - AI light 1 carlo
 DEV19 - AI light 2
 DEV20 - Bedroom, PIR, PWM led streifen, DS18B20
-DEV22 - RGB Transistor dimmer
 DEV24 - SonOff Touch unused
 DEV25 - SonOff Touch unused
 DEV26 - POW
-DEV27 - B1 unused
-DEV28 - B1 unused
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused
-DEV57 - xmas sonoff basic mit pir
 DEV77 - carlo flower1

@@ -48,7 +48,8 @@ class SprinklerWorld(hass.Hass):
             [['light.dev30_1','light.dev30_3'],1.5] # two valves, 150% time
                 ]
 
-        today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
+        #today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
+        today_max_temp = int(float(self.g("sensor.dark_sky_daytime_high_temperature_0","28")))
         if(today_max_temp > 28):
             max_time = 30
         elif(today_max_temp < 22):

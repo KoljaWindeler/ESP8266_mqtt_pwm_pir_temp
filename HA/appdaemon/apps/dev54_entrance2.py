@@ -11,15 +11,32 @@ class EntranceWorld2(hass.Hass):
         self.listen_state(self.inside_on, "binary_sensor.dev54_motion_1", new = "on")
         self.inside_off()
 
-        self.run_daily(self.outside_on, time(6, 0, 0), arg1="6am call")
-        self.run_daily(self.outside, time(22, 0, 0),arg1="22pm call")
-        self.run_daily(self.outside, time(23, 0, 0), arg2="23pm call")
-        self.run_at_sunrise(self.outside, offset = 30 * 60, arg1="Sunrise")
-        self.run_at_sunset(self.outside, offset = 15 * 60, arg1="Sunset")
-        self.listen_state(self.outside, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
-        self.listen_state(self.outside, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
-        self.listen_state(self.approaching, "proximity.caro_home", arg1="Caro approaching")
-        self.listen_state(self.approaching, "proximity.kolja_home", arg1="Kolja approaching")
+        self.run_daily(self.six, time(6, 0, 0))
+        self.run_daily(self.twentytwo, time(22, 0, 0))
+        self.run_daily(self.twentythree, time(23, 0, 0))
+        self.run_at_sunrise(self.sunrise, offset = 30 * 60)
+        self.run_at_sunset(self.sunset, offset = 15 * 60)
+        self.listen_state(self.caro_home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
+        self.listen_state(self.kolja_home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
+        self.listen_state(self.approaching, "proximity.caro_home")
+        self.listen_state(self.approaching, "proximity.kolja_home")
+
+    ######################################################
+
+    def six(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside_on("6am")
+    def twentytwo(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("22pm")
+    def twentythree(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("23pm")
+    def sunrise(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("Sunrise")
+    def sunset(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("Senset")
+    def kolja_home(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("Kolja home")
+    def caro_home(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.outside("Kolja home")
 
     ######################################################
 
@@ -27,28 +44,31 @@ class EntranceWorld2(hass.Hass):
         #self.log("proxy")
         #self.log(dir)
         #self.log(dist)
+        if(self.get_state("device_tracker.illuminum_caro") == "home" and self.get_state("device_tracker.illuminum_kolja") == "home"):
+            self.log("ignoring approach, both home")
+            return 0
         if(attribute == "state"):
             dir = self.get_state(entity, attribute="dir_of_travel")
             dist = self.get_state(entity)
             if(dir == "towards" and attribute == "state"):
                 if(int(dist) < 3):
                     self.log("========= approach ========================")
-                    self.log(repr(kwargs))
+                    #self.log(repr(kwargs["arg1"])
                     self.log(entity+" is approaching home")
                     self.outside_wish("on",kwargs)
 
-    def outside_on(self, entity="", attribute="", old="", new="", kwargs=""):
+    def outside_on(self, title):
         self.log("============= outside on ====================")
-        self.log(repr(kwargs))
-        self.outside_wish("on",kwargs)
+        self.log(repr(title))
+        self.outside_wish("on")
 
-    def outside(self, entity="", attribute="", old="", new="", kwargs=""):
+    def outside(self, title):
         self.log("============== outside ===================")
-        self.log(repr(kwargs))
-        self.outside_wish("auto",kwargs)
+        self.log(repr(title))
+        self.outside_wish("auto")
 
     def outside_wish(self,w,kwargs=""):
-        self.log(repr(kwargs))
+        #self.log(repr(kwargs))
 
         now = datetime.now().time()
         ele = float(self.get_state("sun.sun", attribute="elevation"))

@@ -84,9 +84,5 @@ automation:
 script:
   seq_irrigation:
     sequence:
-      - service: notify.pb
-        data:
-          title: "Irrigation"
-          message: "started"
       - service: input_boolean.turn_on
         entity_id: input_boolean.irrigation

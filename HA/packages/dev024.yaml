@@ -1,0 +1,41 @@
+### touch bedroom
+# SL
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### touch deckenlicht
+    name: "dev24"
+    state_topic: "dev24/r/gpio_12_state"
+    command_topic: "dev24/s/gpio_12_state"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+  - platform: mqtt ### touch carlo group
+    name: "dev24_2"
+    state_topic: "dev24/r/gpio_0_state"
+    command_topic: "dev24/s/gpio_0_state"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev24"
+    fname: "24 Carlo Touch"
+
+  - platform: mqtt
+    state_topic: "dev24/r/gpio_0_hold"
+    name: "dev24_0_hold"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev24:
+      friendly_name: "Light carlo"
+

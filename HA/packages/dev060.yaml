@@ -1,0 +1,31 @@
+### touch bedroom
+# SL
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### 
+    name: "dev60"
+    state_topic: "dev60/r/light"
+    command_topic: "dev60/s/light"
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev60"
+    fname: "60"
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev60:
+      friendly_name: "60"
+      icon: "mdi:lamp"
+
+# -----------------------------------------------
+

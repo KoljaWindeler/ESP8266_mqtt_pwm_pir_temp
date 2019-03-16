@@ -15,6 +15,9 @@ light:
 
 homeassistant:
   customize:
+    sensor.dev29_temperature:
+      friendly_name: "29 Warm water"
+      icon: "mdi:thermometer"
     light.dev29:
       friendly_name: "Warm Water Pump"
       icon: mdi:google-circles-extended
@@ -26,6 +29,11 @@ sensor:
     name: "dev29"
     fname: "029 Warm water"
 
+  - platform: mqtt
+    state_topic: "dev29/r/temperature"
+    name: "dev29_temperature"
+    device_class: "temperature"
+    unit_of_measurement: "ºC"
 # -----------------------------------------------
 
 # binary_sensor:

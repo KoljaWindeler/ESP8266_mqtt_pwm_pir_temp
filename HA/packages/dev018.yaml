@@ -3,14 +3,12 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### helle lampinions
-    name: "dev56"
-    state_topic: "dev56/r/light"
-    command_topic: "dev56/s/light/dimm"
-    brightness_state_topic: 'dev56/r/light/brightness'
-    brightness_command_topic: 'dev56/s/light/brightness'
-    retain: True
+  - platform: mqtt ### LED H801
+    name: "dev18"
+    state_topic: "dev18/r/light"
+    command_topic: "dev18/s/light/dimm"
     qos: 0
+    retain: True
     payload_on: "ON"
     payload_off: "OFF"
     optimistic: false
@@ -20,15 +18,14 @@ light:
 
 homeassistant:
   customize:
-    light.dev56:
-      friendly_name: "Lampinion"
+    light.dev18:
+      friendly_name: "PI"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
-    name: "dev56"
-    fname: "56 Lampinions"
+    name: "dev18"
+    fname: "18 PI"
 
 # -----------------------------------------------
-

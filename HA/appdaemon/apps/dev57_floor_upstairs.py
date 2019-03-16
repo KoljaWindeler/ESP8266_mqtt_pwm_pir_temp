@@ -23,4 +23,4 @@ class floor_upWorld(hass.Hass):
         #self.log("floor_up on")
         self.turn_on("light.dev57",brightness=b)
         self.turn_on("light.dev56",brightness=b)
-        self.turn_on("light.dev27",brightness=b)
+        self.turn_on("light.dev27",brightness=min(255,b*12))

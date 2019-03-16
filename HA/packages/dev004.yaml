@@ -36,7 +36,7 @@ sensor:
   - platform: mqtt
     state_topic: "dev4/r/temperature"
     name: "dev4_temperature"
-    sensor_class: "temperature"
+    device_class: "temperature"
     unit_of_measurement: "ºC"
 
 # -----------------------------------------------

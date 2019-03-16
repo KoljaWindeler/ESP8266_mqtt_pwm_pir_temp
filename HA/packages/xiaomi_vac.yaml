@@ -37,13 +37,16 @@ input_boolean:
     name: Cleaning done today
     initial: off
     icon: mdi:check
-
+  autostart_cleaning:
+    name: Autostart cleaning
+    initial: off
+    icon: mdi:check
 
 automation:
   - alias: "vac_reset_cleaning_done"
-    initial_state: 'on'
+    initial_state: 'off'
     trigger:
-      - platform: time
+      - platform: time_pattern
         hours:   00
         minutes: 00
         seconds: 00
@@ -52,7 +55,7 @@ automation:
         entity_id: input_boolean.cleaning_done_today
 
   - alias: "vac_start_cleaning_when_alone"
-    initial_state: 'on'
+    initial_state: 'off'
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_is_home
@@ -66,7 +69,7 @@ automation:
         entity_id: script.activate_cleaning
 
   - alias: "vac_stop_cleaning_when_not_alone"
-    initial_state: 'on'
+    initial_state: 'off'
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_is_home

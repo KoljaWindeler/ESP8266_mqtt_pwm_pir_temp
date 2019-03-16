@@ -3,12 +3,10 @@
 # -----------------------------------------------
 
 light:
-  - platform: mqtt ### ai light unused
+  - platform: mqtt ### LED H801
     name: "dev19"
     state_topic: "dev19/r/light"
     command_topic: "dev19/s/light/dimm"
-    rgb_state_topic: 'dev19/r/light/dimm/color'
-    rgb_command_topic: 'dev19/s/light/dimm/color'
     qos: 0
     retain: True
     payload_on: "ON"
@@ -16,33 +14,18 @@ light:
     optimistic: false
     brightness_scale: 99
 
-  - platform: mqtt 
-    name: "dev19_simple_rainbow"
-    state_topic: "dev19/r/light/animation/simple_rainbow"
-    command_topic: "dev19/s/light/animation/simple_rainbow"
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev19:
-      friendly_name: "Front Door"
-    light.dev19_simple_rainbow:
-      friendly_name: "Front Door Rainbow"
-    binary_sensor.dev19_motion:
-      friendly_name: "19 AI"
-    sensor.dev19_temperature:
-      friendly_name: "19 AI"
-      icon: "mdi:thermometer"
+      friendly_name: "Workshop LED"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev19"
-    fname: "19 AI unused"
+    fname: "19 Workshop LED"
 
 # -----------------------------------------------

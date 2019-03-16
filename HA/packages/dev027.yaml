@@ -30,11 +30,11 @@ light:
 homeassistant:
   customize:
     light.dev27:
-      friendly_name: "027 B1"
+      friendly_name: "027 UpStairs"
       icon: "mdi:lamp"
     light.dev27_simple_rainbow:
       icon: "mdi:traffic-light"
-      friendly_name: "027 B1"
+      friendly_name: "027 UpStairs Rain"
 
 # -----------------------------------------------
 
