@@ -27,8 +27,8 @@ ICON = 'mdi:delete'
 DOMAIN = "trash"
 
 TRASH_TYPES = [1,2,3,4]
-SCAN_INTERVAL = timedelta(minutes=1)
-#SCAN_INTERVAL = timedelta(seconds=15)
+#SCAN_INTERVAL = timedelta(minutes=1)
+SCAN_INTERVAL = timedelta(seconds=15)
 
 DEFAULT_NAME = 'Trash_Sensor'
 CONST_REGIONCODE = "regioncode"
@@ -41,7 +41,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up date afval sensor."""
     regioncode = config.get(CONST_REGIONCODE)
-    url = "http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1[ot]="+str(regioncode)+"&tx_ckcellextermine_pi1[ics]=0&tx_ckcellextermine_pi1[startingpoint]=1&type=3333"
+    #{0} and {1} will be filled later
+    url = "http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D="+str(regioncode)+"&tx_ckcellextermine_pi1%5Bics%5D={0}&tx_ckcellextermine_pi1%5Bstartingpoint%5D={1}&type=3333"
     data = TrashCollectionSchedule(url)
 
     devices = []
@@ -111,16 +112,16 @@ class TrashCollectionSchedule(object):
         magic_nr = 234
         types_found = 0
 
-        #rint("running update")
+        #print("running update")
         for ii in range(0,4):
             url = self._url.format(ii,magic_nr)
-            #rint(str(ii)+" open url:"+url)
+            #print(str(ii)+" open url:"+url)
             response = urlopen(url)
-            #rint(str(ii)+" response is open")
+            #print(str(ii)+" response is open")
             string = response.read().decode('ISO-8859-1')
-            #rint(str(ii)+" got response with n byte "+str(len(string)))
+            #print(str(ii)+" got response with n byte "+str(len(string)))
             entries = string.split("BEGIN:VEVENT")
-            #rint(str(ii)+" got "+str(len(entries))+" entries")
+            #print(str(ii)+" got "+str(len(entries))+" entries")
             trash = {}
             trash['name_type'] = "-"
             trash['pickup_date'] = "-"
@@ -129,21 +130,26 @@ class TrashCollectionSchedule(object):
                 l = entries[i].split('\n')
                 s = l[4].split("SUMMARY:")[1]
                 #for iii in range(0,len(s)):
-                    #rint(str(ii)+"/"+str(iii)+" "+str(ord(s[iii]))+" "+str(s[iii]) )
+                    #print(str(ii)+"/"+str(iii)+" "+str(ord(s[iii]))+" "+str(s[iii]) )
                 s = s.replace(chr(195), 'u')
                 s = s.replace(chr(188), 'e')
                 trash['name_type'] = s
                 trash['extra'] = []
                 trash['pickup_date'] = "-"
-                d = datetime.datetime.strptime(l[2].split("DATE:")[1], "%Y%m%d")
-                if d > today:
-                    types_found = types_found + 1
-                    trash['pickup_date'] = str(d.strftime("%d.%m.%Y"))
+                dd=''.join(e for e in l[2].split("DATE:")[1] if e.isalnum())
+                #print("-->"+str(dd)+"<--")
+                try:
+                    d = datetime.datetime.strptime(str(dd), "%Y%m%d")
+                    if d > today:
+                        types_found = types_found + 1
+                        trash['pickup_date'] = str(d.strftime("%d.%m.%Y"))
 
-                    rem = d - datetime.datetime.now()
-                    extra['remaining'] = str(int(rem.total_seconds()/86400))
-                    trash['extra'] = extra
-                    break
+                        rem = d - datetime.datetime.now()
+                        extra['remaining'] = str(int(rem.total_seconds()/86400))
+                        trash['extra'] = extra
+                        break
+                except:
+                    print("conversion from "+str(dd)+" failed")
             trash_data.append(trash)
         self.data = trash_data
         if types_found == 4:
