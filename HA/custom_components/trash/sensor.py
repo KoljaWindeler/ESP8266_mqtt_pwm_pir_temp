@@ -27,8 +27,8 @@ ICON = 'mdi:delete'
 DOMAIN = "trash"
 
 TRASH_TYPES = [1,2,3,4]
-#SCAN_INTERVAL = timedelta(minutes=1)
-SCAN_INTERVAL = timedelta(seconds=15)
+SCAN_INTERVAL = timedelta(minutes=1)
+#SCAN_INTERVAL = timedelta(seconds=15)
 
 DEFAULT_NAME = 'Trash_Sensor'
 CONST_REGIONCODE = "regioncode"
@@ -42,8 +42,11 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     """Set up date afval sensor."""
     regioncode = config.get(CONST_REGIONCODE)
     #{0} and {1} will be filled later
-    url = "http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D="+str(regioncode)+"&tx_ckcellextermine_pi1%5Bics%5D={0}&tx_ckcellextermine_pi1%5Bstartingpoint%5D={1}&type=3333"
-    data = TrashCollectionSchedule(url)
+    url1 = "http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D="
+    url2 = "&tx_ckcellextermine_pi1%5Bics%5D="
+    url3 = "&tx_ckcellextermine_pi1%5Bstartingpoint%5D="
+    url4 = "&type=3333"
+    data = TrashCollectionSchedule(url1,url2,url3,url4,regioncode)
 
     devices = []
     for trash_type_id in range(0,4): # 4 types of trash
@@ -99,8 +102,12 @@ class TrashCollectionSensor(Entity):
 
 class TrashCollectionSchedule(object):
 
-    def __init__(self, url):
-        self._url = url
+    def __init__(self, url1,url2,url3,url4,regioncode):
+        self._url1 = url1
+        self._url2 = url2
+        self._url3 = url3
+        self._url4 = url4
+        self._rc = regioncode
         self.data = None
         self.f_date = 0
 
@@ -113,45 +120,67 @@ class TrashCollectionSchedule(object):
         types_found = 0
 
         #print("running update")
-        for ii in range(0,4):
-            url = self._url.format(ii,magic_nr)
-            #print(str(ii)+" open url:"+url)
+        for type in range(0,4):
+            url = self._url1+str(self._rc)+self._url2+str(type)+self._url3+str(magic_nr)+self._url4
+            log = str(type)+" open url:"+url+"\r\n"
+            #print(url)
             response = urlopen(url)
-            #print(str(ii)+" response is open")
             string = response.read().decode('ISO-8859-1')
-            #print(str(ii)+" got response with n byte "+str(len(string)))
+            log+="got response with n byte "+str(len(string))+"\r\n"
             entries = string.split("BEGIN:VEVENT")
-            #print(str(ii)+" got "+str(len(entries))+" entries")
+            log+="got "+str(len(entries))+" entries\r\n"
             trash = {}
             trash['name_type'] = "-"
             trash['pickup_date'] = "-"
             extra={}
-            for i in range(1,len(entries)):
-                l = entries[i].split('\n')
-                s = l[4].split("SUMMARY:")[1]
-                #for iii in range(0,len(s)):
-                    #print(str(ii)+"/"+str(iii)+" "+str(ord(s[iii]))+" "+str(s[iii]) )
-                s = s.replace(chr(195), 'u')
-                s = s.replace(chr(188), 'e')
-                trash['name_type'] = s
-                trash['extra'] = []
-                trash['pickup_date'] = "-"
-                dd=''.join(e for e in l[2].split("DATE:")[1] if e.isalnum())
-                #print("-->"+str(dd)+"<--")
-                try:
+            try:
+               for i in range(1,len(entries)):
+                    log+="check entry "+str(i)+"\r\n"
+                    l = entries[i].split('\n')
+                    log+=str(len(l))+" lines\r\n"
+                    for ii in range(1,len(l)):
+                        #log+="checking line "+str(ii)+" for SUMMARY ("+l[ii]+")\r\n"
+                        if(l[ii].find("SUMMARY")>=0):
+                            log+="summary line found "+l[ii]+"\r\n"
+                            s = l[ii].split(":")
+                            if(len(s)>1):
+                                s = s[1]
+                    #for iii in range(0,len(s)):
+                        #print(str(ii)+"/"+str(iii)+" "+str(ord(s[iii]))+" "+str(s[iii]) )
+                                s=''.join(e for e in s if (e.isalnum() or e==' '))
+                                s = s.replace(chr(195), 'u')
+                                s = s.replace(chr(188), 'e')
+                                log+="Setting name as ->"+s+"<-\r\n"
+                                trash['name_type'] = s
+                                trash['extra'] = []
+                                trash['pickup_date'] = "-"
+
+                    for ii in range(1,len(l)):
+                        #log+="checking line "+str(ii)+" for DTSTART ("+l[ii]+")\r\n"
+                        if(l[ii].find("DTSTART")>=0):
+                            log+="DTSTART line found "+l[ii]+"\r\n"
+                            s = l[ii].split(":")
+                            if(len(s)>1):
+                                s = s[1]
+                                if(s.find("T")>0):
+                                    s = s.split("T")[0]
+                                    dd=''.join(e for e in s if (e.isalnum() or e==' '))
+                                    log+="use date -->"+str(dd)+"<--\r\n"
                     d = datetime.datetime.strptime(str(dd), "%Y%m%d")
                     if d > today:
+                        log+="FOUND, DONE\r\n"
                         types_found = types_found + 1
                         trash['pickup_date'] = str(d.strftime("%d.%m.%Y"))
-
                         rem = d - datetime.datetime.now()
                         extra['remaining'] = str(int(rem.total_seconds()/86400))
                         trash['extra'] = extra
                         break
-                except:
-                    print("conversion from "+str(dd)+" failed")
+                    else:
+                        log+=" not after today, next\r\n\r\n"
+            except:
+                print("FAILURE: "+log+"\r\n")
+            #print(log)
             trash_data.append(trash)
         self.data = trash_data
         if types_found == 4:
             self.f_date = str(today.strftime("%d"))
-
