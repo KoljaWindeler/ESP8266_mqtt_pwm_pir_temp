@@ -87,14 +87,14 @@ class JkwMqttSensor(Entity):
         This method must be run in the event loop and returns a coroutine.
         """
         @callback
-        def message_received(topic, payload, qos):
+        def message_received(msg):
             """Handle new MQTT messages."""
             self._last_update = time.time()
             # set time to zero if this is a update unit 
             if(self._update):
                self._state = int((time.time()-self._last_update)/60)
             else:
-               self._state = payload
+               self._state = msg.payload
             self.async_schedule_update_ha_state()
 
         # run update all 30 sec 
