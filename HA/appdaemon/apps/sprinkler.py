@@ -49,7 +49,7 @@ class SprinklerWorld(hass.Hass):
                 ]
 
         #today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
-        today_max_temp = int(float(self.g("sensor.dark_sky_daytime_high_temperature_0","28")))
+        today_max_temp = int(float(self.g("sensor.dark_sky_daytime_high_temperature_0d","28")))
         if(today_max_temp > 28):
             max_time = 30
         elif(today_max_temp < 22):

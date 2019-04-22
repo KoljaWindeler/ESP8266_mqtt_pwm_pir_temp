@@ -51,7 +51,7 @@
   - platform: mqtt
     state_topic: "dev99/r/temperature"
     name: "dev99_temperature"
-    sensor_class: "temperature"
+    device_class: "temperature"
     unit_of_measurement: "ºC"
 # -----------------------------------------------------------
   - platform: systemmonitor

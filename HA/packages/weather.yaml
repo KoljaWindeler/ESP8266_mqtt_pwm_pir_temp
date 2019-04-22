@@ -11,3 +11,5 @@ sensor:
       - icon
       - temperature
       - temperature_high
+    scan_interval:
+      minutes: 5

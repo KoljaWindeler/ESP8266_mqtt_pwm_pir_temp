@@ -9,6 +9,7 @@
       #- group.temperatures
       - group.bed_room
       - group.hallway
+      - group.workshop
       #- group.room_carlo
 
   cams:
@@ -43,8 +44,8 @@
     view: yes
     entities:
       #- group.fp_group
-      - group.alarm_control
-      - group.alarm_maps
+      #- group.alarm_control
+      #- group.alarm_maps
       - group.presents
       - group.motion
 
@@ -89,7 +90,7 @@
       - light.joiner_livingroom_test
       - light.dev1
       - light.dev2
-      #- light.dev101
+      - light.dev22
       #- light.dev103
       #- light.dev106
       #- light.dev57
@@ -100,6 +101,15 @@
       #- binary_sensor.dev103_motion
       #- binary_sensor.dev106_motion
       #- binary_sensor.dev57_motion
+
+
+  Workshop:
+    control: hidden
+    view: no
+    entities:
+      #- light.joiner_workshop
+      - light.dev20
+      - light.dev19
 
 
   Temperatures:
@@ -143,6 +153,7 @@
       # - binary_sensor.dev16_motion
       # - sensor.dev16_temperature
       - light.dev55
+      - light.dev24
 
 
   Hallway:
@@ -238,6 +249,7 @@
     entities:
       - light.dev54_3
       - light.dev54_4
+      - light.dev18
 
   Water:
     control: hidden
@@ -289,7 +301,7 @@
       - sensor.dev16_info
       - sensor.dev17_info
       - sensor.dev18_info
-#      - sensor.dev19_info
+      - sensor.dev19_info
       - sensor.dev20_info
       - sensor.dev21_info
       - sensor.dev22_info
@@ -327,7 +339,7 @@
       - sensor.dev16_bssid
       - sensor.dev17_bssid
       - sensor.dev18_bssid
-#      - sensor.dev19_bssid
+      - sensor.dev19_bssid
       - sensor.dev20_bssid
       - sensor.dev21_bssid
       - sensor.dev22_bssid
@@ -366,7 +378,7 @@
       - sensor.dev16_ssid
       - sensor.dev17_ssid
       - sensor.dev18_ssid
-#      - sensor.dev19_ssid
+      - sensor.dev19_ssid
       - sensor.dev20_ssid
       - sensor.dev21_ssid
       - sensor.dev22_ssid
@@ -405,7 +417,7 @@
       - sensor.dev16_capability
       - sensor.dev17_capability
       - sensor.dev18_capability
-#      - sensor.dev19_capability
+      - sensor.dev19_capability
       - sensor.dev20_capability
       - sensor.dev21_capability
       - sensor.dev22_capability
@@ -445,7 +457,7 @@
       - sensor.dev16_rssi
       - sensor.dev17_rssi
       - sensor.dev18_rssi
-#      - sensor.dev19_rssi
+      - sensor.dev19_rssi
       - sensor.dev20_rssi
       - sensor.dev21_rssi
       - sensor.dev22_rssi
@@ -484,7 +496,7 @@
       - sensor.dev16_update
       - sensor.dev17_update
       - sensor.dev18_update
-#      - sensor.dev19_update
+      - sensor.dev19_update
       - sensor.dev20_update
       - sensor.dev21_update
       - sensor.dev22_update
@@ -521,7 +533,7 @@
       - sensor.dev16
       - sensor.dev17
       - sensor.dev18
-#      - sensor.dev19
+      - sensor.dev19
       - sensor.dev20
       - sensor.dev21
       - sensor.dev22

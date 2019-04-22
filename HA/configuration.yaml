@@ -73,7 +73,7 @@ history:
 recorder:
 logbook:
 sun:
-
+stream:
 emulated_hue:
 
 # Text to speech
@@ -86,6 +86,10 @@ input_boolean:
     name: "Global Alarm enabled"
     initial: on
     icon: mdi:security-home
+  presents_simulation:
+    name: "Presents simulation"
+    initial: off
+    icon: mdi:airballoon
 
 mqtt:
  broker: 127.0.0.1
@@ -94,13 +98,6 @@ mqtt:
  username: !secret mq_user
  password: !secret mq_pass
 
-media_player:
- - platform: cast
-   host: 192.168.2.39
- - platform: cast
-   host: 192.168.2.55
- - platform: cast
-   host: 192.168.2.22
 
 sensor: !include sensors.yaml
 switch: !include switches.yaml
@@ -112,15 +109,12 @@ automation: !include automation.yaml
 script: !include scripts.yaml
 
 camera:
-  - name: map_caro
+  - name: pi103
     platform: generic
-    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_caro.attributes.latitude }},{{ states.device_tracker.illuminum_caro.attributes.longitude }}
-    limit_refetch_to_url_change: true
-
-  - name: map_kolja
+    still_image_url: http://192.168.2.103/cam_full.jpg
+  - name: pi106
     platform: generic
-    still_image_url: https://maps.googleapis.com/maps/api/staticmap?center={{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}&zoom=13&size=500x500&maptype=roadmap&markers=color:blue%7Clabel:P%7C{{ states.device_tracker.illuminum_kolja.attributes.latitude }},{{ states.device_tracker.illuminum_kolja.attributes.longitude }}
-    limit_refetch_to_url_change: true
+    still_image_url: http://192.168.2.106/cam_full.jpg
 
 
 

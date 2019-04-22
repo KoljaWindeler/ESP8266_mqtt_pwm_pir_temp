@@ -144,89 +144,6 @@
        title: "over temp detected"
        message: "over temp triggered"
 # ------------------- value trigger for over temp ----------
-# ------------------- outdoor light new ------------------------
-  - alias: outdoor_light3
-    initial_state: False
-    hide_entity: False
-    trigger:
-      - platform: time          # on at 6:30
-        hours: 6
-        minutes: 30
-        seconds: 00
-      - platform: sun           # off 30 min after sunrise
-        event: sunrise
-        offset: "+00:30:00"
-      - platform: sun           # on 15 min after sunset
-        event: sunset
-        offset: "+00:15:00"
-      - platform: state         # off when everyone is home after 22:00, triggered by presents (if that happens after 22:00)
-        entity_id: binary_sensor.everyone_is_home
-        to: 'on'
-        for: 
-          hours: 0
-          minutes: 10
-          seconds: 0
-      - platform: time          # off when everyone is home after 22:00, triggered by time (if everyone was home already)
-        hours: 22
-        minutes: 00
-        seconds: 10
-      - platform: time          # off for sure after 23:00
-        hours: 23
-        minutes: 00
-        seconds: 01
-    action:
-          # sun below horizon and time>23:00: off
-          # sun below horizon and time>22:00 and everyone home: off
-          # sun below horizon and time<22:00 on no matter who is home
-          # time>6:30 and sun still below horizon: on
-          #
-      - service_template: >
-          {% if now().hour==23 %} 
-            light.turn_off
-          {% elif is_state('sun.sun','below_horizon') and now().hour>=22 and is_state('binary_sensor.everyone_is_home','on') %} 
-            light.turn_off                
-          {% elif is_state('sun.sun','below_horizon') %}
-            light.turn_on 
-          {% else %} 
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.joiner_outdoor
-# ------------------- outdoor light ------------------------
-# -------------------- alarm system ------------------------
-# ----------------------------------------------------------
-# --------------------- gmotion new ----------------------------
-# send message as soon as there is movement and nobody is home
-  - alias: alarm_system
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.g_motion
-        to: 'on'
-    condition:
-      condition: and
-      conditions:
-        - condition: state
-          entity_id: input_boolean.alarm_System
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.someone_is_home
-          state: 'off'
-        - condition: state
-          entity_id: vacuum.xiaomi_vacuum_cleaner
-          state: 'off'
-    action:
-     service: notify.pb
-     data_template:
-       title: "Motion detected"
-       message: >
-         {% for state in states.binary_sensor -%}
-          {% if state.attributes.device_class == 'motion' and state.state | lower == 'on' %}- {{state.attributes.friendly_name}}
-         {% endif %}
-         {%- endfor %}
-# --------------------- gmotion ---------------------------- 
-# --------------------- alarm system -----------------------
 # ----------------------------------------------------------
 
 # ------------------- drivetime kolja new ----------------------
@@ -234,14 +151,14 @@
     initial_state: True
     hide_entity: False
     trigger:
-      - platform: time
-        hours: 7
+      - platform: time_pattern
+        hours: 6
         minutes: 00
         seconds: 00
     condition: # make sure that BOTH sensors show off
       - condition: numeric_state
         entity_id: sensor.to_baker
-        above: 22
+        above: 25
     action:
      service: notify.pb
      data_template:
