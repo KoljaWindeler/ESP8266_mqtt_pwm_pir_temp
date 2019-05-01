@@ -5,6 +5,9 @@ entrance2:
 sprinkler:
   module: sprinkler
   class: SprinklerWorld
+kitchen:
+  module: kitchen
+  class: kitchenWorld
 adafruit:
   module: adafruit
   class: AdafruitWorld
@@ -41,3 +44,6 @@ harmony:
 simulation:
   module: present_simulation
   class: SimulationWorld
+connection_check:
+  module: connection
+  class: ConnectionWorld
