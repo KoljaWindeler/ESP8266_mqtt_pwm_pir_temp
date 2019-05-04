@@ -1,10 +1,10 @@
 weather:
   - platform: darksky
-    api_key: d51a09271f9df8904e3216f388a79102
+    api_key: !secret darksky_key
 
 sensor:
   - platform: darksky
-    api_key: d51a09271f9df8904e3216f388a79102
+    api_key: !secret darksky_key
     forecast:
       - 0
     monitored_conditions:
