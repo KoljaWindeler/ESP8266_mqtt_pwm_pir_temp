@@ -71,14 +71,14 @@ updater:
 discovery:
 history:
 recorder:
+  db_url: sqlite:////dev/shm/ha.sql
+  purge_keep_days: 2
 logbook:
 sun:
+system_health:
 stream:
 emulated_hue:
 
-# Text to speech
-tts:
- platform: google
 
 # button
 input_boolean:

@@ -10,7 +10,7 @@ camera:
   - platform: generic
     still_image_url: http://192.168.2.53/snapshot.jpg
     name: cam_xia1
-    stream_source: rtsp://192.168.2.53/unicast
+#    stream_source: rtsp://192.168.2.53/unicast
 
 automation:
   - alias: alarm_system_cxia1

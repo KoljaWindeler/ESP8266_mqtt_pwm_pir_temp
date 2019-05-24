@@ -25,7 +25,7 @@ class warm_waterWorld(hass.Hass):
         self.log("all done")
 
     def fuse(self, entity="", attribute="", old="", new="", kwargs=""):
-        self.log("new boiler temperature "+str(new))
+#        self.log("new boiler temperature "+str(new))
         if(float(new)<35):
             self.call_service("notify/pb", title="Heating", message="Heater at "+str(new)+"c")
             self.call_service("notify/pb_c", title="Heating", message="Heater at "+str(new)+"c")

@@ -16,11 +16,15 @@ class AdafruitWorld(hass.Hass):
 		self.listen_state(self.start,"sensor.adafruit")
 
 	def roundshot(self, url, msg):
-		self.log("downloading "+url)
-		fn = "/tmp/ad_tmp.jpg"
-		urllib.request.urlretrieve(url, fn)
-		self.log("sending")
-		self.call_service("notify/pb", data={"file": fn}, message=msg)
+		try:
+			self.log("downloading "+url)
+			fn = "/tmp/ad_tmp.jpg"
+			urllib.request.urlretrieve(url, fn)
+			self.log("sending")
+			self.call_service("notify/pb", data={"file": fn}, message=msg)
+		except:
+			pass
+
 
 	def start(self, entity, attribute, old, new,kwargs):
 		new = new.lower()
@@ -54,16 +58,11 @@ class AdafruitWorld(hass.Hass):
 		elif(new=="garage"):
 			self.turn_on("light.dev8")
 		elif(new=="roundshot"):
-			try:
-				self.log("roundshot!")
-				self.roundshot("http://192.168.2.103/cam_full.jpg","Roundshot 1")
-				self.roundshot("http://192.168.2.106/cam_full.jpg","Roundshot 2")
-				self.roundshot("http://192.168.2.42/snapshot.jpg","Roundshot 3")
-				self.roundshot("http://192.168.2.43/snapshot.jpg","Roundshot 4")
-				self.roundshot("http://192.168.2.45/snapshot.jpg","Roundshot 5")
-				self.roundshot("http://192.168.2.56/snapshot.jpg","Roundshot 6")
-			except:
-				pass
+			self.log("roundshot!")
+			self.roundshot("http://192.168.2.53/snapshot.jpg","Roundshot 3")
+			self.roundshot("http://192.168.2.43/snapshot.jpg","Roundshot 4")
+			self.roundshot("http://192.168.2.45/snapshot.jpg","Roundshot 5")
+			self.roundshot("http://192.168.2.56/snapshot.jpg","Roundshot 6")
 		elif(new=="0"):
 			self.log("ignore 0")
 		else:

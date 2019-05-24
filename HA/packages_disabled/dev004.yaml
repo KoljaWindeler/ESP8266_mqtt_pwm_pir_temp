@@ -1,0 +1,51 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### sonoff 1, Caro Upstairs
+    name: "dev4"
+    state_topic: "dev4/r/light"
+    command_topic: "dev4/s/light"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev4:
+      friendly_name: "04 Caro"
+      emulated_hue_name: "Kueche"
+    sensor.dev4_temperature:
+      friendly_name: "Caro Upstairs"
+      icon: "mdi:thermometer"
+    binary_sensor.dev4_motion:
+      friendly_name: "04 Caro"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev4"
+    fname: "04 Caro Upstairs"
+
+  - platform: mqtt
+    state_topic: "dev4/r/temperature"
+    name: "dev4_temperature"
+    device_class: "temperature"
+    unit_of_measurement: "ºC"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev4/r/motion"
+    name: "dev4_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

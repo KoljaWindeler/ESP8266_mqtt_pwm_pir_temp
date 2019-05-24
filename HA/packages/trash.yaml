@@ -2,6 +2,8 @@
 sensor:
   - platform: trash
     regioncode: "148"
+#    fname: "test"
+ #   name: "test2"
 
   - platform: template
     sensors:

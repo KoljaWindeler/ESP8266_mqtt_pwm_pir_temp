@@ -187,19 +187,19 @@
         entity_id: 
           - light.night
 #-------------------- new kitchen -------------------------
-  - alias: new_kitchen_in
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: state
-        entity_id: light.dev3
-    action:
-      - service_template: >
-          {% if is_state('light.dev3','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev21
+#  - alias: new_kitchen_in
+#    initial_state: True
+#    hide_entity: False
+#    trigger:
+#      - platform: state
+#        entity_id: light.dev3
+#    action:
+#      - service_template: >
+#          {% if is_state('light.dev3','on') %}
+#            light.turn_on
+#          {% else %}
+#            light.turn_off
+#          {% endif %}
+#        entity_id: 
+#          - light.dev21
 #-------------------- new kitchen -------------------------

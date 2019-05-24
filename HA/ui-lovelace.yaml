@@ -74,12 +74,12 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev58
+                entity: light.dev17
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev22
-                name: Lichterkette
+                entity: light.joiner_bedroom
+                name: Bedroom
           - type: horizontal-stack
             cards:
               - type: entity-button
@@ -120,14 +120,41 @@ views:
         entity: camera.cam_xia1
       - type: picture-entity
         entity: camera.cam_xia2
+        camera_view: live
       - type: picture-entity
         entity: camera.cam_xia3
+        camera_view: live
       - type: picture-entity
         entity: camera.cam_xia4
+        camera_view: live
       - type: picture-entity
-        entity: camera.pi103
+        entity: camera.cam_xia5
+        camera_view: live
       - type: picture-entity
-        entity: camera.pi106
+        entity: camera.cam_xia52
+        camera_view: live
+      - type: horizontal-stack
+        cards:
+          - icon: 'mdi:arrow-left-bold'
+            name: ' '
+            type: entity-button
+            entity: switch.camxia5_left
+          - icon: 'mdi:arrow-up-bold'
+            name: ' '
+            type: entity-button
+            entity: switch.camxia5_up
+          - icon: 'mdi:arrow-down-bold'
+            name: ' '
+            type: entity-button
+            entity: switch.camxia5_down
+          - icon: 'mdi:arrow-right-bold'
+            name: ' '
+            type: entity-button
+            entity: switch.camxia5_right
+#      - type: picture-entity
+#        entity: camera.pi103
+#      - type: picture-entity
+#        entity: camera.pi106
     icon: 'mdi:cctv'
     title: Cams
 ################ media control #######################

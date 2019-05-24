@@ -73,6 +73,11 @@ class EntranceWorld2(hass.Hass):
         now = datetime.now().time()
         ele = float(self.get_state("sun.sun", attribute="elevation"))
         self.log("current elevation "+str(ele))
+        if(self.sun_up()):
+            self.log("sun is up")
+        else:
+            self.log("sun is down")
+
 
         if(w=="on"):
             self.log("request to turn on lights")

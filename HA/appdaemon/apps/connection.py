@@ -11,7 +11,8 @@ class ConnectionWorld(hass.Hass):
                 self.listen_state(self.t, "sensor.dev"+str(i)+"_update")
 
     def t(self, entity, attribute, old, new,kwargs):
-        if(new==5):
-            msg="entity "+entity+" new timeout: "+str(new)
+        if(new=="8"):
+            msg=self.friendly_name(entity)+" ("+entity+") new timeout: "+str(new)
             self.log(msg)
             self.call_service("notify/pb", title="connection alert", message=msg)
+

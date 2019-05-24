@@ -1,0 +1,6 @@
+camera:
+  - platform: generic
+    still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
+    stream_source: rtsp://192.168.2.42:8554/unicast
+    name: cam_xia52
+
