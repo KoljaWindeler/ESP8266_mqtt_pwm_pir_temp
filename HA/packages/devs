@@ -6,7 +6,6 @@ DEV6 - temp / pir keller
 DEV7 - dinng room tower, temperature, simple light
 DEV8 - Garage, PIR + ds18b20
 DEV9 - gaderoben schrank
-DEV10 - unten eingangs support, PIR, temperature, simple light
 DEV11 - living room tower, temperature, simple light
 DEV12 - b1 light bulb, flur unten
 DEV13 - leakage controller
@@ -30,14 +29,14 @@ DEV54 - ULTRA ENTRANCE
 DEV55 - Ikea LED lampinions carlo
 DEV56 - Ikea LED lampinions caro
 DEV57 - Ikea LED lampinions flur
-DEV58 - touch bedroom
+
 DEV59 - S26_2 unused
 DEV60 - S26_3 unused
-
-
+DEV58 - touch bedroom
 DEV5  - outdoor 1, simple light, slampher
 DEV8 - PIR carlo
 DEV9  - staubsauger im shop
+DEV10 - unten eingangs support, PIR, temperature, simple light
 DEV16 - switch for dev20 both bedroom
 DEV19 - AI light 2
 DEV20 - Bedroom, PIR, PWM led streifen, DS18B20

@@ -32,10 +32,13 @@ class SprinklerWorld(hass.Hass):
     def initialize(self):
         self.log("Starting Sprinkler Service")
         self.listen_state(self.start,"input_boolean.irrigation", new = "on")
+        self.listen_state(self.start,"input_boolean.irrigation_override", new = "on")
         self.turn_off("light.dev17")
 
 
     def start(self, entity, attribute, old, new,kwargs):
+        # set on, if we have been started by irrigation
+        self.turn_on("input_boolean.irrigation")
         #self.call_service("notify/pb", title="Irrigation", message="Starting")
         self.log("################################################")
         self.log("Starting Sprinker call")
@@ -49,14 +52,19 @@ class SprinklerWorld(hass.Hass):
                 ]
 
         #today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
-        today_max_temp = int(float(self.g("sensor.dark_sky_daytime_high_temperature_0d","28")))
-        if(today_max_temp > 28):
-            max_time = 30
-        elif(today_max_temp < 22):
-            max_time = 0
+        if(self.g("input_boolean.irrigation_override","off")=="off"):
+            today_max_temp = int(float(self.g("sensor.dark_sky_daytime_high_temperature_0d","28")))
+            if(today_max_temp > 28):
+                max_time = 30
+            elif(today_max_temp < 22):
+                max_time = 0
+            self.log("Today max temp is "+str(today_max_temp)+", will irrigate for "+str(max_time)+ " min")
+            rain_today = int(float(self.g("sensor.dev30_uptime","0"))/5)
+        else:
+            self.turn_off("input_boolean.irrigation_override")
+            rain_today = 0
+            self.log("irrigation override, setting time to "+str(max_time))
 
-        self.log("Today max temp is "+str(today_max_temp)+", will irrigate for "+str(max_time)+ " min")
-        rain_today = int(float(self.g("sensor.dev30_uptime","0"))/5)
         max_time = max(max_time - rain_today,0)
         self.log("There was already "+str(rain_today)+" min of rain, so I'll irrigate for "+str(max_time)+" now")
 

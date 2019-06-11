@@ -100,7 +100,6 @@ mqtt:
 
 sensor: !include sensors.yaml
 switch: !include switches.yaml
-group: !include groups.yaml
 light: !include lights.yaml
 device_tracker: !include tracker.yaml
 binary_sensor: !include b_sensors.yaml

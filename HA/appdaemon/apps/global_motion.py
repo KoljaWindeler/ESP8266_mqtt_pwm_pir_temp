@@ -10,8 +10,8 @@ class GmotionWorld(hass.Hass):
 		self.log("Starting gmotion Service")
 		self.listen_state(self.home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
 		self.listen_state(self.home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
-		self.sensor = ["6_motion", "8_motion", "10_motion", "15_motion", "54_motion_1", "54_motion_2"]
-		self.sensor_name = ["Cellar", "Garage", "Entrance", "World map", "Entrace", "Entrace_cellar"]
+		self.sensor = ["6_motion", "8_motion", "15_motion", "54_motion_1", "54_motion_2", "57_motion"]
+		self.sensor_name = ["Cellar", "Garage", "World map", "Entrace", "Entrace_cellar", "Floor upstairs"]
 		self.sensor_trigger_count = []
 		self.sensor_trigger_count_reported = []
 		for i in range(0,len(self.sensor)):

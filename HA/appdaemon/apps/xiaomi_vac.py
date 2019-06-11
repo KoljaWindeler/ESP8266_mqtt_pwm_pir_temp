@@ -43,7 +43,7 @@ class xiaomi_vacWorld(hass.Hass):
     def presents(self, entity, attribute, old, new,kwargs):
         if(new=="on"): #someon is approaching home
             self.log("someone is home, stop vacuuming. tct: "+str(self.g_tct()))
-            self.call_service("vacuum/stop", entity_id="vacuum.xiaomi_vacuum_cleaner")
+            self.call_service("vacuum/return_to_base", entity_id="vacuum.xiaomi_vacuum_cleaner")
         else:
             self.log("Home alone. tct: "+str(self.g_tct()))
             if(self.tct>20*60):

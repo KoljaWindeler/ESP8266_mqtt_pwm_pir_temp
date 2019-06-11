@@ -47,3 +47,9 @@ simulation:
 connection_check:
   module: connection
   class: ConnectionWorld
+waterpump:
+  module: waterpump
+  class: PumpWorld
+weather:
+  module: weather
+  class: WeatherWorld

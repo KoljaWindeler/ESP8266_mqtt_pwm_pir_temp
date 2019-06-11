@@ -33,8 +33,3 @@
           {%- endif %}
 # -------------- is everyone at home -------------
 # -------------- templates ----------------------
-# -------------- floorplan  ----------------------
-  - platform: mqtt
-    state_topic: dummy/floorplan/sensor
-    name: Floorplan
-# -------------- floorplan  ----------------------

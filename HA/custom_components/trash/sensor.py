@@ -95,7 +95,7 @@ class TrashCollectionSensor(Entity):
             self.data.update()
         if type(self.data.data) == list:
             if len(self.data.data[self._trash_type_id]) == 3:
-                self._state = self.data.data[self._trash_type_id]['pickup_date']
+                self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (%02i)' % int(self.data.data[self._trash_type_id]['extra']['remaining'])
                 self._name = self.data.data[self._trash_type_id]['name_type']
                 self._state_attributes = self.data.data[self._trash_type_id]['extra']
 

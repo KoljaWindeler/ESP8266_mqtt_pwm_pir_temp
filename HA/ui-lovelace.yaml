@@ -74,7 +74,8 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev17
+#                entity: light.dev17
+                entity: light.dev17_autostart
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -130,9 +131,9 @@ views:
       - type: picture-entity
         entity: camera.cam_xia5
         camera_view: live
-      - type: picture-entity
-        entity: camera.cam_xia52
-        camera_view: live
+#      - type: picture-entity
+#        entity: camera.cam_xia52
+#        camera_view: live
       - type: horizontal-stack
         cards:
           - icon: 'mdi:arrow-left-bold'
@@ -151,6 +152,9 @@ views:
             name: ' '
             type: entity-button
             entity: switch.camxia5_right
+      - type: picture-entity
+        entity: camera.cam_dome1
+        camera_view: live
 #      - type: picture-entity
 #        entity: camera.pi103
 #      - type: picture-entity
@@ -321,16 +325,6 @@ views:
       - type: history-graph
         entities:
           - sensor.dev29_temperature
-      - type: history-graph
-        entities:
-          - sensor.dev11_temperature
-          - sensor.dev7_temperature
-          - sensor.dev1_temperature
-          - sensor.dev16_temperature
-          - sensor.dev6_temperature
-          - sensor.dev2_temperature
-#          - sensor.dev10_temperature
-          - sensor.dev9_temperature
       - type: entities
         entities:
           - sensor.trash_0
@@ -341,6 +335,8 @@ views:
       - type: entities
         entities:
           - input_boolean.irrigation
+          - input_boolean.irrigation_override
+          - sensor.dev30_state
           - light.dev17
           - light.dev30_pow
           - light.dev30_1
@@ -351,10 +347,33 @@ views:
           - sensor.dark_sky_daytime_high_temperature_0d
         show_header_toggle: false
         title: Water
-      - type: weather-forecast
-        entity: weather.dark_sky
     icon: 'mdi:home'
     title: Second view
+############## weather #########################
+  - cards:
+      - type: weather-forecast
+        entity: weather.dark_sky
+      - type: picture-entity
+        entity: camera.cam_weather2
+        name: NDS
+        camera_view: live
+      - type: picture-entity
+        entity: camera.cam_weather1
+        name: BRD
+        camera_view: live
+      - type: history-graph
+        entities:
+          - sensor.dev11_temperature
+          - sensor.dev7_temperature
+          - sensor.dev32_temperature
+          - sensor.dev1_temperature
+          - sensor.dev16_temperature
+          - sensor.dev6_temperature
+          - sensor.dev2_temperature
+#          - sensor.dev10_temperature
+          - sensor.dev9_temperature
+    icon: 'mdi:weather-partlycloudy'
+    title: weather
 ############## security #########################
   - cards:
       - type: glance
@@ -413,6 +432,7 @@ views:
           - sensor.dev21_update
 #          - sensor.dev22_update
           - sensor.dev23_update
+          - sensor.dev27_update
           - sensor.dev29_update
           - sensor.dev30_update
           - sensor.dev31_update
@@ -444,6 +464,7 @@ views:
           - sensor.dev21_rssi
 #          - sensor.dev22_rssi
           - sensor.dev23_rssi
+          - sensor.dev27_rssi
           - sensor.dev29_rssi
           - sensor.dev30_rssi
           - sensor.dev31_rssi
@@ -474,6 +495,7 @@ views:
           - sensor.dev21_info
 #          - sensor.dev22_info
           - sensor.dev23_info
+          - sensor.dev27_info
           - sensor.dev29_info
           - sensor.dev30_info
           - sensor.dev31_info
@@ -505,6 +527,7 @@ views:
           - sensor.dev21_bssid
 #          - sensor.dev22_bssid
           - sensor.dev23_bssid
+          - sensor.dev27_bssid
           - sensor.dev29_bssid
           - sensor.dev30_bssid
           - sensor.dev31_bssid
@@ -536,6 +559,7 @@ views:
           - sensor.dev21_ssid
 #          - sensor.dev22_ssid
           - sensor.dev23_ssid
+          - sensor.dev27_ssid
           - sensor.dev29_ssid
           - sensor.dev30_ssid
           - sensor.dev31_ssid
@@ -567,6 +591,7 @@ views:
           - sensor.dev21_capability
 #          - sensor.dev22_capability
           - sensor.dev23_capability
+          - sensor.dev27_capability
           - sensor.dev29_capability
           - sensor.dev30_capability
           - sensor.dev31_capability
@@ -590,101 +615,6 @@ views:
         type: 'custom:monster-card'
     icon: 'mdi:settings'
     title: All lights
-#######################################
-  - cards:
-          - type: vertical-stack
-            cards:
-              - type: horizontal-stack
-                cards:
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:play'
-                    name: "Play / Pause"
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:skip-backward'
-                    name: "Prev Track"
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:skip-forward'
-                    name: "Next Track"
-              - type: horizontal-stack
-                cards:
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:volume-plus'
-                    name: "Volume Up"
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:volume-minus'
-                    name: "Volume Down"
-              - type: horizontal-stack
-                cards:
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:power-sleep'
-                    name: "after track"
-                  - type: entity-button
-                    tap_action:
-                      action: toggle
-                    entity: switch.tonesp_play_pause
-                    icon: 'mdi:lock'
-                    name: "Lock / Unlock"
-          - type: horizontal-stack
-            cards:
-              - type: picture-entity
-                entity: switch.tonesp_card1
-                image: /local/giraffe.jpg
-                tap_action:
-                  action: toggle
-                name: "Kleine Giraffe"
-                show_state: false
-              - type: picture-entity
-                entity: switch.tonesp_card2
-                image: /local/grueffelo.png
-                tap_action:
-                  action: toggle
-                name: "Der Grueffelo"
-                show_state: false
-          - type: horizontal-stack
-            cards:
-              - type: picture-entity
-                entity: switch.tonesp_card3
-                image: /local/giraffe.jpg
-                tap_action:
-                  action: toggle
-                name: "Kleine Giraffe"
-                show_state: false
-              - type: picture-entity
-                entity: switch.tonesp_card4
-                image: /local/grueffelo.png
-                tap_action:
-                  action: toggle
-                name: "asdf"
-                show_state: false
-          - type: horizontal-stack
-            cards:
-              - type: picture-entity
-                entity: switch.tonesp_card5
-                image: /local/giraffe.jpg
-                tap_action:
-                  action: toggle
-                name: "Kinderlieder"
-                show_state: false
-    icon: 'mdi:music-note'
-    title: TonESP
 #######################################
 name: My Awesome Home
 resources:

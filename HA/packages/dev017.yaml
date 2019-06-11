@@ -36,12 +36,26 @@ light:
     optimistic: false
     brightness_scale: 99
 
+  - platform: mqtt ### autostart fakesensor
+    name: "dev17_autostart"
+    command_topic: "dev17/s/light_autostart"
+    qos: 0
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+
+
+
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev17:
       friendly_name: "Water pump"
+      icon: mdi:water-pump
+
+    light.dev17_autostart:
+      friendly_name: "Water Auto"
       icon: mdi:water-pump
 
 # -----------------------------------------------
@@ -86,3 +100,6 @@ script:
     sequence:
       - service: input_boolean.turn_on
         entity_id: input_boolean.irrigation
+
+# -----------------------------------------------
+

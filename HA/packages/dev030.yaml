@@ -113,6 +113,10 @@ input_boolean:
     name: "Irrigation"
     initial: off
     icon: mdi:basket-fill
+  irrigation_override:
+    name: "Force Irrigation"
+    initial: off
+    icon: mdi:basket-fill
 
 # -----------------------------------------------
 

@@ -165,16 +165,4 @@ script:
           data:
             file: /tmp/xia2_1.jpg
 
-      - service: tts.google_say
-        entity_id: media_player.wohnen
-        data:
-          message: "DingDong"
-          language: "fr"
-
-      - service: tts.google_say
-        entity_id: media_player.badezimmer_2
-        data:
-          message: "DingDong"
-          language: "fr"
-
 # -----------------------------------------------
