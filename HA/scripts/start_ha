@@ -1,0 +1,41 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          start ha
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: D-Bus systemwide message bus
+# Description:       D-Bus is a simple interprocess messaging system, used
+#                    for sending messages between applications.
+### END INIT INFO
+# -*- coding: utf-8 -*-
+# Debian init.d script for D-BUS
+# Copyright © 2003 Colin Walters <walters@debian.org>
+# Copyright © 2005 Sjoerd Simons <sjoerd@debian.org>
+# /etc/init.d/start_ha
+#
+
+# Some things that run always
+touch /var/lock/start_ha
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting script start_ha "
+    screen -S "HA" -d -m
+    screen -r "HA" -X stuff "su -s /bin/bash homeassistant -c 'whoami; source /srv/homeassistant/bin/activate; hass'\n"
+    screen -S "AD" -d -m
+    screen -r "AD" -X stuff "appdaemon -c /home/homeassistant/.homeassistant/appdaemon\n"
+    ;;
+  stop)
+    echo "Stopping script start_ha"
+    echo "Could do more here"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/start_ha {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

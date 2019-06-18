@@ -1,0 +1,32 @@
+shell_command:
+  camdome1_1: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_1.jpg
+  camdome1_2: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_2.jpg
+  camdome1_3: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_3.jpg
+  camdome1_4: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_4.jpg
+  camdome1_5: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_5.jpg
+
+
+camera:
+  - platform: generic
+    still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
+    stream_source: rtsp://192.168.2.10/user=admin_password=tlJwpbo6_channel=1_stream=1.sdp
+    name: cam_dome1
+  - platform: generic
+    still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
+    stream_source: rtsp://192.168.2.10/user=admin_password=tlJwpbo6_channel=1_stream=0.sdp
+    name: cam_dome1_hr
+
+script:
+  seq_dingdong_dome:
+    sequence:
+      - service: notify.pb # pd_c
+        data:
+          title: "Doorbell"
+          message: "Ding Dong"
+      - service: shell_command.camdome1_1
+      - service: notify.pb 
+        data:
+          title: "Doorbell"
+          message: "Foto"
+          data:
+            file: /tmp/dome1_1.jpg
