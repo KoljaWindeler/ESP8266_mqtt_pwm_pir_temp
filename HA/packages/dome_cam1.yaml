@@ -1,11 +1,3 @@
-shell_command:
-  camdome1_1: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_1.jpg
-  camdome1_2: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_2.jpg
-  camdome1_3: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_3.jpg
-  camdome1_4: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_4.jpg
-  camdome1_5: ffmpeg -loglevel fatal -i rtsp://192.168.2.10//user=admin_password=_channel=1_stream=0.sdp -vframes 1 -r 1 -y /tmp/dome1_5.jpg
-
-
 camera:
   - platform: generic
     still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
@@ -23,10 +15,23 @@ script:
         data:
           title: "Doorbell"
           message: "Ding Dong"
-      - service: shell_command.camdome1_1
+      - service: camera.snapshot
+        data:
+          entity_id: camera.cam_dome1
+          filename: '/tmp/dome1_1.jpg'
       - service: notify.pb 
         data:
           title: "Doorbell"
           message: "Foto"
           data:
             file: /tmp/dome1_1.jpg
+      - service: camera.snapshot
+        data:
+          entity_id: camera.cam_dome1_hr
+          filename: '/tmp/dome1_1_hr.jpg'
+      - service: notify.pb 
+        data:
+          title: "Doorbell"
+          message: "Foto HR"
+          data:
+            file: /tmp/dome1_1_hr.jpg
