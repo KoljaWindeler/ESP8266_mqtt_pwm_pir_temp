@@ -39,7 +39,7 @@ input_boolean:
     icon: mdi:check
   autostart_cleaning:
     name: Autostart cleaning
-    initial: off
+    initial: no
     icon: mdi:check
 
 automation:
