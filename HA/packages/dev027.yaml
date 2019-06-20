@@ -42,6 +42,10 @@ sensor:
   - platform: mqtt_jkw
     name: "dev27"
     fname: "027 B1"
+  - platform: mqtt
+    state_topic: "dev27/r/uptime"
+    name: "dev27_uptime"
+    unit_of_measurement: "min"
 
 # -----------------------------------------------
 
