@@ -1,20 +1,27 @@
+20190619
+	-Fixed Bug in dimming module with millis overrun
+	- removed BSN, BSP .. only BS left
+		DATA:    [=====     ]  52.8% (used 43268 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.1% (used 404260 bytes from 434160 bytes)
+20190529
+	- Added millis() uptimer as UTP99
 20181220
 	- Fixed B1 bug. Changed key to BONE
 	- Sound streaming playback somewhat stable
 		DATA:    [=====     ]  53.1% (used 43488 bytes from 81920 bytes)
 		PROGRAM: [========= ]  94.0% (used 408156 bytes from 434160 bytes)
-20190927
+20180927
 	- added support for I2S DAC/AMP
 	- Streaming with 44.1khz and 8 (AUD1) or 16 (AUD16) bit/sample
 		DATA:    [=====     ]  53.0% (used 43408 bytes from 81920 bytes)
 		PROGRAM: [========= ]  93.3% (used 404960 bytes from 434160 bytes)
-20190917
+20180917
  	- added parse wide, SL and Button accept any GPIO now
 	- added option for Button to be actually a switch (aka a change from H>L is like a button push + release)
 	- disabled husqvarna and bridge, never used, not tested and no need
 		DATA:    [=====     ]  54.0% (used 43424 bytes from 81920 bytes)
 		PROGRAM: [========= ]  93.3% (used 405168 bytes from 434160 bytes)
-20190910
+20180910
 	- added frequency measurement (cap: fre_s_4, fre_h_8, fre_m_12)
 	- renamed all files to "cap_" if they are pure capabilities
 		DATA:    [=====     ]  54.8% (used 44868 bytes from 81920 bytes)

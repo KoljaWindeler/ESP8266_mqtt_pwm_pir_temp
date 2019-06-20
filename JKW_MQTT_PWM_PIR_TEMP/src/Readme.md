@@ -51,8 +51,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "rssi" (out only)
 
 ### Button
-	Configuration string: "B", "B*", "BP*", "BN*","BS*", "BSP*", "BSN*",  with * = {0..5, 12..16}
-	Purpose: push button (B{,P,N}*) or switch (BS{,P,N}*), any change will imidiatly toggle the light
+	Configuration string: "B", "B*", "BP*", "BN*","BS*"  with * = {0..5, 12..16}
+	Purpose: push button (B{,P,N}*) or switch (BS*), any change will imidiatly toggle the light
 	(as long as a light provider is configured). Publishes also imidiatly a message.
 	Push button can be hold which will trigger extra messages.
 	Sub-Topic(s): "button" / "button1s" / "button2s" / "button3s" (all out only)
@@ -99,7 +99,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "NEO"
 	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
 	Sub-Topic(s): none, is sub-peripheral to light class
-	
+
 ### Simple light / relay
 	Configuration string: "SL"
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
@@ -178,7 +178,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "AUD"
 	Purpose: will provide a server (port 5522) that consumes special audio streams (send by a Raspberry). Output is the RX pin.
 	Sub-Topic(s): Sub-Topic(s): none, consumes direct streams
-	
+
 ### Frequency counter
 	Configuration string: "FRE"
 	Purpose: Counts pin toggles on a definable GPIO and reports them once a minute. E.g. count kw/h via LED pulse
@@ -188,7 +188,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "HUS"
 	Purpose: Can controll a husqvarna automover via soft serial. This is untested.
 	Sub-Topic(s): "husqvarna_mode_[...]"
-	
+
 ### Night light
 	Configuration string: "NL"
 	Purpose: Sets the mini LED on the SonOff Touch, subscribs to a global non device specific topic
@@ -198,7 +198,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "UT"
 	Purpose: Counts the time that a pin is in a defined state (e.g. counts seconds of "there is rain" from my rain sensor)
 	Sub-Topic(s): "uptime"
-	
+
 
 ### WiFi Configuration Access Point
 Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.

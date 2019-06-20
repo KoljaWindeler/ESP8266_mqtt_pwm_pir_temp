@@ -43,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20181220" DEV
+	#define VERSION               "20190619" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -52,7 +52,7 @@
 	#define MAX_RECONNECT_TIME    20 * 60      // even if we've been happliy connected to this network for weeks: start AP after 20 min of trying to reconnect
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
 
-		#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
+	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
 	#define MAX_CAPS          			 20

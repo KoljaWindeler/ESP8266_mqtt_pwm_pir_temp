@@ -111,7 +111,7 @@ bool light::loop(){
 	// // dimming active?  ////
 	if (timer_dimmer_end) { // we are dimming as long as this is non-zero
 		//logger.p(".");
-		if (millis() >= timer_dimmer + m_pwm_dimm_time) {
+		if (millis()-timer_dimmer >= m_pwm_dimm_time) {
 			// logger.p("DIMMER ");
 			timer_dimmer = millis(); // save for next round
 

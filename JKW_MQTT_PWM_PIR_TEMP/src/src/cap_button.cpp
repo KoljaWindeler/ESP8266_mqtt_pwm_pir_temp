@@ -42,14 +42,6 @@ bool button::parse(uint8_t* config){
 		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch/umschalter
 		m_polarity = LOW; // active low
 		return true;
-	} else if(cap.parse_wide(config,(uint8_t*)"BSN",&m_pin)){
-		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch/umschalter
-		m_polarity = LOW; // active low
-		return true;
-	} else if(cap.parse_wide(config,(uint8_t*)"BSP",&m_pin)){
-		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch/umschalter
-		m_polarity = HIGH; // active high !!
-		return true;
 	}
 	// switch/umschalter //
 
