@@ -1,24 +1,11 @@
 homeassistant:
   customize:
     vacuum.xiaomi_vacuum_cleaner:
-      friendly_name: "Mr Thielmann"
+      friendly_name: "Thielmann Sr"
+    vacuum.xiaomi_vacuum_cleaner_2:
+      friendly_name: "Thielmann Jr"
     automation.vac_start_cleaning_when_alone:
-      friendly_name: "Autostart cleaning"
-    group.vac:
-      friendly_name: "Vacuuming"
-    
-
-group:
-  vac:
-    control: hidden
-    icon: mdi:thermometer
-    view: no
-    entities:
-      - vacuum.xiaomi_vacuum_cleaner
-      - input_boolean.cleaning_done_today
-      - sensor.vac_triggered
-      - automation.vac_start_cleaning_when_alone
-
+      friendly_name: "Autostart cleaning"    
 
 sensor:
   - platform: template
@@ -31,6 +18,11 @@ vacuum:
   - platform: xiaomi_miio
     host: 192.168.2.30
     token: !secret xiaomi_token
+    name: xiaomi_vacuum_cleaner
+  - platform: xiaomi_miio
+    host: 192.168.2.92
+    token: !secret xiaomi_token2
+    name: xiaomi_vacuum_cleaner_2
 
 input_boolean:
   cleaning_done_today:
@@ -39,7 +31,7 @@ input_boolean:
     icon: mdi:check
   autostart_cleaning:
     name: Autostart cleaning
-    initial: no
+    initial: on
     icon: mdi:check
 
 automation:
@@ -86,6 +78,9 @@ script:
       - alias: "Switch vac on"
         service: homeassistant.turn_on
         entity_id: vacuum.xiaomi_vacuum_cleaner
+      - alias: "Switch vac on2"
+        service: homeassistant.turn_on
+        entity_id: vacuum.xiaomi_vacuum_cleaner_2
       - alias: "set reminder"
         service: homeassistant.turn_on
         entity_id: input_boolean.cleaning_done_today
@@ -105,6 +100,9 @@ script:
       - alias: "Switch vac off"
         service: homeassistant.turn_off
         entity_id: vacuum.xiaomi_vacuum_cleaner
+      - alias: "Switch vac off2"
+        service: homeassistant.turn_off
+        entity_id: vacuum.xiaomi_vacuum_cleaner_2
       - condition: template
         value_template: >
            {{ (as_timestamp(now()) - as_timestamp(states.switch.zone_1.last_changed)) < 30*60 }}
