@@ -1,12 +1,10 @@
 camera:
-  - platform: generic
-    still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
-    stream_source: rtsp://192.168.2.10/user=admin_password=tlJwpbo6_channel=1_stream=1.sdp
+  - platform: onvif
+    host: 192.168.2.10
+    username: admin
+    password: ""
+    port: 8899
     name: cam_dome1
-  - platform: generic
-    still_image_url: http://192.168.2.42/cgi-bin/currentpic.cgi
-    stream_source: rtsp://192.168.2.10/user=admin_password=tlJwpbo6_channel=1_stream=0.sdp
-    name: cam_dome1_hr
 
 script:
   seq_dingdong_dome:
@@ -25,13 +23,3 @@ script:
           message: "Foto"
           data:
             file: /tmp/dome1_1.jpg
-      - service: camera.snapshot
-        data:
-          entity_id: camera.cam_dome1_hr
-          filename: '/tmp/dome1_1_hr.jpg'
-      - service: notify.pb 
-        data:
-          title: "Doorbell"
-          message: "Foto HR"
-          data:
-            file: /tmp/dome1_1_hr.jpg
