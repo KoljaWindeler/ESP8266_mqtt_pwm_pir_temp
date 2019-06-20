@@ -14,7 +14,10 @@ uptime::~uptime(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded under all circumstances
 bool uptime::parse(uint8_t* config){
-	for (uint8_t i = 0; i <= 16; i++) {
+	for (uint8_t i = 0; i <= 16+1; i++) { // the +1 is 99
+		if(i == 17){ //special treatment: 99 is uptime of device e.g. millis()
+			i = 99;
+		}
 		// output non inverted
 		//UTH5 == uptime counter, high active, pin 5
 		sprintf(m_msg_buffer, "%sP%i",get_key(), i);
@@ -44,7 +47,7 @@ bool uptime::init(){
 	sprintf(m_msg_buffer,"GPIO %i",m_pin);
 	logger.pln(m_msg_buffer);
 	m_counter.set(0); // set counter to 0
-	if(m_active_high){
+	if(m_active_high && m_pin!=99){
 		pinMode(m_pin, INPUT);
 		digitalWrite(m_pin, LOW); // no pull up
 	} else {
@@ -73,7 +76,9 @@ uint8_t uptime::count_intervall_update(){
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
 bool uptime::intervall_update(uint8_t slot){
-	if(digitalRead(m_pin) == m_active_high){ // pin is active
+	if(m_pin==99){
+		m_counter.set((millis()/1000)/60);
+	} else if(digitalRead(m_pin) == m_active_high){ // pin is active
 		m_counter.set(m_counter.get_value()+1); // update eveny minute if the pin is active
 	}
 	return false;
@@ -91,7 +96,7 @@ bool uptime::subscribe(){
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool uptime::receive(uint8_t* p_topic, uint8_t* p_payload){
 	if (!strcmp((const char *) p_topic, build_topic(MQTT_UPTIME_RESET_TOPIC,PC_TO_UNIT))) { // on / off with dimming
-		logger.println(TOPIC_MQTT, F("received uptime reeset command"),COLOR_PURPLE);
+		logger.println(TOPIC_MQTT, F("received uptime reset command"),COLOR_PURPLE);
 		m_counter.set(0); // reset
 		return true;
 	}

@@ -23,7 +23,7 @@ class uptime : public capability {
 	private:
 		bool m_active_high;
 		uint8_t m_pin;
-		mqtt_parameter_16 m_counter;
+		mqtt_parameter_32 m_counter;
 };
 
 
