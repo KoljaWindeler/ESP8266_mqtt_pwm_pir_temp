@@ -4,10 +4,10 @@
 
 #include "main.h"
 
-static constexpr char MQTT_TEMPLATE_TOPIC[]   = "topic1"
+static constexpr char MQTT_TEMPLATE_TOPIC[]   = "topic1";
 
 
-class template : public peripheral {
+class template : public capability {
 	public:
 		template();
 		~template();

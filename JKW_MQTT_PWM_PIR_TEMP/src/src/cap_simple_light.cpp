@@ -58,7 +58,7 @@ void simple_light::setColor(uint8_t r, uint8_t g, uint8_t b){
 	m_state.set(r);
 	if (r) {
 		digitalWrite(m_pin, HIGH);
-		logger.println(TOPIC_INFO_SL, F("Simple pin on"), COLOR_PURPLE);
+		logger.println(TOPIC_INFO_SL, F("Simple light on"), COLOR_PURPLE);
 	} else {
 		digitalWrite(m_pin, LOW);
 		logger.println(TOPIC_INFO_SL, F("Simple light off"), COLOR_PURPLE);
