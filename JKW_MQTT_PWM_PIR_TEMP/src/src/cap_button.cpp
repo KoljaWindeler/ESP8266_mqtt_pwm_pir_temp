@@ -68,7 +68,9 @@ bool button::init(){
 		pinMode(m_pin,INPUT); // disable pull up, shelly seams to have a super low curent driver
 	} else {
 		sprintf_P(m_msg_buffer,PSTR("push button on GPIO %i "),m_pin);
-		pinMode(m_pin,INPUT_PULLUP); // pull up to avoid interrupts without sensor
+		if(m_polarity==LOW){
+			pinMode(m_pin,INPUT_PULLUP); // pull up to avoid interrupts without sensor
+		}
 	}
 	logger.p(m_msg_buffer);
 
