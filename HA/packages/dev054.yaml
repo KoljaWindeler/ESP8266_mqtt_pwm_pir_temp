@@ -110,6 +110,8 @@ automation:
     action:
       - service: script.turn_on
         entity_id: script.seq_dingdong
+      - service: script.turn_on
+        entity_id: script.seq_dingdong_dome
 
 #------- Toggle LED -----------
   - alias: Toggle_entrance_LED_by_switch
