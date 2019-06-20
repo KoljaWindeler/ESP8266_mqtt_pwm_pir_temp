@@ -51,8 +51,10 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "rssi" (out only)
 
 ### Button
-	Configuration string: "B"
-	Purpose: publishes button push imidiatly, button can be hold which will trigger extra messages
+	Configuration string: "B", "B*", "BP*", "BN*","BS*", "BSP*", "BSN*",  with * = {0..5, 12..16}
+	Purpose: push button (B{,P,N}*) or switch (BS{,P,N}*), any change will imidiatly toggle the light
+	(as long as a light provider is configured). Publishes also imidiatly a message.
+	Push button can be hold which will trigger extra messages.
 	Sub-Topic(s): "button" / "button1s" / "button2s" / "button3s" (all out only)
 
 ### ADC
