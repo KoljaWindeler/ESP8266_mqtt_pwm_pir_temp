@@ -145,27 +145,6 @@
        message: "over temp triggered"
 # ------------------- value trigger for over temp ----------
 # ----------------------------------------------------------
-
-# ------------------- drivetime kolja new ----------------------
-  - alias: inform_tavel_kolja
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: time_pattern
-        hours: 6
-        minutes: 00
-        seconds: 00
-    condition: # make sure that BOTH sensors show off
-      - condition: numeric_state
-        entity_id: sensor.to_baker
-        above: 25
-    action:
-     service: notify.pb
-     data_template:
-       title: "Long traveltime"
-       message: "Currently {{ states.sensor.to_baker.state }} min traveltime"
-# ------------------- drivetime kolja ----------------------
-
 #-------------------- night lights -------------------------
   - alias: night_light
     initial_state: True
