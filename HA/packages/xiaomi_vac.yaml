@@ -25,8 +25,12 @@ vacuum:
     name: xiaomi_vacuum_cleaner_2
 
 input_boolean:
-  cleaning_done_today:
-    name: Cleaning done today
+  cleaning_done_today_0:
+    name: Sr Cleaning done today
+    initial: off
+    icon: mdi:check
+  cleaning_done_today_1:
+    name: Jr Cleaning done today
     initial: off
     icon: mdi:check
   autostart_cleaning:
