@@ -35,28 +35,28 @@ class xiaomi_vacWorld(hass.Hass):
 
     def cleaning(self, entity, attribute, old, new,kwargs):
         if(not(new==old)):
-            self.log("new vacuum ("+str(entity)+") status: "+new+". old was "+old+". tct: "+str(self.g_tct(self.vac.index(entity))))
+            self.log("new vacuum ("+str(entity)+") status: "+new+". old was "+old+". tct: "+str(self.g_tct(self.vacs.index(entity))))
             if(new=="cleaning"):
-                self.is_cleaning[self.vac.index(entity)] = True
-                self.cleaning_started[self.vac.index(entity)] = time.time()
-            elif(self.is_cleaning[self.vac.index(entity)]):
-                self.is_cleaning[self.vac.index(entity)] = False
-                self.tct[self.vac.index(entity)] += time.time() - self.cleaning_started[self.vac.index(entity)]
-                self.log("cleaning stopped, total time: "+str(self.g_tct(self.vac.index(entity))))
-                if(self.tct[self.vac.index(entity)] > self.mct):
-                    self.set_state("input_boolean.cleaning_done_today_"+str([self.vac.index(entity)]),state="on")
+                self.is_cleaning[self.vacs.index(entity)] = True
+                self.cleaning_started[self.vacs.index(entity)] = time.time()
+            elif(self.is_cleaning[self.vacs.index(entity)]):
+                self.is_cleaning[self.vacs.index(entity)] = False
+                self.tct[self.vacs.index(entity)] += time.time() - self.cleaning_started[self.vacs.index(entity)]
+                self.log("cleaning stopped, total time: "+str(self.g_tct(self.vacs.index(entity))))
+                if(self.tct[self.vacs.index(entity)] > self.mct):
+                    self.set_state("input_boolean.cleaning_done_today_"+str([self.vacs.index(entity)]),state="on")
                     
     def presents(self, entity, attribute, old, new,kwargs):
         if(new=="on"): #someon is approaching home
             self.log("someone is home, stop vacuuming.")
             for vac in self.vacs:
-                self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vac.index(vac))))
+                self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vacs.index(vac))))
                 self.call_service("vacuum/return_to_base", entity_id=vac)
         else:
             self.log("Home alone.")
             for vac in self.vacs:
-                self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vac.index(vac))))
-                if(self.tct[self.vac.index(entity)]>20*60):
+                self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vacs.index(vac))))
+                if(self.tct[self.vacs.index(vac)]>20*60):
                     self.log("tct >20 min cleaned already, enough for today")
                 elif(self.get_state("input_boolean.autostart_cleaning") == "on"):
                     self.log("start cleaning")
@@ -67,8 +67,8 @@ class xiaomi_vacWorld(hass.Hass):
 
     def reset(self, entity="", attribute="", old="", new="", kwargs=""):
         for vac in self.vacs:
-            self.tct[self.vac.index(vac)] = 0
-            self.set_state("input_boolean.cleaning_done_today_"+str([self.vac.index(entity)]),state="off")
+            self.tct[self.vacs.index(vac)] = 0
+            self.set_state("input_boolean.cleaning_done_today_"+str([self.vacs.index(entity)]),state="off")
 
 
 
