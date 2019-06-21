@@ -320,8 +320,9 @@ views:
           - vacuum.xiaomi_vacuum_cleaner_2
           - input_boolean.cleaning_done_today_0
           - input_boolean.cleaning_done_today_1
-          - sensor.vac_triggered
-          - automation.vac_start_cleaning_when_alone
+          - sensor.vac_triggered_0
+          - sensor.vac_triggered_1
+          - input_boolean.autostart_cleaning
         show_header_toggle: false
         title: Vacuuming
       - type: history-graph

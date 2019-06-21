@@ -10,9 +10,14 @@ homeassistant:
 sensor:
   - platform: template
     sensors:
-      vac_triggered:
-        value_template: '{{ (as_timestamp(states.input_boolean.cleaning_done_today.last_changed)) |   timestamp_custom("%A, %d %h %H:%M") }}'
-        friendly_name: "Cleaning last triggered"
+      vac_triggered_0:
+        value_template: '{{ (as_timestamp(states.input_boolean.cleaning_done_today_0.last_changed)) |   timestamp_custom("%A, %d %h %H:%M") }}'
+        friendly_name: "Cleaning last triggered 1"
+  - platform: template
+    sensors:
+      vac_triggered_1:
+        value_template: '{{ (as_timestamp(states.input_boolean.cleaning_done_today_1.last_changed)) |   timestamp_custom("%A, %d %h %H:%M") }}'
+        friendly_name: "Cleaning last triggered 2"
 
 vacuum:
   - platform: xiaomi_miio
