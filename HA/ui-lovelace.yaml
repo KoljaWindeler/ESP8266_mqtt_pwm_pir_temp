@@ -118,22 +118,14 @@ views:
 ############# cams ##########################
   - cards:
       - type: picture-entity
-        entity: camera.cam_xia1
-      - type: picture-entity
-        entity: camera.cam_xia2
+        entity: camera.cam_dome1
         camera_view: live
       - type: picture-entity
         entity: camera.cam_xia3
         camera_view: live
       - type: picture-entity
-        entity: camera.cam_xia4
-        camera_view: live
-      - type: picture-entity
         entity: camera.cam_xia5
         camera_view: live
-#      - type: picture-entity
-#        entity: camera.cam_xia52
-#        camera_view: live
       - type: horizontal-stack
         cards:
           - icon: 'mdi:arrow-left-bold'
@@ -153,8 +145,16 @@ views:
             type: entity-button
             entity: switch.camxia5_right
       - type: picture-entity
-        entity: camera.cam_dome1
+        entity: camera.cam_xia1
+      - type: picture-entity
+        entity: camera.cam_xia2
         camera_view: live
+      - type: picture-entity
+        entity: camera.cam_xia4
+        camera_view: live
+#      - type: picture-entity
+#        entity: camera.cam_xia52
+#        camera_view: live
 #      - type: picture-entity
 #        entity: camera.pi103
 #      - type: picture-entity
@@ -317,6 +317,7 @@ views:
       - type: entities
         entities:
           - vacuum.xiaomi_vacuum_cleaner
+          - vacuum.xiaomi_vacuum_cleaner_2
           - input_boolean.cleaning_done_today_0
           - input_boolean.cleaning_done_today_1
           - sensor.vac_triggered
@@ -616,6 +617,14 @@ views:
         type: 'custom:monster-card'
     icon: 'mdi:settings'
     title: All lights
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev27_uptime
+        name: Dev27uptime
+        type: sensor 
+    title: T
 #######################################
 name: My Awesome Home
 resources:
