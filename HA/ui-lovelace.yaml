@@ -317,7 +317,8 @@ views:
       - type: entities
         entities:
           - vacuum.xiaomi_vacuum_cleaner
-          - input_boolean.cleaning_done_today
+          - input_boolean.cleaning_done_today_0
+          - input_boolean.cleaning_done_today_1
           - sensor.vac_triggered
           - automation.vac_start_cleaning_when_alone
         show_header_toggle: false
