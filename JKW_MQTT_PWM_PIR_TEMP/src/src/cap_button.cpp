@@ -192,22 +192,23 @@ void button::interrupt(){
 
 	// avoid bouncing
 	if (millis() - m_timer_debounce > BUTTON_DEBOUNCE) {
-		// check time
-		m_timer_button_down = millis();
-		// make sure that the loop checks in 0.1s from now if the button is still down
-		m_timer_checked = millis() - BUTTON_CHECK_INTERVALL + BUTTON_FAST_CHECK_INTERVALL;
 		// toggle status of both lights
 		if(p_light){
 			((light*)p_light)->toggle();
 		}
-		// publish change
-		m_state.set(0);
 		// keep counting if we're fast enough
 		if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
 			m_counter++;
 		} else {
 			m_counter = 1;
 		}
+		// check time fornext push
+		m_timer_button_down = millis();
+		// publish change
+		m_state.set(0);
+		// make sure that the loop checks in 0.1s from now if the button is still down
+		m_timer_checked = millis() - BUTTON_CHECK_INTERVALL + BUTTON_FAST_CHECK_INTERVALL;
+
 		logger.print(TOPIC_BUTTON, F("push nr "));
 		Serial.println(m_counter);
 	};
