@@ -3,12 +3,13 @@
 
 
 #include "main.h"
-	#define BUTTON_INPUT_PIN       0    // D3
-	#define BUTTON_CHECK_INTERVALL 1000 // ms
-	#define BUTTON_LONG_PUSH       1000 // ms
-	#define BUTTON_TIMEOUT         1500 // max 1500ms timeout between each button press to count up (start of config)
-	#define BUTTON_DEBOUNCE        400  // ms debouncing for the botton
-	#define BUTTON_RELEASE_OFFSET  10   // internal use
+	#define BUTTON_INPUT_PIN       			0    // D3
+	#define BUTTON_CHECK_INTERVALL 			1000 // ms
+	#define BUTTON_FAST_CHECK_INTERVALL 100 // ms
+	#define BUTTON_LONG_PUSH       			1000 // ms
+	#define BUTTON_TIMEOUT         			1500 // max 1500ms timeout between each button press to count up (start of config)
+	#define BUTTON_DEBOUNCE        			400  // ms debouncing for the botton
+	#define BUTTON_RELEASE_OFFSET  			10   // internal use
 
 	#define BUTTON_MODE_PUSH_BUTTON 1
 	#define BUTTON_MODE_SWITCH 2
@@ -37,11 +38,15 @@ private:
 		mqtt_parameter_8 m_state;
 		uint8_t m_counter;
 		uint32_t m_timer_button_down;
+		uint32_t m_timer_debounce;
 		uint32_t m_timer_checked;
 		// uint8_t key[2];
 		uint8_t m_pin;
 		uint8_t m_mode_toggle_switch;
+		bool m_pullup;
 		bool m_polarity;
+		bool m_pin_active;
+		uint32_t m_interrupt_counter;
 	};
 
 

@@ -1,8 +1,9 @@
-20190619
-	-Fixed Bug in dimming module with millis overrun
+20190622
+	- Fixed Bug in dimming module with millis overrun
+	- Enhance Button class to fully support Shelly
 	- removed BSN, BSP .. only BS left
-		DATA:    [=====     ]  52.8% (used 43268 bytes from 81920 bytes)
-		PROGRAM: [========= ]  93.1% (used 404260 bytes from 434160 bytes)
+		DATA:    [=====     ]  52.8% (used 43280 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.2% (used 404424 bytes from 434160 bytes)
 20190529
 	- Added millis() uptimer as UTP99
 20181220
