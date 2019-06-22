@@ -13,11 +13,21 @@ script:
         data:
           title: "Doorbell"
           message: "Ding Dong"
+      - service: notify.pb_c # pd_c
+        data:
+          title: "Doorbell"
+          message: "Ding Dong"
       - service: camera.snapshot
         data:
           entity_id: camera.cam_dome1
           filename: '/tmp/dome1_1.jpg'
       - service: notify.pb 
+        data:
+          title: "Doorbell"
+          message: "Foto"
+          data:
+            file: /tmp/dome1_1.jpg
+      - service: notify.pb_c
         data:
           title: "Doorbell"
           message: "Foto"

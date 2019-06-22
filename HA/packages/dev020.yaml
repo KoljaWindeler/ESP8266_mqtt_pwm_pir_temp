@@ -21,12 +21,8 @@ sensor:
     fname: "20 Workshop"
 
   - platform: mqtt
-    state_topic: "dev20/r/gpio_5_hold"
+    state_topic: "dev20/r/button1s"
     name: "dev20_button_hold"
-
-  - platform: mqtt
-    state_topic: "dev20/r/gpio_5_state"
-    name: "dev20_button"
 
 # -----------------------------------------------
 

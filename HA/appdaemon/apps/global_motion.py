@@ -79,7 +79,8 @@ class GmotionWorld(hass.Hass):
 		if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
 			# 2.
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
-			if(not(vac in ["cleaning", "returning"])):
+			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
+			if(not(vac in ["cleaning", "returning"]) and not(vac in ["cleaning", "returning"])):
 				# 2.1.
 				#self.log("motion and no-one home and vacuum not cleaning")
 				if(time.time() - self.msg_ts >= self.msg_delay[self.msg_nr]):

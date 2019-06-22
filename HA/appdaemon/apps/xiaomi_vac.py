@@ -44,7 +44,7 @@ class xiaomi_vacWorld(hass.Hass):
                 self.tct[self.vacs.index(entity)] += time.time() - self.cleaning_started[self.vacs.index(entity)]
                 self.log("cleaning stopped, total time: "+str(self.g_tct(self.vacs.index(entity))))
                 if(self.tct[self.vacs.index(entity)] > self.mct):
-                    self.set_state("input_boolean.cleaning_done_today_"+str([self.vacs.index(entity)]),state="on")
+                    self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(entity)),state="on")
                     
     def presents(self, entity, attribute, old, new,kwargs):
         if(new=="on"): #someon is approaching home
@@ -68,7 +68,7 @@ class xiaomi_vacWorld(hass.Hass):
     def reset(self, entity="", attribute="", old="", new="", kwargs=""):
         for vac in self.vacs:
             self.tct[self.vacs.index(vac)] = 0
-            self.set_state("input_boolean.cleaning_done_today_"+str([self.vacs.index(entity)]),state="off")
+            self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(entity)),state="off")
 
 
 
