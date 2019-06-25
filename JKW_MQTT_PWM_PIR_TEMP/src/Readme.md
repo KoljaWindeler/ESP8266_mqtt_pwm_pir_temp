@@ -243,7 +243,7 @@ All devices will also subscribe to a set of topics:
 
 A somewhat working configuration for the SOnOff 4CH look like this:
 1) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "GIN0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,GOP12,GOP15,R"   -u asd -P asd
-	-this will result in an error: dev4/r/error -> Unsatisfied config: GIN9,GIN10 due to the fact that pis >=6 and <=11 are usually used by the flash.
-	-ignoring this will give you 4 working switches, one LED and for Relay + LED
+	- this will result in an error: dev4/r/error -> Unsatisfied config: GIN9,GIN10 due to the fact that pis >=6 and <=11 are usually used by the flash.
+	- ignoring this will give you 4 working switches, one LED and for Relay + LED
 2) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "B0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,SL12,GOP15,R"   -u asd -P asd
 	- will be a bit advance and connects the L1 Switch (Gpio0) directly as toggle to the L1 Output (GPIO12)
