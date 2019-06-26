@@ -27,7 +27,7 @@ class PiWorld(hass.Hass):
             g=0
             b=0
 
-        if(b>7):
+        if(b==8):
             m="Also der Brunnen meldet sich seit "+str(b)+" minuten nicht mehr "
             if(g>6):
                 m=m+"und die Garage ist auch schon ueber "+str(g)+" min offline, ich glaube es ist der FI raus"
