@@ -9,6 +9,7 @@ class EntranceWorld2(hass.Hass):
         self.listen_state(self.inside_on, "binary_sensor.dev10_motion", new = "on")
         self.listen_state(self.inside_off, "binary_sensor.dev54_motion_1", new = "off", duration = 120)
         self.listen_state(self.inside_on, "binary_sensor.dev54_motion_1", new = "on")
+        self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
         self.inside_off()
 
         self.run_daily(self.six, time(6, 0, 0))
@@ -39,6 +40,12 @@ class EntranceWorld2(hass.Hass):
         self.outside("Kolja home")
 
     ######################################################
+
+    def ring(self, entity, attribute, old, new,kwargs):
+        self.log("========= ring ========================")
+        self.outside_wish("on",kwargs)
+        self.run_in(self.outside_wish,10*60,w="auto") # turn off after 10 min
+
 
     def approaching(self, entity, attribute, old, new,kwargs):
         #self.log("proxy")
