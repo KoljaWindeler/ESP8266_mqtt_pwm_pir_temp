@@ -242,9 +242,22 @@ All devices will also subscribe to a set of topics:
 5) s/ota
 	- MQTT firmware update .. not stable ATM
 
-A somewhat working configuration for the SOnOff 4CH look like this:
-1) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "GIN0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,GOP12,GOP15,R"   -u asd -P asd
+# Typical configurations
+### A somewhat working configuration for the SOnOff 4CH look like this:
+	1) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "GIN0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,GOP12,GOP15,R"   -u asd -P asd
 	- this will result in an error: dev4/r/error -> Unsatisfied config: GIN9,GIN10 due to the fact that pis >=6 and <=11 are usually used by the flash.
 	- ignoring this will give you 4 working switches, one LED and for Relay + LED
-2) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "B0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,SL12,GOP15,R"   -u asd -P asd
+	2) mosquitto_pub -h x.x.x.x  -t "dev4/s/capability" -m "B0,GIN9,GIN10,GIN14,GON13,GOP4,GOP5,SL12,GOP15,R"   -u asd -P asd
 	- will be a bit advance and connects the L1 Switch (Gpio0) directly as toggle to the L1 Output (GPIO12)
+### Sonoff Basic / S20:
+	Configuration: mosquitto_pub -h x.x.x.x  -t "dev1/s/capability" -m "B,R,SL" -u asd -P asd
+	HA config would be: 
+	light:
+		- platform: mqtt
+		name: "dev1"
+		command_topic: "dev1/s/light"
+		state_topic: "dev1/r/light"
+		qos: 0
+		retain: True
+		payload_on: "ON"
+		payload_off: "OFF"
