@@ -31,6 +31,7 @@ bool simple_light::init(){
 	logger.print(TOPIC_GENERIC_INFO, F("Simple light init "), COLOR_GREEN);
 	sprintf(m_msg_buffer,"GPIO %i",m_pin);
 	logger.pln(m_msg_buffer);
+	return true;
 	//setState();
 }
 

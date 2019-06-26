@@ -12,6 +12,7 @@ uint8_t* rssi::get_key(){
 
 bool rssi::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("RSSI init"), COLOR_GREEN);
+	return true;
 }
 
 bool rssi::parse(uint8_t* config){

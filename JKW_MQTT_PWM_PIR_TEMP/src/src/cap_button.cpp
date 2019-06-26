@@ -107,6 +107,7 @@ bool button::init(){
 	}
 	// loop timer, check instantly
 	m_timer_checked=0;
+	return true;
 }
 
 

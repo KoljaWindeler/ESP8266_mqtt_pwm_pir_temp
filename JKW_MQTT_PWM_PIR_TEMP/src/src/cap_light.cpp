@@ -29,6 +29,7 @@ bool light::init(){
 	m_light_brightness.set(99,false); // init values, will be overwirtten by MQTT commands
 	m_animation_brightness.set(99,false);
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
+	return true;
 }
 
 bool light::reg_provider(capability * p, uint8_t* t){

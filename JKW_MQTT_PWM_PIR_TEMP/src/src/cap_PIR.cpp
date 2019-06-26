@@ -40,6 +40,7 @@ bool PIR::init(){
 	init_done = true;
 	sprintf(m_msg_buffer,"%s init, pin config %i",get_key(),m_pin);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
+	return true;
 }
 
 void PIR::interrupt(){

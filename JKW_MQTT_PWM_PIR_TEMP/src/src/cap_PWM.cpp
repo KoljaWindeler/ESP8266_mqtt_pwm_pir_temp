@@ -41,6 +41,7 @@ bool PWM::init(){
 	analogWriteRange(255);
 	sprintf(m_msg_buffer,"%s init, pin config %i,%i,%i,%i,%i",get_key(),m_pins[0],m_pins[1],m_pins[2],m_pins[3],m_pins[4]);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
+	return true;
 }
 
 

@@ -13,6 +13,7 @@ bool BOne::parse(uint8_t* config){
 bool BOne::init(){
 	_my92x1_b1.init(true,MY9291_DI_PIN, MY9291_DCKI_PIN,6); // true = B1
 	logger.println(TOPIC_GENERIC_INFO, F("B1 init"), COLOR_GREEN);
+	return true;
 }
 
 uint8_t* BOne::get_dep(){
