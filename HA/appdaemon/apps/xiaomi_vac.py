@@ -68,7 +68,7 @@ class xiaomi_vacWorld(hass.Hass):
     def reset(self, entity="", attribute="", old="", new="", kwargs=""):
         for vac in self.vacs:
             self.tct[self.vacs.index(vac)] = 0
-            self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(entity)),state="off")
+            self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(vac)),state="off")
 
 
 
