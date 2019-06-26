@@ -1,0 +1,18 @@
+{
+    "data": {
+        "camera.cam_dome1": {
+            "preload_stream": true
+        },
+        "camera.cam_xia1": {
+            "preload_stream": false
+        },
+        "camera.cam_xia3": {
+            "preload_stream": false
+        },
+        "camera.cam_xia4": {
+            "preload_stream": false
+        }
+    },
+    "key": "camera",
+    "version": 1
+}
