@@ -32,7 +32,6 @@ static constexpr char MQTT_RECORD_STATUS_TOPIC[]   = "record_status";
 #define SILENCE_EMA_WEIGHT 1024
 #define REC_BUFFER_SIZE 700
 #define ENVELOPE_EMA_WEIGHT 2
-#define ICACHE_RAM_ATTR     __attribute__((section(".iram.text")))
 
 #define NOT_CONNECTED 1
 #define CONNECTED 2
