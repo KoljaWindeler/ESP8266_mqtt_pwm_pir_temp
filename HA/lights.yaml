@@ -7,6 +7,7 @@
       - light.dev21
       - light.dev14
       - light.dev3
+      - light.dev5
 # --------------------------------------------------
   - platform: group
     name: "joiner_livingroom"
