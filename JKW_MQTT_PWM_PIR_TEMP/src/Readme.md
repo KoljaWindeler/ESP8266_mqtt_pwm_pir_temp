@@ -192,7 +192,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 ### Night light
 	Configuration string: "NL"
 	Purpose: Sets the mini LED on the SonOff Touch, subscribs to a global non device specific topic
-	Sub-Topic(s): "nightlight"
+	Sub-Topic(s): "night"
 
 ### Uptime
 	Configuration string: "UT"
