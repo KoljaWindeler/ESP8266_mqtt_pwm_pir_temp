@@ -103,8 +103,8 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.joiner_workshop
-                name: workshop
+                entity: light.dev5
+                name: Tisch
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -379,8 +379,8 @@ views:
     title: weather
 ############## security #########################
   - cards:
-      - type: glance
-        show_state: false
+      - type: entities
+        show_header_toggle: false
         entities:
           - input_boolean.alarm_system
           - input_boolean.presents_simulation
@@ -389,7 +389,8 @@ views:
           - device_tracker.illuminum_kolja
           - device_tracker.illuminum_caro
         title: Alarm Status
-      - type: glance
+      - type: entities
+        show_header_toggle: false
         entities:
           - binary_sensor.g_motion
           - binary_sensor.dev6_motion
@@ -400,7 +401,6 @@ views:
           - binary_sensor.dev54_motion_1
           - binary_sensor.dev54_motion_2
 #          - binary_sensor.dev22_motion
-        show_state: false
       - type: map
         entities:
           - entity: device_tracker.illuminum_kolja
@@ -419,6 +419,7 @@ views:
           - sensor.dev1_update
           - sensor.dev2_update
           - sensor.dev3_update
+          - sensor.dev5_update
           - sensor.dev6_update
           - sensor.dev7_update
           - sensor.dev8_update
@@ -451,6 +452,7 @@ views:
           - sensor.dev1_rssi
           - sensor.dev2_rssi
           - sensor.dev3_rssi
+          - sensor.dev5_rssi
           - sensor.dev6_rssi
           - sensor.dev7_rssi
           - sensor.dev8_rssi
@@ -482,6 +484,7 @@ views:
           - sensor.dev1_info
           - sensor.dev2_info
           - sensor.dev3_info
+          - sensor.dev5_info
           - sensor.dev6_info
           - sensor.dev7_info
           - sensor.dev8_info
@@ -514,6 +517,7 @@ views:
           - sensor.dev1_bssid
           - sensor.dev2_bssid
           - sensor.dev3_bssid
+          - sensor.dev5_bssid
           - sensor.dev6_bssid
           - sensor.dev7_bssid
           - sensor.dev8_bssid
@@ -546,6 +550,7 @@ views:
           - sensor.dev1_ssid
           - sensor.dev2_ssid
           - sensor.dev3_ssid
+          - sensor.dev5_ssid
           - sensor.dev6_ssid
           - sensor.dev7_ssid
           - sensor.dev8_ssid
@@ -578,6 +583,7 @@ views:
           - sensor.dev1_capability
           - sensor.dev2_capability
           - sensor.dev3_capability
+          - sensor.dev5_capability
           - sensor.dev6_capability
           - sensor.dev7_capability
           - sensor.dev8_capability
