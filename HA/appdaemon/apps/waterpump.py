@@ -16,6 +16,7 @@ class PumpWorld(hass.Hass):
 
     def start(self, entity, attribute, old, new,kwargs):
         if(self.get_state("light.dev17_autostart")!="on"):
+            self.set_state("sensor.dev30_state",state="Done")
             self.turn_off("light.dev17")
             return
 
