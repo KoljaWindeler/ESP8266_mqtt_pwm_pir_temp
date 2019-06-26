@@ -79,9 +79,9 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		"light/animation/color_wipe":  payload ON / OFF, to switch hard
 
 ### BOne
-	Configuration string: "B1"
+	Configuration string: "BONE"
 	Purpose: will consume all light commands (dimm/color) and forward it the the IC used in the Sonoff B1
-	Mentioning the config string "B1" will autoload the light class which takes care of all commands
+	Mentioning the config string "BONE" will autoload the light class which takes care of all commands
 	Sub-Topic(s): none, is sub-peripheral to light class
 
 ### Ai
@@ -131,12 +131,12 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "bridge"
 
 ### GPIO
-	Configuration string: "G[Polarity: {P/N} ][Direction: {I/O}][GPIO Pin: {0..16}]"
-	e.g. "GPI1" / "GNI3" / "GNO5"  / "GPO16"
+	Configuration string: "G[Direction: {I/O}][Polarity: {P/N} ][GPIO Pin: {0..16}]"
+	e.g. "GIP1" / "GIN3" / "GON5"  / "GOP16"
 
 	Purpose: directly set or get pin out-/input, watch out: this module can override other outputs
-	GPO4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
-	GNI3 will configure GPIO3 as LOW-active Input, thus publishing "ON" when the pin goes LOW
+	GOP4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
+	GIN3 will configure GPIO3 as LOW-active Input, thus publishing "ON" when the pin goes LOW
 	GPIO 6-11 are not available due to their connection to the flash. Usage of those will be ignored.
 
 	Sub-Topic(s) if used as INPUT:
