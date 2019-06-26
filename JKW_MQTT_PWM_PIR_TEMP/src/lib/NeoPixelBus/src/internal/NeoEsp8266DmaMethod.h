@@ -48,7 +48,9 @@ extern "C"
 #include "ets_sys.h"
 #include "user_interface.h"
 
+#if !defined(__CORE_ESP8266_VERSION_H)
     void rom_i2c_writeReg_Mask(uint32_t block, uint32_t host_id, uint32_t reg_add, uint32_t Msb, uint32_t Lsb, uint32_t indata);
+#endif
 }
 
 struct slc_queue_item
@@ -74,7 +76,7 @@ public:
 class NeoEsp8266DmaSpeed800Kbps
 {
 public:
-    const static uint32_t I2sClockDivisor = 3; 
+    const static uint32_t I2sClockDivisor = 3;
     const static uint32_t I2sBaseClockDivisor = 16;
     const static uint32_t ResetTimeUs = 50;
 };
@@ -82,7 +84,7 @@ public:
 class NeoEsp8266DmaSpeed400Kbps
 {
 public:
-    const static uint32_t I2sClockDivisor = 6; 
+    const static uint32_t I2sClockDivisor = 6;
     const static uint32_t I2sBaseClockDivisor = 16;
     const static uint32_t ResetTimeUs = 50;
 };
@@ -100,7 +102,7 @@ const uint8_t c_I2sPin = 3; // due to I2S hardware, the pin used is restricted t
 template<typename T_SPEED> class NeoEsp8266DmaMethodBase
 {
 public:
-    NeoEsp8266DmaMethodBase(uint16_t pixelCount, size_t elementSize) 
+    NeoEsp8266DmaMethodBase(uint16_t pixelCount, size_t elementSize)
     {
         uint16_t dmaPixelSize = c_dmaBytesPerPixelBytes * elementSize;
 
@@ -269,7 +271,7 @@ public:
 private:
     static NeoEsp8266DmaMethodBase* s_this; // for the ISR
 
-    size_t    _pixelsSize;    // Size of '_pixels' buffer 
+    size_t    _pixelsSize;    // Size of '_pixels' buffer
     uint8_t*  _pixels;        // Holds LED color values
 
     uint32_t _i2sBufferSize; // total size of _i2sBuffer
@@ -310,7 +312,7 @@ private:
                     slc_queue_item* finished_item = (slc_queue_item*)SLCRXEDA;
 
                     // data block has pending data waiting to send, prepare it
-                    // point last state block to top 
+                    // point last state block to top
                     (finished_item + 1)->next_link_ptr = (uint32_t)(s_this->_i2sBufDesc);
 
                     s_this->_dmaState = NeoDmaState_Sending;
@@ -367,7 +369,7 @@ private:
     }
 };
 
-template<typename T_SPEED> 
+template<typename T_SPEED>
 NeoEsp8266DmaMethodBase<T_SPEED>* NeoEsp8266DmaMethodBase<T_SPEED>::s_this;
 
 typedef NeoEsp8266DmaMethodBase<NeoEsp8266DmaSpeedWs2813> NeoEsp8266DmaWs2813Method;
