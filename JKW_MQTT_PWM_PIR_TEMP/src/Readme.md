@@ -8,7 +8,8 @@ As of now I have Sonoff Touch, Sonoff Basic, Sonoff Pow and a couple of self bui
 - Wait 90 sec
 - Connect to the AP (SSID "ESP CONFIG")
 - Open http://192.168.4.1
-- Configuration the wifi and MQTT settings, assign a unique device short name (e.g. "dev01" or even a location like "house/livingroom/tower" ... limit this to 50 chars, it will be used for all mqtt topics in the future
+- Configuration the wifi and MQTT settings, assign a unique device short name (e.g. "dev01" or even a location like "house/livingroom/tower" ... limit this to 49 chars, it will be used for all mqtt topics in the future.
+Login, password, SSID, Networkpassword are limited to 15, port to 5 and capability to 63 characters.
 - Prepare to see the "boot up" message of the device by connecting to the same MQTT broker and subscribe to e.g. "dev01/r/#" (all PC receivable topics of this device)
 - Once the device rebooted, it will connect to the configured wifi and publish its default config (e.g. Firmware version etc) which will show up on the PC
 - Configure the capabilities of the device by publishing e.g. [mosquito_pub -t "dev01/s/capabilities" -m "R,B,SL" -u MQTT_USER -p MQTT_PW] (see peripherals list below)
