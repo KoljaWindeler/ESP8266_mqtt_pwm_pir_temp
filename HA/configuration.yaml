@@ -85,7 +85,7 @@ input_boolean:
   alarm_system:
     name: "Global Alarm enabled"
     initial: on
-    icon: mdi:security-home
+    icon: mdi:security
   presents_simulation:
     name: "Presents simulation"
     initial: off
