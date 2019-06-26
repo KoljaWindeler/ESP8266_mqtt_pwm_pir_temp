@@ -22,6 +22,7 @@ class J_DS : public capability {
 	private:
 		mqtt_parameter_8 m_state;
 		OneWire* p_ds;
+		uint8_t m_pin;
 		float getDsTemp();
 };
 

@@ -11,7 +11,7 @@ uint8_t* J_DS::get_key(){
 }
 
 bool J_DS::init(){
-	p_ds = new OneWire(DS_PIN);
+	p_ds = new OneWire(m_pin);
 	logger.println(TOPIC_GENERIC_INFO, F("DS init"), COLOR_GREEN);
 	return true;
 }
@@ -55,7 +55,11 @@ bool J_DS::intervall_update(uint8_t slot){
 // }
 
 bool J_DS::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	if(cap.parse(config,get_key())){
+		m_pin = DS_PIN;
+		return true;
+	}
+	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
 // bool J_DS::publish(){

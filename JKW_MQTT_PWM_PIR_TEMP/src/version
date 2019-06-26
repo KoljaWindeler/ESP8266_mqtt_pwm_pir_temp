@@ -1,3 +1,7 @@
+20190626
+	- added random pin assignment for the DS18B20, e.g. DS4 will configure the DS on gpio4
+		DATA:    [=====     ]  52.8% (used 43280 bytes from 81920 bytes)
+		PROGRAM: [========= ]  93.2% (used 404504 bytes from 434160 bytes)
 20190622
 	- Fixed Bug in dimming module with millis overrun
 	- Enhance Button class to fully support Shelly

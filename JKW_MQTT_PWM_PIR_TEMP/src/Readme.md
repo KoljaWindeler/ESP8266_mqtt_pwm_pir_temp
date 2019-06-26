@@ -111,7 +111,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "temperature" and "humidity" (both out only)
 
 ### DS18B20
-	Configuration string: "DS"
+	Configuration string: "DS" or "DSx" with x being the GPIO the sensor is connected to. Default is GPIO13.
 	Purpose: publishs once per minute
 	Sub-Topic(s): "temperature" (out only)
 
