@@ -108,7 +108,6 @@
 	extern capability * p_button;
 	extern capability * p_neo;
 	extern capability * p_pir;
-	extern capability * p_pir2;
 	extern capability * p_pwm;
 	extern capability * p_pwm2;
 	extern capability * p_pwm3;

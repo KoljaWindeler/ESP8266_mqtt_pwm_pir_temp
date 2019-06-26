@@ -6,7 +6,6 @@ capability *p_bOne;
 capability *p_button;
 capability *p_neo;
 capability *p_pir;
-capability *p_pir2;
 capability *p_pwm;
 capability *p_pwm2;
 capability *p_pwm3;

@@ -1,9 +1,7 @@
 #include <cap_PIR.h>
 #ifdef WITH_PIR
 
-PIR::PIR(uint8_t* k,uint8_t pin){
-	m_pin = pin;
-	sprintf((char*)key,(char*)k);
+PIR::PIR(){
 	init_done = false;
 };
 
@@ -13,23 +11,25 @@ PIR::~PIR(){
 		init_done = false;
 	}
 	uint8_t buffer[15];
-	sprintf((char*)buffer,"%s deleted",get_key());
+	sprintf((char*)buffer,"PIR deleted");
 	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
 };
 
 uint8_t* PIR::get_key(){
-	return key;
+	return (uint8_t*)"PIR";
 }
 
 bool PIR::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	if(cap.parse(config,get_key())){
+		m_pin = 14;
+		return true;
+	}
+	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
 void fooPIR(){
 	if(p_pir){
 		((PIR*)p_pir)->interrupt();
-	} else if(p_pir2){
-		((PIR*)p_pir2)->interrupt();
 	}
 }
 

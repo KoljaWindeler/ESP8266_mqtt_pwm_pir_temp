@@ -121,7 +121,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only)
 
 ### PIR
-	Configuration string: "PIR / PI2" (PIR uses input-pin 14, PI2 pin 5)
+	Configuration string: "PIR" / "PIR*" with * = {0..5, 12..16}, default is 14
 	Purpose: publishes motion events instantly
 	Sub-Topic(s): "motion"
 

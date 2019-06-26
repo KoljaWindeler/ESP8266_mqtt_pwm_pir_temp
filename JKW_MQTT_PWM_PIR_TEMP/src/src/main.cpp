@@ -539,8 +539,7 @@ void loadPheripherals(uint8_t * config){
 	bake(new PWM(((uint8_t *) "PW3"), 15, 13, 12, 14, 4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
 #endif
 #ifdef WITH_PIR
-	bake(new PIR(((uint8_t *) "PIR"), 14), &p_pir, config);                 // SONOFF PIR
-	bake(new PIR(((uint8_t *) "PI2"), 5), &p_pir2, config);                 // Kolja_v2
+	bake(new PIR(), &p_pir, config);                 // Kolja_v2
 #endif
 #ifdef WITH_DHT22
 	bake(new J_DHT22(), &p_dht, config);
