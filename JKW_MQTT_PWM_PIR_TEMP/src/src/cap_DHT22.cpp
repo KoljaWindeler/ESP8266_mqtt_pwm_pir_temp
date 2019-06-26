@@ -12,7 +12,7 @@ uint8_t* J_DHT22::get_key(){
 
 bool J_DHT22::init(){
 	// dht
-	p_dht = new DHT(DHT_PIN, DHT22);        // J_DHT22
+	p_dht = new DHT(m_pin, DHT22);        // J_DHT22
 	p_dht->begin();
 	logger.println(TOPIC_GENERIC_INFO, F("DHT init"), COLOR_GREEN);
 	return true;
@@ -23,7 +23,11 @@ uint8_t J_DHT22::count_intervall_update(){
 }
 
 bool J_DHT22::parse(uint8_t* config){
-	return cap.parse(config,get_key());
+	if(cap.parse(config,get_key())){
+		m_pin = DHT_PIN;
+		return true;
+	}
+	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
 

@@ -101,17 +101,17 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): none, is sub-peripheral to light class
 
 ### Simple light / relay
-	Configuration string: "SL"
+	Configuration string: "SL" / "SL*"  with * = {0..5, 12..16}, default is 12
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 
 ### DHT22
-	Configuration string: "DHT"
+	Configuration string: "DHT" / "DHT*" with * = {0..5, 12..16}, default is GPIO2.
 	Purpose: publishs Temperature and humidity once per minute
 	Sub-Topic(s): "temperature" and "humidity" (both out only)
 
 ### DS18B20
-	Configuration string: "DS" or "DSx" with x being the GPIO the sensor is connected to. Default is GPIO13.
+	Configuration string: "DS" / "DS*" with * = {0..5, 12..16}, default is GPIO13.
 	Purpose: publishs once per minute
 	Sub-Topic(s): "temperature" (out only)
 
@@ -180,8 +180,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): Sub-Topic(s): none, consumes direct streams
 
 ### Frequency counter
-	Configuration string: "FRE"
-	Purpose: Counts pin toggles on a definable GPIO and reports them once a minute. E.g. count kw/h via LED pulse
+	Configuration string: "FRE_s_*", "FRE_h_*", "FRE_h_*" with * = {0..5, 12..16}
+	Purpose: Counts pin toggles on a definable GPIO and reports them once a minute. E.g. count kw/{s/m/h} via LED pulse
 	Sub-Topic(s): "freq"
 
 ### Husqvarna
@@ -195,8 +195,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "night"
 
 ### Uptime
-	Configuration string: "UT"
-	Purpose: Counts the time that a pin is in a defined state (e.g. counts seconds of "there is rain" from my rain sensor)
+	Configuration string: "UT[Polarity: {P/N}]*"  with * = {0..5, 12..16}
+	Purpose: Counts the time that a pin is in a defined state (P=HIGH, N=LOW) (e.g. counts seconds of "there is rain" from my rain sensor)
 	Sub-Topic(s): "uptime"
 
 

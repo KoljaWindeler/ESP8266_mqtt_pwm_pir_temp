@@ -20,7 +20,8 @@ class J_DHT22 : public capability {
 		// bool publish();
 	private:
 		DHT* p_dht;
-		// uint8_t key[4];
+		uint8_t m_pin;
+// uint8_t key[4];
 };
 
 
