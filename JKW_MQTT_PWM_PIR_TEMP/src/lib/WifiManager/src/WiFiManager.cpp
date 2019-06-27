@@ -279,7 +279,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 			if (char_buffer == 13 || char_buffer == 255) {
 				// Serial.print("#");
 				f_start = 0;
-				for (int i = 0; i <= sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 1.2.3.4.5.6.7
+				for (uint8_t i = 0; i <= sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 1.2.3.4.5.6.7
 					if (i > 0) {
 						f_start += m_mqtt_sizes[i - 1];
 					}
@@ -313,7 +313,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							Serial.print(F("==========\r\n"));
 							// write to address 0 ++
 							f_start = 0;
-							for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 1.2.3.4.5.6.7
+							for (uint8_t i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 1.2.3.4.5.6.7
 								f_start += m_mqtt_sizes[i];
 							}
 							storeMqttStruct((char *) m_mqtt, f_start);
@@ -342,7 +342,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 			} else if (char_buffer == 127) { // backspace
 				// search lowerlimit of this field
 				f_start = 0;
-				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
+				for (uint8_t i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
 					// Serial.print("+");
 					if (f_start + m_mqtt_sizes[i] > f_p) { // seach for the field that starts closes to our current pos
 						break;
@@ -359,7 +359,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 				// Serial.print("&");
 				// calc next segment
 				f_start = 0;
-				for (int i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
+				for (uint8_t i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last; i++) { // 0.1.2.3.4.5.6.7
 					// Serial.print("+");
 					f_start += m_mqtt_sizes[i];
 					if (f_p < f_start) {  // seach for the field that starts closes to our current pos
