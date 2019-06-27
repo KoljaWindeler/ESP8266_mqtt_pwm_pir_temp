@@ -127,7 +127,7 @@ bool button::loop(){
 		// if button is pushed
 		if (digitalRead(m_pin) == m_polarity){
 			// button is still pushed
-			for(int i=3;i>0;i--){
+			for(uint8_t i=3;i>0;i--){
 				// if the button is down for more then n seconds, set the state accordingly
 				if(millis()-m_timer_button_down>i*BUTTON_LONG_PUSH){
 					m_state.check_set(i); // will be send by the publish() routine

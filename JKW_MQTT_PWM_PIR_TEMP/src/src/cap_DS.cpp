@@ -93,7 +93,7 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 	p_ds->select(addr);
 	p_ds->write(0x44, 1); // start conversion, with parasite power on at the end
 
-	byte present = p_ds->reset();
+	p_ds->reset();
 	p_ds->select(addr);
 	p_ds->write(0xBE); // Read Scratchpad
 

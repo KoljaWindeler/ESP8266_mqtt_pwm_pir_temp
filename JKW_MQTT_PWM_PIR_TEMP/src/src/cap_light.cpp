@@ -55,7 +55,7 @@ bool light::reg_provider(capability * p, uint8_t* t){
 		logger.pln(F("UNKNOWN "));
 		logger.pln((char*)t);
 	}
-
+	return false;
 }
 
 void light::setState(bool state){

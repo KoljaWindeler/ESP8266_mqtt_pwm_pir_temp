@@ -369,7 +369,7 @@ void reconnect(){
 
 				// IP publishing
 				IPAddress ip = WiFi.localIP();
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3],PLAY_PORT);
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3]);
 				network.publish(build_topic("IP", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("IP", UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");

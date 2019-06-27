@@ -96,7 +96,6 @@ bool connection_relay::MeshConnect(){
 			if (strncmp(WiFi.SSID(i).c_str(), AP_SSID, strlen(AP_SSID)) == 0) {
 				// erial.println("interesting config");
 				// schema: AP_SSID-dev1-2 = AP is dev1, level = 2
-				uint8_t step = 0;
 				uint8_t this_mesh_level = 1;
 				uint8_t this_sig = wifiManager.getRSSIasQuality((int)WiFi.RSSI(i));
 
@@ -212,6 +211,7 @@ bool connection_relay::loopCheck(){
 		// send_up(msg,strlen(msg));
 	};
 #endif
+	return false;
 };
 
 // publish the routing
@@ -280,7 +280,7 @@ bool connection_relay::subscribe(char * topic, bool enqueue){
 		// erial.print("Direct subscibe: ");
 		// erial.println(topic);
 		client.subscribe(topic); // MQTT_TRACE_TOPIC topic
-		for (uint8_t i; i < 10; i++) {
+		for (uint8_t i=0; i < 10; i++) {
 			client.loop();
 		}
 		return connected();
@@ -452,9 +452,7 @@ bool connection_relay::enqueue_up(char * msg, uint16_t size){
 // send one message at the time (still fast)
 bool connection_relay::dequeue_up(){
 #ifdef WITH_MESH
-	uint32_t start;
 	uint16_t size;
-	uint8_t buf;
 
 	for (uint8_t i = 0; i < MAX_MSG_QUEUE; i++) {
 		if (outBuf[i]) {
@@ -559,7 +557,7 @@ void connection_relay::receive_loop(){
 				// fill buffer .. again dangerous ?
 				espUplink.readBytes(topic, topic_len); // topic is NOT \0 terminated in the message
 				topic[topic_len] = '\0';
-				if (espUplink.readBytes(msg, msg_len + 1) == msg_len + 1) {
+				if ((uint16_t)espUplink.readBytes(msg, msg_len + 1) == msg_len + 1) {
 					// msg[msg_len]     = '\0';
 					callback(topic, (byte *) msg, msg_len);
 					// there is one more byte in the buffer, after the msg and that is the \0 for the msg

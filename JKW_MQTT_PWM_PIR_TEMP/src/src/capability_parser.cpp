@@ -9,7 +9,6 @@ capability_parser::capability_parser(){};
 bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
 	// in: P,S,...
 	uint8_t p=0;
-	uint8_t len = 0;
 	uint8_t temp[10];
 	uint8_t* cap_start;
 	unsigned char * p_input=input;
