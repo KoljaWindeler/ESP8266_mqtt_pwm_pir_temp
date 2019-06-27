@@ -67,7 +67,7 @@ uint8_t* button::get_key(){
 	return (uint8_t*)"B";
 }
 
-void fooButton(){
+void ICACHE_RAM_ATTR fooButton(){
 	if(p_button){
 		((button*)p_button)->interrupt();
 	}

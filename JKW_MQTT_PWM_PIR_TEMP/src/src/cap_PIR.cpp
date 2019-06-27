@@ -27,7 +27,7 @@ bool PIR::parse(uint8_t* config){
 	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
-void fooPIR(){
+void ICACHE_RAM_ATTR fooPIR(){
 	if(p_pir){
 		((PIR*)p_pir)->interrupt();
 	}
