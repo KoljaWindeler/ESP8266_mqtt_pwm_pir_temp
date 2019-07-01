@@ -99,6 +99,8 @@ void logging::topic(uint8_t TOPIC){
 		p(F("[MQTT CONNECTED]    "));
 	} else if(TOPIC==TOPIC_MQTT_SUBSCIBED){
 		p(F("[MQTT subscribed]   "));
+	} else if(TOPIC==TOPIC_MQTT_UNSUBSCIBED){
+		p(F("[MQTT UNsubscribed] "));
 	} else if(TOPIC==TOPIC_MQTT_PUBLISH){
 		p(F("[MQTT publish]      "));
 	} else if(TOPIC==TOPIC_WIFI){

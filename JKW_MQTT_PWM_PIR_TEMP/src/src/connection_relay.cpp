@@ -267,6 +267,23 @@ bool connection_relay::connected(bool print){
 	return false;
 }
 
+/////
+bool connection_relay::unsubscribe(char * topic){
+	if (!connected()) {
+		return false;
+	}
+	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
+		// erial.print("Direct subscibe: ");
+		// erial.println(topic);
+		client.unsubscribe(topic); // MQTT_TRACE_TOPIC topic
+		for (uint8_t i=0; i < 10; i++) {
+			client.loop();
+		}
+		return connected();
+	}
+	return false;
+ }
+
 // replacement for the subscribe routine.
 // if direct connected simply a mqtt subscribe
 // else it will preformat the message

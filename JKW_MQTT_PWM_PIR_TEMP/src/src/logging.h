@@ -2,28 +2,29 @@
 	#define logging_h
 #include <Arduino.h>
 
-	#define TOPIC_MQTT            1
-	#define TOPIC_MQTT_PUBLISH    2
-	#define TOPIC_MQTT_SUBSCIBED  3
-	#define TOPIC_MQTT_CONNECTED  4
-	#define TOPIC_WIFI            5
-	#define TOPIC_MQTT_IN         6
-	#define TOPIC_INFO_PWM        7
-	#define TOPIC_INFO_SL         8
-	#define TOPIC_BUTTON          9
-	#define TOPIC_GENERIC_INFO    10
-	#define TOPIC_CON_REL         11
-	#define TOPIC_OTA             12
+	#define TOPIC_MQTT             1
+	#define TOPIC_MQTT_PUBLISH     2
+	#define TOPIC_MQTT_SUBSCIBED   3
+	#define TOPIC_MQTT_CONNECTED   4
+	#define TOPIC_WIFI             5
+	#define TOPIC_MQTT_IN          6
+	#define TOPIC_INFO_PWM         7
+	#define TOPIC_INFO_SL          8
+	#define TOPIC_BUTTON           9
+	#define TOPIC_GENERIC_INFO     10
+	#define TOPIC_CON_REL          11
+	#define TOPIC_OTA              12
+	#define TOPIC_MQTT_UNSUBSCIBED 13
 
-	#define COLOR_NONE            0
-	#define COLOR_RED             1
-	#define COLOR_GREEN           2
-	#define COLOR_YELLOW          3
-	#define COLOR_PURPLE          4
+	#define COLOR_NONE             0
+	#define COLOR_RED              1
+	#define COLOR_GREEN            2
+	#define COLOR_YELLOW           3
+	#define COLOR_PURPLE           4
 
-	#define LOGGING_BUFFER_SIZE   1500
-	#define EXCEPT_BUFFER_WASTING 0.03
-	#define MAX_MQTT_MSG          100
+	#define LOGGING_BUFFER_SIZE    1500
+	#define EXCEPT_BUFFER_WASTING  0.03
+	#define MAX_MQTT_MSG           100
 
 
 	class logging {

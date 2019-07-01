@@ -40,6 +40,7 @@
 	#define MQTT_OTA_WRITE              'B'
 	#define MQTT_OTA_END                'C'
 
+	#define NETWORK_SUBSCRIPTION_DELAY	2000
 
 	class blacklist_entry {
 public:
@@ -65,6 +66,7 @@ public:
 		void startAP();
 		void stopAP();
 		bool subscribe(char * topic);
+		bool unsubscribe(char * topic);
 		bool publish(char * topic, char * msg);
 		bool broadcast_publish_down(char * topic, char * mqtt_msg, uint16_t payload_size);
 		bool connected();
