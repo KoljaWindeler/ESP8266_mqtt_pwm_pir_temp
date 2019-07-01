@@ -33,6 +33,7 @@ PubSubClient client(wifiClient);
 mqtt_data mqtt;
 capability_parser cap;
 logging logger;
+uint32_t timer_connected_start;
 
 char m_topic_buffer[TOPIC_BUFFER_SIZE];
 char m_msg_buffer[MSG_BUFFER_SIZE];
