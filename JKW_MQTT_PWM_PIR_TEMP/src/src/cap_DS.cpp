@@ -1,8 +1,21 @@
 #include <cap_DS.h>
 #ifdef WITH_DS
 
-J_DS::J_DS(){};
+J_DS::J_DS(){
+	m_discovery_pub = false;
+};
+
 J_DS::~J_DS(){
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DS config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.unsubscribe(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+	}
 	logger.println(TOPIC_GENERIC_INFO, F("DS deleted"), COLOR_YELLOW);
 };
 
@@ -13,16 +26,13 @@ uint8_t* J_DS::get_key(){
 bool J_DS::init(){
 	p_ds = new OneWire(m_pin);
 	logger.println(TOPIC_GENERIC_INFO, F("DS init"), COLOR_GREEN);
+	m_discovery_pub=false;
 	return true;
 }
 
 uint8_t J_DS::count_intervall_update(){
 	return 1; // we have 1 values; temp that we want to publish per minute
 }
-
-// bool J_DS::loop(){
-// 	return false; // i did nothing
-// }
 
 bool J_DS::intervall_update(uint8_t slot){
 	// function called to publish the brightness of the led
@@ -46,13 +56,7 @@ bool J_DS::intervall_update(uint8_t slot){
 	return network.publish(build_topic(MQTT_TEMPARATURE_TOPIC,UNIT_TO_PC), m_msg_buffer);
 }
 
-// bool J_DS::subscribe(){
-// 	return true;
-// }
-//
-// bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
-// 	return false; // not for me
-// }
+
 
 bool J_DS::parse(uint8_t* config){
 	if(cap.parse(config,get_key())){
@@ -62,9 +66,64 @@ bool J_DS::parse(uint8_t* config){
 	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
-// bool J_DS::publish(){
-// 	return false;
-// }
+bool J_DS::subscribe(){
+	char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
+	sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
+	network.subscribe(t);
+	logger.println(TOPIC_MQTT_SUBSCIBED, t, COLOR_GREEN);
+	delete[] t;
+	m_discovery_pub = false;
+	return true;
+}
+
+bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
+	if(!m_discovery_pub){
+		char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
+		if(!strcmp((const char *)p_topic,t)){
+			logger.println(TOPIC_GENERIC_INFO, F("DS discovery topic found"), COLOR_YELLOW);
+			char* m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
+			if(!strcmp((const char *)p_payload,m)){
+				logger.println(TOPIC_GENERIC_INFO, F("DS discovery match"), COLOR_GREEN);
+				m_discovery_pub = true;
+			} else {
+				m_discovery_pub = false;
+				logger.println(TOPIC_GENERIC_INFO, F("DS discovery mismatch"), COLOR_YELLOW);
+				//logger.p((char*)p_payload);
+				//logger.p(" vs ");
+				//logger.pln(m);
+			}
+			delete[] m;
+			return true;
+		}
+		delete[] t;
+		return false; // not for me
+	}
+	return false; // not for me
+}
+
+bool J_DS::publish(){
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_UNSUBSCIBED, t, COLOR_GREEN);
+			network.unsubscribe(t);
+			char* m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("DS discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			return true;
+		}
+	}
+	return false;
+}
 
 
 float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
