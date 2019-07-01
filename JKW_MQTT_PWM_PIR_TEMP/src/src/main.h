@@ -96,6 +96,7 @@
 	#define UNIT_TO_PC 'r'
 	#define PC_TO_UNIT 's'
 
+	extern uint32_t timer_connected_start;
 	extern WiFiClient wifiClient;
 	extern WiFiManager wifiManager;
 	extern PubSubClient client;

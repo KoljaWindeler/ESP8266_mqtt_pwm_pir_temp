@@ -4,7 +4,6 @@ uint8_t periodic_slot = 0;
 uint32_t updateFastValuesTimer = 0;
 uint32_t updateSlowValuesTimer = 0;
 uint32_t timer_republish_avoid = 0;
-uint32_t timer_connected_start = 0;
 uint32_t timer_connected_stop  = 0;
 uint32_t timer_last_publish    = 0;
 uint32_t m_animation_dimm_time = 0;
@@ -58,9 +57,16 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	logger.topic(TOPIC_MQTT_IN);
 
 	if (p_length < MSG_BUFFER_SIZE - 10) { // limit
-		sprintf(m_msg_buffer, "'%s' --> '%s'\r\n", p_topic, p_payload);
-		logger.p(m_msg_buffer);
+		sprintf(m_msg_buffer, "'%s' --> '%s'", p_topic, p_payload);
+	} else {
+		sprintf(m_msg_buffer, "'%s' --> ", p_topic);
+		memcpy(m_msg_buffer+strlen(p_topic)+7, p_payload, MSG_BUFFER_SIZE-strlen(p_topic)-8);
+		m_msg_buffer[MSG_BUFFER_SIZE-4]='.';
+		m_msg_buffer[MSG_BUFFER_SIZE-3]='.';
+		m_msg_buffer[MSG_BUFFER_SIZE-2]='.';
+		m_msg_buffer[MSG_BUFFER_SIZE-1]=0x00;
 	}
+	logger.pln(m_msg_buffer);
 	// Serial.printf("%s --> %s\r\n", p_topic, p_payload);
 	logger.remColor(COLOR_PURPLE);
 
@@ -701,6 +707,8 @@ void setup(){
 	logger.pln(m_msg_buffer);
 	logger.pln(F("=== End of Setup ==="));
 	logger.pln(F(" "));
+
+	timer_connected_start = 0;
 } // setup
 
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
@@ -710,12 +718,13 @@ void setup(){
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 bool uninterrupted;
 void loop(){
+	// handle network .. like parse and react on incoming data
+	network.receive_loop();
+
 	if (!network.connected()) {
 		reconnect();
 		// reconnect will NEVER leave with not connected network, it will actaully loop until a connection is established
 	}
-	// handle network .. like parse and react on incoming data
-	network.receive_loop();
 
 
 	// // dimming end ////
