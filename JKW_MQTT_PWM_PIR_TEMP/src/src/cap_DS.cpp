@@ -66,40 +66,7 @@ bool J_DS::parse(uint8_t* config){
 	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
-bool J_DS::subscribe(){
-	char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
-	sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
-	network.subscribe(t);
-	logger.println(TOPIC_MQTT_SUBSCIBED, t, COLOR_GREEN);
-	delete[] t;
-	m_discovery_pub = false;
-	return true;
-}
-
 bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
-	if(!m_discovery_pub){
-		char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
-		sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
-		if(!strcmp((const char *)p_topic,t)){
-			logger.println(TOPIC_GENERIC_INFO, F("DS discovery topic found"), COLOR_YELLOW);
-			char* m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
-			if(!strcmp((const char *)p_payload,m)){
-				logger.println(TOPIC_GENERIC_INFO, F("DS discovery match"), COLOR_GREEN);
-				m_discovery_pub = true;
-			} else {
-				m_discovery_pub = false;
-				logger.println(TOPIC_GENERIC_INFO, F("DS discovery mismatch"), COLOR_YELLOW);
-				//logger.p((char*)p_payload);
-				//logger.p(" vs ");
-				//logger.pln(m);
-			}
-			delete[] m;
-			return true;
-		}
-		delete[] t;
-		return false; // not for me
-	}
 	return false; // not for me
 }
 
@@ -108,8 +75,6 @@ bool J_DS::publish(){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
 			sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_UNSUBSCIBED, t, COLOR_GREEN);
-			network.unsubscribe(t);
 			char* m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("DS discovery"), COLOR_GREEN);
