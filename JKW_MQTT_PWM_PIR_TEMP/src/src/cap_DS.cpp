@@ -6,16 +6,17 @@ J_DS::J_DS(){
 };
 
 J_DS::~J_DS(){
+#ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
 		char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
 		sprintf(t, MQTT_DISCOVERY_DS_TOPIC, mqtt.dev_short);
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DS config "), COLOR_YELLOW);
 		logger.pln(t);
-		network.unsubscribe(t);
 		network.publish(t,(char*)"");
 		m_discovery_pub = false;
 		delete[] t;
 	}
+#endif
 	logger.println(TOPIC_GENERIC_INFO, F("DS deleted"), COLOR_YELLOW);
 };
 
@@ -71,6 +72,7 @@ bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
 }
 
 bool J_DS::publish(){
+#ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			char* t = new char[strlen(MQTT_DISCOVERY_DS_TOPIC)+strlen(mqtt.dev_short)];
@@ -87,6 +89,7 @@ bool J_DS::publish(){
 			return true;
 		}
 	}
+#endif
 	return false;
 }
 

@@ -4,6 +4,10 @@
 #include "main.h"
 static constexpr char MQTT_MOTION_TOPIC[]        = "motion";      // publish
 
+#ifdef WITH_DISCOVERY
+static constexpr char MQTT_DISCOVERY_M_TOPIC[]      = "homeassistant/binary_sensor/%s_motion/config";
+static constexpr char MQTT_DISCOVERY_M_MSG[]      = "{\"name\":\"%s_motion\", \"stat_t\": \"%s/r/motion\"}";
+#endif
 
 class PIR : public capability {
 	public:
@@ -23,6 +27,7 @@ class PIR : public capability {
 		uint8_t key[4];
 		uint8_t m_pin;
 		bool init_done;
+		bool m_discovery_pub;
 };
 
 

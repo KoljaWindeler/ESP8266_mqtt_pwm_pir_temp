@@ -14,6 +14,10 @@
 	#define BUTTON_MODE_PUSH_BUTTON 1
 	#define BUTTON_MODE_SWITCH 2
 
+	#ifdef WITH_DISCOVERY
+	static constexpr char MQTT_DISCOVERY_B_TOPIC[]      = "homeassistant/binary_sensor/%s_button/config";
+	static constexpr char MQTT_DISCOVERY_B_MSG[]      = "{\"name\":\"%s_button\", \"stat_t\": \"%s/r/button\"}";
+	#endif
 
 	static constexpr char MQTT_BUTTON_TOPIC_0S[] = "button";   // publish
 	static constexpr char MQTT_BUTTON_TOPIC_1S[] = "button1s"; // publish
@@ -47,6 +51,7 @@ private:
 		bool m_polarity;
 		bool m_pin_active;
 		uint32_t m_interrupt_counter;
+		bool m_discovery_pub;
 	};
 
 

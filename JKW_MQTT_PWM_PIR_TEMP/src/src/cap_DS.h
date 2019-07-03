@@ -5,8 +5,11 @@
 #include <OneWire.h>
 #include <Wire.h>
 #define DS_PIN           13 // D7
+
+#ifdef WITH_DISCOVERY
 static constexpr char MQTT_DISCOVERY_DS_TOPIC[]      = "homeassistant/sensor/%s_temperature_DS/config";
 static constexpr char MQTT_DISCOVERY_DS_MSG[]      = "{\"name\":\"%s_temperature\", \"stat_t\": \"%s/r/temperature\"}";
+#endif
 
 class J_DS : public capability {
 	public:
@@ -17,7 +20,7 @@ class J_DS : public capability {
 		uint8_t* get_key();
 		uint8_t count_intervall_update();
 		bool intervall_update(uint8_t slot);
-		bool subscribe();
+		//bool subscribe();
 		// bool loop();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		bool publish();

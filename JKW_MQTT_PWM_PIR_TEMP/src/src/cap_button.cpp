@@ -12,10 +12,22 @@ button::button(){
 	m_timer_debounce=0;
 	m_counter=0;
 	m_pin_active = false;
+	m_discovery_pub = false;
 };
 
 button::~button(){
 	detachInterrupt(digitalPinToInterrupt(m_pin));
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = new char[strlen(MQTT_DISCOVERY_B_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_B_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+	}
+#endif
 	logger.println(TOPIC_GENERIC_INFO, F("Button deleted"), COLOR_YELLOW);
 };
 
@@ -181,6 +193,26 @@ bool button::publish(){
 		}
 		return ret;
 	}
+
+#ifdef WITH_DISCOVERY
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			char* t = new char[strlen(MQTT_DISCOVERY_B_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_B_TOPIC, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_B_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_B_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("B discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			return true;
+		}
+	}
+#endif
+
 	return false;
 }
 

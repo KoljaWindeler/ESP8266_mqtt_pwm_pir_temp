@@ -1,7 +1,23 @@
 #include <cap_simple_light.h>
 #ifdef WITH_SL
-simple_light::simple_light(){};
+
+simple_light::simple_light(){
+	m_discovery_pub = false;
+};
+
 simple_light::~simple_light(){
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = new char[strlen(MQTT_DISCOVERY_SL_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_SL_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing SL config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.unsubscribe(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+	}
+#endif
 	logger.println(TOPIC_GENERIC_INFO, F("Simple light deleted"), COLOR_YELLOW);
 };
 
@@ -52,7 +68,27 @@ bool simple_light::init(){
 // }
 //
 //
-// bool simple_light::publish(){	return false;}
+bool simple_light::publish(){
+#ifdef WITH_DISCOVERY
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			char* t = new char[strlen(MQTT_DISCOVERY_SL_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_SL_TOPIC, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_SL_MSG)+3*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_SL_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("SL discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			return true;
+		}
+	}
+#endif
+	return false;
+}
 
 // function called to adapt the state of the led
 void simple_light::setColor(uint8_t r, uint8_t g, uint8_t b){
