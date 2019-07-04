@@ -68,20 +68,6 @@ sensor:
 # -----------------------------------------------
 
 automation:
-  - alias: pump_auto_on
-    initial_state: True
-    hide_entity: False
-    trigger:
-      - platform: mqtt
-        topic: irrigation
-        payload: 'on'
-      - platform: time
-        at: '7:00:00'
-    action:
-      - service: script.turn_on
-        entity_id: script.seq_irrigation
-
-
   - alias: pump_off
     initial_state: True
     hide_entity: False
@@ -93,13 +79,6 @@ automation:
       - service: light.turn_off
         entity_id: light.dev17
 
-# -----------------------------------------------
-
-script:
-  seq_irrigation:
-    sequence:
-      - service: input_boolean.turn_on
-        entity_id: input_boolean.irrigation
 
 # -----------------------------------------------
 
