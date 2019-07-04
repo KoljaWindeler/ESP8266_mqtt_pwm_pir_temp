@@ -17,6 +17,8 @@
 	#ifdef WITH_DISCOVERY
 	static constexpr char MQTT_DISCOVERY_B_TOPIC[]      = "homeassistant/binary_sensor/%s_button/config";
 	static constexpr char MQTT_DISCOVERY_B_MSG[]      = "{\"name\":\"%s_button\", \"stat_t\": \"%s/r/button\"}";
+	static constexpr char MQTT_DISCOVERY_B1S_TOPIC[]      = "homeassistant/binary_sensor/%s_button_1s/config";
+	static constexpr char MQTT_DISCOVERY_B1S_MSG[]      = "{\"name\":\"%s_button_1s\", \"stat_t\": \"%s/r/button1s\"}";
 	#endif
 
 	static constexpr char MQTT_BUTTON_TOPIC_0S[] = "button";   // publish
