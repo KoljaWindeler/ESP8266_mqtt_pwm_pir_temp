@@ -1,11 +1,12 @@
 DEV1  - Kugel im wohnzimmer, temperature, simple light
 DEV2  - wohnzimmer licht am eingang vom flur
 DEV3  - touch küche
-DEV4  - oben caro, temperature, PIR, simple light
-DEV6 - temp / pir keller
-DEV7 - dinng room tower, temperature, simple light
-DEV8 - Garage, PIR + ds18b20
-DEV9 - gaderoben schrank
+DEV4  - CH4 unused as of now
+DEV5  - Shelly Kuechentisch
+DEV6  - temp / pir keller
+DEV7  - dinng room tower, temperature, simple light
+DEV8  - Garage, PIR + ds18b20
+DEV9  - gaderoben schrank
 DEV11 - living room tower, temperature, simple light
 DEV12 - b1 light bulb, flur unten
 DEV13 - leakage controller
@@ -30,6 +31,8 @@ DEV55 - Ikea LED lampinions carlo
 DEV56 - Ikea LED lampinions caro
 DEV57 - Ikea LED lampinions flur
 
+
+#DEV4  - oben caro, temperature, PIR, simple light
 DEV59 - S26_2 unused
 DEV60 - S26_3 unused
 DEV58 - touch bedroom

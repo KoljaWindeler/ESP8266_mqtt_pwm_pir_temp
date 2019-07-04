@@ -108,8 +108,8 @@ automation:
         entity_id: binary_sensor.dev54_button
         to: 'on'
     action:
-      - service: script.turn_on
-        entity_id: script.seq_dingdong
+#      - service: script.turn_on
+#        entity_id: script.seq_dingdong
       - service: script.turn_on
         entity_id: script.seq_dingdong_dome
 

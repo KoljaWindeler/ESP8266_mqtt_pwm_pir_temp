@@ -93,7 +93,9 @@ input_boolean:
 
 mqtt:
  broker: 127.0.0.1
- port: 1883
+ port: 1883 
+ discovery: true
+ discovery_prefix: homeassistant
  username: !secret mq_user
  password: !secret mq_pass
 

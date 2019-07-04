@@ -22,6 +22,9 @@ homeassistant:
   customize:
     light.dev55:
       friendly_name: "Lampinions carlo"
+    sensor.dev55_temperature:
+      friendly_name: "Carlo"
+      icon: "mdi:thermometer"
 
 # -----------------------------------------------
 
@@ -29,6 +32,11 @@ sensor:
   - platform: mqtt_jkw
     name: "dev55"
     fname: "55 Lampinions carlo"
+
+  - platform: mqtt
+    state_topic: "dev55/r/temperature"
+    name: "dev55_temperature"
+    unit_of_measurement: "ºC"
 
 # -----------------------------------------------
 

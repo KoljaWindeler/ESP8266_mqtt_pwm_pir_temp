@@ -1,0 +1,20 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+
+homeassistant:
+  customize:
+    light.dev99:
+      friendly_name: "99 testing"
+    binary_sensor.dev99_motion:
+      friendly_name: "99 testing motion"
+      device_class: motion
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev99"
+    fname: "99 testing"
+

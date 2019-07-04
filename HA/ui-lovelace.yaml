@@ -146,9 +146,9 @@ views:
             entity: switch.camxia5_right
       - type: picture-entity
         entity: camera.cam_xia1
-      - type: picture-entity
-        entity: camera.cam_xia2
-        camera_view: live
+#      - type: picture-entity
+#        entity: camera.cam_xia2
+#        camera_view: live
       - type: picture-entity
         entity: camera.cam_xia4
         camera_view: live
@@ -356,6 +356,32 @@ views:
   - cards:
       - type: weather-forecast
         entity: weather.dark_sky
+      - type: vertical-stack
+        cards:
+         - type: horizontal-stack
+           cards:
+            - detail: 2
+              graph: line
+              entity: sensor.dev1_temperature
+              name: Livingroom
+              type: sensor 
+            - detail: 2
+              graph: line
+              entity: sensor.dev6_temperature
+              name: Cellar
+              type: sensor 
+         - type: horizontal-stack
+           cards:
+            - detail: 2
+              graph: line
+              entity: sensor.dev32_temperature
+              name: Bedroom
+              type: sensor 
+            - detail: 2
+              graph: line
+              entity: sensor.dev55_temperature
+              name: Carlo
+              type: sensor 
       - type: picture-entity
         entity: camera.cam_weather2
         name: NDS
@@ -364,17 +390,6 @@ views:
         entity: camera.cam_weather1
         name: BRD
         camera_view: live
-      - type: history-graph
-        entities:
-          - sensor.dev11_temperature
-          - sensor.dev7_temperature
-          - sensor.dev32_temperature
-          - sensor.dev1_temperature
-          - sensor.dev16_temperature
-          - sensor.dev6_temperature
-          - sensor.dev2_temperature
-#          - sensor.dev10_temperature
-          - sensor.dev9_temperature
     icon: 'mdi:weather-partlycloudy'
     title: weather
 ############## security #########################
