@@ -1,3 +1,12 @@
+2010704
+	- added discovery feature for multiple capabilities
+		PIR, Button, GPIO (basic), DS18B20, ADC, SL
+		DATA:    [=====     ]  50.6% (used 41416 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.2% (used 413724 bytes from 958448 bytes)
+2010627
+	- updated esp8266-arduino core to version 2.2.2.
+		DATA:    [=====     ]  49.7% (used 40712 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.6% (used 418212 bytes from 958448 bytes)
 20190626
 	- added random pin assignment for the DS18B20, e.g. DS4 will configure the DS on gpio4
 	- added random pin assignment for the DHT, e.g. DHT4 will configure the DHT on gpio4

@@ -17,7 +17,7 @@ J_GPIO::~J_GPIO(){
 			delete m_dimmer[i];
 			m_dimmer[i] = NULL;
 		}
-		
+
 #ifdef WITH_DISCOVERY
 		if(m_discovery_pub[i] & (timer_connected_start>0)){
 			if (m_pin_out[i]) {
@@ -40,8 +40,8 @@ J_GPIO::~J_GPIO(){
 			}
 		}
 #endif
-		
-	};	
+
+	};
 	logger.println(TOPIC_GENERIC_INFO, F("J_GPIO deleted"), COLOR_YELLOW);
 };
 
@@ -431,10 +431,10 @@ bool J_GPIO::publish(){
 				return ret; // one at the time
 			}
 		}
-	
+
 #ifdef WITH_DISCOVERY
 		if(!m_discovery_pub[i]){
-			if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY+300*i){
+			if(millis()-timer_connected_start>(uint32_t)(NETWORK_SUBSCRIPTION_DELAY+300*i)){
 				if (m_pin_out[i]) {
 					char* t = new char[strlen(MQTT_DISCOVERY_GPO_TOPIC)+strlen(mqtt.dev_short)];
 					sprintf(t, MQTT_DISCOVERY_GPO_TOPIC, mqtt.dev_short,i);
