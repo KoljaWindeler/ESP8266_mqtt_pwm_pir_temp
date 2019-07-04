@@ -22,7 +22,7 @@ class ADC : public capability
 		//bool loop();
 		//bool subscribe();
 		//bool receive(uint8_t* p_topic, uint8_t* p_payload);
-		//bool publish();
+		bool publish();
 		uint8_t* get_key();
 	private:
 		mqtt_parameter_8 m_state;
