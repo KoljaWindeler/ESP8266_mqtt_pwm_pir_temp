@@ -21,11 +21,19 @@ button::~button(){
 	if(m_discovery_pub & (timer_connected_start>0)){
 		char* t = new char[strlen(MQTT_DISCOVERY_B_TOPIC)+strlen(mqtt.dev_short)];
 		sprintf(t, MQTT_DISCOVERY_B_TOPIC, mqtt.dev_short);
-		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B config "), COLOR_YELLOW);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B config"), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
-		m_discovery_pub = false;
 		delete[] t;
+		
+		char* t1s = new char[strlen(MQTT_DISCOVERY_B1S_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t1s, MQTT_DISCOVERY_B1S_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B1S config"), COLOR_YELLOW);
+		logger.pln(t1s);
+		network.publish(t1s,(char*)"");
+		delete[] t1s;
+		
+		m_discovery_pub = false;
 	}
 #endif
 	logger.println(TOPIC_GENERIC_INFO, F("Button deleted"), COLOR_YELLOW);
@@ -208,6 +216,18 @@ bool button::publish(){
 			m_discovery_pub = network.publish(t,m);
 			delete[] m;
 			delete[] t;
+			
+			char* t1s = new char[strlen(MQTT_DISCOVERY_B1S_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t1s, MQTT_DISCOVERY_B1S_TOPIC, mqtt.dev_short);
+			char* m1s = new char[strlen(MQTT_DISCOVERY_B1S_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m1s, MQTT_DISCOVERY_B1S_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("B1S discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = m_discovery_pub && network.publish(t1s,m1s);
+			delete[] m1s;
+			delete[] t1s;
 			return true;
 		}
 	}
