@@ -1,15 +1,18 @@
-### ball living room
-# SL, DS18B20
 # -----------------------------------------------
-
 
 homeassistant:
   customize:
     light.dev99:
       friendly_name: "99 testing"
+      retain: True
     binary_sensor.dev99_motion:
       friendly_name: "99 testing motion"
       device_class: motion
+    sensor.dev99_temperature:
+      friendly_name: "99 testing temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -18,3 +21,4 @@ sensor:
     name: "dev99"
     fname: "99 testing"
 
+# -----------------------------------------------
