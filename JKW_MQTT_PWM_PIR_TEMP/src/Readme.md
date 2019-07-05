@@ -50,6 +50,7 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "R"
 	Purpose: publishs WiFi strength once per minute
 	Sub-Topic(s): "rssi" (out only)
+	This peripheral does not support discovery but is included in the custom component.
 
 ### Button
 	Configuration string: "B", "B*", "BP*", "BN*","BS*"  with * = {0..5, 12..16}
@@ -57,11 +58,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	(as long as a light provider is configured). Publishes also imidiatly a message.
 	Push button can be hold which will trigger extra messages.
 	Sub-Topic(s): "button" / "button1s" / "button2s" / "button3s" (all out only)
+	This peripheral has basic discovery support. The button and button1s will show up as e.g. binary_sensor.dev123_button.
 
 ### ADC
 	Configuration string: "ADC"
 	Purpose: publish raw ADC value once per minute
 	Sub-Topic(s): "adc" (out only)
+	This peripheral has discovery support, it will show up as e.g. sensor.dev123_adc.
 
 ### Light
 	Configuration string: none
@@ -78,58 +81,69 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		"light/animation/rainbow":  payload ON / OFF, to switch hard
 		"light/animation/simple_rainbow":  payload ON / OFF, to switch hard
 		"light/animation/color_wipe":  payload ON / OFF, to switch hard
+	This peripheral has no own discovery support, however some light provider do.
 
 ### BOne
 	Configuration string: "BONE"
 	Purpose: will consume all light commands (dimm/color) and forward it the the IC used in the Sonoff B1
 	Mentioning the config string "BONE" will autoload the light class which takes care of all commands
 	Sub-Topic(s): none, is sub-peripheral to light class
+	This peripheral has no discovery support as of now.
 
 ### Ai
 	Configuration string: "AI"
 	Purpose: will consume all light commands (dimm/color) and forward it the the IC used in the Thinker AI
 	Mentioning the config string "AI" will autoload the light class which takes care of all commands
 	Sub-Topic(s): none, is sub-peripheral to light class
+	This peripheral has no discovery support as of now.
 
 ### PWM
 	Configuration string: "PWM / PW2 / PW3" (Pin 4/5/16,0,0    4/4/4,0,0      15,13,12,14,4)
 	Purpose: will consume all light commands (dimm/color) and forward it to the selected outputs (R,G,B,W,WW)
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
+	This peripheral has no discovery support as of now.
 
 ### Neopixel
 	Configuration string: "NEO"
 	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
 	Sub-Topic(s): none, is sub-peripheral to light class
+	This peripheral has no discovery support as of now.
 
 ### Simple light / relay
 	Configuration string: "SL" / "SL*"  with * = {0..5, 12..16}, default is 12
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
+	This peripheral has discovery support and will show up as e.g. light.dev99.
 
 ### DHT22
 	Configuration string: "DHT" / "DHT*" with * = {0..5, 12..16}, default is GPIO2.
 	Purpose: publishs Temperature and humidity once per minute
 	Sub-Topic(s): "temperature" and "humidity" (both out only)
+	This peripheral has no discovery support as of now.
 
 ### DS18B20
 	Configuration string: "DS" / "DS*" with * = {0..5, 12..16}, default is GPIO13.
 	Purpose: publishs once per minute
 	Sub-Topic(s): "temperature" (out only)
+	This peripheral has discovery support and will show up as e.g. sensor.dev99_temperature
 
 ### HLW8012
 	Configuration string: "HLW"
 	Purpose: this chip is used in the Sonoff POW, it publishes Voltage, current and Power once per minute
 	Sub-Topic(s): "current" (out only) "/s/voltage" (out only) "/s/power" (out only)
+	This peripheral has no discovery support as of now.
 
 ### PIR
 	Configuration string: "PIR" / "PIR*" with * = {0..5, 12..16}, default is 14
 	Purpose: publishes motion events instantly
 	Sub-Topic(s): "motion"
+	This peripheral has discovery support and will show up as e.g. binary_sensor.dev34_motino
 
 ### RF bridge
 	Configuration string: "RFB"
 	Purpose: forwards 433Mhz packages
 	Sub-Topic(s): "bridge"
+	This peripheral has no discovery support as of now.
 
 ### GPIO
 	Configuration string: "G[Direction: {I/O}][Polarity: {P/N} ][GPIO Pin: {0..16}]"
@@ -174,31 +188,38 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		    payload_off: "OFF"
 		    optimistic: false
 		    brightness_scale: 99
+		    
+	This peripheral has basic discovery support, Outputs will show up as e.g. switch.dev34_gpio_4 and inputs as binary_sensor.dev34_gpio_3
 
 ### Audio
 	Configuration string: "AUD"
 	Purpose: will provide a server (port 5522) that consumes special audio streams (send by a Raspberry). Output is the RX pin.
 	Sub-Topic(s): Sub-Topic(s): none, consumes direct streams
+	This peripheral has no discovery support as of now.
 
 ### Frequency counter
 	Configuration string: "FRE_s_*", "FRE_h_*", "FRE_h_*" with * = {0..5, 12..16}
 	Purpose: Counts pin toggles on a definable GPIO and reports them once a minute. E.g. count kw/{s/m/h} via LED pulse
 	Sub-Topic(s): "freq"
+	This peripheral has no discovery support as of now.
 
 ### Husqvarna
 	Configuration string: "HUS"
 	Purpose: Can controll a husqvarna automover via soft serial. This is untested.
 	Sub-Topic(s): "husqvarna_mode_[...]"
+	This peripheral has no discovery support as of now.
 
 ### Night light
 	Configuration string: "NL"
 	Purpose: Sets the mini LED on the SonOff Touch, subscribs to a global non device specific topic
 	Sub-Topic(s): "night"
+	This peripheral has no discovery support as of now.
 
 ### Uptime
 	Configuration string: "UT[Polarity: {P/N}]*"  with * = {0..5, 12..16}
 	Purpose: Counts the time that a pin is in a defined state (P=HIGH, N=LOW) (e.g. counts seconds of "there is rain" from my rain sensor)
 	Sub-Topic(s): "uptime"
+	This peripheral has no discovery support as of now.
 
 
 ### WiFi Configuration Access Point
@@ -216,6 +237,28 @@ connected to the MQTT will increase the time before the configuration AP will be
 The client will try 1 second longer to reconnect per 20 sec of previous connection time. The maximum time is limited to 20 minutes.
 
 The MESH mode will kick in after 80% of the waittime hast passed.
+
+# Home Assistant custom component
+Basically all devices will publish some extra information (see below). I've created a custom_componet to shorten the configuration 
+files. Once this component is loaded it will add the following extra sensors:
+	
+	1) Wifi Signal streangth [%], called e.g. sensor.dev34_rssi = 34%
+	2) Wifi Base MAC, called e.g. sensor.dev34_bssid = "ab:cd:ef:gh:ij:kl" 
+		this is useful if you have multiple accesspoints with the same SSID
+	3) Wifi Base SSID, called e.g. sensor.dev34_ssid = "Fritzbox asdf"
+	4) Firmware Version and Info, called e.g. sensor.dev34_ssid = "20190705" or "lost connection" if the 
+		device got disconnected
+	5) Capability list, called e.g. sensor.dev34_capability = "B,SL,R" reflecting the configured peripherals
+	6) Last Update, called e.g. sensor.dev34_update = "0" this will show the time (in minutes) of the last response
+		very handy to check that the device is up and well. Can be used e.g. for automated error messages
+	
+
+This component is located in this repository under HA/custom_components/mqtt_jkw and need to be copied into <HomeAssistantDirectory>/custom_components/. Once this is done your config file shall look like this
+	
+	sensor:
+  	  - platform: mqtt_jkw
+  	    name: "dev3"
+  	    fname: "03 Kitchen Touch"
 
 # Tricks
 All devices will publish a set of information on connect (helps to check if the device connected):
