@@ -1,3 +1,7 @@
+2010706
+	- change button1s payload and added buttonrelease status
+		DATA:    [=====     ]  50.6% (used 41436 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.2% (used 413800 bytes from 958448 bytes)
 2010704
 	- added discovery feature for multiple capabilities
 		PIR, Button, GPIO (basic), DS18B20, ADC, SL

@@ -81,7 +81,7 @@ void light::setState(bool state){
 }
 
 void light::setColor(uint8_t r, uint8_t g, uint8_t b){
-	uint32_t c=(uint32_t)r<<8+(uint32_t)g<<4+b;
+	uint32_t c=((uint32_t)r<<8)+((uint32_t)g<<4)+b;
 	if(m_state.get_value()){
 		m_light_color.set(c);
 		m_light_current.r = r;
@@ -322,7 +322,7 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 			if(!strncmp_P((const char*) p_payload, STATE_ONFOR, 5)){
 				m_onfor_offtime = millis() + 1000 * atoi((const char*) (p_payload+5));
 				logger.print(TOPIC_GENERIC_INFO, F("Auto off in "),COLOR_PURPLE);
-				sprintf(m_msg_buffer,"%i sec",(m_onfor_offtime-millis())/1000+1);
+				sprintf(m_msg_buffer,"%lu sec",(m_onfor_offtime-millis())/1000+1);
 				logger.pln(m_msg_buffer);
 			}
 		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {

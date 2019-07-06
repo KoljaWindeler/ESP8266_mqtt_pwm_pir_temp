@@ -25,14 +25,14 @@ button::~button(){
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
-		
+
 		char* t1s = new char[strlen(MQTT_DISCOVERY_B1S_TOPIC)+strlen(mqtt.dev_short)];
 		sprintf(t1s, MQTT_DISCOVERY_B1S_TOPIC, mqtt.dev_short);
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B1S config"), COLOR_YELLOW);
 		logger.pln(t1s);
 		network.publish(t1s,(char*)"");
 		delete[] t1s;
-		
+
 		m_discovery_pub = false;
 	}
 #endif
@@ -164,10 +164,8 @@ bool button::loop(){
 		else if(m_pin_active){
 			m_pin_active = false; // button released
 			// RELEASE push - button after holding for n*BUTTON_LONG_PUSH (1000ms), SWITCH never gets here
-			if(millis() - m_timer_button_down > 3*BUTTON_LONG_PUSH) {
-				// set the state to BUTTON_RELEASE_OFFSET (10) + N, where N = how many sec we've hold down the key
-				m_state.set( BUTTON_RELEASE_OFFSET + (millis() - m_timer_button_down) / BUTTON_LONG_PUSH );
-			}
+			// set the state to BUTTON_RELEASE_OFFSET (10) + N, where N = how many sec we've hold down the key
+			m_state.set( BUTTON_RELEASE_OFFSET + (millis() - m_timer_button_down) / BUTTON_LONG_PUSH );
 		}
 	}
 	return false; // i did nothing that should be none interrupted
@@ -179,22 +177,33 @@ bool button::publish(){
 		boolean ret = false;
 		if(m_state.get_value()==0){ // right after push
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_0S);
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), (char*)STATE_ON);
 		} else if(m_state.get_value()==1){ // after 1 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 1s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_1S);
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), (char*)STATE_ON);
 		} else if(m_state.get_value()==2){ // after 2 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 2s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_2S);
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), (char*)STATE_ON);
 		} else if(m_state.get_value()==3){ // after 3 sec
 			logger.println(TOPIC_MQTT_PUBLISH, F("button push 3s"), COLOR_GREEN);
-			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)MQTT_BUTTON_TOPIC_3S);
-		}
-		else if(m_state.get_value() > BUTTON_RELEASE_OFFSET){ // release after > 1 sec (m_state == 10 + sec hold)
+			ret = network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)STATE_ON);
+		} else {
+			//released
 			sprintf(m_msg_buffer, "%i", m_state.get_value()-BUTTON_RELEASE_OFFSET);
 			logger.print(TOPIC_MQTT_PUBLISH, F("button release after "), COLOR_GREEN);
 			logger.pln(m_msg_buffer);
 			ret = network.publish(build_topic(MQTT_BUTTON_RELEASE_TOPIC,UNIT_TO_PC), m_msg_buffer);
+			for(int8_t i=min(m_state.get_value()-BUTTON_RELEASE_OFFSET,3);i>=0;i--){
+				if(i==3){
+					ret &= network.publish(build_topic(MQTT_BUTTON_TOPIC_3S,UNIT_TO_PC), (char*)STATE_OFF);
+				} else if(i==2){
+					ret &= network.publish(build_topic(MQTT_BUTTON_TOPIC_2S,UNIT_TO_PC), (char*)STATE_OFF);
+				} else if(i==1){
+					ret &= network.publish(build_topic(MQTT_BUTTON_TOPIC_1S,UNIT_TO_PC), (char*)STATE_OFF);
+				} else {
+					ret &= network.publish(build_topic(MQTT_BUTTON_TOPIC_0S,UNIT_TO_PC), (char*)STATE_OFF);
+				}
+			}
 		}
 		if (ret) {
 			m_state.outdated(false);
@@ -216,7 +225,7 @@ bool button::publish(){
 			m_discovery_pub = network.publish(t,m);
 			delete[] m;
 			delete[] t;
-			
+
 			char* t1s = new char[strlen(MQTT_DISCOVERY_B1S_TOPIC)+strlen(mqtt.dev_short)];
 			sprintf(t1s, MQTT_DISCOVERY_B1S_TOPIC, mqtt.dev_short);
 			char* m1s = new char[strlen(MQTT_DISCOVERY_B1S_MSG)+2*strlen(mqtt.dev_short)];
