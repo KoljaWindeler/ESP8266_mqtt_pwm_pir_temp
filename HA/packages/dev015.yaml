@@ -31,6 +31,10 @@ sensor:
   - platform: mqtt_jkw
     name: "dev15"
     fname: "15 Worldmap"
+  - platform: mqtt
+    state_topic: "dev15/r/uptime"
+    name: "dev15_uptime"
+    unit_of_measurement: "min"
 
 # -----------------------------------------------
 

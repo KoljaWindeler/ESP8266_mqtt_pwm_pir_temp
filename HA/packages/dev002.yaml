@@ -1,27 +1,22 @@
-### kitchen hood
-# SL, Ds18b20
-# -----------------------------------------------
-light:
-  - platform: mqtt ### 
-    name: "dev2"
-    state_topic: "dev2/r/light"
-    command_topic: "dev2/s/light"
-    qos: 0
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev2:
       friendly_name: "Donald"
-      icon: "mdi:lamp"
+      retain: True
+    binary_sensor.dev2_button:
+      friendly_name: "02 Donald button"
+    binary_sensor.dev2_button1s:
+      friendly_name: "02 Donald button1s"
+    binary_sensor.dev2_motion:
+      friendly_name: "02 Donald motion"
+      device_class: motion
     sensor.dev2_temperature:
-      friendly_name: "Donald"
+      friendly_name: "02 Donald temperature"
+      unit_of_measurement: "ºC"
       icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -30,11 +25,4 @@ sensor:
     name: "dev2"
     fname: "02 Donald"
 
-  - platform: mqtt
-    state_topic: "dev2/r/temperature"
-    name: "dev2_temperature"
-    unit_of_measurement: "ºC"
-
 # -----------------------------------------------
-
-

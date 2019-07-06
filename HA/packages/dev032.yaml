@@ -1,43 +1,28 @@
-
-### touch bedroom
-# SL
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ### 
-    name: "dev32"
-    state_topic: "dev32/r/light"
-    command_topic: "dev32/s/light"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
+homeassistant:
+  customize:
+    light.dev32:
+      friendly_name: "32 Bedroom Kolja"
+      retain: True
+    binary_sensor.dev32_button:
+      friendly_name: "32 Bedroom Kolja button"
+    binary_sensor.dev32_button1s:
+      friendly_name: "32 Bedroom Kolja button1s"
+    binary_sensor.dev32_motion:
+      friendly_name: "32 Bedroom Kolja motion"
+      device_class: motion
+    sensor.dev32_temperature:
+      friendly_name: "32 Bedroom Kolja temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev32"
-    fname: "32 Bedroom kolja"
-
-  - platform: mqtt
-    state_topic: "dev32/r/temperature"
-    name: "dev32_temperature"
-    unit_of_measurement: "ºC"
-
-  - platform: mqtt
-    state_topic: "dev32/r/button1s"
-    name: "dev32_button1s"
-
-# -----------------------------------------------
-
-homeassistant:
-  customize:
-    light.dev32:
-      friendly_name: "Bed Kolja"
-      icon: "mdi:lamp"
-    sensor.dev32_temperature:
-      friendly_name: "Bedroom"
-      icon: "mdi:thermometer"
+    fname: "32 Bedroom Kolja"
 
 # -----------------------------------------------

@@ -1,24 +1,22 @@
-### ball living room
-# SL
-# -----------------------------------------------
-
-light:
-  - platform: mqtt ### bed room touch switch
-    name: "dev3"
-    state_topic: "dev3/r/light"
-    command_topic: "dev3/s/light"
-    qos: 0
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev3:
-      friendly_name: "03 Kitchen Touch"
+      friendly_name: "Kitchen Touch"
+      retain: True
+    binary_sensor.dev3_button:
+      friendly_name: "Kitchen Touch button"
+    binary_sensor.dev3_button3s:
+      friendly_name: "Kitchen Touch button3s"
+    binary_sensor.dev3_motion:
+      friendly_name: "Kitchen Touch motion"
+      device_class: motion
+    sensor.dev3_temperature:
+      friendly_name: "Kitchen Touch temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -28,5 +26,3 @@ sensor:
     fname: "03 Kitchen Touch"
 
 # -----------------------------------------------
-
-

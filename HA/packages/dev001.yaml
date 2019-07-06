@@ -1,28 +1,22 @@
-### ball living room
-# SL, DS18B20
-# -----------------------------------------------
-
-light:
-  - platform: mqtt 
-    name: "dev1"
-    command_topic: "dev1/s/light"
-    state_topic: "dev1/r/light"
-    qos: 0
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev1:
       friendly_name: "Ball"
-    sensor.dev1_temperature:
-      friendly_name: "Livingroom Ball"
-      icon: "mdi:thermometer"
+      retain: True
+    binary_sensor.dev1_button:
+      friendly_name: "Ball button"
+    binary_sensor.dev1_button1s:
+      friendly_name: "Ball button1s"
     binary_sensor.dev1_motion:
-      friendly_name: "Ball"
+      friendly_name: "Ball motion"
+      device_class: motion
+    sensor.dev1_temperature:
+      friendly_name: "Ball temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -31,17 +25,4 @@ sensor:
     name: "dev1"
     fname: "01 Ball"
 
-  - platform: mqtt
-    state_topic: "dev1/r/temperature"
-    name: "dev1_temperature"
-    unit_of_measurement: "ºC"
-
 # -----------------------------------------------
-
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev1/r/motion"
-    name: "dev1_motion"
-    device_class: motion
-
-

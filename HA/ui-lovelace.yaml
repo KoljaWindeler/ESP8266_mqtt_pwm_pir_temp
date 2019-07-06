@@ -646,6 +646,14 @@ views:
         entity: sensor.dev27_uptime
         name: Dev27uptime
         type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev15_uptime
+        name: Dev15uptime
+        type: sensor 
+      - type: picture-entity
+        entity: camera.cam_dome2
+        camera_view: live
     title: T
 #######################################
 name: My Awesome Home
