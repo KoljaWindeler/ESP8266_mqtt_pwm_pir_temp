@@ -34,10 +34,10 @@ class SprinklerWorld(hass.Hass):
         self.listen_state(self.start,"input_boolean.irrigation", new = "on")
         self.listen_state(self.start_o,"input_boolean.irrigation_override", new = "on")
         self.turn_off("light.dev17")
-        self.run_daily(self.start, datetime.time(7, 0, 0))
+        self.run_daily(self.start_o, datetime.time(7, 0, 0))
 
 
-    def start_o(self, entity, attribute, old, new,kwargs):
+    def start_o(self, entity="", attribute="", old="", new="",kwargs=""):
         # set on, if we have been started by irrigation
         self.turn_on("input_boolean.irrigation")
 

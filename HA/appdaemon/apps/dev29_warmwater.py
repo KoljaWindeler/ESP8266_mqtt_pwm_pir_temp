@@ -19,9 +19,9 @@ class warm_waterWorld(hass.Hass):
 
     def trigger(self, entity):
         self.log("Toggeling Flow state for 10 sec")
-        self.turn_on("light.dev29")
+        self.turn_on("switch.dev29")
         time.sleep(10)
-        self.turn_off("light.dev29")
+        self.turn_off("switch.dev29")
         self.log("all done")
 
     def fuse(self, entity="", attribute="", old="", new="", kwargs=""):

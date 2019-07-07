@@ -12,9 +12,8 @@ class workshopWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Workshop Service")
-        self.set_state("sensor.dev20_button_hold",state="0")
         self.listen_state(self.group_toggle,"light.dev20")
-        self.listen_state(self.main_toggle,"sensor.dev20_button_hold")
+        self.listen_state(self.main_toggle,"binary_sensor.dev20_button1s", new="on")
 
     def group_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle group lights")
@@ -30,5 +29,4 @@ class workshopWorld(hass.Hass):
 
     def main_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle main lights")
-        self.set_state("sensor.dev20_button_hold",state="0")
         self.toggle("light.dev20") # bench only

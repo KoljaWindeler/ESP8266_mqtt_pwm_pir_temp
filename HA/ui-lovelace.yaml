@@ -451,6 +451,7 @@ views:
           - sensor.dev21_update
 #          - sensor.dev22_update
           - sensor.dev23_update
+          - sensor.dev24_update
           - sensor.dev27_update
           - sensor.dev29_update
           - sensor.dev30_update
@@ -458,7 +459,7 @@ views:
           - sensor.dev32_update
           - sensor.dev54_update
           - sensor.dev55_update
-          - sensor.dev56_update
+#          - sensor.dev56_update
           - sensor.dev57_update
       - type: entities
         title: Rssi
@@ -484,6 +485,7 @@ views:
           - sensor.dev21_rssi
 #          - sensor.dev22_rssi
           - sensor.dev23_rssi
+          - sensor.dev24_rssi
           - sensor.dev27_rssi
           - sensor.dev29_rssi
           - sensor.dev30_rssi
@@ -491,7 +493,7 @@ views:
           - sensor.dev32_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
-          - sensor.dev56_rssi
+#          - sensor.dev56_rssi
           - sensor.dev57_rssi
       - type: entities
         show_header_toggle: false
@@ -516,6 +518,7 @@ views:
           - sensor.dev21_info
 #          - sensor.dev22_info
           - sensor.dev23_info
+          - sensor.dev24_info
           - sensor.dev27_info
           - sensor.dev29_info
           - sensor.dev30_info
@@ -523,7 +526,7 @@ views:
           - sensor.dev32_info
           - sensor.dev54_info
           - sensor.dev55_info
-          - sensor.dev56_info
+#          - sensor.dev56_info
           - sensor.dev57_info
         title: Info
       - type: entities
@@ -549,6 +552,7 @@ views:
           - sensor.dev21_bssid
 #          - sensor.dev22_bssid
           - sensor.dev23_bssid
+          - sensor.dev24_bssid
           - sensor.dev27_bssid
           - sensor.dev29_bssid
           - sensor.dev30_bssid
@@ -556,7 +560,7 @@ views:
           - sensor.dev32_bssid
           - sensor.dev54_bssid
           - sensor.dev55_bssid
-          - sensor.dev56_bssid
+#          - sensor.dev56_bssid
           - sensor.dev57_bssid
         title: Bssid
       - type: entities
@@ -582,6 +586,7 @@ views:
           - sensor.dev21_ssid
 #          - sensor.dev22_ssid
           - sensor.dev23_ssid
+          - sensor.dev24_ssid
           - sensor.dev27_ssid
           - sensor.dev29_ssid
           - sensor.dev30_ssid
@@ -589,7 +594,7 @@ views:
           - sensor.dev32_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
-          - sensor.dev56_ssid
+#          - sensor.dev56_ssid
           - sensor.dev57_ssid
         title: SSID
       - type: entities
@@ -615,6 +620,7 @@ views:
           - sensor.dev21_capability
 #          - sensor.dev22_capability
           - sensor.dev23_capability
+          - sensor.dev24_capability
           - sensor.dev27_capability
           - sensor.dev29_capability
           - sensor.dev30_capability
@@ -622,7 +628,7 @@ views:
           - sensor.dev32_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
-          - sensor.dev56_capability
+#          - sensor.dev56_capability
           - sensor.dev57_capability
         title: Capability
     icon: 'mdi:signal-variant'
@@ -651,9 +657,11 @@ views:
         entity: sensor.dev15_uptime
         name: Dev15uptime
         type: sensor 
-      - type: picture-entity
-        entity: camera.cam_dome2
-        camera_view: live
+      - detail: 2
+        graph: line
+        entity: sensor.dev13_adc
+        name: dev13 ADC
+        type: sensor 
     title: T
 #######################################
 name: My Awesome Home

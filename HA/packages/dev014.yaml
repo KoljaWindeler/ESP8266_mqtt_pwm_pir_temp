@@ -1,40 +1,28 @@
-### ball living room
-# SL, DS18B20
-# -----------------------------------------------
-
-light:
-  - platform: mqtt ### kitchen drawer
-    name: "dev14"
-    state_topic: "dev14/r/light"
-    command_topic: "dev14/s/light"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev14:
       friendly_name: "Fridge"
+      retain: True
+    binary_sensor.dev14_button:
+      friendly_name: "Fridge button"
+    binary_sensor.dev14_button14s:
+      friendly_name: "Fridge button1s"
     binary_sensor.dev14_motion:
-      friendly_name: "14 Fridge"
+      friendly_name: "Fridge motion"
+      device_class: motion
+    sensor.dev14_temperature:
+      friendly_name: "Fridge temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev14"
-    fname: "14 Kitchen Fridge"
+    fname: "14 Fridge"
 
 # -----------------------------------------------
-
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev14/r/motion"
-    name: "dev14_motion"
-    device_class: motion
-
-# -----------------------------------------------
-

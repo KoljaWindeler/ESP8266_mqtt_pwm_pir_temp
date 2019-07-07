@@ -1,23 +1,22 @@
-### ball living room
-# SL, DS18B20
-# -----------------------------------------------
-
-light:
-  - platform: mqtt ### slamper Kitchen
-    name: "dev21"
-    state_topic: "dev21/r/light"
-    command_topic: "dev21/s/light"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev21:
-      friendly_name: "21 SL Kitchen"
+      friendly_name: "SL Kitchen"
+      retain: True
+    binary_sensor.dev21_button:
+      friendly_name: "SL Kitchen button"
+    binary_sensor.dev21_button21s:
+      friendly_name: "SL Kitchen button1s"
+    binary_sensor.dev21_motion:
+      friendly_name: "SL Kitchen motion"
+      device_class: motion
+    sensor.dev21_temperature:
+      friendly_name: "SL Kitchen temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -27,4 +26,3 @@ sensor:
     fname: "21 SL Kitchen"
 
 # -----------------------------------------------
-

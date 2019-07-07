@@ -1,46 +1,28 @@
-### ball living room
-# SL, DS18B20
-# -----------------------------------------------
-
-light:
-  - platform: mqtt ### 
-    name: "dev29"
-    state_topic: "dev29/r/gpio_4_state"
-    command_topic: "dev29/s/gpio_4_state"
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
-    sensor.dev29_temperature:
-      friendly_name: "29 Warm water"
-      icon: "mdi:thermometer"
     light.dev29:
-      friendly_name: "Warm Water Pump"
-      icon: mdi:google-circles-extended
+      friendly_name: "Warm Water"
+      retain: True
+    binary_sensor.dev29_button:
+      friendly_name: "Warm Water button"
+    binary_sensor.dev29_button29s:
+      friendly_name: "Warm Water button1s"
+    binary_sensor.dev29_motion:
+      friendly_name: "Warm Water motion"
+      device_class: motion
+    sensor.dev29_temperature:
+      friendly_name: "Warm Water temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev29"
-    fname: "029 Warm water"
-
-  - platform: mqtt
-    state_topic: "dev29/r/temperature"
-    name: "dev29_temperature"
-    device_class: "temperature"
-    unit_of_measurement: "ºC"
-# -----------------------------------------------
-
-# binary_sensor:
-#  - platform: mqtt
-#    state_topic: "dev28/r/motion"
-#    name: "dev28_motion"
-#    device_class: motion
+    fname: "029 Warm Water"
 
 # -----------------------------------------------
-
