@@ -4,7 +4,6 @@ homeassistant:
   customize:
     light.dev99:
       friendly_name: "Ball"
-      retain: True
     binary_sensor.dev99_button:
       friendly_name: "Ball button"
     binary_sensor.dev99_button99s:

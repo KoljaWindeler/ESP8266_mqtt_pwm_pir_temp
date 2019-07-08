@@ -1,0 +1,40 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+light:
+  - platform: mqtt ### weihnachtskette
+    name: "dev96"
+    state_topic: "dev96/r/gpio_4_state"
+    command_topic: "dev96/s/gpio_4_state"
+    retain: True
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev96:
+      friendly_name: "x-mas"
+    binary_sensor.dev96_motion:
+      friendly_name: "x-mas"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev96"
+    fname: "96 x-mas tree"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev96/r/gpio_5_state"
+    name: "dev96_motion"
+    device_class: motion
+
+# -----------------------------------------------
+

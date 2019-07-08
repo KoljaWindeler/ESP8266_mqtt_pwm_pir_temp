@@ -1,43 +1,46 @@
-DEV1  - Kugel im wohnzimmer, temperature, simple light
-DEV2  - wohnzimmer licht am eingang vom flur
-DEV3  - touch küche
+DEV1  -T- Kugel im wohnzimmer, temperature, simple light
+DEV2  -T- wohnzimmer licht am eingang vom flur
+DEV3  -T- touch küche
 DEV4  - CH4 unused as of now
-DEV5  - Shelly Kuechentisch
-DEV6  - temp / pir keller
-DEV7  - dinng room tower, temperature, simple light
-DEV8  - Garage, PIR + ds18b20
-DEV9  - gaderoben schrank
-DEV11 - living room tower, temperature, simple light
-DEV12 - b1 light bulb, flur unten
-DEV13 - leakage controller
-DEV14 - kitchen fridge, PIR, simple light
-DEV15 - World map, PIR dimmer
-DEV16 - power meter
-DEV17 - steckdosending pumpe
-DEV18 - love of pi
-DEV19 - workshop LED
-DEV20 - shelly workshop
-DEV21 - slampher in küche
-DEV22 - Xmas lichterkette, ehemals 57
-DEV23 - SonOff Touch Bedroom
-DEV24 - SonOff Touch carlo
-DEV27 - B1 Flur oben
-DEV29 - Warm Water trigger
-DEV30 - valve ctrl 
-DEV31 - SL bed light caro
-DEV32 - SL bed light kolja
-DEV54 - ULTRA ENTRANCE
-DEV55 - Ikea LED lampinions carlo
+DEV5  -T- Shelly Kuechentisch
+DEV6  -T- temp / pir keller
+DEV7  -T- dinng room tower, temperature, simple light
+DEV8  -O- Garage, PIR + ds18b20
+DEV11 -T- living room tower, temperature, simple light
+DEV12 -O- b1 light bulb, flur unten
+DEV13 -T- leakage controller
+DEV14 -T- kitchen fridge, PIR, simple light
+DEV15 -T- World map, PIR dimmer
+DEV17 -O- steckdosending pumpe
+DEV18 -T- love of pi
+DEV19 -T- workshop LED
+DEV20 -T- shelly workshop
+DEV21 -T- slampher in küche
+DEV23 -O- SonOff Touch Bedroom
+DEV24 -O- SonOff Touch carlo
+DEV27 -O- B1 Flur oben
+DEV29 -T- Warm Water trigger
+DEV30 -O- valve ctrl 
+DEV31 -T- SL bed light caro
+DEV32 -T- SL bed light kolja
+DEV54 -O- ULTRA ENTRANCE
+DEV55 -T- Ikea LED lampinions carlo
+DEV57 -T- Ikea LED lampinions flur
+
+
+
+
+
 DEV56 - Ikea LED lampinions caro
-DEV57 - Ikea LED lampinions flur
-
-
+DEV22 - Xmas lichterkette, ehemals 57
+DEV16 - power meter
 #DEV4  - oben caro, temperature, PIR, simple light
 DEV59 - S26_2 unused
 DEV60 - S26_3 unused
 DEV58 - touch bedroom
 DEV5  - outdoor 1, simple light, slampher
 DEV8 - PIR carlo
+DEV9  - gaderoben schrank
 DEV9  - staubsauger im shop
 DEV10 - unten eingangs support, PIR, temperature, simple light
 DEV16 - switch for dev20 both bedroom
@@ -48,3 +51,4 @@ DEV25 - SonOff Touch unused
 DEV26 - POW
 //DEV42 - tiny PCB 3 pwm dimmer, PIR, unused
 DEV77 - carlo flower1
+

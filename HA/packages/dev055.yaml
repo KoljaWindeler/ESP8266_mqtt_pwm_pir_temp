@@ -2,22 +2,6 @@
 # SL, DS18B20
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ###  lampinions flur oben
-    name: "dev55"
-    state_topic: "dev55/r/light"
-    command_topic: "dev55/s/light/dimm"
-    brightness_state_topic: 'dev55/r/light/brightness'
-    brightness_command_topic: 'dev55/s/light/brightness'
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
-# -----------------------------------------------
-
 homeassistant:
   customize:
     light.dev55:

@@ -7,8 +7,8 @@ homeassistant:
       retain: True
     binary_sensor.dev3_button:
       friendly_name: "Kitchen Touch button"
-    binary_sensor.dev3_button3s:
-      friendly_name: "Kitchen Touch button3s"
+    binary_sensor.dev3_button1s:
+      friendly_name: "Kitchen Touch button1s"
     binary_sensor.dev3_motion:
       friendly_name: "Kitchen Touch motion"
       device_class: motion

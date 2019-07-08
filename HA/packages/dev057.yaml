@@ -1,21 +1,5 @@
-### ball living room
+### Floor up living room
 # SL, DS18B20
-# -----------------------------------------------
-
-light:
-  - platform: mqtt ###  lampinions flur oben
-    name: "dev57"
-    state_topic: "dev57/r/light"
-    command_topic: "dev57/s/light/dimm"
-    brightness_state_topic: 'dev57/r/light/brightness'
-    brightness_command_topic: 'dev57/s/light/brightness'
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
 # -----------------------------------------------
 
 homeassistant:
@@ -23,7 +7,19 @@ homeassistant:
     light.dev57:
       friendly_name: "Lampinions oben"
     binary_sensor.dev57_motion:
+      device_class: motion
       friendly_name: "57 Floor upstairs"
+    binary_sensor.dev57_button:
+      friendly_name: "Floor up button"
+    binary_sensor.dev57_button57s:
+      friendly_name: "Floor up button1s"
+    sensor.dev57_temperature:
+      friendly_name: "Floor up temperature"
+      unit_of_measurement: "ºC"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
+    sensor.dev57_adc:
+      friendly_name: "Floor up"
 
 # -----------------------------------------------
 
@@ -39,4 +35,6 @@ binary_sensor:
     state_topic: "dev57/r/gpio_13_state"
     name: "dev57_motion"
     device_class: motion
+
+# -----------------------------------------------
 

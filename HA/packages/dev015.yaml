@@ -2,22 +2,6 @@
 # SL, DS18B20
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ### dimmer treppe
-    name: "dev15"
-    state_topic: "dev15/r/light"
-    command_topic: "dev15/s/light/dimm"
-    brightness_state_topic: 'dev15/r/light/brightness'
-    brightness_command_topic: 'dev15/s/light/brightness'
-    qos: 0
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
-# -----------------------------------------------
-
 homeassistant:
   customize:
     light.dev15:
