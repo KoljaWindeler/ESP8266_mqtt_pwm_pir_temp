@@ -7,7 +7,7 @@ homeassistant:
       retain: True
     binary_sensor.dev29_button:
       friendly_name: "Warm Water button"
-    binary_sensor.dev29_button29s:
+    binary_sensor.dev29_button1s:
       friendly_name: "Warm Water button1s"
     binary_sensor.dev29_motion:
       friendly_name: "Warm Water motion"
