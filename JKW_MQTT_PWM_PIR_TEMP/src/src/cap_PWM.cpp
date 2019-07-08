@@ -8,12 +8,25 @@ PWM::PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint
 	m_pins[3] = pin3;
 	m_pins[4] = pin4;
 	sprintf((char*)key,(char*)k);
+	m_discovery_pub = false;
 };
 
 PWM::~PWM(){
 	uint8_t buffer[15];
 	sprintf((char*)buffer,"%s deleted",get_key());
 	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
+	
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = new char[strlen(MQTT_DISCOVERY_PWM_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_PWM_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing PWM config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+	}
+#endif
 };
 
 uint8_t* PWM::get_key(){
@@ -74,6 +87,24 @@ void PWM::setState(uint8_t value){
 
 bool PWM::publish(){
 	// function called to publish the state of the PWM (on/off)
+#ifdef WITH_DISCOVERY
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			char* t = new char[strlen(MQTT_DISCOVERY_PWM_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_PWM_TOPIC, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_PWM_MSG)+5*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_PWM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("PWM discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			return true;
+		}
+	}
+#endif
 	return false;
 }
 
