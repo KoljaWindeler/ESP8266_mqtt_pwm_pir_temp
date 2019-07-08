@@ -16,6 +16,12 @@
 	static constexpr char MQTT_LIGHT_ANIMATION_SIMPLE_RAINBOW_TOPIC[] = "light/animation/simple_rainbow"; // get command here ON / OFF
 	static constexpr char MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC[]     = "light/animation/color_wipe";     // get command here ON / OFF
 
+
+#ifdef WITH_DISCOVERY
+	static constexpr char MQTT_DISCOVERY_DIMM_TOPIC[]      = "homeassistant/light/%s/config";
+	static constexpr char MQTT_DISCOVERY_DIMM_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\"}";
+#endif
+
 	#define T_SL                     1
 	#define T_PWM                    2
 	#define T_NEO                    3
