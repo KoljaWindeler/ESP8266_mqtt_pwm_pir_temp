@@ -7,7 +7,7 @@ homeassistant:
       retain: True
     binary_sensor.dev20_button:
       friendly_name: "Workshop button"
-    binary_sensor.dev20_button20s:
+    binary_sensor.dev20_button1s:
       friendly_name: "Workshop button1s"
     binary_sensor.dev20_motion:
       friendly_name: "Workshop motion"
