@@ -22,9 +22,19 @@ homeassistant:
   customize:
     light.dev55:
       friendly_name: "Lampinions carlo"
+      retain: True
+    binary_sensor.dev55_button:
+      friendly_name: "Lampinions carlo button"
+    binary_sensor.dev55_button1s:
+      friendly_name: "Lampinions carlo button1s"
+    binary_sensor.dev55_motion:
+      friendly_name: "carlo motion"
+      device_class: motion
     sensor.dev55_temperature:
       friendly_name: "Carlo"
+      unit_of_measurement: "ºC"
       icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 
@@ -33,16 +43,4 @@ sensor:
     name: "dev55"
     fname: "55 Lampinions carlo"
 
-  - platform: mqtt
-    state_topic: "dev55/r/temperature"
-    name: "dev55_temperature"
-    unit_of_measurement: "ºC"
-
-# -----------------------------------------------
-
-binary_sensor:
-  - platform: mqtt
-    state_topic: "dev55/r/gpio_13_state"
-    name: "dev55_motion"
-    device_class: motion
 
