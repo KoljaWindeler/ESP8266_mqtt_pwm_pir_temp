@@ -3,6 +3,11 @@
 
 #include "main.h"
 
+#ifdef WITH_DISCOVERY
+static constexpr char MQTT_DISCOVERY_PWM_TOPIC[]      = "homeassistant/light/%s/config";
+static constexpr char MQTT_DISCOVERY_PWM_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\"}";
+#endif
+
 class PWM : public capability {
 	public:
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2);
@@ -33,6 +38,7 @@ class PWM : public capability {
 		uint8_t dep[4];
 		led m_light_current;
 		uint8_t m_pins[4];
+		bool m_discovery_pub;
 	};
 
 
