@@ -2,59 +2,24 @@
 # SL
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ### steckdosen dings Water pumpe
-    name: "dev17"
-    state_topic: "dev17/r/light"
-    command_topic: "dev17/s/light"
-    qos: 0
-    retain: True
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
-  - platform: mqtt ### steckdosen dings Water pumpe
-    name: "dev17_30"
-    state_topic: "dev17/r/light"
-    command_topic: "dev17/s/light"
-    qos: 0
-    retain: True
-    payload_on: "ONFOR1800"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
-  - platform: mqtt ### steckdosen dings Water pumpe
-    name: "dev17_45"
-    state_topic: "dev17/r/light"
-    command_topic: "dev17/s/light"
-    qos: 0
-    retain: True
-    payload_on: "ONFOR2700"
-    payload_off: "OFF"
-    optimistic: false
-    brightness_scale: 99
-
+switch:
   - platform: mqtt ### autostart fakesensor
-    name: "dev17_autostart"
+    name: "dev17_gpio_12_autostart"
     command_topic: "dev17/s/light_autostart"
     qos: 0
     retain: True
     payload_on: "ON"
     payload_off: "OFF"
 
-
-
 # -----------------------------------------------
 
 homeassistant:
   customize:
-    light.dev17:
+    switch.dev17_gpio_12:
       friendly_name: "Water pump"
       icon: mdi:water-pump
 
-    light.dev17_autostart:
+    switch.dev17_gpio_12_autostart:
       friendly_name: "Water Auto"
       icon: mdi:water-pump
 
@@ -77,7 +42,7 @@ automation:
         payload: 'off'
     action:
       - service: light.turn_off
-        entity_id: light.dev17
+        entity_id: switch.dev17_gpio_12
 
 
 # -----------------------------------------------

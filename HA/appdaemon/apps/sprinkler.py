@@ -24,7 +24,7 @@ class SprinklerWorld(hass.Hass):
         return r
 
     def check_stop(self):
-        if(self.g("light.dev17","off")=="off" or self.g("input_boolean.irrigation","off")=="off"): 
+        if(self.g("switch.dev17_gpio_12","off")=="off" or self.g("input_boolean.irrigation","off")=="off"): 
             return True
         else:
             return False
@@ -33,7 +33,7 @@ class SprinklerWorld(hass.Hass):
         self.log("Starting Sprinkler Service")
         self.listen_state(self.start,"input_boolean.irrigation", new = "on")
         self.listen_state(self.start_o,"input_boolean.irrigation_override", new = "on")
-        self.turn_off("light.dev17")
+        self.turn_off("switch.dev17_gpio_12")
         self.run_daily(self.start_o, datetime.time(7, 0, 0))
 
 
@@ -49,9 +49,9 @@ class SprinklerWorld(hass.Hass):
         max_time = 15 #30
 
         config = [
-            [['light.dev30_4'],1], # one valve, 2xt200, regular time
-            [['light.dev30_2'],1], # one valve, 3xt200, regular time
-            [['light.dev30_1','light.dev30_3'],1.5] # two valves, 150% time
+            [['switch.dev30_gpio_15'],1], # one valve, 2xt200, regular time
+            [['switch.dev30_gpio_4'],1], # one valve, 3xt200, regular time
+            [['switch.dev30_gpio_16','switch.dev30_gpio_5'],1.5] # two valves, 150% time
                 ]
 
         #today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
@@ -93,7 +93,7 @@ class SprinklerWorld(hass.Hass):
                 self.set_state("sensor.dev30_state",state="Valve online")
 
 
-            self.turn_on("light.dev30_pow")
+            self.turn_on("switch.dev30_gpio_2")
             self.log("Opening all valves to reduce pump pressure")
             self.set_state("sensor.dev30_state",state="Open all valves")
             for ring in range(0,len(config)):
@@ -104,7 +104,7 @@ class SprinklerWorld(hass.Hass):
             for i in range(0,3):
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 00/40")
                 self.log("Ramping up pump "+str(i+1)+" / 3")
-                self.turn_on("light.dev17")
+                self.turn_on("switch.dev17_gpio_12")
                 time.sleep(10)
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 10/40")
                 self.log("Wait 10/40")
@@ -114,9 +114,9 @@ class SprinklerWorld(hass.Hass):
                 time.sleep(10)
                 self.log("Wait 30/40, turn off to collect water")
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 30/40")
-                self.turn_off("light.dev17")
+                self.turn_off("switch.dev17_gpio_12")
                 time.sleep(10)
-                self.turn_on("light.dev17")
+                self.turn_on("switch.dev17_gpio_12")
                 self.log("Wait 40/40, pump turned on again")
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 40/40")
                 time.sleep(1)
@@ -125,7 +125,7 @@ class SprinklerWorld(hass.Hass):
 
 
 
-            self.turn_on("light.dev17")
+            self.turn_on("switch.dev17_gpio_12")
             self.log("Pump ready")
             time.sleep(2) # give a little time to g states
             self.log("Closing all valves")
@@ -163,17 +163,17 @@ class SprinklerWorld(hass.Hass):
 
             self.set_state("sensor.dev30_state",state="Shutting down")
             self.log("Shutting down valve power")
-            self.turn_off("light.dev30_pow")
+            self.turn_off("switch.dev30_gpio_2")
             self.log("Shutting down pump")
-            self.turn_off("light.dev17")
+            self.turn_off("switch.dev17_gpio_12")
             #self.call_service("notify/pb", title="Irrigation", message="All done")
 
         #else:
             #self.call_service("notify/pb", title="Irrigation", message="Skipping, no rain needed")
 
-        self.turn_on("light.dev30_reset_rain_time")
+        self.turn_on("switch.dev30_reset_rain_time")
         time.sleep(1)
-        self.turn_off("light.dev30_reset_rain_time")
+        self.turn_off("switch.dev30_reset_rain_time")
         self.log("All done, enjoy your evening")
         self.turn_off("input_boolean.irrigation")
         self.log("All done, enjoy your evening")

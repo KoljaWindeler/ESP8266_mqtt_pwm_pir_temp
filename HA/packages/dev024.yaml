@@ -12,15 +12,6 @@ light:
     payload_on: "ON"
     payload_off: "OFF"
 
-  - platform: mqtt ### touch carlo group
-    name: "dev24_2"
-    state_topic: "dev24/r/gpio_0_state"
-    command_topic: "dev24/s/gpio_0_state"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-
 # -----------------------------------------------
 
 sensor:

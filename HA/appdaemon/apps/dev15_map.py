@@ -16,6 +16,6 @@ class MapWorld(hass.Hass):
     def map_on(self, entity, attribute, old, new,kwargs):
         #self.log("map on")
         self.turn_on("light.dev15")
-        ele = float(self.get_state("sun.sun", attribute="elevation"))
-        if(ele < 15):
-                self.turn_on("light.dev12")
+        #ele = float(self.get_state("sun.sun", attribute="elevation"))
+        #if(ele < 15):
+        self.turn_on("light.dev12")

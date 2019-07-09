@@ -56,13 +56,13 @@ class AdafruitWorld(hass.Hass):
 			self.turn_on("light.dev12")
 			self.turn_on("light.dev15")
 		elif(new=="garage"):
-			self.turn_on("light.dev8")
+			self.turn_on("switch.dev8")
 		elif(new=="roundshot"):
 			self.log("roundshot!")
-			self.roundshot("http://192.168.2.53/snapshot.jpg","Roundshot 3")
-			self.roundshot("http://192.168.2.43/snapshot.jpg","Roundshot 4")
-			self.roundshot("http://192.168.2.45/snapshot.jpg","Roundshot 5")
-			self.roundshot("http://192.168.2.56/snapshot.jpg","Roundshot 6")
+			self.roundshot("http://192.168.2.11/webcapture.jpg?command=snap&","Roundshot 1/4")
+			self.roundshot("http://192.168.2.45/snapshot.jpg","Roundshot 2/4")
+			self.roundshot("http://192.168.2.56/snapshot.jpg","Roundshot 3/4")
+			self.roundshot("http://192.168.2.42/cgi-bin/currentpic.cgi","Roundshot 4/4")
 		elif(new=="0"):
 			self.log("ignore 0")
 		else:

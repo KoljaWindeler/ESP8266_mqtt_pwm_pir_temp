@@ -16,7 +16,7 @@ class bedroomWorld(hass.Hass):
         self.listen_state(self.bedlight_off,"binary_sensor.dev32_button1s", new = "on")
         self.set_state("sensor.dev23_0_hold",state="0")
         self.listen_state(self.ventilation_toggle,"sensor.dev23_0_hold", new = "1")
-        self.listen_state(self.bedlight_toggle,"light.dev23_2", new = "on")
+        self.listen_state(self.bedlight_toggle,"binary_sensor.dev23_gpio_0", new = "on")
 
     def bedlight_off(self, entity, attribute, old, new,kwargs):
         self.log("Switch bedlight lights off")
@@ -28,4 +28,4 @@ class bedroomWorld(hass.Hass):
 
     def ventilation_toggle(self, entity, attribute, old, new,kwargs):
         self.set_state("sensor.dev23_0_hold",state="0")
-        self.toggle("light.dev23") # ventilator
+        self.toggle("switch.dev23_gpio_12") # ventilator

@@ -2,27 +2,6 @@
 # SL
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ### touch ventilator
-    name: "dev23"
-    state_topic: "dev23/r/gpio_12_state"
-    command_topic: "dev23/s/gpio_12_state"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-
-  - platform: mqtt ### touchbedroom group
-    name: "dev23_2"
-    state_topic: "dev23/r/gpio_0_state"
-    command_topic: "dev23/s/gpio_0_state"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-
-# -----------------------------------------------
-
 sensor:
   - platform: mqtt_jkw
     name: "dev23"
@@ -36,7 +15,7 @@ sensor:
 
 homeassistant:
   customize:
-    light.dev23:
+    switch.dev23:
       friendly_name: "Bed Ventilator"
       icon: "mdi:fan"
 

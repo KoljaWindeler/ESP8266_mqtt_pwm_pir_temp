@@ -1,7 +1,7 @@
 ### ball living room
 # SL, DS18B20
 # -----------------------------------------------
-light:
+switch:
   - platform: mqtt ### tower dinning
     name: "dev8"
     command_topic: "dev8/s/gpio_12_pulse"
@@ -21,7 +21,7 @@ homeassistant:
       icon: "mdi:thermometer"
     binary_sensor.dev8_motion:
       friendly_name: "08 Garage"
-    light.dev8:
+    switch.dev8:
       friendly_name: "Garage"
 
 # -----------------------------------------------

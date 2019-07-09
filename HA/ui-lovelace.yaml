@@ -74,8 +74,8 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-#                entity: light.dev17
-                entity: light.dev17_autostart
+#                entity: switch.dev17_gpio_12
+                entity: switch.dev17_gpio_12_autostart
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -340,12 +340,12 @@ views:
           - input_boolean.irrigation
           - input_boolean.irrigation_override
           - sensor.dev30_state
-          - light.dev17
-          - light.dev30_pow
-          - light.dev30_1
-          - light.dev30_2
-          - light.dev30_3
-          - light.dev30_4
+          - switch.dev17_gpio_12
+          - switch.dev30_gpio_2
+          - switch.dev30_gpio_16
+          - switch.dev30_gpio_4
+          - switch.dev30_gpio_5
+          - switch.dev30_gpio_15
           - sensor.dev30_uptime
           - sensor.dark_sky_daytime_high_temperature_0d
         show_header_toggle: false
@@ -642,6 +642,14 @@ views:
         filter:
           include:
             - domain: light
+        type: 'custom:monster-card'
+      - show_empty: true
+        card:
+          type: entities
+          title: All switches
+        filter:
+          include:
+            - domain: switch
         type: 'custom:monster-card'
     icon: 'mdi:settings'
     title: All lights
