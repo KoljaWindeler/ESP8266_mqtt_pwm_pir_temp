@@ -3,8 +3,23 @@
 #ifdef WITH_AI
 
 
-AI::AI(){};
+AI::AI(){
+	m_discovery_pub = false;
+};
+
 AI::~AI(){
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = new char[strlen(MQTT_DISCOVERY_DIMM_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_DIMM_TOPIC, mqtt.dev_short);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing AI config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+	}
+#endif
+
 	logger.println(TOPIC_GENERIC_INFO, F("AI deleted"), COLOR_YELLOW);
 };
 
@@ -65,8 +80,27 @@ uint8_t AI::getState(led* color){
 // }
 //
 //
-// bool AI::publish(){
-// 	return false; // i did notihgin
-// }
+ bool AI::publish(){
+	 // function called to publish the state of the PWM (on/off)
+#ifdef WITH_DISCOVERY
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			char* t = new char[strlen(MQTT_DISCOVERY_DIMM_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_DIMM_TOPIC, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_DIMM_MSG)+5*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DIMM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("AI discovery"), COLOR_GREEN);
+			//logger.p(t);
+			//logger.p(" -> ");
+			//logger.pln(m);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			return true;
+		}
+	}
+#endif
+ 	return false; // i did notihgin
+ }
 
 #endif

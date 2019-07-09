@@ -17,7 +17,7 @@ class BOne : public capability {
 		// bool subscribe();
 		bool parse(uint8_t* config);
 		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
-		// bool publish();
+		bool publish();
 		uint8_t* get_key();
 		my92x1* getmy929x1();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
@@ -28,6 +28,7 @@ class BOne : public capability {
 		// uint8_t key[3];
 		led m_light_current;
 		my92x1 _my92x1_b1;
+		bool m_discovery_pub;
 };
 
 

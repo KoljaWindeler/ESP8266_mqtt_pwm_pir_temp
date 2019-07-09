@@ -15,11 +15,11 @@ PWM::~PWM(){
 	uint8_t buffer[15];
 	sprintf((char*)buffer,"%s deleted",get_key());
 	logger.println(TOPIC_GENERIC_INFO, (char*)buffer, COLOR_YELLOW);
-	
+
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = new char[strlen(MQTT_DISCOVERY_PWM_TOPIC)+strlen(mqtt.dev_short)];
-		sprintf(t, MQTT_DISCOVERY_PWM_TOPIC, mqtt.dev_short);
+		char* t = new char[strlen(MQTT_DISCOVERY_DIMM_TOPIC)+strlen(mqtt.dev_short)];
+		sprintf(t, MQTT_DISCOVERY_DIMM_TOPIC, mqtt.dev_short);
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing PWM config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
@@ -90,10 +90,10 @@ bool PWM::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			char* t = new char[strlen(MQTT_DISCOVERY_PWM_TOPIC)+strlen(mqtt.dev_short)];
-			sprintf(t, MQTT_DISCOVERY_PWM_TOPIC, mqtt.dev_short);
-			char* m = new char[strlen(MQTT_DISCOVERY_PWM_MSG)+5*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_PWM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+			char* t = new char[strlen(MQTT_DISCOVERY_DIMM_TOPIC)+strlen(mqtt.dev_short)];
+			sprintf(t, MQTT_DISCOVERY_DIMM_TOPIC, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_DIMM_MSG)+5*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DIMM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("PWM discovery"), COLOR_GREEN);
 			//logger.p(t);
 			//logger.p(" -> ");
