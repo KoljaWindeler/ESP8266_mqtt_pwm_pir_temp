@@ -103,7 +103,7 @@ class GmotionWorld(hass.Hass):
 					self.log(msg)
 					self.call_service("notify/pb", title="Motion alert", message=msg)
 
-					if(self.msg_nr +1 < len(self.sensor)):
+					if(self.msg_nr +1 < len(self.msg_delay)):
 						self.msg_nr = self.msg_nr +1
 
 

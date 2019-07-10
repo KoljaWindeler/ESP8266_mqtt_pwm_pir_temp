@@ -6,9 +6,9 @@ class PresentsWorld(hass.Hass):
 		self.log("Starting Presents Service")
 		self.listen_state(self.presents, "device_tracker.illuminum_caro", duration = 1*60) # 1 min away 
 		self.listen_state(self.presents, "device_tracker.illuminum_kolja", duration = 1*60) # 1 min away
-			
 
-	def presents(self, kwargs=""):
+
+	def presents(self, entity, attribute, old, new,kwargs):
 		if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
 			self.log("Presents state just changed to 'nobody is home'")
 			# get all device that are on
