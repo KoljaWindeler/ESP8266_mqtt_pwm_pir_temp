@@ -27,7 +27,7 @@ class GmotionWorld(hass.Hass):
 
 
 	def home(self, entity, attribute, old, new, kwargs):
-		if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
+		if(self.get_state("device_tracker.illuminum_caro") != "home" and self.get_state("device_tracker.illuminum_kolja") != "home"):
 			self.sensor_trigger_count = []
 			self.sensor_trigger_count_reported = []
 			for i in range(0,len(self.sensor)):
