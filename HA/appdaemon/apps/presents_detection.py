@@ -9,7 +9,7 @@ class PresentsWorld(hass.Hass):
 
 
 	def presents(self, entity, attribute, old, new,kwargs):
-		if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
+		if(self.get_state("device_tracker.illuminum_caro") != "home" and self.get_state("device_tracker.illuminum_kolja") != "home"):
 			self.log("Presents state just changed to 'nobody is home'")
 			# get all device that are on
 			remaining_lights_on = []
