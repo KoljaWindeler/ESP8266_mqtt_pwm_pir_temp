@@ -76,7 +76,7 @@ class GmotionWorld(hass.Hass):
 		## 2.3. the distance of us towards home
 		# 1.
 
-		if(self.get_state("device_tracker.illuminum_caro") == "not_home" and self.get_state("device_tracker.illuminum_kolja") == "not_home"):
+		if(self.get_state("device_tracker.illuminum_caro") != "home" and self.get_state("device_tracker.illuminum_kolja") != "home"):
 			# 2.
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
 			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
