@@ -635,22 +635,22 @@ views:
     title: Signals
 #######################################
   - cards:
-      - show_empty: true
-        card:
-          type: entities
-          title: All lights
-        filter:
-          include:
-            - domain: light
-        type: 'custom:monster-card'
-      - show_empty: true
-        card:
-          type: entities
-          title: All switches
-        filter:
-          include:
-            - domain: switch
-        type: 'custom:monster-card'
+     - show_empty: true
+       card:
+         type: entities
+         title: All lights
+       filter:
+         include:
+           - domain: light
+       type: 'custom:monster-card'
+     - show_empty: true
+       card:
+         type: entities
+         title: All switches
+       filter:
+         include:
+           - domain: switch
+       type: 'custom:monster-card'
     icon: 'mdi:settings'
     title: All lights
 #######################################
