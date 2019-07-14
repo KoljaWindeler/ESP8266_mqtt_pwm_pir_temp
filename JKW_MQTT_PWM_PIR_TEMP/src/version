@@ -1,3 +1,8 @@
+20190714
+	- added support for discovery with complex device Id
+	  unten/wohnzimmer/tower will show up as unten_wohnzimmer_tower
+		DATA:    [=====     ]  51.3% (used 42060 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.3% (used 415296 bytes from 958448 bytes)
 20190708
 	- added dimm discovery for AI and Bone
 		DATA:    [=====     ]  51.3% (used 42024 bytes from 81920 bytes)

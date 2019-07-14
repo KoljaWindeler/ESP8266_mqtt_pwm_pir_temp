@@ -813,3 +813,37 @@ bool bake(capability * p_obj, capability ** p_handle, uint8_t * config){
 	}
 	return false;
 }
+// /////////////////////////////////////////////////////////////////////////////////////
+char* str_rpl(char* in, char old, char replacement){
+	for(uint16 i=0; i<strlen(in); i++){
+		if(in[i]==old){
+			in[i]=replacement;
+		}
+	}
+	return in;
+}
+// /////////////////////////////////////////////////////////////////////////////////////
+char* discovery_topic_bake(const char* topic,...){
+	char* dev_short_clean = new char[strlen(mqtt.dev_short)];
+	char* t = new char[strlen(topic)+strlen(mqtt.dev_short)];
+
+	if(t!=NULL && dev_short_clean!=NULL){
+		strcpy(dev_short_clean,mqtt.dev_short); // copy device id
+		sprintf(t, MQTT_DISCOVERY_SL_TOPIC, str_rpl(dev_short_clean, '/', '_'));  // remove all '/' and replace them with '_'
+		delete[] dev_short_clean; // not needed anymore, content is in 't'
+
+		char* t2 = new char[strlen(topic)+strlen(mqtt.dev_short)];  // final destination for topic
+		if(t2!=NULL){
+			va_list args;
+			va_start (args,topic);
+			vsprintf(t2, t, args);
+			va_end (args);
+			delete[] t; // free buffer
+			return t2; // don't forget to free this as well
+		} else {
+			return NULL; // smart?
+		}
+	}
+	return NULL;
+}
+// /////////////////////////////////////////////////////////////////////////////////////

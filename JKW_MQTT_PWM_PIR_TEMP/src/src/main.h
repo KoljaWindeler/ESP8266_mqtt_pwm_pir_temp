@@ -43,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20190708" DEV
+	#define VERSION               "20190714" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -74,6 +74,8 @@
 	void setup();
 	void loop();
 	bool bake(capability * p_obj, capability ** p_handle, uint8_t * config);
+	char * str_rpl(char* in, char old, char replacement);
+	char* discovery_topic_bake(const char* topic,...);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
