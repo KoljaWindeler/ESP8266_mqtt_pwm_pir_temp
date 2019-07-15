@@ -434,8 +434,8 @@ bool J_GPIO::publish(){
 		if(!m_discovery_pub[i]){
 			if(millis()-timer_connected_start>(uint32_t)(NETWORK_SUBSCRIPTION_DELAY+300*i)){
 				if (m_pin_out[i]) {
-					char* t = discovery_topic_bake(MQTT_DISCOVERY_GPO_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;					char* m = new char[strlen(MQTT_DISCOVERY_GPO_MSG)+3*strlen(mqtt.dev_short)];
-					char* m = new char[strlen(MQTT_DISCOVERY_GPO_MSG)+2*strlen(mqtt.dev_short)];
+					char* t = discovery_topic_bake(MQTT_DISCOVERY_GPO_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
+					char* m = new char[strlen(MQTT_DISCOVERY_GPO_MSG)+3*strlen(mqtt.dev_short)];
 					sprintf(m, MQTT_DISCOVERY_GPO_MSG, mqtt.dev_short, i, mqtt.dev_short, i, mqtt.dev_short, i);
 					logger.println(TOPIC_MQTT_PUBLISH, F("GPIO discovery"), COLOR_GREEN);
 					//logger.p(t);
