@@ -7,8 +7,8 @@ homeassistant:
       retain: True
     binary_sensor.dev11_button:
       friendly_name: "Tower R button"
-    binary_sensor.dev11_button11s:
-      friendly_name: "Tower R button11s"
+    binary_sensor.dev11_button1s:
+      friendly_name: "Tower R button1s"
     binary_sensor.dev11_motion:
       friendly_name: "Tower R motion"
       device_class: motion
