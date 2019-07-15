@@ -7,7 +7,7 @@ homeassistant:
       retain: True
     binary_sensor.dev21_button:
       friendly_name: "SL Kitchen button"
-    binary_sensor.dev21_button21s:
+    binary_sensor.dev21_button1s:
       friendly_name: "SL Kitchen button1s"
     binary_sensor.dev21_motion:
       friendly_name: "SL Kitchen motion"

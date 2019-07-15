@@ -6,7 +6,7 @@ homeassistant:
       friendly_name: "Workshop LED"
     binary_sensor.dev19_button:
       friendly_name: "Workshop LED button"
-    binary_sensor.dev19_button19s:
+    binary_sensor.dev19_button1s:
       friendly_name: "Workshop LED button1s"
     binary_sensor.dev19_motion:
       friendly_name: "Workshop LED motion"

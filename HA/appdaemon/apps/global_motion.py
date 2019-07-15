@@ -80,7 +80,7 @@ class GmotionWorld(hass.Hass):
 			# 2.
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
 			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
-			if(not(vac in ["cleaning", "returning"]) and not(vac in ["cleaning", "returning"])):
+			if(not(vac in ["cleaning", "returning"]) and not(vac2 in ["cleaning", "returning"])):
 				# 2.1.
 				#self.log("motion and no-one home and vacuum not cleaning")
 				if(time.time() - self.msg_ts >= self.msg_delay[self.msg_nr]):
@@ -97,7 +97,7 @@ class GmotionWorld(hass.Hass):
 					msg += ". Distances: "
 					msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
 					msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
-					msg +="Vacuum status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner")
+					msg +="Vacuum status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner")+" / "+self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
 
 
 					self.log(msg)
