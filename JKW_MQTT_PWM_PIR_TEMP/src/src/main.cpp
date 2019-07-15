@@ -815,7 +815,11 @@ bool bake(capability * p_obj, capability ** p_handle, uint8_t * config){
 }
 // /////////////////////////////////////////////////////////////////////////////////////
 char* str_rpl(char* in, char old, char replacement){
-	for(uint16 i=0; i<strlen(in); i++){
+	return str_rpl(in,old,replacement,strlen(in));
+}
+
+char* str_rpl(char* in, char old, char replacement, uint8_t len){
+	for(uint16 i=0; i<len; i++){
 		if(in[i]==old){
 			in[i]=replacement;
 		}
@@ -824,26 +828,24 @@ char* str_rpl(char* in, char old, char replacement){
 }
 // /////////////////////////////////////////////////////////////////////////////////////
 char* discovery_topic_bake(const char* topic,...){
-	char* dev_short_clean = new char[strlen(mqtt.dev_short)];
+	// create string
+	va_list args;
+	va_start (args,topic);
 	char* t = new char[strlen(topic)+strlen(mqtt.dev_short)];
+	vsprintf(t, topic, args);
+	va_end (args);
 
-	if(t!=NULL && dev_short_clean!=NULL){
-		strcpy(dev_short_clean,mqtt.dev_short); // copy device id
-		sprintf(t, MQTT_DISCOVERY_SL_TOPIC, str_rpl(dev_short_clean, '/', '_'));  // remove all '/' and replace them with '_'
-		delete[] dev_short_clean; // not needed anymore, content is in 't'
+	//Serial.print("Topic input ");
+	//Serial.println(t);
 
-		char* t2 = new char[strlen(topic)+strlen(mqtt.dev_short)];  // final destination for topic
-		if(t2!=NULL){
-			va_list args;
-			va_start (args,topic);
-			vsprintf(t2, t, args);
-			va_end (args);
-			delete[] t; // free buffer
-			return t2; // don't forget to free this as well
-		} else {
-			return NULL; // smart?
-		}
+	char* pos = strstr(t,mqtt.dev_short);
+	if(pos!=NULL){
+		str_rpl(pos, '/', '_',strlen(mqtt.dev_short));  // remove all '/' and replace them with '_'
 	}
-	return NULL;
+
+	//Serial.print("Topic output ");
+	//Serial.println(t);
+
+	return t; // don't forget to free this as well
 }
 // /////////////////////////////////////////////////////////////////////////////////////

@@ -74,7 +74,8 @@
 	void setup();
 	void loop();
 	bool bake(capability * p_obj, capability ** p_handle, uint8_t * config);
-	char * str_rpl(char* in, char old, char replacement);
+	char* str_rpl(char* in, char old, char replacement);
+	char* str_rpl(char* in, char old, char replacement, uint8_t len);
 	char* discovery_topic_bake(const char* topic,...);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective

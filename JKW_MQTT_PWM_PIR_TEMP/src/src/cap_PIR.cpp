@@ -14,7 +14,7 @@ PIR::~PIR(){
 
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake(MQTT_DISCOVERY_M_TOPIC); // don't forget to "delete[] t;" at the end of usage;
+		char* t = discovery_topic_bake(MQTT_DISCOVERY_M_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing PIR config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
@@ -97,7 +97,7 @@ bool PIR::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			char* t = discovery_topic_bake(MQTT_DISCOVERY_M_TOPIC); // don't forget to "delete[] t;" at the end of usage;
+			char* t = discovery_topic_bake(MQTT_DISCOVERY_M_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 			char* m = new char[strlen(MQTT_DISCOVERY_M_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_M_MSG, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("PIR discovery"), COLOR_GREEN);
