@@ -6,7 +6,7 @@ homeassistant:
       friendly_name: "PI"
     binary_sensor.dev18_button:
       friendly_name: "PI button"
-    binary_sensor.dev18_button18s:
+    binary_sensor.dev18_button1s:
       friendly_name: "PI button1s"
     binary_sensor.dev18_motion:
       friendly_name: "PI motion"
