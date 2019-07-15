@@ -7,8 +7,8 @@ homeassistant:
       retain: True
     binary_sensor.dev6_button:
       friendly_name: "Cellar button"
-    binary_sensor.dev6_button6s:
-      friendly_name: "Cellar button6s"
+    binary_sensor.dev6_button1s:
+      friendly_name: "Cellar button1s"
     binary_sensor.dev6_motion:
       friendly_name: "Cellar motion"
       device_class: motion
