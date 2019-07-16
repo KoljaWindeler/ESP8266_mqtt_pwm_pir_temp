@@ -19,12 +19,32 @@ homeassistant:
 lovelace:
   mode: yaml
 config:
-zone 3:
-  name: Home
-  latitude: !secret latitude
-  longitude: !secret longitude
-  radius: 500
-  icon: mdi:account-multiple
+zone:
+  - name: Home
+    latitude: !secret latitude_home
+    longitude: !secret longitude_home
+    radius: 500
+    icon: mdi:account-multiple
+  - name: Baker
+    latitude: !secret latitude_baker
+    longitude: !secret longitude_baker
+    radius: 500
+    icon: mdi:work
+  - name: Uni
+    latitude: !secret latitude_uni
+    longitude: !secret longitude_uni
+    radius: 500
+    icon: mdi:account_balance
+  - name: Swim
+    latitude: !secret latitude_swim
+    longitude: !secret longitude_swim
+    radius: 100
+    icon: mdi:pool
+  - name: Sport
+    latitude: !secret latitude_sport
+    longitude: !secret longitude_sport
+    radius: 200
+    icon: mdi:fitness_center
 
 # Enables the frontend
 frontend:
