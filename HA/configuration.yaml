@@ -38,7 +38,7 @@ zone:
   - name: Swim
     latitude: !secret latitude_swim
     longitude: !secret longitude_swim
-    radius: 100
+    radius: 200
     icon: mdi:pool
   - name: Sport
     latitude: !secret latitude_sport
