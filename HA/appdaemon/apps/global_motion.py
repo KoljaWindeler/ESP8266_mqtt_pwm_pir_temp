@@ -97,7 +97,8 @@ class GmotionWorld(hass.Hass):
 					msg += ". Distances: "
 					msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
 					msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "
-					msg +="Vacuum status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner")+" / "+self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
+					msg +="Vacuum status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner")
+					msg +=" / Vacuum 2 status: "+self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
 
 
 					self.log(msg)
