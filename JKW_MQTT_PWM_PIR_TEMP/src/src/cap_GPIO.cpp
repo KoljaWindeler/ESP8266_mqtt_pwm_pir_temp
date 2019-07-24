@@ -22,7 +22,7 @@ J_GPIO::~J_GPIO(){
 		if(m_discovery_pub[i] & (timer_connected_start>0)){
 			if (m_pin_out[i]) {
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPO_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
-				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config"), COLOR_YELLOW);
+				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
 				m_discovery_pub[i] = false;
@@ -30,7 +30,7 @@ J_GPIO::~J_GPIO(){
 			}
 			if (m_pin_in[i]) {
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPI_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
-				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config"), COLOR_YELLOW);
+				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
 				m_discovery_pub[i] = false;

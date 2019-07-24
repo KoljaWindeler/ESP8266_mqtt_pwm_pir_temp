@@ -43,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20190714" DEV
+	#define VERSION               "20190724" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -133,6 +133,7 @@
 	extern capability * p_play;
 	extern capability * p_freq;
 	extern capability * p_rec;
+	extern capability * p_em;
 
 	extern const uint8_t intens[100];
 
@@ -159,6 +160,7 @@
 #include "cap_play.h"
 #include "cap_freq.h"
 #include "cap_record.h"
+#include "cap_energy_meter.h"
 
 #endif // ifndef main_h
 

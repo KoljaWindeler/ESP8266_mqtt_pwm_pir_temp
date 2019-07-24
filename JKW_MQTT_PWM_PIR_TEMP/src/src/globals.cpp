@@ -25,6 +25,7 @@ capability *p_uptime;
 capability *p_play;
 capability *p_freq;
 capability *p_rec;
+capability *p_em;
 
 connection_relay network;
 WiFiClient wifiClient;

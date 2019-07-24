@@ -1,3 +1,8 @@
+20190724
+	- added initial EM parsing
+		DATA:    [=====     ]  51.7% (used 42380 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.6% (used 418192 bytes from 958448 bytes)
+		3kB for SoftwareSerial
 20190714
 	- added support for discovery with complex device Id
 	  unten/wohnzimmer/tower will show up as unten_wohnzimmer_tower

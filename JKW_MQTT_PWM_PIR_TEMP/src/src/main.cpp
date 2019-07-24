@@ -587,6 +587,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_REC
 	bake(new record(), &p_rec, config);
 #endif
+#ifdef WITH_EM
+	bake(new energy_meter(), &p_em, config);
+#endif
 
 
 	// logger.p("RAM after init objects ");
