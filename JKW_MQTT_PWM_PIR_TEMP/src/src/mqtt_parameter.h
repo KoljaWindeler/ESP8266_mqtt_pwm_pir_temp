@@ -48,4 +48,19 @@ class mqtt_parameter_32 {
 		boolean _update_required;
 };
 
+class mqtt_parameter_64 {
+	public:
+		mqtt_parameter_64();
+		void check_set(uint64_t input);
+		void set(uint64_t input);
+		void set(uint64_t input, bool update);
+		uint64_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		uint64_t _value;
+		boolean _update_required;
+};
+
 #endif

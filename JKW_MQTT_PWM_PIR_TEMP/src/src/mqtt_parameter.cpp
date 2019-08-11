@@ -88,3 +88,34 @@ void mqtt_parameter_32::outdated(bool update_required){
 bool mqtt_parameter_32::get_outdated(){
 	return _update_required;
 }
+
+/////////////// 64 ///////////
+
+mqtt_parameter_64::mqtt_parameter_64(){
+	_value = false;
+	_update_required = false;
+};
+void mqtt_parameter_64::check_set(uint64_t input){
+	if(input != _value){
+		set(input);
+	}
+}
+void mqtt_parameter_64::set(uint64_t input){
+	set(input,true);
+}
+void mqtt_parameter_64::set(uint64_t input, bool update){
+	_value = input;
+	_update_required = update;
+}
+uint64_t mqtt_parameter_64::get_value(){
+	return _value;
+}
+void mqtt_parameter_64::outdated(){
+	outdated(true);
+}
+void mqtt_parameter_64::outdated(bool update_required){
+	_update_required = update_required;
+}
+bool mqtt_parameter_64::get_outdated(){
+	return _update_required;
+}

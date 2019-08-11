@@ -134,6 +134,7 @@
 	extern capability * p_freq;
 	extern capability * p_rec;
 	extern capability * p_em;
+	extern capability * p_ir;
 
 	extern const uint8_t intens[100];
 
@@ -156,6 +157,7 @@
 #include "cap_GPIO.h"
 //#include "cap_husqvarna.h"
 #include "cap_mesh.h"
+#include "cap_ir.h"
 #include "cap_uptime.h"
 #include "cap_play.h"
 #include "cap_freq.h"
@@ -178,7 +180,7 @@
  * 10	GPIO12		D6; MTDI; HSPI_MISO 						// DO NOT USE, CONNECTED TO FLASH
  * 11	VDDPST		P	Digital / IO power supply (1.8 V ~ 3.3 V)
  * 12	GPIO13		D7; MTCK; HSPI_MOSI; UART0_CTS
- * 13	GPIO15		D8; MTDO; HSPI_CS; UART0_RTS  	// DO NOT USE, on board pull down
+ * 13	GPIO15		D8z; MTDO; HSPI_CS; UART0_RTS  	// DO NOT USE, on board pull down
  * 14	GPIO02		D4; UART Tx during flash programming; internal LED
  * 15	GPIO00		D3; SPI_CS2; Button pin, needs to be high during startup, will be checked 10 sec afterboot, if low-> wifimanager start
  * 16	GPIO04		D2
