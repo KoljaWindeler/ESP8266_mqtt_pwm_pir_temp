@@ -5,8 +5,6 @@ class EntranceWorld2(hass.Hass):
 
     def initialize(self):
         self.log("Starting Entrance Service 2")
-        self.listen_state(self.inside_off, "binary_sensor.dev10_motion", new = "off", duration = 120)
-        self.listen_state(self.inside_on, "binary_sensor.dev10_motion", new = "on")
         self.listen_state(self.inside_off, "binary_sensor.dev54_motion_1", new = "off", duration = 120)
         self.listen_state(self.inside_on, "binary_sensor.dev54_motion_1", new = "on")
         self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
@@ -37,7 +35,7 @@ class EntranceWorld2(hass.Hass):
     def kolja_home(self, entity="", attribute="", old="", new="", kwargs=""):
         self.outside("Kolja home")
     def caro_home(self, entity="", attribute="", old="", new="", kwargs=""):
-        self.outside("Kolja home")
+        self.outside("Caro home")
 
     ######################################################
 

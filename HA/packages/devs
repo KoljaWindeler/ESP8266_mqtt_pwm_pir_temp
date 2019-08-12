@@ -6,11 +6,14 @@ DEV5  -T- Shelly Kuechentisch
 DEV6  -T- temp / pir keller
 DEV7  -T- dinng room tower, temperature, simple light
 DEV8  -O- Garage, PIR + ds18b20
+DEV9  -O- Phillips lampe,not used
+DEV10 -T- Mediaroom, lightdimmer
 DEV11 -T- living room tower, temperature, simple light
 DEV12 -O- b1 light bulb, flur unten
 DEV13 -T- leakage controller
 DEV14 -T- kitchen fridge, PIR, simple light
 DEV15 -T- World map, PIR dimmer
+DEV16 -T- Energy meter
 DEV17 -T- steckdosending pumpe
 DEV18 -T- love of pi
 DEV19 -T- workshop LED
@@ -18,6 +21,7 @@ DEV20 -T- shelly workshop
 DEV21 -T- slampher in küche
 DEV23 -T- SonOff Touch Bedroom
 DEV24 -O- SonOff Touch carlo
+DEV25 -T- Shellybeamer 
 DEV27 -O- B1 Flur oben
 DEV29 -T- Warm Water trigger
 DEV30 -O- valve ctrl 
@@ -26,6 +30,7 @@ DEV32 -T- SL bed light kolja
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions carlo
 DEV57 -T- Ikea LED lampinions flur
+DEV58 -T- media pc gpio 12
 
 
 

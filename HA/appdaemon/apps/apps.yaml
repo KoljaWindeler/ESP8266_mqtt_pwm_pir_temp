@@ -32,6 +32,9 @@ xiaomi_vac:
 workshop:
   module: dev20_workshop
   class: workshopWorld
+beamer:
+  module: dev25_beamer
+  class: beamerWorld
 carlo:
   module: dev24_carlo
   class: carloWorld
@@ -56,3 +59,6 @@ weather:
 presents:
   module: presents_detection
   class: PresentsWorld
+IR:
+  module: IR
+  class: irWorld

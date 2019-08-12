@@ -6,7 +6,7 @@ homeassistant:
       friendly_name: "Ball"
     binary_sensor.dev99_button:
       friendly_name: "Ball button"
-    binary_sensor.dev99_button99s:
+    binary_sensor.dev99_button1s:
       friendly_name: "Ball button1s"
     binary_sensor.dev99_motion:
       friendly_name: "Ball motion"
