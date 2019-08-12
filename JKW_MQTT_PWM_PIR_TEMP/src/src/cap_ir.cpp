@@ -61,6 +61,7 @@ bool ir::loop(){
 	if (pMyReceiver->decode(pResults)) {
 		if(0xFFFFFFFFFFFFFFFF!=pResults->value){
 			m_state.set(pResults->value);
+			//Serial.println(typeToString(pResults->decode_type,0));
 		}
 		pMyReceiver->resume();  // Receive the next value
   }
@@ -110,9 +111,9 @@ bool ir::loop(){
 bool ir::publish(){
 	if (m_state.get_outdated()) {
 		uint64_t t=m_state.get_value();
-		sprintf(m_msg_buffer, "%x%x",((uint32_t)(t>>32)),((uint32_t)(t&0xffffffff)));
-		logger.print(TOPIC_MQTT_PUBLISH, m_msg_buffer, COLOR_GREEN);
-		if(network.publish(build_topic(MQTT_IR_TOPIC, UNIT_TO_PC), (char *) m_msg_buffer)){
+		sprintf(m_msg_buffer, "IR recv %04X%04X%04X%04X",((uint16_t)((t>>48)&0xffff)),((uint16_t)((t>>32)&0xffff)),((uint16_t)((t>>16)&0xffff)),((uint16_t)(t&0xffff)));
+		logger.println(TOPIC_MQTT_PUBLISH, m_msg_buffer, COLOR_GREEN);
+		if(network.publish(build_topic(MQTT_IR_TOPIC, UNIT_TO_PC), (char *) m_msg_buffer+9)){
 			m_state.outdated(false);
 			return true;
 		}

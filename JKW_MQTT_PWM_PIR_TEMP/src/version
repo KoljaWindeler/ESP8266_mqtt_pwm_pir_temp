@@ -1,3 +1,8 @@
+20190812
+	- added IR support
+	- disabled REC capability by default to save memory
+		DATA:    [=====     ]  51.8% (used 42444 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.7% (used 419320 bytes from 958448 bytes)
 20190724
 	- added initial EM parsing
 		DATA:    [=====     ]  51.7% (used 42380 bytes from 81920 bytes)
