@@ -4,17 +4,24 @@ class PresentsWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Presents Service")
-		self.listen_state(self.presents, "binary_sensor.someone_is_home", duration = 1*60) # 1 min away
-
+		self.white_list = ["light.dev12","light.dev12_2","light.dev15"]
+		self.listen_state(self.presents, "binary_sensor.someone_is_home") # 5 min away
 
 	def presents(self, entity, attribute, old, new,kwargs):
+		if(old=="on" and new=="off"):
+			#m="nobody at home, checking in 5min"
+			#self.log(m)
+			self.run_in(self.chk_light,5*60)
+			#self.call_service("notify/pb", title="testing", message=m)
+
+	def chk_light(self, kwargs):
 		if(self.get_state("binary_sensor.someone_is_home") == "off"):
 			self.log("Presents state just changed to 'nobody is home'")
 			# get all device that are on
 			remaining_lights_on = []
 			group = self.get_state("group.all_lights", attribute = "all")
 			for l in group["attributes"]["entity_id"]:
-				if(self.get_state(l)=="on"):
+				if(self.get_state(l)=="on" and not(l in self.white_list)):
 					remaining_lights_on.append(l)
 			# if there are some, write a message
 			if(len(remaining_lights_on)>0):

@@ -87,6 +87,16 @@ remote:
     name: TVHub
     host: 192.168.2.44
 
+media_player:
+  - platform: yamaha
+    host: 192.168.2.26
+    source_ignore:
+      - "HDMI1"
+      - "HDMI4"
+    source_names:
+      HDMI2: "ChromeCast"
+      HDMI3: "FTV4k"
+
 updater:
 discovery:
 history:

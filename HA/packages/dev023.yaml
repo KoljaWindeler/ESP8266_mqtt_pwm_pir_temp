@@ -15,7 +15,7 @@ sensor:
 
 homeassistant:
   customize:
-    switch.dev23:
+    switch.dev23_gpio_12:
       friendly_name: "Bed Ventilator"
       icon: "mdi:fan"
 

@@ -15,7 +15,7 @@ class WeatherWorld(hass.Hass):
         self.run_every(self.run_every_c, time, 10 * 60) # every 10 min
 
     def run_every_c(self, entity='', attribute='', old='', new='',kwargs=''):
-        self.log("### trigger reload ###")
+#        self.log("### trigger reload ###")
         self.set_state("sensor.weather_reload_trigger", state = str(random.randint(99,999)))
 
 

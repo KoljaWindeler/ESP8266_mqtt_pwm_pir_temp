@@ -163,6 +163,20 @@ views:
     title: Cams
 ################ media control #######################
   - cards:
+      - type: horizontal-stack
+        cards:
+         - type: entity-button
+           tap_action:
+             action: toggle
+           entity: switch.dev58_gpio_12
+           icon: 'mdi:download-network'
+           name: MediaPC
+         - type: entity-button
+           tap_action:
+             action: toggle
+           entity: light.dev10
+#           icon: 'mdi:download-network'
+ #          name: MediaPC
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -438,12 +452,13 @@ views:
           - sensor.dev6_update
           - sensor.dev7_update
           - sensor.dev8_update
-#          - sensor.dev10_update
+          - sensor.dev10_update
           - sensor.dev11_update
           - sensor.dev12_update
           - sensor.dev13_update
           - sensor.dev14_update
           - sensor.dev15_update
+          - sensor.dev16_update
           - sensor.dev17_update
           - sensor.dev18_update
           - sensor.dev19_update
@@ -452,6 +467,7 @@ views:
 #          - sensor.dev22_update
           - sensor.dev23_update
           - sensor.dev24_update
+          - sensor.dev25_update
           - sensor.dev27_update
           - sensor.dev29_update
           - sensor.dev30_update
@@ -461,6 +477,7 @@ views:
           - sensor.dev55_update
 #          - sensor.dev56_update
           - sensor.dev57_update
+          - sensor.dev58_update
       - type: entities
         title: Rssi
         show_header_toggle: false
@@ -472,12 +489,13 @@ views:
           - sensor.dev6_rssi
           - sensor.dev7_rssi
           - sensor.dev8_rssi
-#          - sensor.dev10_rssi
+          - sensor.dev10_rssi
           - sensor.dev11_rssi
           - sensor.dev12_rssi
           - sensor.dev13_rssi
           - sensor.dev14_rssi
           - sensor.dev15_rssi
+          - sensor.dev16_rssi
           - sensor.dev17_rssi
           - sensor.dev18_rssi
           - sensor.dev19_rssi
@@ -486,6 +504,7 @@ views:
 #          - sensor.dev22_rssi
           - sensor.dev23_rssi
           - sensor.dev24_rssi
+          - sensor.dev25_rssi
           - sensor.dev27_rssi
           - sensor.dev29_rssi
           - sensor.dev30_rssi
@@ -495,6 +514,7 @@ views:
           - sensor.dev55_rssi
 #          - sensor.dev56_rssi
           - sensor.dev57_rssi
+          - sensor.dev58_rssi
       - type: entities
         show_header_toggle: false
         entities:
@@ -505,12 +525,13 @@ views:
           - sensor.dev6_info
           - sensor.dev7_info
           - sensor.dev8_info
-#          - sensor.dev10_info
+          - sensor.dev10_info
           - sensor.dev11_info
           - sensor.dev12_info
           - sensor.dev13_info
           - sensor.dev14_info
           - sensor.dev15_info
+          - sensor.dev16_info
           - sensor.dev17_info
           - sensor.dev18_info
           - sensor.dev19_info
@@ -519,6 +540,7 @@ views:
 #          - sensor.dev22_info
           - sensor.dev23_info
           - sensor.dev24_info
+          - sensor.dev25_info
           - sensor.dev27_info
           - sensor.dev29_info
           - sensor.dev30_info
@@ -528,6 +550,7 @@ views:
           - sensor.dev55_info
 #          - sensor.dev56_info
           - sensor.dev57_info
+          - sensor.dev58_info
         title: Info
       - type: entities
         show_header_toggle: false
@@ -539,12 +562,13 @@ views:
           - sensor.dev6_bssid
           - sensor.dev7_bssid
           - sensor.dev8_bssid
-#          - sensor.dev10_bssid
+          - sensor.dev10_bssid
           - sensor.dev11_bssid
           - sensor.dev12_bssid
           - sensor.dev13_bssid
           - sensor.dev14_bssid
           - sensor.dev15_bssid
+          - sensor.dev16_bssid
           - sensor.dev17_bssid
           - sensor.dev18_bssid
           - sensor.dev19_bssid
@@ -553,6 +577,7 @@ views:
 #          - sensor.dev22_bssid
           - sensor.dev23_bssid
           - sensor.dev24_bssid
+          - sensor.dev25_bssid
           - sensor.dev27_bssid
           - sensor.dev29_bssid
           - sensor.dev30_bssid
@@ -562,6 +587,7 @@ views:
           - sensor.dev55_bssid
 #          - sensor.dev56_bssid
           - sensor.dev57_bssid
+          - sensor.dev58_bssid
         title: Bssid
       - type: entities
         show_header_toggle: false
@@ -573,12 +599,13 @@ views:
           - sensor.dev6_ssid
           - sensor.dev7_ssid
           - sensor.dev8_ssid
-#          - sensor.dev10_ssid
+          - sensor.dev10_ssid
           - sensor.dev11_ssid
           - sensor.dev12_ssid
           - sensor.dev13_ssid
           - sensor.dev14_ssid
           - sensor.dev15_ssid
+          - sensor.dev16_ssid
           - sensor.dev17_ssid
           - sensor.dev18_ssid
           - sensor.dev19_ssid
@@ -587,6 +614,7 @@ views:
 #          - sensor.dev22_ssid
           - sensor.dev23_ssid
           - sensor.dev24_ssid
+          - sensor.dev25_ssid
           - sensor.dev27_ssid
           - sensor.dev29_ssid
           - sensor.dev30_ssid
@@ -596,6 +624,7 @@ views:
           - sensor.dev55_ssid
 #          - sensor.dev56_ssid
           - sensor.dev57_ssid
+          - sensor.dev58_ssid
         title: SSID
       - type: entities
         show_header_toggle: false
@@ -607,12 +636,13 @@ views:
           - sensor.dev6_capability
           - sensor.dev7_capability
           - sensor.dev8_capability
-#          - sensor.dev10_capability
+          - sensor.dev10_capability
           - sensor.dev11_capability
           - sensor.dev12_capability
           - sensor.dev13_capability
           - sensor.dev14_capability
           - sensor.dev15_capability
+          - sensor.dev16_capability
           - sensor.dev17_capability
           - sensor.dev18_capability
           - sensor.dev19_capability
@@ -621,6 +651,7 @@ views:
 #          - sensor.dev22_capability
           - sensor.dev23_capability
           - sensor.dev24_capability
+          - sensor.dev25_capability
           - sensor.dev27_capability
           - sensor.dev29_capability
           - sensor.dev30_capability
@@ -630,6 +661,7 @@ views:
           - sensor.dev55_capability
 #          - sensor.dev56_capability
           - sensor.dev57_capability
+          - sensor.dev58_capability
         title: Capability
     icon: 'mdi:signal-variant'
     title: Signals
@@ -667,8 +699,13 @@ views:
         type: sensor 
       - detail: 2
         graph: line
-        entity: sensor.dev13_adc
-        name: dev13 ADC
+        entity: sensor.dev16_em_cur
+        name: EM current
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_em_tot
+        name: EM total
         type: sensor 
     title: T
 #######################################
