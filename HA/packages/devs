@@ -1,7 +1,7 @@
 DEV1  -T- Kugel im wohnzimmer, temperature, simple light
 DEV2  -T- wohnzimmer licht am eingang vom flur
 DEV3  -T- touch küche
-DEV4  - CH4 unused as of now
+DEV4  -T- CH4 garden water pump + vent
 DEV5  -T- Shelly Kuechentisch
 DEV6  -T- temp / pir keller
 DEV7  -T- dinng room tower, temperature, simple light
@@ -14,7 +14,7 @@ DEV13 -T- leakage controller
 DEV14 -T- kitchen fridge, PIR, simple light
 DEV15 -T- World map, PIR dimmer
 DEV16 -T- Energy meter
-DEV17 -T- steckdosending pumpe
+
 DEV18 -T- love of pi
 DEV19 -T- workshop LED
 DEV20 -T- shelly workshop
@@ -22,6 +22,7 @@ DEV21 -T- slampher in küche
 DEV23 -T- SonOff Touch Bedroom
 DEV24 -O- SonOff Touch carlo
 DEV25 -T- Shellybeamer 
+DEV26 -T- Shelly 2.5oben
 DEV27 -O- B1 Flur oben
 DEV29 -T- Warm Water trigger
 DEV30 -O- valve ctrl 

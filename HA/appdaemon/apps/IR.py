@@ -12,7 +12,7 @@ class irWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting ir Service")
-        self.listen_state(self.up,"sensor.dev99_ir")
+        self.listen_state(self.up,"sensor.dev10_ir")
 
     def up(self, entity, attribute, old, new,kwargs):
         if(new.find("_done")!=-1):

@@ -17,6 +17,8 @@ homeassistant:
       unit_of_measurement: "ºC"
       icon: "mdi:thermometer"
       device_class: "temperature"
+    switch.dev29_gpio_4:
+      friendly_name: "Warm Water Emu"
 
 # -----------------------------------------------
 

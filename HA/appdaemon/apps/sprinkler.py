@@ -24,7 +24,7 @@ class SprinklerWorld(hass.Hass):
         return r
 
     def check_stop(self):
-        if(self.g("switch.dev17_gpio_12","off")=="off" or self.g("input_boolean.irrigation","off")=="off"): 
+        if(self.g("switch.dev4_gpio_12","off")=="off" or self.g("input_boolean.irrigation","off")=="off"): 
             return True
         else:
             return False
@@ -33,7 +33,7 @@ class SprinklerWorld(hass.Hass):
         self.log("Starting Sprinkler Service")
         self.listen_state(self.start,"input_boolean.irrigation", new = "on")
         self.listen_state(self.start_o,"input_boolean.irrigation_override", new = "on")
-        self.turn_off("switch.dev17_gpio_12")
+        self.turn_off("switch.dev4_gpio_12")
         self.run_daily(self.start_o, datetime.time(7, 0, 0))
 
 
@@ -104,7 +104,7 @@ class SprinklerWorld(hass.Hass):
             for i in range(0,3):
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 00/40")
                 self.log("Ramping up pump "+str(i+1)+" / 3")
-                self.turn_on("switch.dev17_gpio_12")
+                self.turn_on("switch.dev4_gpio_12")
                 time.sleep(10)
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 10/40")
                 self.log("Wait 10/40")
@@ -114,9 +114,9 @@ class SprinklerWorld(hass.Hass):
                 time.sleep(10)
                 self.log("Wait 30/40, turn off to collect water")
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 30/40")
-                self.turn_off("switch.dev17_gpio_12")
+                self.turn_off("switch.dev4_gpio_12")
                 time.sleep(10)
-                self.turn_on("switch.dev17_gpio_12")
+                self.turn_on("switch.dev4_gpio_12")
                 self.log("Wait 40/40, pump turned on again")
                 self.set_state("sensor.dev30_state",state="Ramp up "+str(i+1)+"/3, 40/40")
                 time.sleep(1)
@@ -125,7 +125,7 @@ class SprinklerWorld(hass.Hass):
 
 
 
-            self.turn_on("switch.dev17_gpio_12")
+            self.turn_on("switch.dev4_gpio_12")
             self.log("Pump ready")
             time.sleep(2) # give a little time to g states
             self.log("Closing all valves")
@@ -165,7 +165,7 @@ class SprinklerWorld(hass.Hass):
             self.log("Shutting down valve power")
             self.turn_off("switch.dev30_gpio_2")
             self.log("Shutting down pump")
-            self.turn_off("switch.dev17_gpio_12")
+            self.turn_off("switch.dev4_gpio_12")
             #self.call_service("notify/pb", title="Irrigation", message="All done")
 
         #else:

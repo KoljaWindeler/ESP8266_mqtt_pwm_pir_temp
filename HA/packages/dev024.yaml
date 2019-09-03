@@ -29,4 +29,6 @@ homeassistant:
   customize:
     light.dev24:
       friendly_name: "Light carlo"
+    switch.dev24_gpio_12:
+      friendly_name: "Light carlo"
 

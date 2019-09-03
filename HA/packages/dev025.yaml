@@ -18,6 +18,8 @@ homeassistant:
       device_class: "temperature"
     sensor.dev25_adc:
       friendly_name: "Beamer Shelly"
+    switch.dev25_gpio_4:
+      friendly_name: "Beamer Sh Light"
 
 # -----------------------------------------------
 

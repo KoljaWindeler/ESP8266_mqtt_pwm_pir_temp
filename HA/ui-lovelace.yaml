@@ -74,8 +74,8 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-#                entity: switch.dev17_gpio_12
-                entity: switch.dev17_gpio_12_autostart
+#                entity: switch.dev4_gpio_12
+                entity: switch.dev4_gpio_12_autostart
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -123,29 +123,29 @@ views:
       - type: picture-entity
         entity: camera.cam_xia3
         camera_view: live
-      - type: picture-entity
-        entity: camera.cam_xia5
-        camera_view: live
-      - type: horizontal-stack
-        cards:
-          - icon: 'mdi:arrow-left-bold'
-            name: ' '
-            type: entity-button
-            entity: switch.camxia5_left
-          - icon: 'mdi:arrow-up-bold'
-            name: ' '
-            type: entity-button
-            entity: switch.camxia5_up
-          - icon: 'mdi:arrow-down-bold'
-            name: ' '
-            type: entity-button
-            entity: switch.camxia5_down
-          - icon: 'mdi:arrow-right-bold'
-            name: ' '
-            type: entity-button
-            entity: switch.camxia5_right
-      - type: picture-entity
-        entity: camera.cam_xia1
+#      - type: picture-entity
+#        entity: camera.cam_xia5
+#        camera_view: live
+#      - type: horizontal-stack
+#        cards:
+#          - icon: 'mdi:arrow-left-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_left
+#          - icon: 'mdi:arrow-up-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_up
+#          - icon: 'mdi:arrow-down-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_down
+#          - icon: 'mdi:arrow-right-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_right
+#      - type: picture-entity
+#        entity: camera.cam_xia1
 #      - type: picture-entity
 #        entity: camera.cam_xia2
 #        camera_view: live
@@ -354,7 +354,7 @@ views:
           - input_boolean.irrigation
           - input_boolean.irrigation_override
           - sensor.dev30_state
-          - switch.dev17_gpio_12
+          - switch.dev4_gpio_12
           - switch.dev30_gpio_2
           - switch.dev30_gpio_16
           - switch.dev30_gpio_4
@@ -381,6 +381,18 @@ views:
               type: sensor 
             - detail: 2
               graph: line
+              entity: sensor.dev2_temperature
+              name: Livingroom 2
+              type: sensor 
+         - type: horizontal-stack
+           cards:
+            - detail: 2
+              graph: line
+              entity: sensor.dev8_temperature
+              name: Garage
+              type: sensor 
+            - detail: 2
+              graph: line
               entity: sensor.dev6_temperature
               name: Cellar
               type: sensor 
@@ -404,7 +416,7 @@ views:
         entity: camera.cam_weather1
         name: BRD
         camera_view: live
-    icon: 'mdi:weather-partlycloudy'
+    icon: 'mdi:weather-partly-cloudy'
     title: weather
 ############## security #########################
   - cards:
@@ -448,6 +460,7 @@ views:
           - sensor.dev1_update
           - sensor.dev2_update
           - sensor.dev3_update
+          - sensor.dev4_update
           - sensor.dev5_update
           - sensor.dev6_update
           - sensor.dev7_update
@@ -459,7 +472,7 @@ views:
           - sensor.dev14_update
           - sensor.dev15_update
           - sensor.dev16_update
-          - sensor.dev17_update
+#          - sensor.dev17_update
           - sensor.dev18_update
           - sensor.dev19_update
           - sensor.dev20_update
@@ -468,6 +481,7 @@ views:
           - sensor.dev23_update
           - sensor.dev24_update
           - sensor.dev25_update
+          - sensor.dev26_update
           - sensor.dev27_update
           - sensor.dev29_update
           - sensor.dev30_update
@@ -485,6 +499,7 @@ views:
           - sensor.dev1_rssi
           - sensor.dev2_rssi
           - sensor.dev3_rssi
+          - sensor.dev4_rssi
           - sensor.dev5_rssi
           - sensor.dev6_rssi
           - sensor.dev7_rssi
@@ -496,7 +511,7 @@ views:
           - sensor.dev14_rssi
           - sensor.dev15_rssi
           - sensor.dev16_rssi
-          - sensor.dev17_rssi
+#          - sensor.dev17_rssi
           - sensor.dev18_rssi
           - sensor.dev19_rssi
           - sensor.dev20_rssi
@@ -505,6 +520,7 @@ views:
           - sensor.dev23_rssi
           - sensor.dev24_rssi
           - sensor.dev25_rssi
+          - sensor.dev26_rssi
           - sensor.dev27_rssi
           - sensor.dev29_rssi
           - sensor.dev30_rssi
@@ -521,6 +537,7 @@ views:
           - sensor.dev1_info
           - sensor.dev2_info
           - sensor.dev3_info
+          - sensor.dev4_info
           - sensor.dev5_info
           - sensor.dev6_info
           - sensor.dev7_info
@@ -532,7 +549,7 @@ views:
           - sensor.dev14_info
           - sensor.dev15_info
           - sensor.dev16_info
-          - sensor.dev17_info
+#          - sensor.dev17_info
           - sensor.dev18_info
           - sensor.dev19_info
           - sensor.dev20_info
@@ -541,6 +558,7 @@ views:
           - sensor.dev23_info
           - sensor.dev24_info
           - sensor.dev25_info
+          - sensor.dev26_info
           - sensor.dev27_info
           - sensor.dev29_info
           - sensor.dev30_info
@@ -558,6 +576,7 @@ views:
           - sensor.dev1_bssid
           - sensor.dev2_bssid
           - sensor.dev3_bssid
+          - sensor.dev4_bssid
           - sensor.dev5_bssid
           - sensor.dev6_bssid
           - sensor.dev7_bssid
@@ -569,7 +588,7 @@ views:
           - sensor.dev14_bssid
           - sensor.dev15_bssid
           - sensor.dev16_bssid
-          - sensor.dev17_bssid
+#          - sensor.dev17_bssid
           - sensor.dev18_bssid
           - sensor.dev19_bssid
           - sensor.dev20_bssid
@@ -578,6 +597,7 @@ views:
           - sensor.dev23_bssid
           - sensor.dev24_bssid
           - sensor.dev25_bssid
+          - sensor.dev26_bssid
           - sensor.dev27_bssid
           - sensor.dev29_bssid
           - sensor.dev30_bssid
@@ -595,6 +615,7 @@ views:
           - sensor.dev1_ssid
           - sensor.dev2_ssid
           - sensor.dev3_ssid
+          - sensor.dev4_ssid
           - sensor.dev5_ssid
           - sensor.dev6_ssid
           - sensor.dev7_ssid
@@ -606,7 +627,7 @@ views:
           - sensor.dev14_ssid
           - sensor.dev15_ssid
           - sensor.dev16_ssid
-          - sensor.dev17_ssid
+#          - sensor.dev17_ssid
           - sensor.dev18_ssid
           - sensor.dev19_ssid
           - sensor.dev20_ssid
@@ -615,6 +636,7 @@ views:
           - sensor.dev23_ssid
           - sensor.dev24_ssid
           - sensor.dev25_ssid
+          - sensor.dev26_ssid
           - sensor.dev27_ssid
           - sensor.dev29_ssid
           - sensor.dev30_ssid
@@ -632,6 +654,7 @@ views:
           - sensor.dev1_capability
           - sensor.dev2_capability
           - sensor.dev3_capability
+          - sensor.dev4_capability
           - sensor.dev5_capability
           - sensor.dev6_capability
           - sensor.dev7_capability
@@ -643,7 +666,7 @@ views:
           - sensor.dev14_capability
           - sensor.dev15_capability
           - sensor.dev16_capability
-          - sensor.dev17_capability
+#          - sensor.dev17_capability
           - sensor.dev18_capability
           - sensor.dev19_capability
           - sensor.dev20_capability
@@ -652,6 +675,7 @@ views:
           - sensor.dev23_capability
           - sensor.dev24_capability
           - sensor.dev25_capability
+          - sensor.dev26_capability
           - sensor.dev27_capability
           - sensor.dev29_capability
           - sensor.dev30_capability
@@ -689,13 +713,8 @@ views:
   - cards:
       - detail: 2
         graph: line
-        entity: sensor.dev27_uptime
-        name: Dev27uptime
-        type: sensor 
-      - detail: 2
-        graph: line
-        entity: sensor.dev15_uptime
-        name: Dev15uptime
+        entity: sensor.dev4_humidity
+        name: Basement Humidity
         type: sensor 
       - detail: 2
         graph: line

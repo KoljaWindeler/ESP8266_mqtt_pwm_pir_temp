@@ -38,6 +38,9 @@ homeassistant:
     switch.dev30_gpio_15:
       friendly_name: "Valve 2xT200"
       icon: mdi:call-split
+    switch.dev30_gpio_14:
+      friendly_name: "Valve unused"
+      icon: mdi:call-split
     switch.dev30_gpio_2:
       friendly_name: "Water valve Power"
       icon: mdi:power-plug
