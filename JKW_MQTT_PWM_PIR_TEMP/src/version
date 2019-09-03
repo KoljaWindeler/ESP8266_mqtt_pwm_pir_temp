@@ -1,3 +1,7 @@
+20190903
+	- added discovery for J_DHT22
+		DATA:    [=====     ]  52.0% (used 42632 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.8% (used 420028 bytes from 958448 bytes)
 20190812
 	- added IR support
 	- disabled REC capability by default to save memory
