@@ -1,0 +1,10 @@
+{
+  "domain": "statistics_jkw",
+  "name": "statistics",
+  "documentation": "https://www.home-assistant.io/components/zwave",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@home-assistant/z-wave"
+  ]
+}
