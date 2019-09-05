@@ -91,7 +91,7 @@ class StatisticsSensor(Entity):
         self._precision = precision
         self._unit_of_measurement = None
         self.states = deque(maxlen=self._sampling_size)
-		self.averages = deque(maxlen=self._sampling_size)
+        self.averages = deque(maxlen=self._sampling_size)
         self.ages = deque(maxlen=self._sampling_size)
 
         self.count = 0
@@ -153,7 +153,7 @@ class StatisticsSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.mean if not self.is_binary else self.count
+        return self.averaged_derivation if not self.is_binary else self.count
 
     @property
     def unit_of_measurement(self):
@@ -183,7 +183,7 @@ class StatisticsSensor(Entity):
                 ATTR_MAX_AGE: self.max_age,
                 ATTR_CHANGE: self.change,
                 ATTR_AVERAGE_CHANGE: self.average_change,
-				ATTR_AVERAGED_DERIVATION: self.averaged_derivation,
+                ATTR_AVERAGED_DERIVATION: self.averaged_derivation,
                 ATTR_CHANGE_RATE: self.change_rate,
             }
 
@@ -221,7 +221,7 @@ class StatisticsSensor(Entity):
                                   self._precision)
                 self.median = round(statistics.median(self.states),
                                     self._precision)
-				self.averages.append(self.mean)
+                self.averages.append(self.mean)
             except statistics.StatisticsError as err:
                 _LOGGER.debug("%s: %s", self.entity_id, err)
                 self.mean = self.median = STATE_UNKNOWN
@@ -253,9 +253,9 @@ class StatisticsSensor(Entity):
                     time_diff = (self.max_age - self.min_age).total_seconds()
                     if time_diff > 0:
                         self.change_rate = self.average_change / time_diff
-						
-					self.averaged_derivation = self.averages[-1] - self.averages[0]
-					self.averaged_derivation /= len(self.states) - 1
+
+                    self.averaged_derivation = self.averages[-1] - self.averages[0]
+                    self.averaged_derivation /= len(self.states) - 1
 
                 self.change = round(self.change, self._precision)
                 self.average_change = round(self.average_change,
