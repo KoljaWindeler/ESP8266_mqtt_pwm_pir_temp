@@ -54,7 +54,7 @@ private:
 		bool m_pin_active;
 		uint32_t m_interrupt_counter;
 		bool m_discovery_pub;
-		bool m_ghost_avoidance;
+		uint8_t m_ghost_avoidance;
 	};
 
 

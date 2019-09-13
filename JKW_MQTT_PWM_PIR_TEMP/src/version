@@ -1,3 +1,7 @@
+20190913
+	-	added GHOST keyword for GHOST button
+		DATA:    [=====     ]  52.1% (used 42648 bytes from 81920 bytes)
+		PROGRAM: [====      ]  43.8% (used 420148 bytes from 958448 bytes)
 20190903
 	- added discovery for J_DHT22
 		DATA:    [=====     ]  52.0% (used 42632 bytes from 81920 bytes)
