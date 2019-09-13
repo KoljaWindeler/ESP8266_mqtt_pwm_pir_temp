@@ -13,6 +13,7 @@ button::button(){
 	m_counter=0;
 	m_pin_active = false;
 	m_discovery_pub = false;
+	m_ghost_avoidance = false;
 };
 
 button::~button(){
@@ -39,6 +40,10 @@ button::~button(){
 
 
 bool button::parse(uint8_t* config){
+	// ghost avoidance first, as it won't return // 
+	if(cap.parse(config,"GHOST")){
+		m_ghost_avoidance = true;
+	}
 	// taster //
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;
@@ -243,6 +248,14 @@ bool button::publish(){
 
 // external button push
 void button::interrupt(){
+	// ghost switching avoidance, Shelly switches tend to see little peaks << 100ms as input
+	if(m_ghost_avoidance){
+		bool m_pin_state = digitalRead(m_pin);
+		delay(100);
+		if(digitalRead(m_pin) != m_pin_state){
+			return;
+		}
+	}
 	// Push-Button (Taster)
 	if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
 		m_pin_active = true; // button is pushed
@@ -274,5 +287,4 @@ void button::interrupt(){
 	// avoid bouncing, and recogize the state changes (Push-Button will count hold seconds, based on this)
 	m_timer_debounce = millis();
 }
-
 #endif
