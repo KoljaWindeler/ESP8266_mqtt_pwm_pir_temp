@@ -153,7 +153,7 @@
 #include "cap_NeoStrip.h"
 #include "cap_light.h"
 #include "cap_night_light.h"
-//#include "cap_bridge.h"
+#include "cap_bridge.h"
 #include "cap_GPIO.h"
 //#include "cap_husqvarna.h"
 #include "cap_mesh.h"

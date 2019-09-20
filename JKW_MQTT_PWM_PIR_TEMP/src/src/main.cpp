@@ -569,7 +569,7 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_NL
 	bake(new night_light(), &p_nl, config);
 #endif
-	//bake(new bridge(), &p_rfb, config);
+	bake(new bridge(), &p_rfb, config);
 #ifdef WITH_GPIO
 	bake(new J_GPIO(), &p_gpio, config);
 #endif

@@ -8,21 +8,31 @@ static constexpr char MQTT_BRIDGE_TOPIC[]     = "bridge";      // publish
 static constexpr char MQTT_BRIDGE_TRAIN[]     = "bridge/train";      // publish
 
 
-#define RFB_START 10
-#define RFB_ACTION 11
-#define RFB_END 12
-#define RFB_SYNC_1 13
-#define RFB_SYNC_2 14
-#define RFB_LOW_1 15
-#define RFB_LOW_2 16
-#define RFB_HIGH_1 17
-#define RFB_HIGH_2 18
-#define RFB_D0 19
-#define RFB_D1 20
-#define RFB_D2 21
+#define RFB_START_0 10
+#define RFB_START_1 11
+#define RFB_VERSION 12
+#define RFB_CMD     13
+#define RFB_LEN_1   14
+#define RFB_LEN_2   15
+#define RFB_DATA    16
+#define RFB_CHK     17
+
 #define RFB_TIMEOUT 1000
 
+struct luminea_mcu {
+	uint8_t cmd;
+	uint16_t len;
+	uint8_t data[40];
+	uint8_t data_p;
+	uint8_t chk;
+	uint8_t rdy;
+};
 
+struct luminea_status {
+	uint8_t reed;
+	uint8_t tamper;
+	uint8_t batt;
+};
 
 class bridge : public capability {
 	public:
@@ -39,12 +49,13 @@ class bridge : public capability {
 		uint8_t* get_key();
 		bool publish();
 	private:
-		void send_cmd(uint8_t cmd);
-		uint8_t m_state;
+		void send_cmd(uint8_t cmd, uint16_t len, uint8_t* data);
+		uint8_t m_recv_state;
+		uint8_t m_msg_state;
 		uint32_t rfb_last_received;
 		uint8_t key[4];
-		bool rfb_data_rdy;
-		uint8_t rfb_data[11];
+		luminea_mcu rfb;
+		luminea_status status;
 		uint8_t t; // temporary serial byte
 
 };

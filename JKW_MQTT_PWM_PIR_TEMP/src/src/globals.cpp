@@ -18,7 +18,7 @@ capability *p_light;
 capability *p_hlw;
 capability *p_nl;
 capability *p_ir;
-//capability *p_rfb;
+capability *p_rfb;
 capability *p_gpio;
 //capability *p_husqvarna;
 capability *p_no_mesh;
