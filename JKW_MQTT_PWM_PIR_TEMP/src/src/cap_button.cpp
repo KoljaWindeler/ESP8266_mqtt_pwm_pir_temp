@@ -45,6 +45,10 @@ bool button::parse(uint8_t* config){
 		m_ghost_avoidance = 50;
 	};
 	cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &m_ghost_avoidance, (uint8_t*)"");
+	if(m_ghost_avoidance){
+		logger.print(TOPIC_GENERIC_INFO, F("Enable anti-ghosting "), COLOR_PURPLE);
+		logger.pln(m_ghost_avoidance);
+	}
 	// taster //
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;

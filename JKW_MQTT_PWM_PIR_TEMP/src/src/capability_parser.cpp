@@ -30,6 +30,7 @@ bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep)
 		} else {
 			temp[p]=0x00;
 			//Serial.printf("parsing. input: %s vs. key %s\r\n",temp,key);
+			yield(); // might take some time. call yield to avoid the trigger of WDT
 			if(!strcmp((const char*)key,(const char*)temp)){ // if this is my key
 				if(strcmp((const char*)dep,(const char*)"")){ // if i have a dependency
 					if(ensure_dep(p_input,dep)){ // ensure depency is part of the config string or add it
@@ -76,11 +77,12 @@ bool capability_parser::parse_wide(unsigned char* input, uint8_t* key_word, uint
 // dep is a dependency as always
 bool capability_parser::parse_wide(unsigned char* input, const char* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep){
 	char temp_key[15]; // max key width is 15 byte (way to long)
-	if(key_end>16){
-		key_end = 16;
+	if(key_end>255){
+		key_end = 255; // uint8  max is 0..255
 	}
+
 	// loop over all possible pins (limit upper end to 16)
-	for (uint8_t i = key_start; i <= key_end; i++) {
+	for (uint16_t i = key_start; i <= key_end; i++) {
 		if(i>=6 && i<=11){
 			// gpio 6 to 11 should not be used, connection toward flash, controller will crash
 			continue;
