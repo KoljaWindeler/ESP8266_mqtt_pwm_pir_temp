@@ -16,15 +16,17 @@ class xiaomi_vacWorld(hass.Hass):
         self.mct = 20*60 # minimum clean time 20min
         self.listen_state(self.presents,"binary_sensor.someone_is_home")
         self.vacs = ["vacuum.xiaomi_vacuum_cleaner","vacuum.xiaomi_vacuum_cleaner_2"]
+        self.vac_clean_interval = [2,1]
         self.cleaning_started = []
         self.tct = [] # total cleaning time
         self.is_cleaning = [] # status
-        
+
         for vac in self.vacs:
             self.listen_state(self.cleaning,vac)
             self.cleaning_started.append(time.time())
             self.tct.append(0)
             self.is_cleaning.append(False)
+        self.reset()
 
     def g_tct(self,id):
         if(self.is_cleaning[id]):
@@ -63,12 +65,11 @@ class xiaomi_vacWorld(hass.Hass):
                     self.call_service("vacuum/start", entity_id=vac)
                 else:
                     self.log("no cleaning, autostart off")
-                
+
 
     def reset(self, entity="", attribute="", old="", new="", kwargs=""):
         for vac in self.vacs:
-            self.tct[self.vacs.index(vac)] = 0
-            self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(vac)),state="off")
-
-
+            if(datetime.datetime.today().weekday() % self.vac_clean_interval[self.vacs.index(vac)]==0):
+               self.tct[self.vacs.index(vac)] = 0
+               self.set_state("input_boolean.cleaning_done_today_"+str(self.vacs.index(vac)),state="off")
 

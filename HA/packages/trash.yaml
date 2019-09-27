@@ -55,6 +55,10 @@ automation:
         hours: 19
         minutes: 00
         seconds: 00
+      - platform: time_pattern
+        hours: 17
+        minutes: 00
+        seconds: 00
     condition:
       condition: or
       conditions:

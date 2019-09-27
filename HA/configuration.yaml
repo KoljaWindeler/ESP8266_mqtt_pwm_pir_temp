@@ -151,3 +151,13 @@ camera:
 
 
 
+group:
+  IOT255_switch:
+  IOT0_switch:
+  IOT1_switch:
+  IOT255_light:
+  IOT0_light:
+  IOT1_light:
+  IOT255_sensor:
+  IOT0_sensor:
+  IOT1_sensor:

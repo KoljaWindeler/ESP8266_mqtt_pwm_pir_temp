@@ -1,3 +1,20 @@
+name: My Awesome Home
+resources:
+  - type: js
+    url: /local/monster-card.js
+  - type: js
+    url: /local/group-card.js
+  - type: module
+    url: /local/compact-custom-header.js?v=0.0.1
+
+background: >-
+  center / cover no-repeat
+  url("/local/background.jpg")
+  fixed
+
+cch:
+   background: 'rgba(255, 152, 0, 0.9)'
+
 views:
   - theme: dark-mode
 ############## home #########################
@@ -70,7 +87,7 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev2
+                entity: switch.dev8
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -175,8 +192,6 @@ views:
            tap_action:
              action: toggle
            entity: light.dev10
-#           icon: 'mdi:download-network'
- #          name: MediaPC
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -691,6 +706,70 @@ views:
     title: Signals
 #######################################
   - cards:
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT1
+        group: group.iot1_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT1
+        group: group.iot1_light
+
+    icon: 'mdi:home-floor-1'
+    title: All lights
+#######################################
+  - cards:
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT0
+        group: group.iot0_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT0
+        group: group.iot0_light
+
+    icon: 'mdi:home-floor-0'
+    title: All lights
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity
+        name: Basement Humidity
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity_stat_mean
+        name: Basement Humidity
+        type: sensor 
+      - entities: 
+          - switch.dev4_gpio_5
+        title: Basement Ventilation
+        type: history-graph
+
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT255
+        group: group.iot255_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT255
+        group: group.iot255_light
+
+    icon: 'mdi:home-floor-b'
+    title: All lights
+#######################################
+  - cards:
      - show_empty: true
        card:
          type: entities
@@ -713,11 +792,6 @@ views:
   - cards:
       - detail: 2
         graph: line
-        entity: sensor.dev4_humidity
-        name: Basement Humidity
-        type: sensor 
-      - detail: 2
-        graph: line
         entity: sensor.dev16_em_cur
         name: EM current
         type: sensor 
@@ -726,10 +800,10 @@ views:
         entity: sensor.dev16_em_tot
         name: EM total
         type: sensor 
+      - type: entities
+        entities:
+          - input_boolean.approx_warn
+        show_header_toggle: false
     title: T
 #######################################
-name: My Awesome Home
-resources:
-  - type: js
-    url: /local/monster-card.js
 

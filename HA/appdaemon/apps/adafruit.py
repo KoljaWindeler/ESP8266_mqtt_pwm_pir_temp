@@ -1,4 +1,4 @@
-import appdaemon.plugins.hass.hassapi as hass
+import appdaemon.plugins.hass.hassapi as hass 
 import datetime, time
 import urllib.request
 

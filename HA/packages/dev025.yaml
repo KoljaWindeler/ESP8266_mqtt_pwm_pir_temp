@@ -29,3 +29,8 @@ sensor:
     fname: "25 Beamer Shelly"
 
 # -----------------------------------------------
+
+input_boolean:
+  approx_warn:
+    name: "approximation warning"
+    initial: off

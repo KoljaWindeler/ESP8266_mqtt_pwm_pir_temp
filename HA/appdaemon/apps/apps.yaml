@@ -62,3 +62,9 @@ presents:
 IR:
   module: IR
   class: irWorld
+vent:
+  module: dev4
+  class: ventWorld
+groups:
+  module: groups
+  class: create_group

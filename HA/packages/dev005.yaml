@@ -4,6 +4,7 @@ homeassistant:
   customize:
     light.dev5:
       friendly_name: "Kitchen Kronleuchter"
+      icon: "mdi:silverware"
       retain: True
     binary_sensor.dev5_button:
       friendly_name: "Kitchen Kronleuchter button"

@@ -7,7 +7,7 @@
     action:
       service: frontend.set_theme
       data:
-        name: darkorange
+        name: darkorange_trans
 # ------------------- autoload theme ------------------------
 # ------------------- cellar new --------------------------------
   - alias: cellar_light_on_motion
