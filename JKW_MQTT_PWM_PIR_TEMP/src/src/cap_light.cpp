@@ -99,6 +99,7 @@ void light::setColor(uint8_t r, uint8_t g, uint8_t b){
 void light::toggle(){
 	if (!m_state.get_value()) {
 		m_light_current = m_light_backup;
+		m_light_target = m_light_backup; // not sure if this is needed
 	} else {
 		m_light_backup  = m_light_target; // save last target value to resume later on
 		m_light_current = (led){ 0, 0, 0 };
