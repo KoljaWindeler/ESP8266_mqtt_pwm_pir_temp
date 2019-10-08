@@ -77,12 +77,8 @@ class EntranceWorld2(hass.Hass):
 
         now = datetime.now().time()
         ele = float(self.get_state("sun.sun", attribute="elevation"))
+        rising = self.get_state("sun.sun", attribute="rising")
         self.log("current elevation "+str(ele))
-        if(self.sun_up()):
-            self.log("sun is up")
-        else:
-            self.log("sun is down")
-
 
         if(w=="on"):
             self.log("request to turn on lights")
@@ -96,24 +92,25 @@ class EntranceWorld2(hass.Hass):
                 self.log("=================================")
         elif(w=="auto"):
             self.log("request in auto mode")
-            if(ele < 2 and now >= time(13,00,00)):
-                self.log("sun is low and its evening")
-                if (now >= time(23,00,00)):
-                    self.log("after 11 turn off")
-                    self.turn_off("light.joiner_outdoor")
-                    self.log("=================================")
-                elif(now >= time(22,00,00) and self.get_state("binary_sensor.everyone_is_home") == "on"):
-                    self.log("after 10 and everyone is home, turn off")
-                    self.turn_off("light.joiner_outdoor")
-                    self.log("=================================")
-                else:
-                    self.log("before 10 or not everyone is home yet, turn on")
-                    self.turn_on("light.joiner_outdoor")
-                    self.log("=================================")
-            else:
-                self.log("its early or the sun is up, turning off")
+            if(now >= time(23,00,00)):
+                self.log("after 11 turn off")
                 self.turn_off("light.joiner_outdoor")
-                self.log("=================================")
+            elif(now >= time(22,00,00) and self.get_state("binary_sensor.everyone_is_home") == "on"):
+                self.log("after 10 and everyone is home, turn off")
+                self.turn_off("light.joiner_outdoor")
+            elif(ele < 2 and rising == false):
+                self.log("sun low and falling, must be evening, turn on")
+                self.turn_on("light.joiner_outdoor")
+            elif(ele >= 2):
+                self.log("sun is up, turn off")
+                self.turn_off("light.joiner_outdoor")
+            elif(now >= time(6,0,0)):
+                self.log(">= six AM but still dark, turn on")
+                self.turn_on("light.joiner_outdoor")
+            else:
+                self.log("before six in the nigth, turn off")
+                self.turn_off("light.joiner_outdoor")
+            self.log("=================================")
 
 
     ######################################################
