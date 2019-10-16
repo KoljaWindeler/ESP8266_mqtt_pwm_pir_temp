@@ -40,6 +40,7 @@ public:
 		bool parse(uint8_t * config);
 		uint8_t * get_key();
 		bool publish();
+		bool consume_interrupt();
 private:
 		mqtt_parameter_8 m_state;
 		uint8_t m_counter;
@@ -55,6 +56,7 @@ private:
 		uint32_t m_interrupt_counter;
 		bool m_discovery_pub;
 		uint8_t m_ghost_avoidance;
+		bool m_interrupt_ready;
 	};
 
 
