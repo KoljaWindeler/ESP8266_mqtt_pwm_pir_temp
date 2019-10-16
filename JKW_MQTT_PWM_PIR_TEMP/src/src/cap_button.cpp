@@ -14,6 +14,7 @@ button::button(){
 	m_pin_active = false;
 	m_discovery_pub = false;
 	m_ghost_avoidance = 0;
+	m_interrupt_ready = false;
 };
 
 button::~button(){
@@ -140,6 +141,8 @@ bool button::init(){
 
 
 bool button::loop(){
+	consume_interrupt();
+		
 	/// start wifimanager config portal if we pushed the button more than 10 times in a row ///
 	if (m_counter >= 10 && millis() - m_timer_button_down > BUTTON_TIMEOUT) {
 		Serial.println(F("[SYS] Rebooting to setup mode"));
@@ -251,45 +254,57 @@ bool button::publish(){
 	return false;
 }
 
+bool button::consume_interrupt(){
+	if(m_interrupt_ready){
+		// processed
+		m_interrupt_ready = false; 
+		
+		// ghost switching avoidance, Shelly switches tend to see little peaks << 100ms as input
+		if(m_ghost_avoidance){
+			bool m_pin_state = digitalRead(m_pin);
+			delay(m_ghost_avoidance);
+			if(digitalRead(m_pin) != m_pin_state){
+				return false;
+			}
+		} 
+	
+		// Push-Button (Taster)
+		if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
+			m_pin_active = true; // button is pushed
+		}
+
+		// avoid bouncing
+		if (millis() - m_timer_debounce > BUTTON_DEBOUNCE) {
+			// toggle status of both lights
+			if(p_light){
+				((light*)p_light)->toggle();
+			}
+			// keep counting if we're fast enough
+			if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
+				m_counter++;
+			} else {
+				m_counter = 1;
+			}
+			// check time fornext push
+			m_timer_button_down = millis();
+			// publish change
+			m_state.set(0);
+			// make sure that the loop checks in 0.1s from now if the button is still down
+			m_timer_checked = millis() - BUTTON_CHECK_INTERVALL + BUTTON_FAST_CHECK_INTERVALL;
+
+			logger.print(TOPIC_BUTTON, F("push nr "));
+			Serial.println(m_counter);
+		};
+
+		// avoid bouncing, and recogize the state changes (Push-Button will count hold seconds, based on this)
+		m_timer_debounce = millis();
+		return true;
+	}
+	return false;
+}
+
 // external button push
 void button::interrupt(){
-	// ghost switching avoidance, Shelly switches tend to see little peaks << 100ms as input
-	if(m_ghost_avoidance){
-		bool m_pin_state = digitalRead(m_pin);
-		delay(m_ghost_avoidance);
-		if(digitalRead(m_pin) != m_pin_state){
-			return;
-		}
-	}
-	// Push-Button (Taster)
-	if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
-		m_pin_active = true; // button is pushed
-	}
-
-	// avoid bouncing
-	if (millis() - m_timer_debounce > BUTTON_DEBOUNCE) {
-		// toggle status of both lights
-		if(p_light){
-			((light*)p_light)->toggle();
-		}
-		// keep counting if we're fast enough
-		if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
-			m_counter++;
-		} else {
-			m_counter = 1;
-		}
-		// check time fornext push
-		m_timer_button_down = millis();
-		// publish change
-		m_state.set(0);
-		// make sure that the loop checks in 0.1s from now if the button is still down
-		m_timer_checked = millis() - BUTTON_CHECK_INTERVALL + BUTTON_FAST_CHECK_INTERVALL;
-
-		logger.print(TOPIC_BUTTON, F("push nr "));
-		Serial.println(m_counter);
-	};
-
-	// avoid bouncing, and recogize the state changes (Push-Button will count hold seconds, based on this)
-	m_timer_debounce = millis();
+	m_interrupt_ready = true;
 }
 #endif
