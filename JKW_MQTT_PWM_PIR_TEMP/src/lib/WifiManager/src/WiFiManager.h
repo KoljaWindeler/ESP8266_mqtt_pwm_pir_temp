@@ -176,6 +176,9 @@ class WiFiManager
 		int           getRSSIasQuality(int RSSI);
 		String        _ssid                   = "";
 		String        _pass                   = "";
+		
+	void registerButton(capability * p_obj);
+}
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
@@ -242,6 +245,7 @@ class WiFiManager
     // kolja helper
     mqtt_data     *m_mqtt;
     uint8_t       m_mqtt_sizes[8];
+	capability 	  *m_button;
 
     boolean       connect;
     boolean       _debug = true;
