@@ -91,7 +91,6 @@ const char * WiFiManagerParameter::getCustomHTML(){
 
 WiFiManager::WiFiManager(){
 	_customIdElement = "";
-	m_button	 = NULL;
 }
 
 void WiFiManager::resetParameter(){
@@ -264,8 +263,8 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 		//  Serial.print("+");
 		// }
 		// check button press
-		if(m_button != NULL){
-			m_button->consume_interrupt();
+		if(_buttonCallback != NULL){
+			_buttonCallback();
 		}
 
 		if (Serial.available()) {
@@ -1183,6 +1182,10 @@ void WiFiManager::setLightToggleCallback( void (*func)(void) ){
 	_lightToggleCallback = func;
 }
 
+void WiFiManager::setButtonCallback( void (*func)(void) ){
+	_buttonCallback = func;
+}
+
 // sets a custom element to add to head, like a new style tag
 void WiFiManager::setCustomHeadElement(const char * element){
 	_customHeadElement = element;
@@ -1206,9 +1209,6 @@ void WiFiManager::DEBUG_WM(Generic text){
 	}
 }
 
-void WiFiManager::registerButton(capability * p_obj){
-	m_button = p_obj;
-}
 
 int WiFiManager::getRSSIasQuality(int RSSI){
 	int quality = 0;
