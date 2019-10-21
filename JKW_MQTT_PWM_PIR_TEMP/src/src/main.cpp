@@ -532,6 +532,9 @@ void loadPheripherals(uint8_t * config){
 #endif
 #ifdef WITH_BUTTON
 	bake(new button(), &p_button, config);
+	if(p_button!=NULL){
+		wifiManager.registerButton(p_button);
+	}
 #endif
 #ifdef WITH_SL
 	bake(new simple_light(), &p_simple_light, config);
