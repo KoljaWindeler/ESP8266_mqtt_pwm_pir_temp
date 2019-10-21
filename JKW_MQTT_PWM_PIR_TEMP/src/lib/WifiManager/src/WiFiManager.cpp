@@ -18,7 +18,7 @@ WiFiManagerParameter::WiFiManagerParameter(const char * custom){
 	_placeholder = NULL;
 	_length      = 0;
 	_value       = NULL;
-
+	
 	_customHTML = custom;
 }
 
@@ -91,6 +91,7 @@ const char * WiFiManagerParameter::getCustomHTML(){
 
 WiFiManager::WiFiManager(){
 	_customIdElement = "";
+	m_button	 = NULL;
 }
 
 void WiFiManager::resetParameter(){
@@ -262,6 +263,10 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 		//  t=millis();
 		//  Serial.print("+");
 		// }
+		// check button press
+		if(m_button != NULL){
+			m_button->consume_interrupt();
+		}
 
 		if (Serial.available()) {
 			char_buffer = Serial.read();
@@ -1199,6 +1204,10 @@ void WiFiManager::DEBUG_WM(Generic text){
 		Serial.print("[WM] ");
 		Serial.println(text);
 	}
+}
+
+void WiFiManager::registerButton(capability * p_obj){
+	m_button = p_obj;
 }
 
 int WiFiManager::getRSSIasQuality(int RSSI){
