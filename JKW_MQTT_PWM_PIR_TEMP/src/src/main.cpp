@@ -533,7 +533,7 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_BUTTON
 	bake(new button(), &p_button, config);
 	if(p_button!=NULL){
-		wifiManager.registerButton(p_button);
+		wifiManager.setButtonCallback(WifiButton);
 	}
 #endif
 #ifdef WITH_SL

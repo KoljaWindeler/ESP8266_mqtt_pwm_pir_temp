@@ -102,6 +102,12 @@ void ICACHE_RAM_ATTR fooButton(){
 	}
 }
 
+void WifiButton(){
+	if(p_button){
+		((button*)p_button)->consume_interrupt();
+	}
+}
+
 bool button::init(){
 	logger.print(TOPIC_GENERIC_INFO, F("Button init: "), COLOR_GREEN);
 

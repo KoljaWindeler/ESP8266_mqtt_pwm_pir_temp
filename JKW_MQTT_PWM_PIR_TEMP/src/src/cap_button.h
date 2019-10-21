@@ -59,5 +59,6 @@ private:
 		bool m_interrupt_ready;
 	};
 
+void WifiButton();
 
 #endif // ifndef button_h
