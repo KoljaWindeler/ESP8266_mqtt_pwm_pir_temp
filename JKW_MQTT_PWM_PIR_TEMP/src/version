@@ -1,7 +1,7 @@
 20191021
 	-	reworked button handling. No interaction during interrupt
-                DATA:    [=====     ]  52.2% (used 42728 bytes from 81920 bytes)
-                PROGRAM: [====      ]  44.0% (used 421500 bytes from 958448 bytes)
+		DATA:    [=====     ]  52.2% (used 42728 bytes from 81920 bytes)
+		PROGRAM: [====      ]  44.0% (used 421500 bytes from 958448 bytes)
 20190913
 	-	added GHOST keyword for GHOST button
 		DATA:    [=====     ]  52.1% (used 42648 bytes from 81920 bytes)

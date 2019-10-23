@@ -121,6 +121,7 @@ bool button::init(){
 	if(m_mode_toggle_switch == BUTTON_MODE_SWITCH){
 		sprintf_P(m_msg_buffer,PSTR("switch on GPIO %i "),m_pin);
 		attachInterrupt(digitalPinToInterrupt(m_pin), fooButton, CHANGE);
+		m_polarity = !digitalRead(m_pin); // predict next state
 	} else {
 		sprintf_P(m_msg_buffer,PSTR("push button on GPIO %i "),m_pin);
 		logger.p(m_msg_buffer);
@@ -148,7 +149,7 @@ bool button::init(){
 
 bool button::loop(){
 	consume_interrupt();
-		
+
 	/// start wifimanager config portal if we pushed the button more than 10 times in a row ///
 	if (m_counter >= 10 && millis() - m_timer_button_down > BUTTON_TIMEOUT) {
 		Serial.println(F("[SYS] Rebooting to setup mode"));
@@ -263,20 +264,21 @@ bool button::publish(){
 bool button::consume_interrupt(){
 	if(m_interrupt_ready){
 		// processed
-		m_interrupt_ready = false; 
-		
+		m_interrupt_ready = false;
+
 		// ghost switching avoidance, Shelly switches tend to see little peaks << 100ms as input
 		if(m_ghost_avoidance){
-			bool m_pin_state = digitalRead(m_pin);
 			delay(m_ghost_avoidance);
-			if(digitalRead(m_pin) != m_pin_state){
+			if(digitalRead(m_pin) != m_polarity){
 				return false;
 			}
-		} 
-	
+		}
+
 		// Push-Button (Taster)
 		if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
 			m_pin_active = true; // button is pushed
+		} else {
+			m_polarity = !m_polarity; // predict next change
 		}
 
 		// avoid bouncing
