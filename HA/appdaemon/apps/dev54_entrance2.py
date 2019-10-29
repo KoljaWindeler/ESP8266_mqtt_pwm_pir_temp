@@ -1,5 +1,5 @@
 import appdaemon.plugins.hass.hassapi as hass
-from datetime import datetime, time
+from datetime import datetime, time 
 
 class EntranceWorld2(hass.Hass):
 
@@ -98,7 +98,7 @@ class EntranceWorld2(hass.Hass):
             elif(now >= time(22,00,00) and self.get_state("binary_sensor.everyone_is_home") == "on"):
                 self.log("after 10 and everyone is home, turn off")
                 self.turn_off("light.joiner_outdoor")
-            elif(ele < 2 and rising == false):
+            elif(ele < 2 and now >= time(13,0,0)):
                 self.log("sun low and falling, must be evening, turn on")
                 self.turn_on("light.joiner_outdoor")
             elif(ele >= 2):

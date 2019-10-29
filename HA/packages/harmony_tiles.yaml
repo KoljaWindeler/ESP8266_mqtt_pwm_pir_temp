@@ -3,6 +3,8 @@ binary_sensor:
     sensors:
       harmony:
         value_template: false
+      harmony_beamer:
+        value_template: false
 
 
 
@@ -18,7 +20,7 @@ script:
         entity_id: remote.tvhub
         data:
           command: VolumeUp
-          device: 47580278
+          device: 64177010
           num_repeats: 10
           delay_secs: 0.0
   tvmute:
@@ -27,14 +29,14 @@ script:
         entity_id: remote.tvhub
         data:
           command: Mute
-          device: 47580278
+          device: 64177010
   tvvolumedown:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: VolumeDown
-          device: 47580278
+          device: 64177010
           num_repeats: 10
           delay_secs: 0.0
   firedown:
@@ -43,42 +45,42 @@ script:
         entity_id: remote.tvhub
         data:
           command: DirectionDown
-          device: 49174954
+          device: 64178691
   fireup:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: DirectionUp
-          device: 49174954
+          device: 64178691
   fireok:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: OK
-          device: 49174954
+          device: 64178691
   fireleft:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: DirectionLeft
-          device: 49174954
+          device: 64178691
   fireright:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: DirectionRight
-          device: 49174954
+          device: 64178691
   firehome:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: Home
-          device: 49174954
+          device: 64178691
   tvoff:
     sequence:
       - service: remote.turn_on
@@ -90,13 +92,25 @@ script:
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
-          activity: "29555877"
+          activity: "40515128"
   start_chromaudio:
     sequence:
       - service: remote.turn_on
         entity_id: remote.tvhub
         data:
-          activity: "32486021"
+          activity: "40817320"
+  start_beamer:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "40703112"
+  beameroff:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "-1"
   start_chrom:
     sequence:
       - service: remote.turn_on
@@ -109,12 +123,12 @@ script:
         entity_id: remote.tvhub
         data:
           command: ChannelUp
-          device: 53034729
+          device: 47580277
   tvdown:
     sequence:
       - service: remote.send_command
         entity_id: remote.tvhub
         data:
           command: ChannelDown
-          device: 53034729
+          device: 47580277
 

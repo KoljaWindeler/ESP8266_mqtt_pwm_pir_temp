@@ -4,7 +4,7 @@ class PresentsWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Presents Service")
-		self.white_list = ["light.dev12","light.dev12_2","light.dev15"]
+		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor"]
 		self.listen_state(self.presents, "binary_sensor.someone_is_home") # 5 min away
 
 	def presents(self, entity, attribute, old, new,kwargs):
@@ -30,4 +30,4 @@ class PresentsWorld(hass.Hass):
 					m += self.friendly_name(l)+" ("+l+"), "
 				m = m[0:len(m)-2]+" so you might want to tunnel in and turn it off remotly" # remove tailing ", "
 				self.log(m)
-				self.call_service("notify/pb", title="connection alert", message=m)
+				self.call_service("notify/pb", title="you can leave your LED on", message=m)

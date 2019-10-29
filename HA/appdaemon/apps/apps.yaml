@@ -68,3 +68,6 @@ vent:
 groups:
   module: groups
   class: create_group
+dingdong:
+  module: dingdong
+  class: DingDongWorld

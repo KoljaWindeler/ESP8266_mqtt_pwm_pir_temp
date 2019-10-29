@@ -27,3 +27,17 @@ sensor:
     fname: "58 MediaPC"
 
 # -----------------------------------------------
+
+binary_sensor:
+  - platform: ping
+    name: mediapc_ping
+    host: 192.168.2.35
+
+# -----------------------------------------------
+
+switch:
+  - platform: command_line
+    switches:
+      mediapc_shutdown:
+        command_off: net rpc shutdown -I 192.168.2.53 -U kolja%123
+

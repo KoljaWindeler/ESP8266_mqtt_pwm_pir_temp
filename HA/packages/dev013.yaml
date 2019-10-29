@@ -19,6 +19,7 @@ homeassistant:
       device_class: "temperature"
     sensor.dev13_adc:
       friendly_name: "Leakage"
+      unit_of_measurement: "ºC"
 
 # -----------------------------------------------
 

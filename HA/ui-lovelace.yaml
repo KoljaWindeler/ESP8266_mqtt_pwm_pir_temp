@@ -6,6 +6,8 @@ resources:
     url: /local/group-card.js
   - type: module
     url: /local/compact-custom-header.js?v=0.0.1
+  - type: module
+    url: /local/mini-graph-card-bundle.js
 
 background: >-
   center / cover no-repeat
@@ -192,6 +194,24 @@ views:
            tap_action:
              action: toggle
            entity: light.dev10
+      - type: horizontal-stack
+        cards:
+         - icon: 'mdi:laptop'
+           name: BeamerPc
+           service: script.turn_on
+           type: entity-button
+           tap_action:
+             service: script.start_beamer
+             action: call-service
+           entity: binary_sensor.always_on
+         - icon: 'mdi:power'
+           name: BeamerOff
+           service: script.turn_on
+           type: entity-button
+           tap_action:
+             service: script.beameroff
+             action: call-service
+           entity: binary_sensor.harmony_beamer
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -800,10 +820,37 @@ views:
         entity: sensor.dev16_em_tot
         name: EM total
         type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev13_adc
+        name: leakage
+        type: sensor 
       - type: entities
         entities:
           - input_boolean.approx_warn
         show_header_toggle: false
+      - type: custom:mini-graph-card
+        name: 'Energy Year'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        maxDays: 365
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+      - type: custom:mini-graph-card
+        name: 'Energy Month'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+      - type: custom:mini-graph-card
+        formater: 'yyyy-mm-dd'
+        name: 'Energy Month abs'
+        diplay_mode: 'abs'
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
     title: T
 #######################################
 
