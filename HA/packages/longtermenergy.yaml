@@ -1,0 +1,16 @@
+notify:
+  - platform: file
+    name: filenotify
+    filename: /opt/counter_total.csv
+    #timestamp: true
+
+automation:
+  - alias: sensor_values_to_file
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        at: '23:59:55'
+    action:
+      - service: notify.filenotify
+        data_template: 
+          message: " {{now().strftime("%Y-%m-%d")}},{{ states.sensor.long_term_power.state }}"
