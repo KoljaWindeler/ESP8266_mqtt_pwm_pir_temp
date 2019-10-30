@@ -13,3 +13,9 @@ automation:
       - service: notify.filenotify
         data_template: 
           message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.dev16_em_tot.state }}"
+
+
+sensor:
+  - platform: load_external
+    name: long_term_power
+    feed_path: '/opt/counter_total.csv'
