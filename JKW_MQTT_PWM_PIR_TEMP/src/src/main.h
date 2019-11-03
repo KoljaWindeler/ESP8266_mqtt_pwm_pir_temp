@@ -135,6 +135,7 @@
 	extern capability * p_rec;
 	extern capability * p_em;
 	extern capability * p_ir;
+	extern capability * p_SerSer;
 
 	extern const uint8_t intens[100];
 
@@ -163,6 +164,7 @@
 #include "cap_freq.h"
 #include "cap_record.h"
 #include "cap_energy_meter.h"
+#include "cap_SerialServer.h"
 
 #endif // ifndef main_h
 

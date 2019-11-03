@@ -550,6 +550,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_PIR
 	bake(new PIR(), &p_pir, config);                 // Kolja_v2
 #endif
+#ifdef WITH_SERIALSERVER
+	bake(new SerialServer(), &p_SerSer, config);
+#endif
 #ifdef WITH_DHT22
 	bake(new J_DHT22(), &p_dht, config);
 #endif
