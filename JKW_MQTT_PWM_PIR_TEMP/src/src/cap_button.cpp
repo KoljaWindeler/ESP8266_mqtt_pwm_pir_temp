@@ -294,7 +294,7 @@ bool button::consume_interrupt(){
 			// toggle status of both lights, but only do that if there is a light //
 			// and the NO_Button_to_light_connection is false (so they are actually connected)
 			// or if we are offline (sort of an backup mechanism 
-			if(p_light && (!m_no_BL_conn || !network.connected())}){
+			if(p_light && (!m_no_BL_conn || !network.connected())){
 				((light*)p_light)->toggle();
 			}
 			// keep counting if we're fast enough
