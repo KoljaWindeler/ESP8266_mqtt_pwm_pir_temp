@@ -51,13 +51,13 @@ bool button::parse(uint8_t* config){
 		logger.print(TOPIC_GENERIC_INFO, F("Enable anti-ghosting "), COLOR_PURPLE);
 		logger.pln(m_ghost_avoidance);
 	}
-	
+
 	// keyword "NOBSLCONN" says that we don't want to connect the button to the light
 	// so triggering the button shall NOT toggle the light
-	if(cap.parse(config,(uint8_t*)"NOBLCONN")){ 
+	if(cap.parse(config,(uint8_t*)"NOBLCONN")){
 		m_no_BL_conn = true;
 	}
-	
+
 	// taster //
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;
@@ -159,7 +159,7 @@ bool button::loop(){
 	consume_interrupt();
 
 	/// start wifimanager config portal if we pushed the button more than 10 times in a row ///
-	if (m_counter >= 10 && millis() - m_timer_button_down > BUTTON_TIMEOUT) {
+	if (m_counter >= 20 && millis() - m_timer_button_down > BUTTON_TIMEOUT) {
 		Serial.println(F("[SYS] Rebooting to setup mode"));
 		delay(200);
 		wifiManager.startConfigPortal(CONFIG_SSID);
@@ -192,6 +192,7 @@ bool button::loop(){
 			// RELEASE push - button after holding for n*BUTTON_LONG_PUSH (1000ms), SWITCH never gets here
 			// set the state to BUTTON_RELEASE_OFFSET (10) + N, where N = how many sec we've hold down the key
 			m_state.set( BUTTON_RELEASE_OFFSET + (millis() - m_timer_button_down) / BUTTON_LONG_PUSH );
+			m_timer_button_down = millis();
 		}
 	}
 	return false; // i did nothing that should be none interrupted
@@ -293,7 +294,7 @@ bool button::consume_interrupt(){
 		if (millis() - m_timer_debounce > BUTTON_DEBOUNCE) {
 			// toggle status of both lights, but only do that if there is a light //
 			// and the NO_Button_to_light_connection is false (so they are actually connected)
-			// or if we are offline (sort of an backup mechanism 
+			// or if we are offline (sort of an backup mechanism
 			if(p_light && (!m_no_BL_conn || !network.connected())){
 				((light*)p_light)->toggle();
 			}

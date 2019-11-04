@@ -1,3 +1,7 @@
+20191104
+	- added NOBLCONN and increased button push to setup count to 20
+		DATA:    [=====     ]  52.2% (used 42744 bytes from 81920 bytes)
+		PROGRAM: [====      ]  44.1% (used 422444 bytes from 958448 bytes)
 20191021
 	-	reworked button handling. No interaction during interrupt
 		DATA:    [=====     ]  52.2% (used 42728 bytes from 81920 bytes)

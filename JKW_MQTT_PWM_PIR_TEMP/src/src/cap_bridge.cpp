@@ -1,9 +1,7 @@
 #include <cap_bridge.h>
-
+#ifdef WITH_RFB
 // simply the constructor
-bridge::bridge(){
-	sprintf((char*)key,"RFB");
-};
+bridge::bridge(){};
 
 // simply the destructor
 bridge::~bridge(){
@@ -20,7 +18,7 @@ bool bridge::parse(uint8_t* config){
 
 // the will be requested to check if the key is in the config strim
 uint8_t* bridge::get_key(){
-	return key;
+	return (uint8_t*)"RFB";
 }
 
 // will be callen if the key is part of the config
@@ -29,7 +27,7 @@ bool bridge::init(){
 	logger.println(TOPIC_GENERIC_INFO, F("Bridge init"), COLOR_GREEN);
 	logger.enable_serial_trace(false);
 	Serial.end();
-	delay(1000);
+	delay(50);
 	Serial.begin(9600);
 
 	m_msg_state = 0;
@@ -135,12 +133,12 @@ bool bridge::loop(){
 				//char m[80];
 				//sprintf(m,"len: %i, cmd: %i, [chk]:%x",rfb.len,rfb.cmd,rfb.chk);
 				if(rfb.cmd==5 && rfb.len>=18){
-					status.batt = rfb.data[17];
-					status.tamper = rfb.data[9];
-					status.reed = rfb.data[4];
+					//status.batt = rfb.data[17];
+					//status.tamper = rfb.data[9];
+					//status.reed = rfb.data[4];
+					rfb.rdy=true;
 				}
 				//logger.pln(m);
-				rfb.rdy=true;
 				m_msg_state++;
 			}
 			m_recv_state = RFB_START_0;
@@ -215,3 +213,4 @@ bool bridge::publish(){
 	}
 	return false;
 }
+#endif
