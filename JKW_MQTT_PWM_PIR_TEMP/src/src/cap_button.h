@@ -53,6 +53,7 @@ private:
 		bool m_pullup;
 		bool m_polarity;
 		bool m_pin_active;
+		bool m_no_BL_conn;
 		uint32_t m_interrupt_counter;
 		bool m_discovery_pub;
 		uint8_t m_ghost_avoidance;
