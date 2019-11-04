@@ -15,6 +15,7 @@ button::button(){
 	m_discovery_pub = false;
 	m_ghost_avoidance = 0;
 	m_interrupt_ready = false;
+	m_no_BL_conn = false;
 };
 
 button::~button(){
@@ -50,6 +51,13 @@ bool button::parse(uint8_t* config){
 		logger.print(TOPIC_GENERIC_INFO, F("Enable anti-ghosting "), COLOR_PURPLE);
 		logger.pln(m_ghost_avoidance);
 	}
+	
+	// keyword "NOBSLCONN" says that we don't want to connect the button to the light
+	// so triggering the button shall NOT toggle the light
+	if(cap.parse(config,(uint8_t*)"NOBLCONN")){ 
+		m_no_BL_conn = true;
+	}
+	
 	// taster //
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;
@@ -283,8 +291,10 @@ bool button::consume_interrupt(){
 
 		// avoid bouncing
 		if (millis() - m_timer_debounce > BUTTON_DEBOUNCE) {
-			// toggle status of both lights
-			if(p_light){
+			// toggle status of both lights, but only do that if there is a light //
+			// and the NO_Button_to_light_connection is false (so they are actually connected)
+			// or if we are offline (sort of an backup mechanism 
+			if(p_light && (!m_no_BL_conn || !network.connected())}){
 				((light*)p_light)->toggle();
 			}
 			// keep counting if we're fast enough
