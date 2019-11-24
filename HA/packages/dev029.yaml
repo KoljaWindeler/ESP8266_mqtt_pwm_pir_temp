@@ -25,6 +25,6 @@ homeassistant:
 sensor:
   - platform: mqtt_jkw
     name: "dev29"
-    fname: "029 Warm Water"
+    fname: "29 Warm Water"
 
 # -----------------------------------------------

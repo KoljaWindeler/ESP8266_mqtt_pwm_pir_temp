@@ -3683,6 +3683,7 @@
         line_width: 5,
         compress: false,
         smoothing: false,
+        unit: '',
         maxDays: 30,
         formater: 'dd.mm.yyyy',
         display_mode: 'abs',
@@ -4032,7 +4033,7 @@
 
     renderSvgGradient(gradients) {
       if (!gradients) return;
-      const items = gradients.map((gradiemaxDaysnt, i) => {
+      const items = gradients.map((gradient, i) => {
         if (!gradient) return;
         return svg`
         <linearGradient id=${`grad-${this.id}-${i}`} gradientTransform="rotate(90)">

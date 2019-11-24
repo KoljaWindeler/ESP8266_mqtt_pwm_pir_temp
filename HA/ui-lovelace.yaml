@@ -4,8 +4,8 @@ resources:
     url: /local/monster-card.js
   - type: js
     url: /local/group-card.js
-  - type: module
-    url: /local/compact-custom-header.js?v=0.0.1
+#  - type: module
+#    url: /local/compact-custom-header.js?v=0.0.1
   - type: module
     url: /local/mini-graph-card-bundle.js
 
@@ -48,7 +48,7 @@ views:
             service: script.turn_on
             type: entity-button
             tap_action:
-              service: script.tvvolumedown
+              service: script.yamaha_vol_down
               action: call-service
             entity: binary_sensor.harmony
           - icon: 'mdi:volume-plus'
@@ -56,7 +56,7 @@ views:
             service: script.turn_on
             type: entity-button
             tap_action:
-              service: script.tvvolumeup
+              service: script.yamaha_vol_up
               action: call-service
             entity: binary_sensor.harmony
           - icon: 'mdi:cast-connected'
@@ -67,6 +67,8 @@ views:
               service: script.start_chromaudio
               action: call-service
             entity: binary_sensor.always_on
+#      - type: vertical-stack
+#        cards:
       - type: picture-entity
         entity: camera.cam_xia4
         name: Carlo
@@ -82,6 +84,18 @@ views:
             entity: sensor.dark_sky_temperature
             name: Outside
             type: sensor 
+      - type: horizontal-stack
+        cards:
+          - detail: 2
+            graph: line
+            entity: sensor.dhcp_master_kbyte_sec_received
+            name: Downstream
+            type: sensor 
+          - detail: 2
+            graph: line
+            entity: sensor.dev16_em_cur
+            name: House Power
+            type: sensor 
       - type: vertical-stack
         cards:
           - type: horizontal-stack
@@ -89,12 +103,14 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: switch.dev8
+                entity: light.dev56
+                name: Lampin C
               - type: entity-button
                 tap_action:
                   action: toggle
-#                entity: switch.dev4_gpio_12
-                entity: switch.dev4_gpio_12_autostart
+                entity: light.dev23
+                name: Vent Carlo
+                hold_action: more-info
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -105,9 +121,7 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev54
-                name: Ent. LED
-                hold_action: more-info
+                entity: switch.dev4_gpio_12_autostart
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -128,20 +142,30 @@ views:
                 tap_action:
                   action: toggle
                 entity: light.dev55
-                name: Lampin C
+                name: Lampin L.
               - type: entity-button
                 tap_action:
                   action: toggle
+                name: Light L.
                 entity: light.dev24
+          - type: picture-entity
+            entity: camera.cam_xia1
+            name: L.
     icon: 'mdi:home-assistant'
 ############# cams ##########################
   - cards:
       - type: picture-entity
         entity: camera.cam_dome1
         camera_view: live
+        name: Door
       - type: picture-entity
         entity: camera.cam_xia3
         camera_view: live
+        name: Garage
+      - type: picture-entity
+        entity: camera.cam_xia1
+        camera_view: live
+        name: L.
 #      - type: picture-entity
 #        entity: camera.cam_xia5
 #        camera_view: live
@@ -171,6 +195,7 @@ views:
       - type: picture-entity
         entity: camera.cam_xia4
         camera_view: live
+        name: Carlo
 #      - type: picture-entity
 #        entity: camera.cam_xia52
 #        camera_view: live
@@ -271,7 +296,7 @@ views:
                 service: script.turn_on
                 type: entity-button
                 tap_action:
-                  service: script.tvvolumeup
+                  service: script.yamaha_vol_up_2
                   action: call-service
                 entity: binary_sensor.harmony
               - icon: 'mdi:arrow-up-bold'
@@ -339,7 +364,7 @@ views:
                 service: script.turn_on
                 type: entity-button
                 tap_action:
-                  service: script.tvvolumedown
+                  service: script.yamaha_vol_down_2
                   action: call-service
                 entity: binary_sensor.harmony
               - icon: 'mdi:arrow-down-bold'
@@ -351,7 +376,15 @@ views:
                   action: call-service
                 entity: binary_sensor.harmony
       - type: media-control
+        entity: media_player.gmusic_player
+      - type: media-control
         entity: media_player.jkw_cast2
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: GMusic
+        group: group.google_music_media_player
+        show_header_toggle: false
     icon: 'mdi:cast-connected'
     title: Media
 ########### outside ############################
@@ -469,6 +502,7 @@ views:
         show_header_toggle: false
         entities:
           - binary_sensor.g_motion
+          - binary_sensor.dev17_motion
           - binary_sensor.dev6_motion
           - binary_sensor.dev8_motion
 #          - binary_sensor.dev10_motion
@@ -476,7 +510,7 @@ views:
           - binary_sensor.dev15_motion
           - binary_sensor.dev54_motion_1
           - binary_sensor.dev54_motion_2
-#          - binary_sensor.dev22_motion
+          - binary_sensor.dev57_motion
       - type: map
         entities:
           - entity: device_tracker.illuminum_kolja
@@ -507,7 +541,7 @@ views:
           - sensor.dev14_update
           - sensor.dev15_update
           - sensor.dev16_update
-#          - sensor.dev17_update
+          - sensor.dev17_update
           - sensor.dev18_update
           - sensor.dev19_update
           - sensor.dev20_update
@@ -524,7 +558,7 @@ views:
           - sensor.dev32_update
           - sensor.dev54_update
           - sensor.dev55_update
-#          - sensor.dev56_update
+          - sensor.dev56_update
           - sensor.dev57_update
           - sensor.dev58_update
       - type: entities
@@ -546,7 +580,7 @@ views:
           - sensor.dev14_rssi
           - sensor.dev15_rssi
           - sensor.dev16_rssi
-#          - sensor.dev17_rssi
+          - sensor.dev17_rssi
           - sensor.dev18_rssi
           - sensor.dev19_rssi
           - sensor.dev20_rssi
@@ -563,7 +597,7 @@ views:
           - sensor.dev32_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
-#          - sensor.dev56_rssi
+          - sensor.dev56_rssi
           - sensor.dev57_rssi
           - sensor.dev58_rssi
       - type: entities
@@ -584,7 +618,7 @@ views:
           - sensor.dev14_info
           - sensor.dev15_info
           - sensor.dev16_info
-#          - sensor.dev17_info
+          - sensor.dev17_info
           - sensor.dev18_info
           - sensor.dev19_info
           - sensor.dev20_info
@@ -601,7 +635,7 @@ views:
           - sensor.dev32_info
           - sensor.dev54_info
           - sensor.dev55_info
-#          - sensor.dev56_info
+          - sensor.dev56_info
           - sensor.dev57_info
           - sensor.dev58_info
         title: Info
@@ -623,7 +657,7 @@ views:
           - sensor.dev14_bssid
           - sensor.dev15_bssid
           - sensor.dev16_bssid
-#          - sensor.dev17_bssid
+          - sensor.dev17_bssid
           - sensor.dev18_bssid
           - sensor.dev19_bssid
           - sensor.dev20_bssid
@@ -640,7 +674,7 @@ views:
           - sensor.dev32_bssid
           - sensor.dev54_bssid
           - sensor.dev55_bssid
-#          - sensor.dev56_bssid
+          - sensor.dev56_bssid
           - sensor.dev57_bssid
           - sensor.dev58_bssid
         title: Bssid
@@ -662,7 +696,7 @@ views:
           - sensor.dev14_ssid
           - sensor.dev15_ssid
           - sensor.dev16_ssid
-#          - sensor.dev17_ssid
+          - sensor.dev17_ssid
           - sensor.dev18_ssid
           - sensor.dev19_ssid
           - sensor.dev20_ssid
@@ -679,7 +713,7 @@ views:
           - sensor.dev32_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
-#          - sensor.dev56_ssid
+          - sensor.dev56_ssid
           - sensor.dev57_ssid
           - sensor.dev58_ssid
         title: SSID
@@ -701,7 +735,7 @@ views:
           - sensor.dev14_capability
           - sensor.dev15_capability
           - sensor.dev16_capability
-#          - sensor.dev17_capability
+          - sensor.dev17_capability
           - sensor.dev18_capability
           - sensor.dev19_capability
           - sensor.dev20_capability
@@ -718,12 +752,58 @@ views:
           - sensor.dev32_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
-#          - sensor.dev56_capability
+          - sensor.dev56_capability
           - sensor.dev57_capability
           - sensor.dev58_capability
         title: Capability
     icon: 'mdi:signal-variant'
     title: Signals
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_em_cur
+        name: EM current
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_em_tot
+        name: EM total
+        type: sensor 
+      - type: custom:mini-graph-card
+        formater: 'yyyy-mm-dd'
+        name: 'EM total month'
+        diplay_mode: 'abs'
+        unit: 'kWh'
+        maxDays: 30
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+      - type: custom:mini-graph-card
+        name: 'Energy Month / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        maxDays: 30
+        data_delimiter: ','
+        unit: 'kWh'
+        entities:
+         - sensor.long_term_power
+#        color_thresholds:
+#            - value: 12
+#              color: "#fcca04"
+#            - value: 14
+#              color: "#ff8080"
+      - type: custom:mini-graph-card
+        name: 'Energy Year / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        unit: 'kWh'
+        maxDays: 365
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+    icon: 'mdi:power-plug'
+    title: power
 #######################################
   - cards:
       - type: custom:group-card
@@ -812,45 +892,18 @@ views:
   - cards:
       - detail: 2
         graph: line
-        entity: sensor.dev16_em_cur
-        name: EM current
-        type: sensor 
-      - detail: 2
-        graph: line
-        entity: sensor.dev16_em_tot
-        name: EM total
-        type: sensor 
-      - detail: 2
-        graph: line
         entity: sensor.dev13_adc
         name: leakage
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dhcp_master_kbyte_sec_received
+        name: Download
         type: sensor 
       - type: entities
         entities:
           - input_boolean.approx_warn
         show_header_toggle: false
-      - type: custom:mini-graph-card
-        name: 'Energy Year'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        maxDays: 365
-        data_delimiter: ','
-        entities:
-         - sensor.long_term_power
-      - type: custom:mini-graph-card
-        name: 'Energy Month'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        data_delimiter: ','
-        entities:
-         - sensor.long_term_power
-      - type: custom:mini-graph-card
-        formater: 'yyyy-mm-dd'
-        name: 'Energy Month abs'
-        diplay_mode: 'abs'
-        data_delimiter: ','
-        entities:
-         - sensor.long_term_power
     title: T
 #######################################
 

@@ -4,7 +4,7 @@ class PresentsWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Presents Service")
-		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor"]
+		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor","light.dev56","light.dev18"]
 		self.listen_state(self.presents, "binary_sensor.someone_is_home") # 5 min away
 
 	def presents(self, entity, attribute, old, new,kwargs):

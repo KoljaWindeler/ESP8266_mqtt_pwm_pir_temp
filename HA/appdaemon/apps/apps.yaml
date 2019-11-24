@@ -2,6 +2,9 @@
 entrance2:
   module: dev54_entrance2
   class: EntranceWorld2
+gmusic:
+  module: gmusic
+  class: gmusicWorld
 sprinkler:
   module: sprinkler
   class: SprinklerWorld
@@ -36,8 +39,11 @@ beamer:
   module: dev25_beamer
   class: beamerWorld
 carlo:
-  module: dev24_carlo
+  module: dev23_carlo
   class: carloWorld
+lara:
+  module: dev24_lara
+  class: laraWorld
 pi:
   module: dev18_pi
   class: PiWorld

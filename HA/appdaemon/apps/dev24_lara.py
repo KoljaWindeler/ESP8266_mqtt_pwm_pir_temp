@@ -8,13 +8,12 @@ import datetime, time
 # Args:
 #
 
-class carloWorld(hass.Hass):
+class laraWorld(hass.Hass):
 
     def initialize(self):
-        self.log("Starting carlo Service")
-        self.set_state("sensor.dev24_0_hold",state="0")
-        self.listen_state(self.main_toggle,"sensor.dev24_0_hold", new = "1")
-        self.listen_state(self.lampinions_toggle,"binary_sensor.dev24_gpio_0", new = "on")
+        self.log("Starting lara Service")
+        self.listen_state(self.main_toggle,"binary_sensor.dev24_button1s", new = "on")
+        self.listen_state(self.lampinions_toggle,"binary_sensor.dev24_button", new = "on")
 
     def lampinions_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle lampinion")
@@ -22,5 +21,4 @@ class carloWorld(hass.Hass):
 
     def main_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle main")
-        self.set_state("sensor.dev24_0_hold",state="0")
         self.toggle("light.dev24") # main

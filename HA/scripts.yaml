@@ -76,6 +76,34 @@
         data:
           activity: "32486021"
 # ---------------------------------------------------------
+  yamaha_vol_up:
+    sequence:
+      - service: media_player.volume_set
+        data_template:
+          entity_id: media_player.yamaha_receiver
+          volume_level: '{{states.media_player.yamaha_receiver.attributes.volume_level | float + 0.05}}'
+# ---------------------------------------------------------
+  yamaha_vol_up_2:
+    sequence:
+      - service: media_player.volume_set
+        data_template:
+          entity_id: media_player.yamaha_receiver
+          volume_level: '{{states.media_player.yamaha_receiver.attributes.volume_level | float + 0.02}}'
+# ---------------------------------------------------------
+  yamaha_vol_down:
+    sequence:
+      - service: media_player.volume_set
+        data_template:
+          entity_id: media_player.yamaha_receiver
+          volume_level: '{{states.media_player.yamaha_receiver.attributes.volume_level | float - 0.05}}'
+# ---------------------------------------------------------
+  yamaha_vol_down_2:
+    sequence:
+      - service: media_player.volume_set
+        data_template:
+          entity_id: media_player.yamaha_receiver
+          volume_level: '{{states.media_player.yamaha_receiver.attributes.volume_level | float - 0.02}}'
+# ---------------------------------------------------------
   test:
     sequence:
       - service: notify.pb 

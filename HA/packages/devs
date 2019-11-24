@@ -14,7 +14,7 @@ DEV13 -T- leakage controller
 DEV14 -T- kitchen fridge, PIR, simple light
 DEV15 -T- World map, PIR dimmer
 DEV16 -T- Energy meter
-
+DEV17 -O- Kellertuer
 DEV18 -T- love of pi
 DEV19 -T- workshop LED
 DEV20 -T- shelly workshop
@@ -29,7 +29,8 @@ DEV30 -O- valve ctrl
 DEV31 -T- SL bed light caro
 DEV32 -T- SL bed light kolja
 DEV54 -O- ULTRA ENTRANCE
-DEV55 -T- Ikea LED lampinions carlo
+DEV55 -T- Ikea LED lampinions Geheim
+DEV56 -T- Ikea LED lampinions carlo
 DEV57 -T- Ikea LED lampinions flur
 DEV58 -T- media pc gpio 12
 

@@ -1,0 +1,8 @@
+remote:
+  - platform: harmony
+    name: TVHub
+    host: 192.168.2.206
+  - platform: harmony
+    name: beamer_harmony
+    host: 192.168.2.207
+

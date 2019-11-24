@@ -39,18 +39,22 @@ class create_group(hass.Hass):
 #      print("check domain "+d)
       all_entities = self.get_state(d)
       for entity in all_entities:
-#        print("check "+entity)
+        print("check "+entity)
         if "dev" in entity:
           p=entity.split(".")
           if(len(p)>=2):
             dev = p[1].split("_")[0]
             ssid = "sensor."+str(dev)+"_ssid"
             if(self.entity_exists(ssid)):
-#              print("has _ssid "+self.get_state(ssid))
-              a = ap_ssid.index(self.get_state(ssid))
-              if(a<0):
+              ssid = self.get_state(ssid)
+              if(ssid=="IOT254"):
+                ssid="IOT255"
+              print("has _ssid "+ssid)
+              if(ssid in ap_ssid):
+                 a = ap_ssid.index(ssid)
+              else:
 #                print("---> ssid not found")
-                a=len(ap_ssid)
+                 a=0
 #              print("add to entitylist["+str(domains.index(d))+"]["+str(a)+"] "+entity)
 
               entitylist[domains.index(d)][a].append(entity)

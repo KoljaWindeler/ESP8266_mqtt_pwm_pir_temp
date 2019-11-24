@@ -1,21 +1,15 @@
-### touch bedroom
-# SL
+
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev23"
-    fname: "23 Bedroom Touch"
-
-  - platform: mqtt
-    state_topic: "dev23/r/gpio_0_hold"
-    name: "dev23_0_hold"
+    fname: "23 Carlo"
 
 # -----------------------------------------------
 
 homeassistant:
   customize:
-    switch.dev23_gpio_12:
-      friendly_name: "Bed Ventilator"
-      icon: "mdi:fan"
+    light.dev23:
+      friendly_name: "Carlo"
 

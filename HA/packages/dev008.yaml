@@ -35,6 +35,8 @@ homeassistant:
     switch.dev8:
       friendly_name: "Garage"
       icon: "mdi:boom-gate"
+    switch.dev8_gpio_14:
+      friendly_name: "Garage_ignore"
 
 # -----------------------------------------------
 

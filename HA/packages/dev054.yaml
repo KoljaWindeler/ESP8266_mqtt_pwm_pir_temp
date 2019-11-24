@@ -60,6 +60,14 @@ light:
 
 homeassistant:
   customize:
+    switch.dev54_gpio_2:
+      friendly_name: "Main Door light"
+    switch.dev54_gpio_4:
+      friendly_name: "House Exterior light"
+    switch.dev54_gpio_5:
+      friendly_name: "Chandelier Entrance"
+    switch.dev54_gpio_16:
+      friendly_name: "LED Entrance"
     light.dev54:
       friendly_name: "LED Entrance"
     light.dev54_2:
@@ -83,10 +91,6 @@ sensor:
 # -----------------------------------------------
 
 binary_sensor:
-  - platform: mqtt
-    state_topic: "dev54/r/gpio_0_state"
-    name: "dev54_button"
-    device_class: safety
   - platform: mqtt
     state_topic: "dev54/r/gpio_13_state"
     name: "dev54_motion_1"

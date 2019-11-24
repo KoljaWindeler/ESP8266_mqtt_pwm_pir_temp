@@ -20,6 +20,7 @@ homeassistant:
 lovelace:
   mode: yaml
 config:
+#mobile_app:
 zone:
   - name: Home
     latitude: !secret latitude_home
@@ -82,14 +83,9 @@ notify:
     api_key: !secret pushbullet_key_c
     base_url: https://kolja.duckdns.org:8123
 
-remote:
-  - platform: harmony
-    name: TVHub
-    host: 192.168.2.44
-
 media_player:
   - platform: yamaha
-    host: 192.168.2.26
+    host: 192.168.2.205
     source_ignore:
       - "HDMI1"
       - "HDMI4"
