@@ -56,21 +56,39 @@ bool J_GPIO::parse(uint8_t * config){
 			// 6 to 11 should not be used
 			continue;
 		}
-		// output non inverted
+		// output non inverted, half log output pwm values 0..99 -> 0-100%
 		sprintf_P(m_msg_buffer, PSTR("GOP%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = false;
-			m_dimmer[i]  = new dimmer(i, false);
+			m_dimmer[i]  = new dimmer(i, false, PWM_LOG);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
-		// output inverted
+		// output inverted, half log output pwm values 0..99 -> 0-100%
 		sprintf_P(m_msg_buffer, PSTR("GON%i"), i);
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = true;
-			m_dimmer[i]  = new dimmer(i, true);
+			m_dimmer[i]  = new dimmer(i, true, PWM_LOG);
+			f = true; // at least one pin  used, so keep this component alive
+			continue;
+		}
+		// output non inverted, linear output pwm values 0..255 -> 0-100%
+		sprintf_P(m_msg_buffer, PSTR("GOLP%i"), i);
+		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
+			m_pin_out[i] = true; // mark pin as "in use"
+			m_invert[i]  = false;
+			m_dimmer[i]  = new dimmer(i, false, PWM_LIN);
+			f = true; // at least one pin  used, so keep this component alive
+			continue;
+		}
+		// output inverted, half linear output pwm values 0..255 -> 0-100%
+		sprintf_P(m_msg_buffer, PSTR("GOLN%i"), i);
+		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
+			m_pin_out[i] = true; // mark pin as "in use"
+			m_invert[i]  = true;
+			m_dimmer[i]  = new dimmer(i, true, PWM_LIN);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -233,14 +251,14 @@ void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 
 		if (m_state[pin].get_value() == PWM_ON) {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
-			m_dimmer[pin]->dimm_to(PWM_MAX, false); // max on with no dimming
+			m_dimmer[pin]->dimm_to(m_dimmer[i].get_max(), false); // max on with no dimming
 		} else {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
 			m_dimmer[pin]->dimm_to(0, false); // off with no dimming;
 		}
 		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
 	} else {                                          // pwm
-		intens_level = min(PWM_MAX, (int) intens_level); // limit
+		intens_level = min(m_dimmer[i].get_max(), (int) intens_level); // limit
 		m_state[pin].set(intens_level);                  // store to trigger publish
 
 		// sort of debug
@@ -301,8 +319,8 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 					set_output(i, PWM_OFF); // 0%
 				} else {                 // set pwm level direct
 					// try to get BRIGHTNESS
-					m_brightness[i].set(min(PWM_MAX, atoi((const char *) p_payload)));
-					set_output(i, min(PWM_MAX, atoi((const char *) p_payload))); // limit to 0..99
+					m_brightness[i].set(min(m_dimmer[i].get_max(), atoi((const char *) p_payload)));
+					set_output(i, min(m_dimmer[i].get_max(), atoi((const char *) p_payload))); // limit to 0..99
 				}
 				return true;
 			}
@@ -311,7 +329,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
 				// change brightness
-				m_brightness[i].set(min(PWM_MAX, atoi((const char *) p_payload)));
+				m_brightness[i].set(min(m_dimmer[i].get_max(), atoi((const char *) p_payload)));
 				m_dimmer[i]->set_brightness(m_brightness[i].get_value());
 				return true;
 			}
@@ -467,12 +485,25 @@ bool J_GPIO::publish(){
 //  ---------------------------------------- ///
 //  ---------------- DIMMER ---------------- ///
 //  ---------------------------------------- ///
-dimmer::dimmer(uint8_t gpio, bool invers){
+dimmer::dimmer(uint8_t gpio, bool invers, uint8_t phy_log){
 	m_step_time = 10; // ms
 	m_gpio      = gpio;
 	m_invers    = invers;
-	m_backup_v  = PWM_MAX; // override by MQTT msg
+	m_phy_log   = phy_log;
+	if(m_phy_log == PWM_LIN){
+		m_backup_v  = PWM_LIN_MAX; // override by MQTT msg
+	} else {
+		m_backup_v  = PWM_LOG_MAX; // override by MQTT msg
+	}
 };
+
+// returns the maximum allowed input value
+uint8_t dimmer::get_max(){
+	if(m_phy_log == PWM_LIN){
+		return PWM_LIN_MAX; // 255
+	} 
+	return PWM_LOG_MAX; // 99
+}
 
 // actually executing the m_dimmer
 // return true if we're dimming, will avoid mqtt msg during dimming
@@ -489,16 +520,23 @@ bool dimmer::loop(){
 				m_current_v = m_target_v;
 				m_end_time  = 0; // last step, stop dimming
 			} else {
-				m_current_v = min(PWM_MAX, (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
+				m_current_v = min(get_max(), (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
 			}
 			// logger.pln(m_light_current.r);``
-			if (m_invers) {
-				// erial.printf("%i,%i\r\n",m_gpio,intens[99 - m_current_v]);
-				analogWrite(m_gpio, intens[PWM_MAX - m_current_v]);
+			uint8_t analog_value = m_current_v; // assume linear and non invers
+			if(m_phy_log == PWM_LIN){
+				if(m_invers){
+					analog_value = get_max() - m_current_v; // linear but invers
+				}
 			} else {
-				// erial.printf("%i,%i\r\n",m_gpio,intens[m_current_v]);
-				analogWrite(m_gpio, intens[m_current_v]);
+				if(m_invers) {
+					analog_value=intens[get_max() - m_current_v]; // log inverse
+				} else {
+					analogWrite(m_gpio, intens[m_current_v]); // log non invers
+				}
 			}
+			// erial.printf("%i,%i\r\n",m_gpio,analog_value);
+			analogWrite(m_gpio, analog_value); // finally write to pin
 		}
 		return true; // muy importante .. request uninterrupted execution
 	}
@@ -512,7 +550,7 @@ bool dimmer::set_brightness(uint8_t t){
 }
 
 bool dimmer::set_brightness(uint8_t t, bool dimming){
-	t = min((int) t, PWM_MAX);
+	t = min((int) t, get_max());
 	// if the light is already on, dimm to new brightness
 	if (m_current_v) {
 		dimm_to(t, dimming);
