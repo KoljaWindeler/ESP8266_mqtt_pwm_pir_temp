@@ -1,10 +1,15 @@
 #ifndef J_GPIO_h
 	#define J_GPIO_h
 
-	#define PWM_MAX 99
 	#define PWM_MIN 0
 	#define PWM_ON  255
 	#define PWM_OFF 254
+	
+	#define PWM_LIN 0
+	#define PWM_LIN_MAX 255
+	
+	#define PWM_LOG 1
+	#define PWM_LOG_MAX 99
 
 #include "main.h"
 
@@ -25,16 +30,18 @@
 
 	class dimmer {
 public:
-		dimmer(uint8_t gpio, bool invers);
+		dimmer(uint8_t gpio, bool invers, uint8_t phy_log);
 		bool loop();
 		bool set_brightness(uint8_t t);
 		bool set_brightness(uint8_t t, bool dimming);
 		void set_state(bool s);
 		void dimm_to(uint8_t t);
 		void dimm_to(uint8_t t, bool dimming);
+		uint8_t get_max();
 private:
 		uint8_t m_gpio        = 0;
 		bool m_invers         = false;
+		uint8_t m_phy_log     = PWM_LOG; 
 		uint8_t m_start_v     = 0;
 		uint8_t m_target_v    = 0;
 		uint8_t m_current_v   = 0;
