@@ -251,14 +251,14 @@ void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 
 		if (m_state[pin].get_value() == PWM_ON) {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
-			m_dimmer[pin]->dimm_to(m_dimmer[i].get_max(), false); // max on with no dimming
+			m_dimmer[pin]->dimm_to(m_dimmer[pin]->get_max(), false); // max on with no dimming
 		} else {
 			sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
 			m_dimmer[pin]->dimm_to(0, false); // off with no dimming;
 		}
 		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
 	} else {                                          // pwm
-		intens_level = min(m_dimmer[i].get_max(), (int) intens_level); // limit
+		intens_level = min((int)(m_dimmer[pin]->get_max()), (int) intens_level); // limit
 		m_state[pin].set(intens_level);                  // store to trigger publish
 
 		// sort of debug
@@ -319,8 +319,8 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 					set_output(i, PWM_OFF); // 0%
 				} else {                 // set pwm level direct
 					// try to get BRIGHTNESS
-					m_brightness[i].set(min(m_dimmer[i].get_max(), atoi((const char *) p_payload)));
-					set_output(i, min(m_dimmer[i].get_max(), atoi((const char *) p_payload))); // limit to 0..99
+					m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload)));
+					set_output(i, min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload))); // limit to 0..99
 				}
 				return true;
 			}
@@ -329,7 +329,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
 				// change brightness
-				m_brightness[i].set(min(m_dimmer[i].get_max(), atoi((const char *) p_payload)));
+				m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload)));
 				m_dimmer[i]->set_brightness(m_brightness[i].get_value());
 				return true;
 			}
@@ -520,7 +520,7 @@ bool dimmer::loop(){
 				m_current_v = m_target_v;
 				m_end_time  = 0; // last step, stop dimming
 			} else {
-				m_current_v = min(get_max(), (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
+				m_current_v = min((int)get_max(), (int) map(m_next_time - m_step_time, m_start_time, m_end_time, m_start_v, m_target_v));
 			}
 			// logger.pln(m_light_current.r);``
 			uint8_t analog_value = m_current_v; // assume linear and non invers
@@ -550,7 +550,7 @@ bool dimmer::set_brightness(uint8_t t){
 }
 
 bool dimmer::set_brightness(uint8_t t, bool dimming){
-	t = min((int) t, get_max());
+	t = min((int) t, (int)get_max());
 	// if the light is already on, dimm to new brightness
 	if (m_current_v) {
 		dimm_to(t, dimming);
