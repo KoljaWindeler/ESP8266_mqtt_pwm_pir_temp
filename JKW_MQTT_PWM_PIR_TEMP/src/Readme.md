@@ -146,8 +146,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	This peripheral has no discovery support as of now.
 
 ### GPIO
-	Configuration string: "G[Direction: {I/O}][Polarity: {P/N} ][GPIO Pin: {0..16}]"
-	e.g. "GIP1" / "GIN3" / "GON5"  / "GOP16"
+	Configuration string: "G[Direction: {I/O}][Polarity: {P/N} ][Mode: {_/L}][GPIO Pin: {0..16}]"
+	e.g. "GIP1" / "GIN3" / "GON5"  / "GOP16" / "GOLP16" / "GOLN13"
 
 	Purpose: directly set or get pin out-/input, watch out: this module can override other outputs
 	GOP4 will configure GPIO4 (! NOT D4, GPIO4 !) as an output with positive polarity ("ON" will be "HIGH)
@@ -162,9 +162,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 
 	Sub-Topic(s) if used as OUTPUT:
 		"gpio_0_state"
-			publish "ON" / "OFF" or the int value {0..99} to e.g. dev4/s/gpio_0_out
-			to set the PIN (0..99 will set the PWM
-			to 0..99% durty cycle) if used as output
+			publish "ON" / "OFF" to e.g. dev4/s/gpio_0_out to set the PIN 
+			if configured as GOP/GON you can also publish the int value {0..99}
+			and set a brightness directly (half log scale, so 49 will be 49% brightness
+			for the human eye but <<50% pwm)
+			if confirgured as LINEAR (GOLP/GOLN) the value will be directly written
+			to the pin {0..255}, so 125 will be 125/255 "ON" (depending on polarity)
+			
 		"gpio_0_toggle"
 			no payload, will toggle between ON/OFF
 		"gpio_0_pulse"
