@@ -1,6 +1,7 @@
 #ifndef logging_h
 	#define logging_h
 #include <Arduino.h>
+#include <WiFiManager.h> 
 
 	#define TOPIC_MQTT             1
 	#define TOPIC_MQTT_PUBLISH     2
@@ -65,5 +66,6 @@ private:
 	};
 
 	extern logging logger;
+	extern WiFiManager wifiManager;
 
 #endif // ifndef logging_h

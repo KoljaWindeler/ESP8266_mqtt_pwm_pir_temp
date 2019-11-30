@@ -50,6 +50,7 @@ void logging::enable_mqtt_trace(bool in){
 void logging::enable_serial_trace(bool in){
 	if(!in){
 		Serial.println("Stopping Serial printouts!");
+		wifiManager.setDebugOutput(false);
 		delay(500);
 	}
 	serial_trace_active=in;

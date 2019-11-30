@@ -3,7 +3,7 @@
 
 // simply the constructor
 SerialServer::SerialServer(){
-	m_port = 1778; // TODO .. make those numbers configurable 
+	m_port = 1778; // TODO .. make those numbers configurable
 	m_rxPin = 15; // D8
 	m_txPin = 13; // D7
 	m_bufferSize = 128;
@@ -33,9 +33,15 @@ bool SerialServer::init(){
 	ser2netServer = new WiFiServer(m_port);
 	ser2netServer->begin();
 	// serial interface
-	swSer1 = new SoftwareSerial(m_rxPin, m_txPin, false, m_bufferSize);
-	swSer1->begin(115200);
-	swSer1->enableIntTx(true);
+	//swSer1 = new SoftwareSerial(m_rxPin, m_txPin, false, m_bufferSize);
+	//swSer1->begin(115200);
+	logger.enable_serial_trace(false);
+	logger.enable_mqtt_trace(true);
+	Serial.flush();
+	Serial.end();
+	delay(50);
+	Serial.begin(115200);
+	//swSer1->enableIntTx(true);
 	logger.println(TOPIC_GENERIC_INFO, F("SerialServer init"), COLOR_GREEN);
 	return true;
 }
@@ -84,20 +90,23 @@ bool SerialServer::loop(){
 			uint8_t bytes_read = ser2netClient.read(net_buf, count);
 			//Serial.write((const uint8_t*)net_buf, bytes_read);
 			for(uint8_t i=0; i<bytes_read; i++){
-				swSer1->write(net_buf[i]);
+				//swSer1->write(net_buf[i]);
+				Serial.write(net_buf[i]);
 			}
 		}
 		// move data from wifi to serial //
 
 		// move data from serial to wifi //
-		count = swSer1->available();
+		//count = swSer1->available();
+		count = Serial.available();
 		if (count > 0) {
 			if (count > m_bufferSize) {
 				count = m_bufferSize;
 			}
 			uint8_t net_buf[count];
 			for(uint8_t i=0; i<count; i++){
-				net_buf[i]=swSer1->read();
+				//net_buf[i]=swSer1->read();
+				net_buf[i]=Serial.read();
 			}
 			ser2netClient.write((const uint8_t*)net_buf, count);
 			ser2netClient.flush();

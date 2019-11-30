@@ -43,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20191104" DEV
+	#define VERSION               "20191130" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -154,7 +154,7 @@
 #include "cap_NeoStrip.h"
 #include "cap_light.h"
 #include "cap_night_light.h"
-#include "cap_bridge.h"
+#include "cap_tuya_bridge.h"
 #include "cap_GPIO.h"
 //#include "cap_husqvarna.h"
 #include "cap_mesh.h"

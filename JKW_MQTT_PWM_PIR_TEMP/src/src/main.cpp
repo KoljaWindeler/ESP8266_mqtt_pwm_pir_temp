@@ -365,9 +365,9 @@ void reconnect(){
 				// MAC publishing
 				uint8_t mac[6];
 				WiFi.macAddress(mac);
-				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", mac[5], mac[4], mac[3], mac[2],
-				  mac[1],
-				  mac[0]);
+				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
+				  mac[4],
+				  mac[5]);
 				network.publish(build_topic("MAC", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("MAC", UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
@@ -575,7 +575,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_NL
 	bake(new night_light(), &p_nl, config);
 #endif
-	bake(new bridge(), &p_rfb, config);
+#ifdef WITH_TUYA_BRIDGE
+	bake(new tuya_bridge(), &p_rfb, config);
+#endif
 #ifdef WITH_GPIO
 	bake(new J_GPIO(), &p_gpio, config);
 #endif
@@ -654,7 +656,7 @@ void setup(){
 	for (uint8_t i = 0; i < 10; i++) {
 		logger.p(i);
 		logger.p(F(".. "));
-		delay(500);
+	//	delay(500);
 	}
 
 	logger.pln(F(""));

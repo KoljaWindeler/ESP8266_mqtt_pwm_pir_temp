@@ -1,87 +1,90 @@
-#include <cap_bridge.h>
-#ifdef WITH_RFB
+#include <cap_tuya_bridge.h>
+#ifdef WITH_TUYA_BRIDGE
 // simply the constructor
-bridge::bridge(){};
+tuya_bridge::tuya_bridge(){};
 
 // simply the destructor
-bridge::~bridge(){
-	logger.println(TOPIC_GENERIC_INFO, F("Bridge deleted"), COLOR_YELLOW);
+tuya_bridge::~tuya_bridge(){
+	logger.println(TOPIC_GENERIC_INFO, F("tuya_bridge deleted"), COLOR_YELLOW);
 };
 
 // helper function that is really just calling another function .. somewhat useless at the moment
 // it is in charge of deciding if the object is loaded or not, but as of now it is just formwarding the
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded undetr all circumstances
-bool bridge::parse(uint8_t* config){
+bool tuya_bridge::parse(uint8_t* config){
 	return cap.parse(config,get_key());
 }
 
 // the will be requested to check if the key is in the config strim
-uint8_t* bridge::get_key(){
+uint8_t* tuya_bridge::get_key(){
 	return (uint8_t*)"RFB";
 }
 
 // will be callen if the key is part of the config
-bool bridge::init(){
+bool tuya_bridge::init(){
 	logger.enable_mqtt_trace(true);
-	logger.println(TOPIC_GENERIC_INFO, F("Bridge init"), COLOR_GREEN);
+	logger.println(TOPIC_GENERIC_INFO, F("tuya_bridge init"), COLOR_GREEN);
 	logger.enable_serial_trace(false);
 	Serial.end();
 	delay(50);
 	Serial.begin(9600);
 
+	// ready to listen
+	m_recv_state = RFB_START_0;
 	m_msg_state = 0;
+
 	return true;
 }
 
 // return how many value you want to publish per second
 // e.g. DHT22: Humidity + Temp = 2
-uint8_t bridge::count_intervall_update(){
+uint8_t tuya_bridge::count_intervall_update(){
 	return 0;
 }
 
 // will be called in loop, if you return true here, every else will be skipped !!
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
-bool bridge::loop(){
+bool tuya_bridge::loop(){
 	if(m_msg_state%2==0){ // ich bin
 		if(m_msg_state==0){
 			send_cmd(1, 0, (uint8_t*)"");// request generic info
 			logger.println(TOPIC_GENERIC_INFO,"generic request send",COLOR_GREEN);
-			//m_msg_state=1; // wait for reply
-			m_msg_state=7; // wait for reply
+			m_msg_state=5; // wait for reply
+			//m_msg_state++; // wait for reply, skip the two steps in between, not needed i think
 		}
 
-		/*else if(m_msg_state==2){
-			uint8_t test3[8]={0x55,0xAA,0x00,0x02,0x00,0x01,0x02,0x04};
-			Serial.write(test3,8);
+		else if(m_msg_state==2){
+			//uint8_t test3[8]={0x55,0xAA,0x00,0x02,0x00,0x01,0x02,0x04};
+			//Serial.write(test3,8);
+			uint8_t test3 = 0x02;
+			send_cmd(2, 1, &test3);// request generic info
+			logger.println(TOPIC_GENERIC_INFO,"request 212 send",COLOR_GREEN);
 			rfb_last_received=millis();
 			m_msg_state++; // wait for reply
 		}
 
 		else if(m_msg_state==4){
-			uint8_t test4[8]={0x55,0xAA,0x00,0x02,0x00,0x01,0x02,0x04};
-			Serial.write(test4,8);
+			//uint8_t test4[8]={0x55,0xAA,0x00,0x02,0x00,0x01,0x02,0x04};
+			//Serial.write(test4,8);
+			uint8_t test3 = 0x03;
+			send_cmd(2, 1, &test3);// request generic info
+			logger.println(TOPIC_GENERIC_INFO,"request 213 send",COLOR_GREEN);
 			rfb_last_received=millis();
 			m_msg_state++; // wait for reply
 		}
 
 		else if(m_msg_state==6){
-			uint8_t test5[8]={0x55,0xAA,0x00,0x02,0x00,0x01,0x03,0x05};
-			Serial.write(test5,8);
-			rfb_last_received=millis();
-			m_msg_state++; // wait for reply
-		}*/
-
-		else if(m_msg_state==8){
 			uint8_t a=0x04;
 			send_cmd(2, 1, &a);
-			logger.println(TOPIC_GENERIC_INFO,"status x04 send",COLOR_GREEN);
+			logger.println(TOPIC_GENERIC_INFO,"status 214 send",COLOR_GREEN);
 			m_msg_state++; // wait for status
 		}
 	}
 
-	if(Serial.available() && !rfb.rdy){
+	// state machine to parse incoming data
+	if(Serial.available()){
 		t=Serial.read();
 		rfb_last_received = millis();
 		if(m_recv_state == RFB_START_0){
@@ -127,16 +130,16 @@ bool bridge::loop(){
 				m_recv_state++;
 			}
 		} else if(m_recv_state == RFB_CHK){
-			//logger.pln("chk");
+			logger.pln("chk");
 			if(rfb.chk==t){
-				//logger.pln("ok");
+				logger.pln("ok");
 				//char m[80];
 				//sprintf(m,"len: %i, cmd: %i, [chk]:%x",rfb.len,rfb.cmd,rfb.chk);
 				if(rfb.cmd==5 && rfb.len>=18){
-					//status.batt = rfb.data[17];
+					m_battery.set(rfb.data[17]);
 					//status.tamper = rfb.data[9];
-					//status.reed = rfb.data[4];
-					rfb.rdy=true;
+					m_state.set(rfb.data[4]);
+					//rfb.rdy=true;
 				}
 				//logger.pln(m);
 				m_msg_state++;
@@ -156,20 +159,25 @@ bool bridge::loop(){
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-bool bridge::intervall_update(uint8_t slot){
+bool tuya_bridge::intervall_update(uint8_t slot){
 	return false;
 }
 
 // will be called everytime the controller reconnects to the MQTT broker,
 // this is the chance to fire some subsctions
 // return is ignored
-bool bridge::subscribe(){
-	network.subscribe(build_topic(MQTT_BRIDGE_TRAIN,PC_TO_UNIT)); // simple rainbow  topic
-	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_BRIDGE_TRAIN,PC_TO_UNIT), COLOR_GREEN);
+bool tuya_bridge::subscribe(){
+	// for this component we're sending out a wakeup messages as early as possible
+	// right after we're connected the subscribe will be callen, even before the first
+	// loop, so send it right away
+	sprintf(m_msg_buffer,"Tuya Wake Up");
+	logger.println(TOPIC_MQTT_PUBLISH, F("Tuya Wake Up"), COLOR_GREEN);
+	network.publish(build_topic(MQTT_TUYA_BRIDGE_WAKE_TOPIC,UNIT_TO_PC), m_msg_buffer);
 	return true;
 }
 
-void bridge::send_cmd(uint8_t cmd, uint16_t len, uint8_t* d){
+// internal function to send data to the tuya controller
+void tuya_bridge::send_cmd(uint8_t cmd, uint16_t len, uint8_t* d){
 	char data[8+len];
 	data[0]=0x55; // header
 	data[1]=0xAA; // header
@@ -190,24 +198,33 @@ void bridge::send_cmd(uint8_t cmd, uint16_t len, uint8_t* d){
 	Serial.write(data,7+len);
 
 	rfb_last_received=millis();
-	rfb.rdy=false;
+	//rfb.rdy=false;
 	m_recv_state = RFB_START_0;
 }
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
-bool bridge::receive(uint8_t* p_topic, uint8_t* p_payload){
+bool tuya_bridge::receive(uint8_t* p_topic, uint8_t* p_payload){
 	return false; // not for me
 }
 
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
-bool bridge::publish(){
-	if(rfb.rdy){
-		logger.print(TOPIC_MQTT_PUBLISH, F("incoming rf data "), COLOR_GREEN);
-		sprintf(m_msg_buffer,"%02x%02x%02x",rfb.data[17],rfb.data[9],rfb.data[4]); // bat, tamper, switch
+bool tuya_bridge::publish(){
+	// state before battery
+	if(m_state.get_outdated()){
+		logger.print(TOPIC_MQTT_PUBLISH, F("Tuya Reed  "), COLOR_GREEN);
+		sprintf(m_msg_buffer,"%i",m_state.get_value());
 		logger.pln(m_msg_buffer);
-		if(network.publish(build_topic(MQTT_BRIDGE_TOPIC,UNIT_TO_PC), m_msg_buffer)){
-			rfb.rdy=false;
+		if(network.publish(build_topic(MQTT_TUYA_BRIDGE_REED_TOPIC,UNIT_TO_PC), m_msg_buffer)){
+			m_state.outdated(false);
+		}
+		return true; // yes, we've published something, stop others (avoid overfilling mqtt buffer)
+	} else if(m_battery.get_outdated()){
+		logger.print(TOPIC_MQTT_PUBLISH, F("Tuya Battery  "), COLOR_GREEN);
+		sprintf(m_msg_buffer,"%i",m_battery.get_value());
+		logger.pln(m_msg_buffer);
+		if(network.publish(build_topic(MQTT_TUYA_BRIDGE_BATTERY_TOPIC,UNIT_TO_PC), m_msg_buffer)){
+			m_battery.outdated(false);
 		}
 		return true; // yes, we've published something, stop others (avoid overfilling mqtt buffer)
 	}

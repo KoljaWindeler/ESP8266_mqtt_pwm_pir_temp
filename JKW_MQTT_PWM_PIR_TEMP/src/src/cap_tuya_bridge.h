@@ -1,12 +1,12 @@
-#ifndef bridge_h
-#define bridge_h
+#ifndef tuya_bridge_h
+#define tuya_bridge_h
 
 
 #include "main.h"
 
-static constexpr char MQTT_BRIDGE_TOPIC[]     = "bridge";      // publish
-static constexpr char MQTT_BRIDGE_TRAIN[]     = "bridge/train";      // publish
-
+static constexpr char MQTT_TUYA_BRIDGE_BATTERY_TOPIC[] = "TUYA_BAT";
+static constexpr char MQTT_TUYA_BRIDGE_REED_TOPIC[]    = "TUYA_REED";
+static constexpr char MQTT_TUYA_BRIDGE_WAKE_TOPIC[]		 = "TUYA_WAKE";
 
 #define RFB_START_0 10
 #define RFB_START_1 11
@@ -34,10 +34,10 @@ struct luminea_status {
 	uint8_t batt;
 };
 
-class bridge : public capability {
+class tuya_bridge : public capability {
 	public:
-		bridge();
-		~bridge();
+		tuya_bridge();
+		~tuya_bridge();
 		bool init();
 		bool loop();
 		void interrupt();
@@ -57,6 +57,8 @@ class bridge : public capability {
 		luminea_mcu rfb;
 		luminea_status status;
 		uint8_t t; // temporary serial byte
+		mqtt_parameter_8 m_battery;
+		mqtt_parameter_8 m_state;
 
 };
 

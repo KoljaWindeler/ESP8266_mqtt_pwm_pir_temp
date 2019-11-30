@@ -18,7 +18,7 @@ WiFiManagerParameter::WiFiManagerParameter(const char * custom){
 	_placeholder = NULL;
 	_length      = 0;
 	_value       = NULL;
-	
+
 	_customHTML = custom;
 }
 
@@ -100,9 +100,9 @@ void WiFiManager::resetParameter(){
 void WiFiManager::addParameter(WiFiManagerParameter * p){
 	_params[_paramsCount] = p;
 	_paramsCount=(_paramsCount+1)%WIFI_MANAGER_MAX_PARAMS;
-	Serial.print(F("Adding parameter: "));
-	Serial.print(p->getID());
-	Serial.print(F(" -> "));
+	DEBUG_WM(F("Adding parameter: "));
+	DEBUG_WM(p->getID());
+	DEBUG_WM(F(" -> "));
 	Serial.println(p->getValue());
 }
 
@@ -113,7 +113,7 @@ void WiFiManager::setupConfigPortal(){
 	DEBUG_WM(F(""));
 	_configPortalStart = millis();
 
-	DEBUG_WM(F("Configuring access point... "));
+	DEBUG_WM(F("Configuring access point... \n\r"));
 	//DEBUG_WM(_apName);
 	if (_apPassword != NULL) {
 		if (strlen(_apPassword) < 8 || strlen(_apPassword) > 63) {
@@ -126,7 +126,7 @@ void WiFiManager::setupConfigPortal(){
 
 	// optional soft ip config
 	if (_ap_static_ip) {
-		DEBUG_WM(F("Custom AP IP/GW/Subnet"));
+		DEBUG_WM(F("Custom AP IP/GW/Subnet\n\r"));
 		WiFi.softAPConfig(_ap_static_ip, _ap_static_gw, _ap_static_sn);
 	}
 
@@ -153,11 +153,13 @@ void WiFiManager::setupConfigPortal(){
 		}
     DEBUG_WM(_apName);
 	}
+	DEBUG_WM(F("\n\r"));
 
 
 	delay(500); // Without delay I've seen the IP address blank
 	DEBUG_WM(F("AP IP address: "));
 	DEBUG_WM(WiFi.softAPIP());
+	DEBUG_WM(F("\n\r"));
 
 	/* Setup the DNS server redirecting all the domains to the apIP */
 	dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
@@ -178,7 +180,7 @@ void WiFiManager::setupConfigPortal(){
 	  std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
 	server->onNotFound(std::bind(&WiFiManager::handleNotFound, this));
 	server->begin(); // Web server start
-	DEBUG_WM(F("HTTP server started"));
+	DEBUG_WM(F("HTTP server started\n\r"));
 } // setupConfigPortal
 
 void WiFiManager::handleToggle(){
@@ -232,7 +234,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 	}
 
 	// ist das ne schlaue idee die hier on the fly zu laden?
-	DEBUG_WM(F("Done"));
+	DEBUG_WM(F("Done\r\n"));
 
 	connect = false;
 	setupConfigPortal();
@@ -293,7 +295,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 						strcpy((char*)p,getMQTTelement(i,m_mqtt));
 						f_p+=strlen(getMQTTelement(i,m_mqtt));
 						p+=strlen(getMQTTelement(i,m_mqtt));
-						Serial.print(getMQTTelement(i,m_mqtt));
+						DEBUG_WM(getMQTTelement(i,m_mqtt));
 					}
 					// seach for the field that starts closes to our current pos
 					if (f_p <= f_start) {
@@ -304,7 +306,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 						f_p = f_start; // set our new pos to the start of that field
 						// print some shiny output
 						if (i == 0) {
-							Serial.print(F("\r\n\r\nStart readig config"));
+							DEBUG_WM(F("\r\n\r\nStart readig config"));
 						};
 						if (i >= 0 && i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) {
 							Serial.println("");
@@ -312,9 +314,9 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							Serial.printf("[%s]\r\n",getMQTTelement(i,m_mqtt));
 						} else if (i == sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]) - skip_last) { // last segement .. save and reboot
 							// fill the buffer
-							Serial.print(F("\r\n==========\r\nConfig stored\r\n"));
+							DEBUG_WM(F("\r\n==========\r\nConfig stored\r\n"));
 							explainFullMqttStruct(m_mqtt);
-							Serial.print(F("==========\r\n"));
+							DEBUG_WM(F("==========\r\n"));
 							// write to address 0 ++
 							f_start = 0;
 							for (uint8_t i = 0; i < sizeof(m_mqtt_sizes) / sizeof(m_mqtt_sizes[0]); i++) { // 1.2.3.4.5.6.7
@@ -324,15 +326,15 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 							delay(1000);
 
 							// what about the wifi?
-							Serial.print(F("Disconnect.\r\n"));
+							DEBUG_WM(F("Disconnect.\r\n"));
 							WiFi.disconnect(false);
-							Serial.print(F("Connect.\r\n"));
+							DEBUG_WM(F("Connect.\r\n"));
 							WiFi.begin(m_mqtt->nw_ssid, m_mqtt->nw_pw);
-							Serial.print(F("checking.\r\n"));
+							DEBUG_WM(F("checking.\r\n"));
 							if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-								Serial.print(F("Failed to connect."));
+								DEBUG_WM(F("Failed to connect."));
 							} else {
-								Serial.print(F("Connect ok. Restart now"));
+								DEBUG_WM(F("Connect ok. Restart now"));
 								delay(500);
 								ESP.restart();
 							}
@@ -357,7 +359,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 				if (f_p > f_start) {
 					p--; // limits?
 					f_p--;
-					Serial.print((char) 0x08); // geht das? ulkig aber ja
+					DEBUG_WM((char) 0x08); // geht das? ulkig aber ja
 				}
 			} else if (char_buffer != 10) { // plain char storing "\r"
 				// Serial.print("&");
@@ -374,7 +376,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 				if (f_p < f_start - 1) { // go on as long as we're in the structure
 					// e.g.: first field is 16 byte long (f_start=16), we can use [0]..[14], [15] must be 0x00, so 13<16-1, 14<16-1; !! 15<16-1
 					if (char_buffer != '\r' && char_buffer != '\n') {
-						Serial.print((char) char_buffer);
+						DEBUG_WM((char) char_buffer);
 					}
 					*p = char_buffer; // store incoming char in struct
 					p++;
@@ -539,38 +541,38 @@ void WiFiManager::explainFullMqttStruct(mqtt_data * mqtt){
 
 void WiFiManager::explainMqttStruct(uint8_t i, boolean rn){
 	if (rn) {
-		Serial.print(F("\r\n"));
+		DEBUG_WM(F("\r\n"));
 	}
 	if (i == 0) {
-		Serial.print(F("MQTT login: "));
+		DEBUG_WM(F("MQTT login: "));
 	} else if (i == 1) {
-		Serial.print(F("MQTT pw: "));
+		DEBUG_WM(F("MQTT pw: "));
 	} else if (i == 2) {
-		Serial.print(F("MQTT dev_short: "));
+		DEBUG_WM(F("MQTT dev_short: "));
 	} else if (i == 3) {
-		Serial.print(F("MQTT server IP: "));
+		DEBUG_WM(F("MQTT server IP: "));
 	} else if (i == 4) {
-		Serial.print(F("MQTT server port: "));
+		DEBUG_WM(F("MQTT server port: "));
 	} else if (i == 5) {
-		Serial.print(F("Network SSID: "));
+		DEBUG_WM(F("Network SSID: "));
 	} else if (i == 6) {
-		Serial.print(F("Network PW: "));
+		DEBUG_WM(F("Network PW: "));
 	} else if (i == 7) {
-		Serial.print(F("MQTT Capability: "));
+		DEBUG_WM(F("MQTT Capability: "));
 	} else {
-		Serial.print(F("ERROR 404 "));
+		DEBUG_WM(F("ERROR 404 "));
 	}
 	if (rn) {
-		Serial.print(F("\r\n"));
+		DEBUG_WM(F("\r\n"));
 	}
 };
 
 int WiFiManager::connectWifi(String ssid, String pass){
 	//DEBUG_WM(F("Connecting as wifi client..."));
-	Serial.print(F("*WM: Connecting to "));
-	if(ssid != ""){
+	DEBUG_WM(F("*WM: Connecting to "));
+	if(ssid != "" && _debug){
 		Serial.printf("->%s<-\r\n",ssid.c_str());
-	} else if (WiFi.SSID()) {
+	} else if (WiFi.SSID() && _debug) {
 		Serial.println(WiFi.SSID());
 	};
 
@@ -605,6 +607,7 @@ int WiFiManager::connectWifi(String ssid, String pass){
 	int connRes = waitForConnectResult();
 	DEBUG_WM("Connection result: ");
 	DEBUG_WM(connRes);
+	DEBUG_WM(F("\r\n"));
 	// not connected, WPS enabled, no pass - first attempt
 	if (_tryWPS && connRes != WL_CONNECTED && pass == "") {
 		startWPS();
@@ -618,8 +621,9 @@ uint8_t WiFiManager::waitForConnectResult(){
 	if (_connectTimeout == 0) {
 		return WiFi.waitForConnectResult();
 	} else {
-		Serial.print(F("Waiting for connection result with time out "));
-		Serial.println((uint16_t)(_connectTimeout/1000));
+		DEBUG_WM(F("Waiting for connection result with time out "));
+		DEBUG_WM((uint16_t)(_connectTimeout/1000));
+		DEBUG_WM(F("\r\n"));
 		unsigned long start    = millis();
 		boolean keepConnecting = true;
 		uint8_t status;
@@ -1204,8 +1208,8 @@ void WiFiManager::setRemoveDuplicateAPs(boolean removeDuplicates){
 template <typename Generic>
 void WiFiManager::DEBUG_WM(Generic text){
 	if (_debug) {
-		Serial.print("[WM] ");
-		Serial.println(text);
+		//Serial.print("[WM] ");
+		Serial.print(text);
 	}
 }
 
