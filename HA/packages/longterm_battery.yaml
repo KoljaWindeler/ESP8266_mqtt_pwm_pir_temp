@@ -1,0 +1,39 @@
+notify:
+  - platform: file
+    name: filenotify_bat_1
+    filename: /opt/battery_total_1.csv
+  - platform: file
+    name: filenotify_bat_2
+    filename: /opt/battery_total_2.csv
+  - platform: file
+    name: filenotify_bat_3
+    filename: /opt/battery_total_3.csv
+
+
+automation:
+  - alias: sensor_values_to_file_battery
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        at: '23:59:55'
+    action:
+      - service: notify.filenotify_bat_1
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d000410e664', 'battery') }}"
+      - service: notify.filenotify_bat_2
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d0004461c84', 'battery') }}"
+      - service: notify.filenotify_bat_3
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d000445c970', 'battery') }}"
+
+sensor:
+  - platform: load_external
+    name: long_term_battery_1
+    feed_path: '/opt/battery_total_1.csv'
+  - platform: load_external
+    name: long_term_battery_2
+    feed_path: '/opt/battery_total_2.csv'
+  - platform: load_external
+    name: long_term_battery_3
+    feed_path: '/opt/battery_total_3.csv'
