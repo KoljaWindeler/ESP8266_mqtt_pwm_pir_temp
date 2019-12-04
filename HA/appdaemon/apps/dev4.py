@@ -8,6 +8,18 @@ class ventWorld(hass.Hass):
         self.listen_state(self.vent, "sensor.dev4_humidity_stat_mean")
         self.turn_off("switch.dev4_gpio_5")
         self.state = 0
+        self.run_daily(self.off, time(23, 0, 0))            # winter -> LEDs
+        self.run_at_sunset(self.on, offset = -15 * 60)      # winter -> LEDs
+
+    ######################################################
+
+    def on(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.log("LEDs outside on")
+        self.turn_on("switch.dev4_gpio_12")
+
+    def off(self, entity="", attribute="", old="", new="", kwargs=""):
+        self.log("LEDs outside off")
+        self.turn_off("switch.dev4_gpio_12")
 
     ######################################################
 

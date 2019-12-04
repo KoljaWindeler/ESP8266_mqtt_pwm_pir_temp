@@ -10,12 +10,18 @@ class GmotionWorld(hass.Hass):
 		self.log("Starting gmotion Service")
 		self.listen_state(self.home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
 		self.listen_state(self.home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
-		self.sensor = ["6_motion", "8_motion", "15_motion", "54_motion_1", "54_motion_2", "57_motion","17_motion"]
-		self.sensor_name = ["Cellar", "Garage", "World map", "Entrace", "Entrace_cellar", "Floor upstairs","Basement door"]
+		self.sensor = []
+		self.sensor.append(["Cellar","6_motion",255])
+		self.sensor.append(["Garage","8_motion",254])
+		self.sensor.append(["World map","15_motion",0])
+		self.sensor.append(["Entrance","54_motion_1",0])
+		self.sensor.append(["Entrance_cellar","54_motion_2",255])
+		self.sensor.append(["Floor upstairs","57_motion",1])
+		self.sensor.append(["Cellar door","17_motion",255])
 		self.sensor_trigger_count = []
 		self.sensor_trigger_count_reported = []
 		for i in range(0,len(self.sensor)):
-			self.listen_state(self.motion, "binary_sensor.dev"+self.sensor[i])
+			self.listen_state(self.motion, "binary_sensor.dev"+self.sensor[i][1])
 			self.sensor_trigger_count_reported.append(0)
 			self.sensor_trigger_count.append(0)
 		self.msg_delay = [0,3*60,8*60,15*60]
@@ -37,18 +43,32 @@ class GmotionWorld(hass.Hass):
 
 	def motion(self, entity, attribute, old, new, kwargs):
 		#self.log("check motion")
+		cellar_m = "off"
+		basement_m = "off"
+		upstairs_m = "off"
 		m = False
 		for i in range(0,len(self.sensor)):
 			#self.log("binary_sensor.dev"+self.sensor[i]+": "+self.get_state("binary_sensor.dev"+self.sensor[i]))
-			if(self.get_state("binary_sensor.dev"+self.sensor[i]) == "on"):
+			if(self.get_state("binary_sensor.dev"+self.sensor[i][1]) == "on"):
 				m = True
 				self.sensor_trigger_count[i] = self.sensor_trigger_count[i]+1
+				if(self.sensor[i][2]==255):
+					cellar_m = "on"
+				elif(self.sensor[i][2]==0):
+					basement_m = "on"
+				elif(self.sensor[i][2]==1):
+					upstairs_m = "on"
+		# per storry motion
+		self.set_state("binary_sensor.g_motion_cellar",state=cellar_m)
+		self.set_state("binary_sensor.g_motion_basement",state=basement_m)
+		self.set_state("binary_sensor.g_motion_upstairs",state=upstairs_m)
+		# gloabal motion
 		if(not(m)):
-			 #self.log("gmotion "+entity)
 			 self.set_state("binary_sensor.g_motion",state="off")
 		else:
 			self.set_state("binary_sensor.g_motion",state="on")
 			self.safety()
+
 
 
 	def safety(self, kwargs=""):
@@ -57,6 +77,14 @@ class GmotionWorld(hass.Hass):
 			#self.log("Safety disabled, quitting")
 			return 0
 
+		################# nicht alarm handling ########################
+		now = datetime.datetime.now().time()
+		if(now > datetime.time(0,30,0) and now < datetime.time(5,30,0)):
+			if(self.get_state("binary_sensor.g_motion_cellar")=="on"  or self.get_state("binary_sensor.g_motion_basement")=="on"):
+				self.log("night alert")
+				self.call_service("notify/pb", title="Nightly motion alert", message="Well there is motion at night in the cellar or the basement .. you might want to have a look")
+
+		################# global alarm handling ########################
 		changes = False
 		for i in range(0,len(self.sensor)):
 			if(not(self.sensor_trigger_count_reported[i]==self.sensor_trigger_count[i])):
@@ -93,7 +121,7 @@ class GmotionWorld(hass.Hass):
 					msg += "Sensors: " 
 					for i in range(0,len(self.sensor)):
 						if(self.sensor_trigger_count[i] - self.sensor_trigger_count_reported[i]>0):
-							msg +=self.sensor_name[i]+" ("+str(self.sensor_trigger_count[i] - self.sensor_trigger_count_reported[i])+"x) "
+							msg +=self.sensor[i][0]+" ("+str(self.sensor_trigger_count[i] - self.sensor_trigger_count_reported[i])+"x) "
 					msg += ". Distances: "
 					msg +="Kolja ("+str(self.distance("device_tracker.illuminum_kolja"))+") "
 					msg +="Caro ("+str(self.distance("device_tracker.illuminum_caro"))+") "

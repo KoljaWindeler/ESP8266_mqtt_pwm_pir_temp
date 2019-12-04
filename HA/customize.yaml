@@ -106,6 +106,12 @@
 # -----------------------------------------------
     binary_sensor.g_motion:
       friendly_name: "Global Motion"
+    binary_sensor.g_motion_upstairs:
+      friendly_name: "Global Motion upstairs"
+    binary_sensor.g_motion_basement:
+      friendly_name: "Global Motion basement"
+    binary_sensor.g_motion_cellar:
+      friendly_name: "Global Motion cellar"
     sensor.g_motion_t:
       friendly_name: "Last global motion"
       icon: "mdi:timer-sand"

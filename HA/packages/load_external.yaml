@@ -1,4 +1,0 @@
-sensor:
-  - platform: load_external
-    name: long_term_power
-    feed_path: '/opt/counter_total.csv'

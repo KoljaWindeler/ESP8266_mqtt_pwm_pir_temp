@@ -93,6 +93,11 @@ media_player:
       HDMI2: "ChromeCast"
       HDMI3: "FTV4k"
 
+
+cast: 
+   media_player:
+    - host: 192.168.2.126
+
 updater:
 discovery:
 history:

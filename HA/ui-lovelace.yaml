@@ -3,6 +3,8 @@ resources:
   - type: js
     url: /local/monster-card.js
   - type: js
+    url: /local/swipe-navigation.js?v=1.0.0
+  - type: js
     url: /local/group-card.js
 #  - type: module
 #    url: /local/compact-custom-header.js?v=0.0.1
@@ -13,6 +15,10 @@ background: >-
   center / cover no-repeat
   url("/local/background.jpg")
   fixed
+
+swipe_nav: 
+   wrap: false 
+   animate: flip
 
 cch:
    background: 'rgba(255, 152, 0, 0.9)'
@@ -121,7 +127,8 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: switch.dev4_gpio_12_autostart
+                entity: light.dev22
+                name: Lichterkette
               - type: entity-button
                 tap_action:
                   action: toggle
@@ -436,34 +443,52 @@ views:
     title: Second view
 ############## weather #########################
   - cards:
+      - type: horizontal-stack
+        cards:
+         - entity: sensor.0x00158d0004461c84_humidity
+           name: Outside
+           type: gauge
+         - entity: sensor.0x00158d000410e664_humidity
+           type: gauge
+         - entity: sensor.0x00158d000445c970_humidity
+           type: gauge
+
       - type: weather-forecast
         entity: weather.dark_sky
+      - type: horizontal-stack
+        cards:
+         - detail: 2
+           graph: line
+           entity: sensor.0x00158d0004461c84_temperature
+           name: Outside
+           type: sensor 
+         - detail: 2
+           graph: line
+           entity: sensor.dev8_temperature
+           name: Garage
+           type: sensor 
+
       - type: vertical-stack
         cards:
+         - type: history-graph
+           entities:
+             - sensor.dev1_temperature
+             - sensor.dev2_temperature
+             - sensor.dev6_temperature
+
          - type: horizontal-stack
            cards:
             - detail: 2
               graph: line
-              entity: sensor.dev1_temperature
-              name: Livingroom
+              entity: sensor.0x00158d000410e664_temperature
               type: sensor 
+              name: Bathroom
             - detail: 2
               graph: line
-              entity: sensor.dev2_temperature
-              name: Livingroom 2
+              entity: sensor.0x00158d000445c970_temperature
               type: sensor 
-         - type: horizontal-stack
-           cards:
-            - detail: 2
-              graph: line
-              entity: sensor.dev8_temperature
-              name: Garage
-              type: sensor 
-            - detail: 2
-              graph: line
-              entity: sensor.dev6_temperature
-              name: Cellar
-              type: sensor 
+              name: Carlo
+
          - type: horizontal-stack
            cards:
             - detail: 2
@@ -474,7 +499,7 @@ views:
             - detail: 2
               graph: line
               entity: sensor.dev55_temperature
-              name: Carlo
+              name: L.
               type: sensor 
       - type: picture-entity
         entity: camera.cam_weather2
@@ -502,6 +527,12 @@ views:
         show_header_toggle: false
         entities:
           - binary_sensor.g_motion
+          - binary_sensor.g_motion_cellar
+          - binary_sensor.g_motion_basement
+          - binary_sensor.g_motion_upstairs
+      - type: entities
+        show_header_toggle: false
+        entities:
           - binary_sensor.dev17_motion
           - binary_sensor.dev6_motion
           - binary_sensor.dev8_motion
@@ -904,6 +935,15 @@ views:
         entities:
           - input_boolean.approx_warn
         show_header_toggle: false
+      - type: history-graph
+        entities:
+          - sensor.0x00158d000410e664_linkquality
+          - sensor.0x00158d000445c970_linkquality
+          - sensor.0x00158d0004461c84_linkquality
+      - type: picture-entity
+        entity: camera.cam_dome1_1
+        camera_view: live
+        name: Door
     title: T
 #######################################
 

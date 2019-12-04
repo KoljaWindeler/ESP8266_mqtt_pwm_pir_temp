@@ -5,6 +5,15 @@
       g_motion:
         device_class: motion
         value_template: false
+      g_motion_cellar:
+        device_class: motion
+        value_template: false
+      g_motion_basement:
+        device_class: motion
+        value_template: false
+      g_motion_upstairs:
+        device_class: motion
+        value_template: false
       always_on:
         device_class: motion
         value_template: true

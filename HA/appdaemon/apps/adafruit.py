@@ -54,6 +54,7 @@ class AdafruitWorld(hass.Hass):
 			self.turn_on("script.tvoff")
 			self.turn_on("light.dev54_2")
 			self.turn_on("light.dev12")
+			self.turn_off("switch.dev4_gpio_12") #pumpe/netz
 			self.turn_on("light.dev15")
 		elif(new=="garage"):
 			self.turn_on("switch.dev8")
