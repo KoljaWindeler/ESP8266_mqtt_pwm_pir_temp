@@ -98,8 +98,7 @@ class TrashCollectionSensor(Entity):
                 try:
                    self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (%02i)' % int(self.data.data[self._trash_type_id]['extra']['remaining'])
                 except:
-                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' ('+ int(self.data.data[self._trash_type_id]['extra']['remaining'] +')'
-                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (-)'
+                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' ('+ self.data.data[self._trash_type_id]['extra']['remaining'] +')'
                 self._name = self.data.data[self._trash_type_id]['name_type']
                 self._state_attributes = self.data.data[self._trash_type_id]['extra']
 #                print("trash sensor update failed")
