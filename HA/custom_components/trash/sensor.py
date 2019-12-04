@@ -95,9 +95,16 @@ class TrashCollectionSensor(Entity):
             self.data.update()
         if type(self.data.data) == list:
             if len(self.data.data[self._trash_type_id]) == 3:
-                self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (%02i)' % int(self.data.data[self._trash_type_id]['extra']['remaining'])
+                try:
+                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (%02i)' % int(self.data.data[self._trash_type_id]['extra']['remaining'])
+                except:
+                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' ('+ int(self.data.data[self._trash_type_id]['extra']['remaining'] +')'
+                   self._state = self.data.data[self._trash_type_id]['pickup_date'] + ' (-)'
                 self._name = self.data.data[self._trash_type_id]['name_type']
                 self._state_attributes = self.data.data[self._trash_type_id]['extra']
+#                print("trash sensor update failed")
+#                print(self.data.data)
+#                print("trash sensor update failed")
 
 
 class TrashCollectionSchedule(object):
@@ -133,6 +140,8 @@ class TrashCollectionSchedule(object):
             trash['name_type'] = "-"
             trash['pickup_date'] = "-"
             extra={}
+            extra['remaining'] = "-"
+            trash['extra'] = extra
             try:
                for i in range(1,len(entries)):
                     log+="check entry "+str(i)+"\r\n"
@@ -152,7 +161,8 @@ class TrashCollectionSchedule(object):
                                 s = s.replace(chr(188), 'e')
                                 log+="Setting name as ->"+s+"<-\r\n"
                                 trash['name_type'] = s
-                                trash['extra'] = []
+                                extra['remaining'] = "-"
+                                trash['extra'] = extra
                                 trash['pickup_date'] = "-"
 
                     for ii in range(1,len(l)):
@@ -176,6 +186,9 @@ class TrashCollectionSchedule(object):
                         trash['extra'] = extra
                         break
                     else:
+                        trash['pickup_date'] = "no pick up"
+                        extra['remaining'] = "-"
+                        trash['extra'] = extra
                         log+=" not after today, next\r\n\r\n"
             except:
                 print("FAILURE: "+log+"\r\n")
