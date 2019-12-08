@@ -1,3 +1,5 @@
+20191208
+	- fixed LOG GPIO output
 20191130
 	- moved serser from SoftwareSerial to hardwareserial
 20191104

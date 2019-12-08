@@ -2,6 +2,36 @@
 #ifdef WITH_GPIO
 // R,PI2,PW3,M3
 // REMEMBER: we're talking about GPIO5 and NOT Arduino D5!!
+
+// setup:
+//   use capability GIN5 / GIP5 to configure GPIO5 as input (low active / high active)
+//   use capability GOP5 / GON5 to configure GPIO5 as output (low active / high active) with half logarithmic
+//   use capability GOLP5 / GOLN5 to configure GPIO5 as output (low active / high active) with linear dimming option
+
+// operation:
+//   input pins will report the logic level .. so a active low switch will send "ON" once the pin goes LOW (0V)
+//   output pins can drive the pin ON / OFF / via PWM
+//   simplest way -> Publish "ON"/"OFF" to topic "devXX/s/gpio_5_state" will set the pin to logic ON/OFF
+//                   Response will be "ON/OFF" on "devXX/r/gpio_5_state"
+
+//   PWM          -> Publish "27" to topic "devXX/s/gpio_5_state" will set the pin to logic 27 PWM .. mode depending
+//   without         Response will be "ON" on "devXX/r/gpio_5_state"
+//   dimming         and in addition "27" on "devXX/r/gpio_5_brightness"
+
+//   dimm pin on  -> Publish "ON"/"OFF" to topic "devXX/s/gpio_5_dimm" will dimm the pin to logic ON/OFF
+//   or off          Response will be "ON/OFF" on "devXX/r/gpio_5_state"
+//                   and in addition "brightness" on "devXX/r/gpio_5_brightness" if the new state was ON
+
+//   toggle       -> Publish any message to "devXX/s/gpio_5_toggle" to toggle the pin state
+//                   Response will be "ON/OFF" on "devXX/r/gpio_5_state"
+//                   and in addition "brightness" on "devXX/r/gpio_5_brightness" if the new state was ON
+
+//   pluse        -> Publish "200" to "devXX/s/gpio_5_pulse" to set the pin ON for 200ms
+//                   Response will be "ON" on "devXX/r/gpio_5_state"
+//                   followed by "OFF" on "devXX/r/gpio_5_state" 200ms delayed
+
+
+
 // simply the constructor
 J_GPIO::J_GPIO(){
 	for (uint8_t i = 0; i <= 16; i++) {
@@ -62,6 +92,8 @@ bool J_GPIO::parse(uint8_t * config){
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = false;
 			m_dimmer[i]  = new dimmer(i, false, PWM_LOG);
+			m_brightness[i].set(m_dimmer[i]->get_max());
+			m_state[i].set(PWM_OFF);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -71,6 +103,8 @@ bool J_GPIO::parse(uint8_t * config){
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = true;
 			m_dimmer[i]  = new dimmer(i, true, PWM_LOG);
+			m_brightness[i].set(m_dimmer[i]->get_max());
+			m_state[i].set(PWM_OFF);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -80,6 +114,8 @@ bool J_GPIO::parse(uint8_t * config){
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = false;
 			m_dimmer[i]  = new dimmer(i, false, PWM_LIN);
+			m_brightness[i].set(m_dimmer[i]->get_max());
+			m_state[i].set(PWM_OFF);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -89,6 +125,8 @@ bool J_GPIO::parse(uint8_t * config){
 			m_pin_out[i] = true; // mark pin as "in use"
 			m_invert[i]  = true;
 			m_dimmer[i]  = new dimmer(i, true, PWM_LIN);
+			m_brightness[i].set(m_dimmer[i]->get_max());
+			m_state[i].set(PWM_OFF);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -97,6 +135,7 @@ bool J_GPIO::parse(uint8_t * config){
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_in[i] = true; // mark pin as "in use"
 			m_invert[i] = false;
+			m_state[i].set(0);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -105,6 +144,7 @@ bool J_GPIO::parse(uint8_t * config){
 		if (cap.parse(config, (uint8_t *) m_msg_buffer)) {
 			m_pin_in[i] = true; // mark pin as "in use"
 			m_invert[i] = true;
+			m_state[i].set(0);
 			f = true; // at least one pin  used, so keep this component alive
 			continue;
 		}
@@ -136,12 +176,9 @@ bool J_GPIO::init(){
 		if (m_pin_in[i]) {
 			if(m_invert[i]){ // inverted input gets pull-up
 				pinMode(i,INPUT_PULLUP);
-			} else {
-				pinMode(i, INPUT);
-			}
-			if (m_invert[i]) {
 				sprintf_P(m_msg_buffer, PSTR("J_GPIO active low input on pin %i"), i);
 			} else {
+				pinMode(i, INPUT);
 				sprintf_P(m_msg_buffer, PSTR("J_GPIO active high input on pin %i"), i);
 			}
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
@@ -160,9 +197,11 @@ bool J_GPIO::loop(){
 	for (uint8_t i = 0; i <= 16; i++) {
 		// output
 		if (m_pin_out[i]) {
+			// output mode: m_timing_parameter is set to a non-zero value e.g. to pulse the output
 			if (millis() >= m_timing_parameter[i] && m_timing_parameter[i] != 0) {
 				set_output(i, 0);
 				m_timing_parameter[i] = 0;
+				m_state[i].set(PWM_OFF);         // publish "OFF" as text
 			}
 			// if one or more gpios are dimming, set return to true, to run uninterrupted
 			else if (m_dimmer[i]->loop()) {
@@ -176,7 +215,7 @@ bool J_GPIO::loop(){
 			// we reset this as soon as the pin goes low
 			if (digitalRead(i) != m_invert[i]) { // in hold mode, or pin is active
 				if (m_timing_parameter[i] == 0) {
-					m_state[i].set(1); // 1 == on
+					m_state[i].set(1); // for input: 1 == on
 					m_timing_parameter[i] = millis(); // timestamp of first push
 				} else {
 					m_state[i].check_set(min(10, (uint8_t) ((millis() - m_timing_parameter[i]) / 1000) + 1)); // will count the hold seconds up to 10
@@ -241,32 +280,28 @@ bool J_GPIO::subscribe(){
 	return true;
 } // subscribe
 
-// drive pin
+// drive pin, values are logical not physical  so if your GPIO is active low and you set
+// the intensity to MAX .. it will physically output LOW. will directly SET no dimming
+// CALLEN BY:
+//     Loop() when a pulse command was executed
+//     receive() when single pin command, or toggle or pulse was received
+// INPUT: pin and logical value of the brightness (0..255)
 void J_GPIO::set_output(uint8_t pin, uint8_t intens_level){
 	if (pin > 16) {
 		return;
 	}
-	if (intens_level == PWM_ON || intens_level == PWM_OFF) { // non - pwm / ON-OFF
-		m_state[pin].set(intens_level);                         // store to trigger publish
-
-		if (m_state[pin].get_value() == PWM_ON) {
-			sprintf(m_msg_buffer, "Set J_GPIO %i: ON", pin);
-			m_dimmer[pin]->dimm_to(m_dimmer[pin]->get_max(), false); // max on with no dimming
-		} else {
-			sprintf(m_msg_buffer, "Set J_GPIO %i: OFF", pin);
-			m_dimmer[pin]->dimm_to(0, false); // off with no dimming;
-		}
-		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
-	} else {                                          // pwm
-		intens_level = min((int)(m_dimmer[pin]->get_max()), (int) intens_level); // limit
-		m_state[pin].set(intens_level);                  // store to trigger publish
-
-		// sort of debug
-		sprintf(m_msg_buffer, "Set J_GPIO %i: %i%% = %i", pin, intens_level, intens[intens_level]);
-		logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
-
-		m_dimmer[pin]->dimm_to(m_state[pin].get_value(), false); // set pwm with no dimming
+	intens_level = min((int)(m_dimmer[pin]->get_max()), (int) intens_level); // limit
+	if(intens_level){
+		m_state[pin].set(PWM_ON); // store to trigger publish
+	} else {
+		m_state[pin].set(PWM_OFF); // store to trigger publish
 	}
+
+	// sort of debug
+	sprintf(m_msg_buffer, "Set J_GPIO %i: %i%% = %i", pin, intens_level, intens[intens_level]);
+	logger.println(TOPIC_MQTT, m_msg_buffer, COLOR_PURPLE);
+
+	m_dimmer[pin]->dimm_to(intens_level, false); // set pwm with no dimming
 };
 
 
@@ -304,44 +339,51 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 		}
 		return true;
 	}
-	// //////////////// MASS DIMMING //////////////////
+	////////////////// END MASS DIMMING //////////////////
 
-	// single pin dimming, not 100% in syn
+	////////////////// SINGLE PIN HANDLING //////////////////
 	for (uint8_t i = 0; i <= 16; i++) {
 		if (m_pin_out[i]) {
-			// set pin once and direcly ON or OFF
+
+			///// set pin state direcly ON or OFF or value, but no dimming  ////////
+			// e.g. "gpio_5_state" -> "ON" / "OFF" / "124"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STATE_TOPIC, i);
-			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off WITHOUT dimming
 				// change OUTPUT
 				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
-					set_output(i, PWM_ON); // 99 == 100% (0..99)
+					set_output(i, m_brightness[i].get_value());  // ON, no dimming
+					// set_output will set m_state -> publish new state
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
-					set_output(i, PWM_OFF); // 0%
-				} else {                 // set pwm level direct
+					set_output(i, 0);  // full OFF, no dimming
+					// set_output will set m_state -> publish new state
+				} else { // set pwm level direct
 					// try to get BRIGHTNESS
-					m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload)));
-					set_output(i, min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload))); // limit to 0..99
+					m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload))); // limit, depending on mode
+					set_output(i,m_brightness[i].get_value());
+					m_state[i].set(PWM_ON); // store to trigger publish
 				}
 				return true;
 			}
 
-			// set Brightness value, this will also dimm to the given brightness if the state was on
+			//// set target Brightness value, this will also dimm to the given brightness if the state was on ////
+			// e.g. "gpio_5_brightness" -> "124"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
-			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) {
 				// change brightness
-				m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload)));
-				m_dimmer[i]->set_brightness(m_brightness[i].get_value());
+				m_brightness[i].set(min((int)(m_dimmer[i]->get_max()), atoi((const char *) p_payload))); // limit
+				m_dimmer[i]->set_brightness(m_brightness[i].get_value()); // with dimming (optionally, if already on)
 				return true;
 			}
 
-			// dimm on or off
+			//// dimm on or off ////
+			// e.g. "gpio_5_dimm" -> "ON" / "OFF"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_DIMM_TOPIC, i);
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
 				// change OUTPUT
 				if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 					m_dimmer[i]->set_state(true);
 					m_brightness[i].outdated(true); // force republish for HA
-					m_state[i].set(PWM_ON);         // publish "OFF" as text
+					m_state[i].set(PWM_ON);         // publish "ON" as text
 				} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) {
 					m_dimmer[i]->set_state(false);
 					m_state[i].set(PWM_OFF); // publish "OFF" as text
@@ -349,21 +391,26 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 				return true;
 			}
 
-			// toggle pin output
+			//// toggle pin output ////
+			// e.g. "gpio_5_toggle" -> "[doesn't matter]"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_TOGGLE_TOPIC, i);
-			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
-				if (m_state[i].get_value() == PWM_ON) {
-					set_output(i, PWM_OFF);
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off WITHOUT dimming
+				// set_output will also set state which will trigger the publishing
+				if (m_state[i].get_value() == PWM_OFF) {
+					set_output(i,m_brightness[i].get_value()); // direct set brightness value, no dimming
+					m_brightness[i].outdated(true);
 				} else {
-					set_output(i, PWM_ON);
+					set_output(i, 0);
 				}
 				return true;
 			}
 
-			// pulse output for some ms
+			//// pulse output for some ms ////
+			// e.g. "gpio_5_pulse" -> "[doesn't matter]"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_PULSE_TOPIC, i);
-			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
-				set_output(i, PWM_ON);
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // no dimming
+				set_output(i,m_brightness[i].get_value()); // direct set brightness value, no dimming
+				// set_output will also set state which will trigger the publishing
 				uint16_t pulse_length = atoi((char *) p_payload);
 				m_timing_parameter[i] = millis() + pulse_length;
 				// do something
@@ -371,6 +418,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			}
 		}
 	}
+	////////////////// END SINGLE PIN HANDLING //////////////////
 	// not for me
 	return false;
 } // receive
@@ -398,11 +446,6 @@ bool J_GPIO::publish(){
 					} else if (m_state[i].get_value() == PWM_OFF) {
 						logger.pln((char *) STATE_OFF);
 						ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) STATE_OFF);
-					} else { // pwm
-						char t[5];
-						sprintf(t, "%i", m_state[i].get_value());
-						logger.pln(t);
-						ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), t);
 					}
 				}
 				// INPUT: "ON" / "OFF" and the HOLD topic
@@ -490,6 +533,7 @@ dimmer::dimmer(uint8_t gpio, bool invers, uint8_t phy_log){
 	m_gpio      = gpio;
 	m_invers    = invers;
 	m_phy_log   = phy_log;
+	m_end_time  = 0;
 	if(m_phy_log == PWM_LIN){
 		m_backup_v  = PWM_LIN_MAX; // override by MQTT msg
 	} else {
@@ -501,7 +545,7 @@ dimmer::dimmer(uint8_t gpio, bool invers, uint8_t phy_log){
 uint8_t dimmer::get_max(){
 	if(m_phy_log == PWM_LIN){
 		return PWM_LIN_MAX; // 255
-	} 
+	}
 	return PWM_LOG_MAX; // 99
 }
 
@@ -532,7 +576,7 @@ bool dimmer::loop(){
 				if(m_invers) {
 					analog_value=intens[get_max() - m_current_v]; // log inverse
 				} else {
-					analogWrite(m_gpio, intens[m_current_v]); // log non invers
+					analog_value=intens[m_current_v]; // log non invers
 				}
 			}
 			// erial.printf("%i,%i\r\n",m_gpio,analog_value);
@@ -576,7 +620,7 @@ void dimmer::dimm_to(uint8_t t, bool dimming){
 	} else {          // this is used if we only want to update our internal states
 		m_target_v  = t; // the dimm to value
 		m_end_time  = 1; // not 0 but very low to trigger loop
-		m_next_time = 2; // next > end to directly ump to the end state
+		m_next_time = 2; // next > end to directly jump to the end state
 		loop();          // run, will set the t value instantly
 	}
 };

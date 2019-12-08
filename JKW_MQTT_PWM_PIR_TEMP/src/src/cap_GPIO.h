@@ -4,10 +4,10 @@
 	#define PWM_MIN 0
 	#define PWM_ON  255
 	#define PWM_OFF 254
-	
+
 	#define PWM_LIN 0
 	#define PWM_LIN_MAX 255
-	
+
 	#define PWM_LOG 1
 	#define PWM_LOG_MAX 99
 
@@ -41,7 +41,7 @@ public:
 private:
 		uint8_t m_gpio        = 0;
 		bool m_invers         = false;
-		uint8_t m_phy_log     = PWM_LOG; 
+		uint8_t m_phy_log     = PWM_LOG;
 		uint8_t m_start_v     = 0;
 		uint8_t m_target_v    = 0;
 		uint8_t m_current_v   = 0;
@@ -69,8 +69,8 @@ private:
 		bool m_pin_out[17]    = { false };
 		dimmer * m_dimmer[17] = { NULL };
 		bool m_pin_in[17]     = { false };
-		mqtt_parameter_8 m_state[17];
-		mqtt_parameter_8 m_brightness[17];
+		mqtt_parameter_8 m_state[17];  // output: either PWM_ON or PWM_OFF, input: 0=OFF,1=ON, 10+x = ON for X seconds
+		mqtt_parameter_8 m_brightness[17]; // brightness value 0..99 for LOG and 0..255 for linear mode
 		uint32_t m_timing_parameter[17] = { 0 };
 		bool m_invert[17];
 		bool m_discovery_pub[17];
