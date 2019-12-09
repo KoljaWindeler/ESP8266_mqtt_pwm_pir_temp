@@ -1,7 +1,9 @@
 #include <cap_energy_meter.h>
 
 // simply the constructor
-energy_meter::energy_meter(){ };
+energy_meter::energy_meter(){
+	m_discovery_pub = false;
+};
 
 // simply the destructor
 energy_meter::~energy_meter(){

@@ -57,12 +57,23 @@ J_GPIO::~J_GPIO(){
 				network.publish(t,(char*)"");
 				m_discovery_pub[i] = false;
 				delete[] t;
+
+				// try to delete retained messages
+				sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STATE_TOPIC, i);
+				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
+				sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
+				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
 			}
 			if (m_pin_in[i]) {
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPI_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
 				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
+
+				// try to delete retained messages
+				sprintf(m_msg_buffer, MQTT_J_GPIO_INPUT_HOLD_TOPIC, i);
+				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
+
 				m_discovery_pub[i] = false;
 				delete[] t;
 			}

@@ -1,7 +1,10 @@
 #include <cap_DHT22.h>
 #ifdef WITH_DHT22
 
-J_DHT22::J_DHT22(){};
+J_DHT22::J_DHT22(){
+	m_discovery_pub = false;
+};
+
 J_DHT22::~J_DHT22(){
 	#ifdef WITH_DISCOVERY
 		if(m_discovery_pub & (timer_connected_start>0)){
