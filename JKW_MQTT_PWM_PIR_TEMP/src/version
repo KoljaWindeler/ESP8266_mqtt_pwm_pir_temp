@@ -1,3 +1,8 @@
+20191209
+	- updated espessiff package to 2.3.1, some breaking changes
+	- downgraded updater to local version (package version consumed 80kb more!)
+		DATA:    [=====     ]  52.4% (used 42896 bytes from 81920 bytes)
+		PROGRAM: [====      ]  44.2% (used 423572 bytes from 958448 bytes)
 20191208
 	- fixed LOG GPIO output
 20191130
