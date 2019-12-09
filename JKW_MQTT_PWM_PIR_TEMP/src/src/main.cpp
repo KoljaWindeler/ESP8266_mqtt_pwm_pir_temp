@@ -33,7 +33,7 @@ bool relationship_timeout(float decelleration_factor, char * next_mode){
 	// max 20min
 	// per second that we've been connected we increase the retry time by 0.2 sec
 	uint16_t time_max_reconnect =
-	  _max(MIN_RECONNECT_TIME, _min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
+	  max(MIN_RECONNECT_TIME, min(MIN_RECONNECT_TIME + time_connected / CALC_RECONNECT_WEIGHT, MAX_RECONNECT_TIME));
 
 	time_max_reconnect *= decelleration_factor;
 

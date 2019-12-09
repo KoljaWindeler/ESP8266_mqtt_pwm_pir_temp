@@ -17,12 +17,11 @@
 #ifndef main_h
 	#define main_h
 
-	#define FS(x) (__FlashStringHelper *) (x)
-
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h> // local modified version          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
-#include <ESP8266httpUpdate.h>
+#include "../lib/ESP8266httpUpdate/src/ESP8266httpUpdate.h"
+
 
 #ifdef WITH_NEOSTRIP
 	#include <NeoPixelBus.h>

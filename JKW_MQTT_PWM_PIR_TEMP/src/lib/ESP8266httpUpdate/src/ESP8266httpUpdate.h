@@ -53,6 +53,10 @@
 #define HTTP_UE_BIN_VERIFY_HEADER_FAILED    (-106)
 #define HTTP_UE_BIN_FOR_WRONG_FLASH         (-107)
 
+#define U_FLASH   0
+#define U_SPIFFS  100
+#define U_AUTH    200
+
 enum HTTPUpdateResult {
     HTTP_UPDATE_FAILED,
     HTTP_UPDATE_NO_UPDATES,
