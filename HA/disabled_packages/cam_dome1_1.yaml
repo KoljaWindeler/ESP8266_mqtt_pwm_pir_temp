@@ -5,6 +5,8 @@ camera:
     mode: crop
     max_image_width: 640
     max_image_height: 480
+    max_stream_width: 640
+    max_stream_height: 480
     image_left: 81
     image_top: 160
     image_refresh_rate: 5.0

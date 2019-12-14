@@ -19,6 +19,7 @@ DEV18 -T- love of pi
 DEV19 -T- workshop LED
 DEV20 -T- shelly workshop
 DEV21 -T- slampher in küche
+DEV22 - Xmas lichterkette, ehemals 57
 DEV23 -T- SonOff Touch Bedroom
 DEV24 -O- SonOff Touch carlo
 DEV25 -T- Shellybeamer 
@@ -33,13 +34,11 @@ DEV55 -T- Ikea LED lampinions Geheim
 DEV56 -T- Ikea LED lampinions carlo
 DEV57 -T- Ikea LED lampinions flur
 DEV58 -T- media pc gpio 12
+DEV59 -T- zigbee bridge
 
 
 
 
-
-DEV56 - Ikea LED lampinions caro
-DEV22 - Xmas lichterkette, ehemals 57
 DEV16 - power meter
 #DEV4  - oben caro, temperature, PIR, simple light
 DEV59 - S26_2 unused

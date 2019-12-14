@@ -137,7 +137,7 @@ views:
               - type: entity-button
                 tap_action:
                   action: toggle
-                entity: light.dev6
+                entity: light.dev59
           - type: horizontal-stack
             cards:
               - type: entity-button
@@ -448,10 +448,48 @@ views:
          - entity: sensor.0x00158d0004461c84_humidity
            name: Outside
            type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
          - entity: sensor.0x00158d000410e664_humidity
+           name: Bathroom U.
            type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
          - entity: sensor.0x00158d000445c970_humidity
+           name: Carlo
            type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+      - type: horizontal-stack
+        cards:
+         - entity: sensor.0x00158d00044494bf_humidity
+           name: Beamer
+           type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.0x00158d0003ce3269_humidity
+           type: gauge
+           name: Livingroom
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.0x00158d000359104f_humidity
+           type: gauge
+           name: Entrance
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+
 
       - type: weather-forecast
         entity: weather.dark_sky
@@ -472,35 +510,17 @@ views:
         cards:
          - type: history-graph
            entities:
+             - sensor.dev59_temperature
              - sensor.dev1_temperature
              - sensor.dev2_temperature
-             - sensor.dev6_temperature
+             - sensor.0x00158d000359104f_temperature
+             - sensor.0x00158d0003ce3269_temperature
+             - sensor.0x00158d000410e664_temperature
+             - sensor.0x00158d00044494bf_temperature
+             - sensor.0x00158d000445c970_temperature
+             - sensor.dev32_temperature
+             - sensor.dev55_temperature
 
-         - type: horizontal-stack
-           cards:
-            - detail: 2
-              graph: line
-              entity: sensor.0x00158d000410e664_temperature
-              type: sensor 
-              name: Bathroom
-            - detail: 2
-              graph: line
-              entity: sensor.0x00158d000445c970_temperature
-              type: sensor 
-              name: Carlo
-
-         - type: horizontal-stack
-           cards:
-            - detail: 2
-              graph: line
-              entity: sensor.dev32_temperature
-              name: Bedroom
-              type: sensor 
-            - detail: 2
-              graph: line
-              entity: sensor.dev55_temperature
-              name: L.
-              type: sensor 
       - type: picture-entity
         entity: camera.cam_weather2
         name: NDS
@@ -534,7 +554,8 @@ views:
         show_header_toggle: false
         entities:
           - binary_sensor.dev17_motion
-          - binary_sensor.dev6_motion
+          - binary_sensor.dev59_motion
+          - binary_sensor.dev59_motion_2
           - binary_sensor.dev8_motion
 #          - binary_sensor.dev10_motion
           - binary_sensor.dev14_motion
@@ -562,7 +583,7 @@ views:
           - sensor.dev3_update
           - sensor.dev4_update
           - sensor.dev5_update
-          - sensor.dev6_update
+#          - sensor.dev6_update
           - sensor.dev7_update
           - sensor.dev8_update
           - sensor.dev10_update
@@ -592,6 +613,7 @@ views:
           - sensor.dev56_update
           - sensor.dev57_update
           - sensor.dev58_update
+          - sensor.dev59_update
       - type: entities
         title: Rssi
         show_header_toggle: false
@@ -601,7 +623,7 @@ views:
           - sensor.dev3_rssi
           - sensor.dev4_rssi
           - sensor.dev5_rssi
-          - sensor.dev6_rssi
+#          - sensor.dev6_rssi
           - sensor.dev7_rssi
           - sensor.dev8_rssi
           - sensor.dev10_rssi
@@ -631,6 +653,7 @@ views:
           - sensor.dev56_rssi
           - sensor.dev57_rssi
           - sensor.dev58_rssi
+          - sensor.dev59_rssi
       - type: entities
         show_header_toggle: false
         entities:
@@ -639,7 +662,7 @@ views:
           - sensor.dev3_info
           - sensor.dev4_info
           - sensor.dev5_info
-          - sensor.dev6_info
+#          - sensor.dev6_info
           - sensor.dev7_info
           - sensor.dev8_info
           - sensor.dev10_info
@@ -669,6 +692,7 @@ views:
           - sensor.dev56_info
           - sensor.dev57_info
           - sensor.dev58_info
+          - sensor.dev59_info
         title: Info
       - type: entities
         show_header_toggle: false
@@ -678,7 +702,7 @@ views:
           - sensor.dev3_bssid
           - sensor.dev4_bssid
           - sensor.dev5_bssid
-          - sensor.dev6_bssid
+#          - sensor.dev6_bssid
           - sensor.dev7_bssid
           - sensor.dev8_bssid
           - sensor.dev10_bssid
@@ -708,6 +732,7 @@ views:
           - sensor.dev56_bssid
           - sensor.dev57_bssid
           - sensor.dev58_bssid
+          - sensor.dev59_bssid
         title: Bssid
       - type: entities
         show_header_toggle: false
@@ -717,7 +742,7 @@ views:
           - sensor.dev3_ssid
           - sensor.dev4_ssid
           - sensor.dev5_ssid
-          - sensor.dev6_ssid
+#          - sensor.dev6_ssid
           - sensor.dev7_ssid
           - sensor.dev8_ssid
           - sensor.dev10_ssid
@@ -747,6 +772,7 @@ views:
           - sensor.dev56_ssid
           - sensor.dev57_ssid
           - sensor.dev58_ssid
+          - sensor.dev59_ssid
         title: SSID
       - type: entities
         show_header_toggle: false
@@ -756,7 +782,7 @@ views:
           - sensor.dev3_capability
           - sensor.dev4_capability
           - sensor.dev5_capability
-          - sensor.dev6_capability
+#          - sensor.dev6_capability
           - sensor.dev7_capability
           - sensor.dev8_capability
           - sensor.dev10_capability
@@ -786,6 +812,7 @@ views:
           - sensor.dev56_capability
           - sensor.dev57_capability
           - sensor.dev58_capability
+          - sensor.dev59_capability
         title: Capability
     icon: 'mdi:signal-variant'
     title: Signals
@@ -936,14 +963,14 @@ views:
           - input_boolean.approx_warn
         show_header_toggle: false
       - type: history-graph
+        #title: Linkquality
         entities:
           - sensor.0x00158d000410e664_linkquality
           - sensor.0x00158d000445c970_linkquality
           - sensor.0x00158d0004461c84_linkquality
-      - type: picture-entity
-        entity: camera.cam_dome1_1
-        camera_view: live
-        name: Door
+          - sensor.0x00158d00044494bf_linkquality
+          - sensor.0x00158d0003ce3269_linkquality
+          - sensor.0x00158d000359104f_linkquality
     title: T
 #######################################
 

@@ -11,7 +11,8 @@ class GmotionWorld(hass.Hass):
 		self.listen_state(self.home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
 		self.listen_state(self.home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
 		self.sensor = []
-		self.sensor.append(["Cellar","6_motion",255])
+		self.sensor.append(["Cellar 1","59_motion",255])
+		self.sensor.append(["Cellar 2","59_motion_2",255])
 		self.sensor.append(["Garage","8_motion",254])
 		self.sensor.append(["World map","15_motion",0])
 		self.sensor.append(["Entrance","54_motion_1",0])

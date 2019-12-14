@@ -1,0 +1,13 @@
+HA/.storage/core.entity_registry
+HA/.storage/core.device_registry
+HA/.storage/core.config_entries
+HA/.storage/camera
+HA/.storage
+HA/.uuid
+HA/.HA_VERSION
+HA/appdaemon/apps/__pycache__/
+HA/gmusic_authtoken
+HA/scripts/screenlog.0
+HA/secrets.yaml
+HA/emulated_hue_ids.json
+

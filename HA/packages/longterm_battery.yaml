@@ -19,13 +19,13 @@ automation:
     action:
       - service: notify.filenotify_bat_1
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d000410e664', 'battery') }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d000410e664_battery'].state }}"
       - service: notify.filenotify_bat_2
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d0004461c84', 'battery') }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d0004461c84_battery'].state }}"
       - service: notify.filenotify_bat_3
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ state_attr('sensor.0x00158d000445c970', 'battery') }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d000445c970_battery'].state }}"
 
 sensor:
   - platform: load_external

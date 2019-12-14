@@ -77,3 +77,6 @@ groups:
 dingdong:
   module: dingdong
   class: DingDongWorld
+temperature:
+  module: temperature
+  class: temperatureWorld
