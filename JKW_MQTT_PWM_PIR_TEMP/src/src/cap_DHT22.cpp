@@ -6,22 +6,22 @@ J_DHT22::J_DHT22(){
 };
 
 J_DHT22::~J_DHT22(){
-	#ifdef WITH_DISCOVERY
-		if(m_discovery_pub & (timer_connected_start>0)){
-			char* t = discovery_topic_bake(MQTT_DISCOVERY_DHT_TEMP_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT temp config "), COLOR_YELLOW);
-			logger.pln(t);
-			network.publish(t,(char*)"");
-			m_discovery_pub = false;
-			delete[] t;
-			char* tt = discovery_topic_bake(MQTT_DISCOVERY_DHT_HUM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT humidity config "), COLOR_YELLOW);
-			logger.pln(tt);
-			network.publish(t,(char*)"");
-			m_discovery_pub = false;
-			delete[] tt;
-		}
-	#endif
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		char* t = discovery_topic_bake(MQTT_DISCOVERY_DHT_TEMP_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT temp config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] t;
+		char* tt = discovery_topic_bake(MQTT_DISCOVERY_DHT_HUM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT humidity config "), COLOR_YELLOW);
+		logger.pln(tt);
+		network.publish(t,(char*)"");
+		m_discovery_pub = false;
+		delete[] tt;
+	}
+#endif
 
 	logger.println(TOPIC_GENERIC_INFO, F("DHT deleted"), COLOR_YELLOW);
 };

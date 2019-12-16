@@ -634,6 +634,7 @@ char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev){
 		pc_shall_R_or_S = PC_TO_UNIT;
 	}
 	if (with_dev) {
+		// 2do .. safety
 		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
 	} else {
 		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, topic);

@@ -216,17 +216,13 @@ bool connection_relay::loopCheck(){
 
 // publish the routing
 bool connection_relay::publishRouting(){
-	char msg[50];
-	char topic[50];
-
-	sprintf_P(topic, PSTR("%s"), build_topic("routing", UNIT_TO_PC));
-	sprintf_P(msg, PSTR("%c%c%c%s%c%s"), MSG_TYPE_ROUTING, strlen(topic) + 1, strlen(
-	   mqtt.dev_short) + 1, topic, 0, mqtt.dev_short);
-
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
-		return publish((char *) topic, mqtt.dev_short);
+		return publish((char *) m_topic_buffer, mqtt.dev_short);
 	} else {
-		return enqueue_up(msg, 3 + strlen(topic) + 1 + strlen(mqtt.dev_short) + 1);
+		build_topic("routing", UNIT_TO_PC);
+		char msg[1+1+1+strlen(m_topic_buffer)+1+strlen(mqtt.dev_short)+1];
+		sprintf_P(msg, PSTR("%c%c%c%s%c%s"), MSG_TYPE_ROUTING, strlen(m_topic_buffer) + 1, strlen(mqtt.dev_short) + 1, m_topic_buffer, 0, mqtt.dev_short);
+		return enqueue_up(msg, 3 + strlen(m_topic_buffer) + 1 + strlen(mqtt.dev_short) + 1);
 	}
 };
 
