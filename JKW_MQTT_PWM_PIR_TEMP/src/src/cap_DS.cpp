@@ -132,8 +132,8 @@ float J_DS::getDsTemp(){ // https://blog.silvertech.at/arduino-temperatur-messen
 	byte MSB = data[1];
 	byte LSB = data[0];
 
-	float tempRead       = ((MSB << 8) | LSB); // using two's compliment
-	float TemperatureSum = tempRead / 16;
+	float tempRead       = (int16_t) ((MSB << 8) | LSB); // using two's compliment
+	float TemperatureSum = tempRead / 16.0;
 
 	return TemperatureSum;
 } // getDsTemp
