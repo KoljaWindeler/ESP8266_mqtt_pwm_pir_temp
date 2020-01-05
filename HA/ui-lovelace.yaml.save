@@ -1,0 +1,1024 @@
+
+name: My Awesome Home
+resources:
+  - type: js
+    url: /local/monster-card.js
+#  - type: js
+#    url: /local/swipe-navigation.js?v=1.0.0
+  - type: js
+    url: /local/group-card.js
+  - type: module
+    url: /local/mini-graph-card-bundle.js
+  - type: module
+    url: /local/custom-header.js
+
+background: >-
+  center / cover no-repeat
+  url("/local/background4.jpg")
+  fixed
+
+swipe_nav: 
+   wrap: false 
+   animate: flip
+
+custom_header:
+  compact_mode: true
+  footer_mode: true
+  options_hide: false
+  button_text:
+    options: >-
+        {{ hours24LZ }}:{{ minutesLZ }} &nbsp; <ha-icon icon='mdi:weather-{%
+        if is_state("weather.dark_sky", "partlycloudy") -%}partly-cloudy{%- else 
+        -%}{{ states('weather.dark_sky')}}{%- endif %}'></ha-icon> {{states.weather.dark_sky.attributes.temperature }}°<br> &nbsp;&nbsp;&nbsp;{{ dayNumLZ }}.{{ monthNumLZ }}.{{ year4d }}
+  exceptions:
+    - conditions:
+        media_query: "(max-width: 600px)"
+      config:
+        voice_hide: true 
+        chevrons: false
+        menu_hide: true
+        options_hide: true
+
+
+
+views:
+  - theme: dark-mode
+############## home #########################
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: light.joiner_livingroom
+            icon: 'mdi:sofa'
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: light.joiner_kitchen
+            icon: 'mdi:pot-mix'
+      - type: horizontal-stack
+        cards:
+          - icon: 'mdi:power'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.tvoff
+              action: call-service
+            entity: binary_sensor.always_on
+          - icon: 'mdi:volume-minus'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.yamaha_vol_down
+              action: call-service
+            entity: binary_sensor.harmony
+          - icon: 'mdi:volume-plus'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.yamaha_vol_up
+              action: call-service
+            entity: binary_sensor.harmony
+          - icon: 'mdi:cast-connected'
+            name: ' '
+            service: script.turn_on
+            type: entity-button
+            tap_action:
+              service: script.start_chromaudio
+              action: call-service
+            entity: binary_sensor.always_on
+#      - type: vertical-stack
+#        cards:
+      - type: picture-entity
+        entity: camera.cam_xia4
+        name: Carlo
+      - type: horizontal-stack
+        cards:
+          - detail: 2
+            graph: line
+            entity: sensor.dev1_temperature
+            name: Livingroom
+            type: sensor 
+          - detail: 2
+            graph: line
+            entity: sensor.dark_sky_temperature
+            name: Outside
+            type: sensor 
+      - type: horizontal-stack
+        cards:
+#          - detail: 2
+#            graph: line
+#            entity: sensor.dhcp_master_kbyte_sec_received
+#            name: Downstream
+#            type: sensor 
+          - type: custom:mini-graph-card
+            name: 'Power Month'
+            display_mode: 'diff'
+            formater: 'yyyy-mm-dd'
+            maxDays: 30
+            data_delimiter: ','
+            unit: 'kWh'
+            entities:
+             - sensor.long_term_power
+          - detail: 2
+            graph: line
+            entity: sensor.dev16_em_cur
+            name: House Power
+            type: sensor 
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev56
+                name: Lampin C
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev23
+                name: Vent Carlo
+                hold_action: more-info
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.joiner_bedroom
+                name: Bedroom
+          - type: horizontal-stack
+            cards:
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev22
+                name: Lichterkette
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev54_2
+                name: Entrance
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev59
+          - type: horizontal-stack
+            cards:
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev5
+                name: Tisch
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                entity: light.dev55
+                name: Lampin L.
+              - type: entity-button
+                tap_action:
+                  action: toggle
+                name: Light L.
+                entity: light.dev24
+#          - type: picture-entity
+#            entity: camera.cam_xia1
+#            name: L.
+    icon: 'mdi:home-assistant'
+############# cams ##########################
+  - cards:
+      - type: picture-entity
+        entity: camera.cam_dome1
+        camera_view: live
+        name: Door
+      - type: picture-entity
+        entity: camera.cam_xia3
+        camera_view: live
+        name: Garage
+      - type: picture-entity
+        entity: camera.cam_xia1
+        camera_view: live
+        name: L.
+#      - type: picture-entity
+#        entity: camera.cam_xia5
+#        camera_view: live
+#      - type: horizontal-stack
+#        cards:
+#          - icon: 'mdi:arrow-left-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_left
+#          - icon: 'mdi:arrow-up-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_up
+#          - icon: 'mdi:arrow-down-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_down
+#          - icon: 'mdi:arrow-right-bold'
+#            name: ' '
+#            type: entity-button
+#            entity: switch.camxia5_right
+#      - type: picture-entity
+#        entity: camera.cam_xia1
+#      - type: picture-entity
+#        entity: camera.cam_xia2
+#        camera_view: live
+      - type: picture-entity
+        entity: camera.cam_xia4
+        camera_view: live
+        name: Carlo
+#      - type: picture-entity
+#        entity: camera.cam_xia52
+#        camera_view: live
+#      - type: picture-entity
+#        entity: camera.pi103
+#      - type: picture-entity
+#        entity: camera.pi106
+    icon: 'mdi:cctv'
+    title: Cams
+################ media control #######################
+  - cards:
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:power'
+                name: All
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.tvoff
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:fire'
+                name: FireTV
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.start_fire
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:cast-connected'
+                name: Ch TV
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.start_chrom
+                  action: call-service
+                entity: binary_sensor.always_on
+              - icon: 'mdi:cast-connected'
+                name: Ch Audio
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.start_chromaudio
+                  action: call-service
+                entity: binary_sensor.always_on
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:menu'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.firehome
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-up-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.fireup
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:volume-plus'
+                name: Amp
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.yamaha_vol_up_2
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-up-bold'
+                name: TV
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.tvup
+                  action: call-service
+                entity: binary_sensor.harmony
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:arrow-left-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.fireleft
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:check-circle'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.fireok
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-right-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.fireright
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:music-circle'
+                name: TheBuzz
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.the_buzz
+                  action: call-service
+                entity: binary_sensor.always_on
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:volume-mute'
+                name: AMP
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.tvmute
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-down-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.firedown
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:volume-minus'
+                name: AMP
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.yamaha_vol_down_2
+                  action: call-service
+                entity: binary_sensor.harmony
+              - icon: 'mdi:arrow-down-bold'
+                name: TV
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.tvdown
+                  action: call-service
+                entity: binary_sensor.harmony
+      - type: horizontal-stack
+        cards:
+         - type: entity-button
+           tap_action:
+             action: toggle
+           entity: switch.dev58_gpio_12
+           icon: 'mdi:download-network'
+           name: MediaPC
+         - type: entity-button
+           tap_action:
+             action: toggle
+           entity: light.dev10
+      - type: horizontal-stack
+        cards:
+         - icon: 'mdi:laptop'
+           name: BeamerPc
+           service: script.turn_on
+           type: entity-button
+           tap_action:
+             service: script.start_beamer
+             action: call-service
+           entity: binary_sensor.always_on
+         - icon: 'mdi:power'
+           name: BeamerOff
+           service: script.turn_on
+           type: entity-button
+           tap_action:
+             service: script.beameroff
+             action: call-service
+           entity: binary_sensor.harmony_beamer
+      - type: media-control
+        entity: media_player.gmusic_player
+      - type: media-control
+        entity: media_player.jkw_cast2
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: GMusic
+        group: group.google_music_media_player
+        show_header_toggle: false
+    icon: 'mdi:cast-connected'
+    title: Media
+########### outside ############################
+  - cards:
+      - type: entities
+        entities:
+          - light.dev54_3
+          - light.dev54_4
+          - light.dev18
+        show_header_toggle: false
+        title: Outside light
+      - type: entities
+        entities:
+          - vacuum.xiaomi_vacuum_cleaner
+          - vacuum.xiaomi_vacuum_cleaner_2
+          - input_boolean.cleaning_done_today_0
+          - input_boolean.cleaning_done_today_1
+          - sensor.vac_triggered_0
+          - sensor.vac_triggered_1
+          - input_boolean.autostart_cleaning
+        show_header_toggle: false
+        title: Vacuuming
+      - type: history-graph
+        entities:
+          - sensor.dev29_temperature
+      - type: entities
+        entities:
+          - sensor.trash_0
+          - sensor.trash_1
+          - sensor.trash_2
+          - sensor.trash_3
+        title: Trash
+      - type: entities
+        entities:
+          - input_boolean.irrigation
+          - input_boolean.irrigation_override
+          - sensor.dev30_state
+          - switch.dev4_gpio_12
+          - switch.dev30_gpio_2
+          - switch.dev30_gpio_16
+          - switch.dev30_gpio_4
+          - switch.dev30_gpio_5
+          - switch.dev30_gpio_15
+          - sensor.dev30_uptime
+          - sensor.dark_sky_daytime_high_temperature_0d
+        show_header_toggle: false
+        title: Water
+    icon: 'mdi:home'
+    title: Second view
+############## weather #########################
+  - cards:
+      - type: horizontal-stack
+        cards:
+         - entity: sensor.outside_humidity
+           name: Outside
+           type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.bathroom_u_humidity
+           name: Bathroom U.
+           type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.carlo_humidity
+           name: Carlo
+           type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+      - type: horizontal-stack
+        cards:
+         - entity: sensor.beamer_humidity
+           name: Beamer
+           type: gauge
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.livingroom_humidity
+           type: gauge
+           name: Livingroom
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+         - entity: sensor.entrance_humidity
+           type: gauge
+           name: Entrance
+           severity:
+             green: 0
+             yellow: 0
+             red: 60
+
+
+      - type: weather-forecast
+        entity: weather.dark_sky
+      - type: horizontal-stack
+        cards:
+         - detail: 2
+           graph: line
+           entity: sensor.outside_temperature
+           name: Outside
+           type: sensor 
+         - detail: 2
+           graph: line
+           entity: sensor.dev8_temperature
+           name: Garage
+           type: sensor 
+      - type: horizontal-stack
+        cards:
+         - detail: 2
+           graph: line
+           entity: sensor.carlo_temperature
+           name: Carlo
+           type: sensor 
+         - detail: 2
+           graph: line
+           entity: sensor.livingroom_temperature
+           name: Livingroom
+           type: sensor 
+
+      - type: vertical-stack
+        cards:
+         - type: history-graph
+           entities:
+             - sensor.dev59_temperature
+             - sensor.dev1_temperature
+             - sensor.dev2_temperature
+             - sensor.entrance_temperature
+             - sensor.livingroom_temperature
+             - sensor.bathroom_u_temperature
+             - sensor.beamer_temperature
+             - sensor.carlo_temperature
+             - sensor.dev32_temperature
+             - sensor.dev55_temperature
+
+      - type: picture-entity
+        entity: camera.cam_weather2
+        name: NDS
+        camera_view: live
+      - type: picture-entity
+        entity: camera.cam_weather1
+        name: BRD
+        camera_view: live
+    icon: 'mdi:weather-partly-cloudy'
+    title: weather
+############## security #########################
+  - cards:
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - input_boolean.alarm_system
+          - input_boolean.presents_simulation
+          - binary_sensor.someone_is_home
+          - binary_sensor.everyone_is_home
+          - device_tracker.illuminum_kolja
+          - device_tracker.illuminum_caro
+        title: Alarm Status
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - binary_sensor.g_motion
+          - binary_sensor.g_motion_cellar
+          - binary_sensor.g_motion_basement
+          - binary_sensor.g_motion_upstairs
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - binary_sensor.dev17_motion
+          - binary_sensor.dev59_motion
+          - binary_sensor.dev59_motion_2
+          - binary_sensor.dev8_motion
+#          - binary_sensor.dev10_motion
+          - binary_sensor.dev14_motion
+          - binary_sensor.dev15_motion
+          - binary_sensor.dev54_motion_1
+          - binary_sensor.dev54_motion_2
+          - binary_sensor.dev57_motion
+      - type: map
+        entities:
+          - entity: device_tracker.illuminum_kolja
+          - entity: device_tracker.illuminum_caro
+          - zone.home
+        aspect_ratio: 90%
+    icon: 'mdi:security'
+    title: Security
+
+############ signal ###########################
+  - cards:
+      - type: entities
+        title: Update
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_update
+          - sensor.dev2_update
+          - sensor.dev3_update
+          - sensor.dev4_update
+          - sensor.dev5_update
+#          - sensor.dev6_update
+          - sensor.dev7_update
+          - sensor.dev8_update
+          - sensor.dev10_update
+          - sensor.dev11_update
+          - sensor.dev12_update
+          - sensor.dev13_update
+          - sensor.dev14_update
+          - sensor.dev15_update
+          - sensor.dev16_update
+          - sensor.dev17_update
+          - sensor.dev18_update
+#          - sensor.dev19_update
+          - sensor.dev20_update
+          - sensor.dev21_update
+#          - sensor.dev22_update
+          - sensor.dev23_update
+          - sensor.dev24_update
+          - sensor.dev25_update
+          - sensor.dev26_update
+          - sensor.dev27_update
+          - sensor.dev28_update
+          - sensor.dev29_update
+          - sensor.dev30_update
+          - sensor.dev31_update
+          - sensor.dev32_update
+          - sensor.dev54_update
+          - sensor.dev55_update
+          - sensor.dev56_update
+          - sensor.dev57_update
+          - sensor.dev58_update
+          - sensor.dev59_update
+      - type: entities
+        title: Rssi
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_rssi
+          - sensor.dev2_rssi
+          - sensor.dev3_rssi
+          - sensor.dev4_rssi
+          - sensor.dev5_rssi
+#          - sensor.dev6_rssi
+          - sensor.dev7_rssi
+          - sensor.dev8_rssi
+          - sensor.dev10_rssi
+          - sensor.dev11_rssi
+          - sensor.dev12_rssi
+          - sensor.dev13_rssi
+          - sensor.dev14_rssi
+          - sensor.dev15_rssi
+          - sensor.dev16_rssi
+          - sensor.dev17_rssi
+          - sensor.dev18_rssi
+#          - sensor.dev19_rssi
+          - sensor.dev20_rssi
+          - sensor.dev21_rssi
+#          - sensor.dev22_rssi
+          - sensor.dev23_rssi
+          - sensor.dev24_rssi
+          - sensor.dev25_rssi
+          - sensor.dev26_rssi
+          - sensor.dev27_rssi
+          - sensor.dev28_rssi
+          - sensor.dev29_rssi
+          - sensor.dev30_rssi
+          - sensor.dev31_rssi
+          - sensor.dev32_rssi
+          - sensor.dev54_rssi
+          - sensor.dev55_rssi
+          - sensor.dev56_rssi
+          - sensor.dev57_rssi
+          - sensor.dev58_rssi
+          - sensor.dev59_rssi
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_info
+          - sensor.dev2_info
+          - sensor.dev3_info
+          - sensor.dev4_info
+          - sensor.dev5_info
+#          - sensor.dev6_info
+          - sensor.dev7_info
+          - sensor.dev8_info
+          - sensor.dev10_info
+          - sensor.dev11_info
+          - sensor.dev12_info
+          - sensor.dev13_info
+          - sensor.dev14_info
+          - sensor.dev15_info
+          - sensor.dev16_info
+          - sensor.dev17_info
+          - sensor.dev18_info
+#          - sensor.dev19_info
+          - sensor.dev20_info
+          - sensor.dev21_info
+#          - sensor.dev22_info
+          - sensor.dev23_info
+          - sensor.dev24_info
+          - sensor.dev25_info
+          - sensor.dev26_info
+          - sensor.dev27_info
+          - sensor.dev28_info
+          - sensor.dev29_info
+          - sensor.dev30_info
+          - sensor.dev31_info
+          - sensor.dev32_info
+          - sensor.dev54_info
+          - sensor.dev55_info
+          - sensor.dev56_info
+          - sensor.dev57_info
+          - sensor.dev58_info
+          - sensor.dev59_info
+        title: Info
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_bssid
+          - sensor.dev2_bssid
+          - sensor.dev3_bssid
+          - sensor.dev4_bssid
+          - sensor.dev5_bssid
+#          - sensor.dev6_bssid
+          - sensor.dev7_bssid
+          - sensor.dev8_bssid
+          - sensor.dev10_bssid
+          - sensor.dev11_bssid
+          - sensor.dev12_bssid
+          - sensor.dev13_bssid
+          - sensor.dev14_bssid
+          - sensor.dev15_bssid
+          - sensor.dev16_bssid
+          - sensor.dev17_bssid
+          - sensor.dev18_bssid
+#          - sensor.dev19_bssid
+          - sensor.dev20_bssid
+          - sensor.dev21_bssid
+#          - sensor.dev22_bssid
+          - sensor.dev23_bssid
+          - sensor.dev24_bssid
+          - sensor.dev25_bssid
+          - sensor.dev26_bssid
+          - sensor.dev27_bssid
+          - sensor.dev28_bssid
+          - sensor.dev29_bssid
+          - sensor.dev30_bssid
+          - sensor.dev31_bssid
+          - sensor.dev32_bssid
+          - sensor.dev54_bssid
+          - sensor.dev55_bssid
+          - sensor.dev56_bssid
+          - sensor.dev57_bssid
+          - sensor.dev58_bssid
+          - sensor.dev59_bssid
+        title: Bssid
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_ssid
+          - sensor.dev2_ssid
+          - sensor.dev3_ssid
+          - sensor.dev4_ssid
+          - sensor.dev5_ssid
+#          - sensor.dev6_ssid
+          - sensor.dev7_ssid
+          - sensor.dev8_ssid
+          - sensor.dev10_ssid
+          - sensor.dev11_ssid
+          - sensor.dev12_ssid
+          - sensor.dev13_ssid
+          - sensor.dev14_ssid
+          - sensor.dev15_ssid
+          - sensor.dev16_ssid
+          - sensor.dev17_ssid
+          - sensor.dev18_ssid
+#          - sensor.dev19_ssid
+          - sensor.dev20_ssid
+          - sensor.dev21_ssid
+#          - sensor.dev22_ssid
+          - sensor.dev23_ssid
+          - sensor.dev24_ssid
+          - sensor.dev25_ssid
+          - sensor.dev26_ssid
+          - sensor.dev27_ssid
+          - sensor.dev28_ssid
+          - sensor.dev29_ssid
+          - sensor.dev30_ssid
+          - sensor.dev31_ssid
+          - sensor.dev32_ssid
+          - sensor.dev54_ssid
+          - sensor.dev55_ssid
+          - sensor.dev56_ssid
+          - sensor.dev57_ssid
+          - sensor.dev58_ssid
+          - sensor.dev59_ssid
+        title: SSID
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - sensor.dev1_capability
+          - sensor.dev2_capability
+          - sensor.dev3_capability
+          - sensor.dev4_capability
+          - sensor.dev5_capability
+#          - sensor.dev6_capability
+          - sensor.dev7_capability
+          - sensor.dev8_capability
+          - sensor.dev10_capability
+          - sensor.dev11_capability
+          - sensor.dev12_capability
+          - sensor.dev13_capability
+          - sensor.dev14_capability
+          - sensor.dev15_capability
+          - sensor.dev16_capability
+          - sensor.dev17_capability
+          - sensor.dev18_capability
+#          - sensor.dev19_capability
+          - sensor.dev20_capability
+          - sensor.dev21_capability
+#          - sensor.dev22_capability
+          - sensor.dev23_capability
+          - sensor.dev24_capability
+          - sensor.dev25_capability
+          - sensor.dev26_capability
+          - sensor.dev27_capability
+          - sensor.dev28_capability
+          - sensor.dev29_capability
+          - sensor.dev30_capability
+          - sensor.dev31_capability
+          - sensor.dev32_capability
+          - sensor.dev54_capability
+          - sensor.dev55_capability
+          - sensor.dev56_capability
+          - sensor.dev57_capability
+          - sensor.dev58_capability
+          - sensor.dev59_capability
+        title: Capability
+    icon: 'mdi:signal-variant'
+    title: Signals
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_em_cur
+        name: EM current
+        type: sensor 
+      - type: custom:mini-graph-card
+        name: 'Energy Month / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        maxDays: 30
+        data_delimiter: ','
+        unit: 'kWh'
+        entities:
+         - sensor.long_term_power
+#        color_thresholds:
+#            - value: 12
+#              color: "#fcca04"
+#            - value: 14
+#              color: "#ff8080"
+      - type: custom:mini-graph-card
+        name: 'Energy Year / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        unit: 'kWh'
+        maxDays: 365
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+    icon: 'mdi:power-plug'
+    title: power
+#######################################
+  - cards:
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT1
+        group: group.iot1_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT1
+        group: group.iot1_light
+
+    icon: 'mdi:home-floor-1'
+    title: All lights
+#######################################
+  - cards:
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT0
+        group: group.iot0_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT0
+        group: group.iot0_light
+
+    icon: 'mdi:home-floor-0'
+    title: All lights
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity
+        name: Basement Humidity
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity_stat_mean
+        name: Basement Humidity
+        type: sensor 
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: switch.dev28_countdown
+            icon: 'mdi:clock'
+            name: Shop Ventilation
+          - entity: sensor.dev28_countdown_state
+            name: Countdown
+            type: gauge
+            max: 30
+      - entities: 
+          - switch.dev4_gpio_5
+        title: Dryroom Ventilation
+        type: history-graph
+
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Switch on IOT255
+        group: group.iot255_switch
+
+      - type: custom:group-card
+        card:
+           type: entities 
+           title: Light on IOT255
+        group: group.iot255_light
+
+    icon: 'mdi:home-floor-b'
+    title: All lights
+#######################################
+  - cards:
+     - show_empty: true
+       card:
+         type: entities
+         title: All lights
+       filter:
+         include:
+           - domain: light
+       type: 'custom:monster-card'
+     - show_empty: true
+       card:
+         type: entities
+         title: All switches
+       filter:
+         include:
+           - domain: switch
+       type: 'custom:monster-card'
+    icon: 'mdi:settings'
+    title: All lights
+#######################################
+  - cards:
+      - detail: 2
+        graph: line
+        entity: sensor.dev13_adc
+        name: leakage
+        type: sensor 
+      - detail: 2
+        graph: line
+        entity: sensor.dhcp_master_kbyte_sec_received
+        name: Download
+        type: sensor 
+      - type: entities
+        entities:
+          - input_boolean.approx_warn
+        show_header_toggle: false
+      - type: entity-button
+        tap_action:
+          action: toggle
+        entity: switch.dev28_gpio_4
+        name: Workshop Air
+      - type: history-graph
+        #title: Linkquality
+        entities:
+          - sensor.bathroom_u_linkquality
+          - sensor.carlo_linkquality
+          - sensor.outside_linkquality
+          - sensor.beamer_linkquality
+          - sensor.livingroom_linkquality
+          - sensor.entrance_linkquality
+    title: T
+#######################################
+

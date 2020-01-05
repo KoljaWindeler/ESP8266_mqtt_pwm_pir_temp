@@ -15,7 +15,7 @@ class PresentsWorld(hass.Hass):
 			#self.call_service("notify/pb", title="testing", message=m)
 
 	def chk_light(self, kwargs):
-		if(self.get_state("binary_sensor.someone_is_home") == "off"):
+		if(self.get_state("binary_sensor.someone_is_home") == "off" and self.get_state("input_boolean.presents_simulation") == "off"):
 			self.log("Presents state just changed to 'nobody is home'")
 			# get all device that are on
 			remaining_lights_on = []

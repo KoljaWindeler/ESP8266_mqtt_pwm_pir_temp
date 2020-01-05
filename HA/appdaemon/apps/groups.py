@@ -33,13 +33,13 @@ class create_group(hass.Hass):
       for a in ap_ssid:
         entitylist[domains.index(d)].append([])
       entitylist[domains.index(d)].append([])
-    print(*entitylist)
+#    print(*entitylist)
 
     for d in domains:
 #      print("check domain "+d)
       all_entities = self.get_state(d)
       for entity in all_entities:
-        print("check "+entity)
+#        print("check "+entity)
         if "dev" in entity:
           p=entity.split(".")
           if(len(p)>=2):
@@ -49,7 +49,7 @@ class create_group(hass.Hass):
               ssid = self.get_state(ssid)
               if(ssid=="IOT254"):
                 ssid="IOT255"
-              print("has _ssid "+ssid)
+#              print("has _ssid "+ssid)
               if(ssid in ap_ssid):
                  a = ap_ssid.index(ssid)
               else:
@@ -58,8 +58,8 @@ class create_group(hass.Hass):
 #              print("add to entitylist["+str(domains.index(d))+"]["+str(a)+"] "+entity)
 
               entitylist[domains.index(d)][a].append(entity)
-        else:
-           print("not a device -> "+entity)
+#        else:
+#           print("not a device -> "+entity)
 #        entitylist.append(entity.lower())
     hidden = "False"
     view = "True"

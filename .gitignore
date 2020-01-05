@@ -4,6 +4,7 @@ HA/.storage/core.config_entries
 HA/.storage/camera
 HA/.storage
 HA/.uuid
+HA/home_assistant.log
 HA/.HA_VERSION
 HA/appdaemon/apps/__pycache__/
 HA/gmusic_authtoken

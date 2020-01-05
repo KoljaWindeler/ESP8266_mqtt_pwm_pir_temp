@@ -8,6 +8,15 @@ notify:
   - platform: file
     name: filenotify_bat_3
     filename: /opt/battery_total_3.csv
+  - platform: file
+    name: filenotify_bat_4
+    filename: /opt/battery_total_4.csv
+  - platform: file
+    name: filenotify_bat_5
+    filename: /opt/battery_total_5.csv
+  - platform: file
+    name: filenotify_bat_6
+    filename: /opt/battery_total_6.csv
 
 
 automation:
@@ -19,13 +28,22 @@ automation:
     action:
       - service: notify.filenotify_bat_1
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d000410e664_battery'].state }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['bathroom_u_battery'].state }}"
       - service: notify.filenotify_bat_2
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d0004461c84_battery'].state }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['outside_battery'].state }}"
       - service: notify.filenotify_bat_3
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['0x00158d000445c970_battery'].state }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['carlo_battery'].state }}"
+      - service: notify.filenotify_bat_4
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['livingroom_battery'].state }}"
+      - service: notify.filenotify_bat_5
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['beamer_battery'].state }}"
+      - service: notify.filenotify_bat_6
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor['entrance_battery'].state }}"
 
 sensor:
   - platform: load_external
@@ -37,3 +55,12 @@ sensor:
   - platform: load_external
     name: long_term_battery_3
     feed_path: '/opt/battery_total_3.csv'
+  - platform: load_external
+    name: long_term_battery_4
+    feed_path: '/opt/battery_total_4.csv'
+  - platform: load_external
+    name: long_term_battery_5
+    feed_path: '/opt/battery_total_5.csv'
+  - platform: load_external
+    name: long_term_battery_6
+    feed_path: '/opt/battery_total_6.csv'

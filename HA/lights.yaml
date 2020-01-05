@@ -20,6 +20,7 @@
   - platform: group
     name: "joiner_bedroom"
     entities:
+      - light.dev19
       - light.dev31
       - light.dev32
 # --------------------------------------------------
@@ -33,7 +34,7 @@
     name: "joiner_workshop"
     entities:
       - light.dev20
-      - light.dev19
+      - light.dev28
 # --------------------------------------------------
 # ------ JOINER ------------------------------------
 # --------------------------------------------------

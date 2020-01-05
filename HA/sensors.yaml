@@ -4,31 +4,22 @@
 # -----------------------------------------------------------
 # ------------- GMOTION -------------------------------------
 # -----------------------------------------------------------
+####### WILL BE OVERRIDDEN BY APPDAEMON ANYWAY ##############
   - platform: template
     sensors:
       g_motion_t:
-        value_template: >-
-          {%- if is_state("binary_sensor.g_motion","on") -%}
-          0
-          {%- else -%}
-          {{ (( as_timestamp(now()) - as_timestamp(states.binary_sensor.g_motion.last_updated)) //60) | int }}
-          {%- endif %}
-        unit_of_measurement: 'min'
-#        entity_id:
-#         - sensor.time
+        value_template: "loading"
+      g_motion_cellar_t:
+        value_template: "loading"
+      g_motion_basement_t:
+        value_template: "loading"
+      g_motion_upstairs_t:
+        value_template: "loading"
 # ---------------------------------------------------------
-# --- 200 min timeout for owntrack changes
-      owntracks_kolja_t:
-        value_template: >-
-          {%- if ((( as_timestamp(now()) - as_timestamp(states.device_tracker.illuminum_kolja.last_updated)) //60) | int) > 200 -%}
-            1 
-          {%- else -%}
-            0
-          {%- endif -%}
-        unit_of_measurement: ''
-#        entity_id:
-#         - sensor.time
-
+      illuminum_kolja_t:
+        value_template: "loading"
+      illuminum_caro_t:
+        value_template: "loading"
 # -----------------------------------------------------------
 # --------------- MQTT --------------------------------------
 # -----------------------------------------------------------

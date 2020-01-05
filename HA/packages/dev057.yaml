@@ -15,7 +15,7 @@ homeassistant:
       friendly_name: "Floor up button1s"
     sensor.dev57_temperature:
       friendly_name: "Floor up temperature"
-      unit_of_measurement: "ºC"
+      unit_of_measurement: "°C"
       icon: "mdi:thermometer"
       device_class: "temperature"
     sensor.dev57_adc:
@@ -32,9 +32,22 @@ sensor:
 
 binary_sensor:
   - platform: mqtt
-    state_topic: "dev57/r/gpio_13_state"
+    state_topic: "dev57/r/gpio_5_state"
     name: "dev57_motion"
     device_class: motion
 
 # -----------------------------------------------
 
+light:
+  - platform: mqtt ### LED dimmer
+    name: "dev57"
+    state_topic: "dev57/r/gpio_4_state"
+    command_topic: "dev57/s/gpio_4_dimm"
+    brightness_state_topic: 'dev57/r/gpio_4_brightness'
+    brightness_command_topic: 'dev57/s/gpio_4_brightness'
+    retain: True
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    brightness_scale: 99

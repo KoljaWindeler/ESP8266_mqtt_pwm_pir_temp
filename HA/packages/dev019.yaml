@@ -3,27 +3,27 @@
 homeassistant:
   customize:
     light.dev19:
-      friendly_name: "Workshop LED"
+      friendly_name: "Crip LED"
     binary_sensor.dev19_button:
-      friendly_name: "Workshop LED button"
+      friendly_name: "Crip LED button"
     binary_sensor.dev19_button1s:
-      friendly_name: "Workshop LED button1s"
+      friendly_name: "Crip LED button1s"
     binary_sensor.dev19_motion:
-      friendly_name: "Workshop LED motion"
+      friendly_name: "Crip LED motion"
       device_class: motion
     sensor.dev19_temperature:
-      friendly_name: "Workshop LED temperature"
-      unit_of_measurement: "ºC"
+      friendly_name: "Crip LED temperature"
+      unit_of_measurement: "°C"
       icon: "mdi:thermometer"
       device_class: "temperature"
     sensor.dev19_adc:
-      friendly_name: "Workshop LED"
+      friendly_name: "Crip LED"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev19"
-    fname: "19 Workshop LED"
+    fname: "19 Crip LED"
 
 # -----------------------------------------------
