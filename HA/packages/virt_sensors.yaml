@@ -5,9 +5,6 @@ binary_sensor:
     sensors:
       sec_short:
         value_template: "on"
-        friendly_name: "Security System"
-        icon: "mdi:lock"
-        device_class: "lock"
 
 
 sensor:
@@ -35,3 +32,11 @@ sensor:
 # ---------------------------------------------------------
       sec_long:
         value_template: "loading"
+
+
+homeassistant:
+  customize:
+    binary_sensor.sec_short:
+      icon: "mdi:lock"
+      device_class: "lock"
+      friendly_name: "Security System"
