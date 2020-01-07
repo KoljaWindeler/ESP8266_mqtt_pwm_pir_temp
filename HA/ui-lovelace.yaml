@@ -69,48 +69,67 @@ views:
                  action: toggle
                entity: light.joiner_kitchen
                icon: 'mdi:pot-mix'
-#### music quick
-         - type: horizontal-stack
-           cards:
-             - icon: 'mdi:power'
-               name: ' '
-               service: script.turn_on
-               type: entity-button
-               tap_action:
-                 service: script.tvoff
-                 action: call-service
-               entity: binary_sensor.always_on
-             - icon: 'mdi:volume-minus'
-               name: ' '
-               service: script.turn_on
-               type: entity-button
-               tap_action:
-                 service: script.yamaha_vol_down
-                 action: call-service
-               entity: binary_sensor.harmony
-             - icon: 'mdi:volume-plus'
-               name: ' '
-               service: script.turn_on
-               type: entity-button
-               tap_action:
-                 service: script.yamaha_vol_up
-                 action: call-service
-               entity: binary_sensor.harmony
-             - icon: 'mdi:cast-connected'
-               name: ' '
-               service: script.turn_on
-               type: entity-button
-               tap_action:
-                 service: script.start_chromaudio
-                 action: call-service
-               entity: binary_sensor.always_on
-         - type: custom:mini-media-player
-           entity: media_player.gmusic_player
-           icon: mdi:google-play
-           hide:
-             volume: true
-             source: true
-             power_state: false
+#### if message, show message
+         - type: conditional
+           conditions: 
+              - entity: sensor.error
+                state_not: " "
+           card:
+              type: markdown
+              title: Warning
+              style: | 
+                ha-card { 
+                  background-color: darkred; 
+                }
+              content: >
+                 {{ states('sensor.error') }}
+#### else music quick
+         - type: conditional
+           conditions: 
+              - entity: sensor.error
+                state: " "
+           card: 
+              type: horizontal-stack
+              cards:
+                - icon: 'mdi:power'
+                  name: ' '
+                  service: script.turn_on
+                  type: entity-button
+                  tap_action:
+                    service: script.tvoff
+                    action: call-service
+                  entity: binary_sensor.always_on
+                - icon: 'mdi:volume-minus'
+                  name: ' '
+                  service: script.turn_on
+                  type: entity-button
+                  tap_action:
+                    service: script.yamaha_vol_down
+                    action: call-service
+                  entity: binary_sensor.harmony
+                - icon: 'mdi:volume-plus'
+                  name: ' '
+                  service: script.turn_on
+                  type: entity-button
+                  tap_action:
+                    service: script.yamaha_vol_up
+                    action: call-service
+                  entity: binary_sensor.harmony
+                - icon: 'mdi:cast-connected'
+                  name: ' '
+                  service: script.turn_on
+                  type: entity-button
+                  tap_action:
+                    service: script.start_chromaudio
+                    action: call-service
+                  entity: binary_sensor.always_on
+            - type: custom:mini-media-player
+              entity: media_player.gmusic_player
+              icon: mdi:google-play
+              hide:
+                volume: true
+                source: true
+                power_state: false
 #### carlo cam
          - type: picture-entity
            entity: camera.cam_xia4
@@ -133,42 +152,23 @@ views:
                name: Outside
                type: sensor 
 
-#### if message, show message
-         - type: conditional
-           conditions: 
-              - entity: sensor.dev99_capability
-                state_not: " "
-           card:
-              type: markdown
-              title: Warning
-              style: | 
-                ha-card { 
-                  background-color: darkred; 
-                }
-              content: >
-                 {{ states('sensor.dev99_capability') }}
-#### else 2x big power
-         - type: conditional
-           conditions: 
-              - entity: sensor.dev99_capability
-                state: " "
-           card: 
-              type: horizontal-stack
-              cards:
-                - type: custom:long-term-card
-                  name: 'Power Month'
-                  display_mode: 'diff'
-                  formater: 'yyyy-mm-dd'
-                  maxDays: 30
-                  data_delimiter: ','
-                  unit: 'kWh'
-                  entities:
-                   - sensor.long_term_power
-                - detail: 2
-                  graph: line
-                  entity: sensor.dev16_em_cur
-                  name: House Power
-                  type: sensor 
+
+         - type: horizontal-stack
+           cards:
+             - type: custom:long-term-card
+               name: 'Power Month'
+               display_mode: 'diff'
+               formater: 'yyyy-mm-dd'
+               maxDays: 30
+               data_delimiter: ','
+               unit: 'kWh'
+               entities:
+                - sensor.long_term_power
+             - detail: 2
+               graph: line
+               entity: sensor.dev16_em_cur
+               name: House Power
+               type: sensor 
 #### safety state
          - type: entities
            show_header_toggle: false
@@ -701,6 +701,12 @@ views:
         entities:
           - input_boolean.alarm_system
           - input_boolean.presents_simulation
+      - type: custom:template-entity-row
+            icon: mdi:lock
+            name: "Security System"
+            state: "{{states('sensor.sec_short')}}"
+            secondary: "{{states('sensor.sec_long')}}"
+            active: "{{ is_state('sensor.sec_short', 'protected') }}"
           - binary_sensor.someone_is_home
           - binary_sensor.everyone_is_home
           - entity: device_tracker.illuminum_kolja
@@ -1224,4 +1230,3 @@ views:
  
     title: T
 #######################################
-
