@@ -15,9 +15,6 @@ class GmotionWorld(hass.Hass):
 		self.listen_state(self.system_state, "input_boolean.alarm_system")
 		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner")
 		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner_2")
-		self.sec_short_protected="protected"
-		self.sec_short_not_protected="not protected"
-		
 		
 		
 		self.sensor = []
@@ -45,21 +42,21 @@ class GmotionWorld(hass.Hass):
 
 	def system_state(self, entity="", attribute="", old="", new="", kwargs=""):
 		# assumption: system is off
-		sec_short = self.sec_short_not_protected
+		sec_short = "off"
 		sec_long = "System disabled"
 		# system is on
 		if(self.get_state("input_boolean.alarm_system") == "on"):
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
 			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
 			if(self.get_state("binary_sensor.someone_is_home") == "on"):
-				sec_short = self.sec_short_not_protected
+				sec_short = "off"
 				sec_long = "System enabeld, but someone is home"		
 			elif((vac in ["cleaning", "returning"]) or (vac2 in ["cleaning", "returning"])):
-				sec_short = self.sec_short_not_protected
+				sec_short = "off"
 				sec_long = "System enabeld, but vacuuming"
 			else:
-				sec_short=self.sec_short_protected
-				sec_long="System enabled"
+				sec_short = "on"
+				sec_long = "System enabled"
 		self.set_state("sensor.sec_short",state=sec_short)
 		self.set_state("sensor.sec_long",state=sec_long)
 		
