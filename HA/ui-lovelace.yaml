@@ -125,13 +125,13 @@ views:
                         service: script.start_chromaudio
                         action: call-service
                       entity: binary_sensor.always_on
-                  - type: custom:mini-media-player
-                    entity: media_player.gmusic_player
-                    icon: mdi:google-play
-                    hide:
-                      volume: true
-                      source: true
-                      power_state: false
+                 - type: custom:mini-media-player
+                   entity: media_player.gmusic_player
+                   icon: mdi:google-play
+                   hide:
+                     volume: true
+                     source: true
+                     power_state: false
 #### carlo cam
          - type: picture-entity
            entity: camera.cam_xia4
