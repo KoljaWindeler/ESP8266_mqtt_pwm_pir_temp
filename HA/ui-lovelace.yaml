@@ -14,6 +14,10 @@ resources:
     type: js
   - url: /community_plugin/lovelace-card-tools/card-tools.js
     type: module
+  - url: /community_plugin/lovelace-template-entity-row/template-entity-row.js
+    type: module
+  - url: /community_plugin/lovelace-card-mod/card-mod.js
+    type: module
 
 background: >-
   center / cover no-repeat
@@ -113,9 +117,9 @@ views:
            name: Carlo
 
 ### 2nd column
-#### 2x big temp
       - type: vertical-stack
         cards:
+#### 2x big temp
          - type: horizontal-stack
            cards:
              - detail: 2
@@ -128,23 +132,43 @@ views:
                entity: sensor.dark_sky_temperature
                name: Outside
                type: sensor 
-#### 2x big power
-         - type: horizontal-stack
-           cards:
-             - type: custom:long-term-card
-               name: 'Power Month'
-               display_mode: 'diff'
-               formater: 'yyyy-mm-dd'
-               maxDays: 30
-               data_delimiter: ','
-               unit: 'kWh'
-               entities:
-                - sensor.long_term_power
-             - detail: 2
-               graph: line
-               entity: sensor.dev16_em_cur
-               name: House Power
-               type: sensor 
+
+#### if message, show message
+         - type: conditional
+           conditions: 
+              - entity: sensor.dev99_capability
+                state_not: " "
+           card:
+              type: markdown
+              title: Warning
+              style: | 
+                ha-card { 
+                  background-color: darkred; 
+                }
+              content: >
+                 {{ states('sensor.dev99_capability') }}
+#### else 2x big power
+         - type: conditional
+           conditions: 
+              - entity: sensor.dev99_capability
+                state: " "
+           card: 
+              type: horizontal-stack
+              cards:
+                - type: custom:long-term-card
+                  name: 'Power Month'
+                  display_mode: 'diff'
+                  formater: 'yyyy-mm-dd'
+                  maxDays: 30
+                  data_delimiter: ','
+                  unit: 'kWh'
+                  entities:
+                   - sensor.long_term_power
+                - detail: 2
+                  graph: line
+                  entity: sensor.dev16_em_cur
+                  name: House Power
+                  type: sensor 
 #### safety state
          - type: entities
            show_header_toggle: false
@@ -229,6 +253,7 @@ views:
                  action: toggle
                entity: light.dev59
                icon: mdi:floor-plan
+               name: Cellar
 #### 4th line
          - type: horizontal-stack
            cards:
@@ -246,7 +271,7 @@ views:
                tap_action:
                  action: toggle
                icon: mdi:coach-lamp
-               name: Entrance
+               name: Foyer
                entity: light.dev54_4
 #### device tracker
          - type: horizontal-stack
@@ -1047,12 +1072,12 @@ views:
       - detail: 2
         graph: line
         entity: sensor.dev4_humidity
-        name: Basement Humidity
+        name: Cellar Humidity
         type: sensor 
       - detail: 2
         graph: line
         entity: sensor.dev4_humidity_stat_mean
-        name: Basement Humidity
+        name: Cellar Humidity
         type: sensor 
       - entities: 
           - switch.dev4_gpio_5
@@ -1143,6 +1168,9 @@ views:
           - sensor.entrance_linkquality
       - type: custom:long-term-card
         name: 'Power Month'
+        lower_bound: 0
+        upper_bound: 100
+        height: 250
         icon: mdi:server
         display_mode: 'abs'
         formater: 'yyyy-mm-dd'
@@ -1153,15 +1181,47 @@ views:
          - entity: sensor.long_term_battery_1
            show_fill: false
            show_graph: true
+           show_legend: false
          - entity: sensor.long_term_battery_2
            show_fill: false
+           show_legend: false
            show_graph: true
          - entity: sensor.long_term_battery_3
            show_fill: false
+           show_legend: false
            show_graph: true
          - entity: sensor.long_term_battery_4
            show_fill: false
+           show_legend: false
            show_graph: true
+         - entity: sensor.long_term_battery_5
+           show_fill: false
+           show_legend: false
+           show_graph: true
+         - entity: sensor.long_term_battery_6
+           show_fill: false
+           show_legend: false
+           show_graph: true
+#          - type: "custom:template-entity-row"
+#            icon: mdi:lamp
+#            name: "The light is {{states('light.bedroom_joiner')}} but nobody's"
+#            state: "{% if is_state('input_boolean.someone_home', 'on')%} home {% else %} away {% endif %}"
+#            secondary: "It's {{states('sensor.time')}}"
+#            active: "{{ is_state('light.bedroom_joiner', 'off') }}"
+
+      - type: entity-filter
+        entities: 
+           - entity: sensor.dev99_capability
+        state_filter:
+           - operator: "!="
+             value: " "
+        show_empty: false
+        card:
+           type: markdown
+           title: Warning
+           content: "{{ states('sensor.dev99_capability') }}"
+
+ 
     title: T
 #######################################
 
