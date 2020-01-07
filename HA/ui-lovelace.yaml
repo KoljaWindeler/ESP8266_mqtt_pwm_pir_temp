@@ -89,47 +89,49 @@ views:
               - entity: sensor.error
                 state: " "
            card: 
-              type: horizontal-stack
+              type: vertical-stack
               cards:
-                - icon: 'mdi:power'
-                  name: ' '
-                  service: script.turn_on
-                  type: entity-button
-                  tap_action:
-                    service: script.tvoff
-                    action: call-service
-                  entity: binary_sensor.always_on
-                - icon: 'mdi:volume-minus'
-                  name: ' '
-                  service: script.turn_on
-                  type: entity-button
-                  tap_action:
-                    service: script.yamaha_vol_down
-                    action: call-service
-                  entity: binary_sensor.harmony
-                - icon: 'mdi:volume-plus'
-                  name: ' '
-                  service: script.turn_on
-                  type: entity-button
-                  tap_action:
-                    service: script.yamaha_vol_up
-                    action: call-service
-                  entity: binary_sensor.harmony
-                - icon: 'mdi:cast-connected'
-                  name: ' '
-                  service: script.turn_on
-                  type: entity-button
-                  tap_action:
-                    service: script.start_chromaudio
-                    action: call-service
-                  entity: binary_sensor.always_on
-            - type: custom:mini-media-player
-              entity: media_player.gmusic_player
-              icon: mdi:google-play
-              hide:
-                volume: true
-                source: true
-                power_state: false
+                 - type: horizontal-stack
+                   cards:
+                    - icon: 'mdi:power'
+                      name: ' '
+                      service: script.turn_on
+                      type: entity-button
+                      tap_action:
+                        service: script.tvoff
+                        action: call-service
+                      entity: binary_sensor.always_on
+                    - icon: 'mdi:volume-minus'
+                      name: ' '
+                      service: script.turn_on
+                      type: entity-button
+                      tap_action:
+                        service: script.yamaha_vol_down
+                        action: call-service
+                      entity: binary_sensor.harmony
+                    - icon: 'mdi:volume-plus'
+                      name: ' '
+                      service: script.turn_on
+                      type: entity-button
+                      tap_action:
+                        service: script.yamaha_vol_up
+                        action: call-service
+                      entity: binary_sensor.harmony
+                    - icon: 'mdi:cast-connected'
+                      name: ' '
+                      service: script.turn_on
+                      type: entity-button
+                      tap_action:
+                        service: script.start_chromaudio
+                        action: call-service
+                      entity: binary_sensor.always_on
+                  - type: custom:mini-media-player
+                    entity: media_player.gmusic_player
+                    icon: mdi:google-play
+                    hide:
+                      volume: true
+                      source: true
+                      power_state: false
 #### carlo cam
          - type: picture-entity
            entity: camera.cam_xia4
@@ -701,7 +703,7 @@ views:
         entities:
           - input_boolean.alarm_system
           - input_boolean.presents_simulation
-      - type: custom:template-entity-row
+          - type: custom:template-entity-row
             icon: mdi:lock
             name: "Security System"
             state: "{{states('sensor.sec_short')}}"
