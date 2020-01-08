@@ -17,8 +17,14 @@ class carloWorld(hass.Hass):
 
     def lampinions_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle lampinion")
-        self.toggle("light.dev56")
+        if(self.get_state("input_boolean.carlo_switch_lock")=="off"):
+           self.toggle("light.dev56")
+        else:
+           self.log("carlo lock active")
 
     def main_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle main")
-        self.toggle("light.dev23")
+        if(self.get_state("input_boolean.carlo_switch_lock")=="off"):
+           self.toggle("light.dev23")
+        else:
+           self.log("carlo lock active")

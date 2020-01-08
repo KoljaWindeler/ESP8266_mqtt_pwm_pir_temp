@@ -39,7 +39,7 @@ class LastUpdatedWorld(hass.Hass):
 		elif(ts<60*24):
 			return str(math.floor(ts/60))+" h"
 		else:
-			return str(math.floor(ts/3600))+" d"
+			return str(math.floor(ts/1440))+" d"
 
 	def timer(self, entity="", attribute="", old="", new="", kwargs=""):
 		try:

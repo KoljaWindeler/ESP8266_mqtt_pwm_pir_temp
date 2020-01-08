@@ -13,3 +13,10 @@ homeassistant:
     light.dev23:
       friendly_name: "Carlo"
 
+# -----------------------------------------------
+
+input_boolean:
+  carlo_switch_lock:
+    name: Carlo light lock
+    initial: off
+    icon: mdi:lock

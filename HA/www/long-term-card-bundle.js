@@ -4018,8 +4018,7 @@
       const color = this.computeColor(this.entity[i].state, i);
       return svg`
       <g class='line--points'
-        ?tooltip=${this.tooltip.entity === i}
-        ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
+        ?tooltip=${1 == 1}
         ?init=${this.length[i]}
         anim=${this.config.animate && this.config.show.points !== 'hover'}
         style="animation-delay: ${this.config.animate ? `${i * 0.5 + 0.5}s` : '0s'}"
@@ -4049,8 +4048,7 @@
       const fill = this.gradient[i] ? `url(#grad-${this.id}-${i})` : this.computeColor(this.entity[i].state, i);
       return svg`
       <rect class='line--rect'
-        ?inactive=${this.tooltip.entity !== undefined && this.tooltip.entity !== i}
-        id=${`rect-${this.id}-${i}`}
+        ?id=${`rect-${this.id}-${i}`}
         fill=${fill} height="100%" width="100%"
         mask=${`url(#line-${this.id}-${i})`}
       />`;

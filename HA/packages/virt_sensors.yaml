@@ -28,7 +28,7 @@ sensor:
       note:
         value_template: "loading"
       error:
-        value_template: "loading"
+        value_template: " "
 # ---------------------------------------------------------
       sec_long:
         value_template: "loading"
