@@ -1140,6 +1140,147 @@ views:
     icon: 'mdi:settings'
     title: All lights
 #######################################
+
+########### all room glance ###########
+  - cards:
+    icon: 'mdi:floor-plan'
+    title: All lights
+##### upstairs
+      - type: glance
+        title: Bedroom
+        entities:
+          - sensor.dev32_temperature
+          - light.dev32
+          - light.dev31
+          - light.dev19
+          - light.dev26
+
+      - type: glance
+        title: Carlo
+        entities:
+          - camera.cam_xia4
+          - sensor.carlo_humidity
+          - sensor.carlo_temperature
+          - light.dev23
+          - light.dev56
+
+      - type: glance
+        title: L.
+        entities:
+          - light.dev55
+          - light.dev24
+          - camera.cam_xia1
+
+      - type: glance
+        title: Hallway
+        entities:
+          - binary_sensor.dev57_motion
+          - light.dev57
+          - light.dev27
+##### basement
+      - type: glance
+        title: Livingarea
+        entities: 
+          - light.dev1
+          - light.dev2
+          - light.dev3
+          - light.dev5
+          - light.dev7
+          - light.dev11
+          - light.dev12
+          - light.dev14
+          - light.dev15
+          - binary_sensor.dev15_motion
+          - binary_sensor.dev14_motion
+          - sensor.livingroom_humidity
+          - sensor.livingroom_temperature
+
+      - type: glance
+        title: Entrance
+        entities:
+          - light.dev54_2
+          - binary_sensor.dev54_motion_1
+          - sensor.entrance_humidity
+          - sensor.entrance_temperature
+##### cellar
+      - type: glance
+        title: supply
+        entities:
+          - sensor.dhcp_master_kbyte_sec_received
+          - sensor.dev16_em_cur
+
+      - type: glance
+        title: bathroom
+        entities:
+          - sensor.dev13_adc
+
+      - type: glance
+        title: Movieroom
+        entities: licht, licht, temp / humidity, harmony?
+          - sensor.beamer_humidity
+          - sensor.beamer_temperature
+          - light.light.dev10
+          - light.light.dev25
+
+      - type: glance
+        title: Backdoor
+        entities:
+          - binary_sensor.dev17_motion
+
+      - type: glance
+        title: Workshop
+        entities: windows, light, light
+          - light.dev20
+          - light.dev28
+          - switch.dev28_gpio_4
+          - switch.dev28_gpio_16
+          
+      - type: glance
+        title: Heater
+        entities:
+          - switch.dev4_gpio_12
+          - sensor.dev29_temperature
+          - sensor.dev4_humidity
+          - switch.dev4_gpio_5
+          
+      - type: glance
+        title: Hallway
+        entities:
+          - light.dev59
+          - sensor.dev59_temperature
+          - binary_sensor.dev59_motion
+          - binary_sensor.dev59_motion_2
+          - binary_sensor.dev54_motion_2
+          
+##### Outdoor
+      - type: glance
+        title: House
+        entities:
+          - light.dev54_3
+          - light.dev54_4
+          - light.dev18
+          - camera.cam_dome1
+          - camera.cam_xia3
+          - sensor.outside_humidity
+          - sensor.outside_temperature
+          
+      - type: glance
+        title: Garage
+        entities:
+          - sensor.dev30_state
+          - switch.dev4_gpio_12
+          - switch.dev30_gpio_2
+          - switch.dev30_gpio_16
+          - switch.dev30_gpio_4
+          - switch.dev30_gpio_5
+          - switch.dev30_gpio_15
+          - sensor.dev30_uptime
+      - type: glance
+        title: Garden
+        entities: ventile
+          - binary_sensor.movement_backyard
+          - light.bed_light
+#######################################
   - cards:
       - detail: 2
         graph: line
