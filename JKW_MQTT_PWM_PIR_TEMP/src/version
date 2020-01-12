@@ -1,3 +1,12 @@
+20200112
+	- multiple PIR instances parallel
+	- PIR with inverted polarity
+	- better message pushing
+	- checking for too long device names
+	- Improved discovery handling
+		DATA:    [=====     ]  52.4% (used 42964 bytes from 81920 bytes)
+		PROGRAM: [====      ]  42.8% (used 409752 bytes from 958448 bytes)
+
 20191206
 	- fixed long device names, tested 49 (limit) working
 		DATA:    [=====     ]  52.3% (used 42884 bytes from 81920 bytes)

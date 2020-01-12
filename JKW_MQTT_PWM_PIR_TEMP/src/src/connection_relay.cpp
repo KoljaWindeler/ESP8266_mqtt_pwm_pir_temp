@@ -330,7 +330,8 @@ bool connection_relay::publish(char * topic, char * mqtt_msg, bool enqueue){
 	if (m_connection_type == CONNECTION_DIRECT_CONNECTED) {
 		client.publish(topic, mqtt_msg, true);
 		client.loop();
-		client.loop();
+		wifiClient.available();
+		wifiClient.flush(0);
 		client.loop();
 		return client.connected();
 	}

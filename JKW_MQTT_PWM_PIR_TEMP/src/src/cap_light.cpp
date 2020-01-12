@@ -8,6 +8,13 @@ light::light(){
 	m_pwm_dimm_time = 10;             // 10ms per Step, 255*0.01 = 2.5 sec
 };
 light::~light(){
+#ifdef WITH_DISCOVERY
+	if(timer_connected_start>0){
+		network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), "");
+		network.publish(build_topic(MQTT_LIGHT_BRIGHTNESS_TOPIC,UNIT_TO_PC), "");
+		network.publish(build_topic(MQTT_LIGHT_COLOR_TOPIC,UNIT_TO_PC), "");
+	}
+#endif
 	logger.println(TOPIC_GENERIC_INFO, F("light deleted"), COLOR_YELLOW);
 };
 

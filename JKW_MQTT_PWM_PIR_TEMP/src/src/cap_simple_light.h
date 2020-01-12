@@ -27,6 +27,7 @@ class simple_light : public capability {
 		mqtt_parameter_8 m_state;
 		uint8_t m_pin;
 		bool m_discovery_pub;
+		bool m_invert;
 
 };
 

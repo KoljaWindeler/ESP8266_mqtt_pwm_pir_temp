@@ -3,6 +3,7 @@
 
 simple_light::simple_light(){
 	m_discovery_pub = false;
+	m_invert = false;
 };
 
 simple_light::~simple_light(){
@@ -29,12 +30,19 @@ uint8_t* simple_light::get_dep(){
 }
 
 bool simple_light::parse(uint8_t* config){
-	if(cap.parse(config,get_key(),get_dep())){
-		m_pin = SIMPLE_LIGHT_PIN;
+	// check for all pins with dedicated string
+	if(cap.parse_wide(config, (uint8_t*)"SLN",&m_pin, (uint8_t*)"LIG")){
+		m_invert = true;
 		return true;
 	}
 	// check for all pins with dedicated string
 	else if(cap.parse_wide(config, get_key(),&m_pin, (uint8_t*)"LIG")){
+		m_invert = false;
+		return true;
+	}
+	else if(cap.parse(config,get_key(),get_dep())){
+		m_pin = SIMPLE_LIGHT_PIN;
+		m_invert = false;
 		return true;
 	}
 
@@ -93,10 +101,18 @@ bool simple_light::publish(){
 void simple_light::setColor(uint8_t r, uint8_t g, uint8_t b){
 	m_state.set(r);
 	if (r) {
-		digitalWrite(m_pin, HIGH);
+		if(!m_invert){
+			digitalWrite(m_pin, HIGH);
+		} else {
+			digitalWrite(m_pin, LOW); 
+		}
 		logger.println(TOPIC_INFO_SL, F("Simple light on"), COLOR_PURPLE);
 	} else {
-		digitalWrite(m_pin, LOW);
+		if(!m_invert){
+			digitalWrite(m_pin, LOW);
+		} else {
+			digitalWrite(m_pin, HIGH); 
+		}
 		logger.println(TOPIC_INFO_SL, F("Simple light off"), COLOR_PURPLE);
 	}
 }

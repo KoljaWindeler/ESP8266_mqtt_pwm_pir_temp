@@ -290,6 +290,32 @@ void reconnect(){
 
 				network.loopCheck();
 				network.publishRouting();
+
+				// capability error checking, this has to be before the subscription. Because once a capability input is received
+				// we have to reload the eeprom information and therefore loose the info about which caps were consumed
+				uint8_t p_fill=0;
+				for(uint8_t i=0; mqtt.cap[i]; i++){
+					if(mqtt.cap[i]!='x'){
+						if(mqtt.cap[i]==',' && (p_fill==0 || mqtt.cap[p_fill-1]==',')){ // only move meaningful comma
+							continue;
+						}
+						mqtt.cap[p_fill] = mqtt.cap[i];
+						p_fill++;
+					}
+				}
+				if(p_fill>1){ // at least one letter + ','
+					mqtt.cap[p_fill-1]=0x00; // remove last ','
+					snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Unsatisfied config: %s"), (char*)mqtt.cap);
+					logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
+					logger.p((char *) " -> ");
+					logger.pln(m_msg_buffer);
+				} else {
+					m_msg_buffer[0]=0x00; // clear previously reported retained errors
+				}
+				network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
+				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
+
+
 				// ... and resubscribe
 				network.subscribe(build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT)); // MQTT_TRACE_TOPIC topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT), COLOR_GREEN);
@@ -313,30 +339,6 @@ void reconnect(){
 					(*active_p[i])->subscribe();
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
-
-				// capability error checking
-				uint8_t p_fill=0;
-				for(uint8_t i=0; mqtt.cap[i]; i++){
-					if(mqtt.cap[i]!='x'){
-						if(mqtt.cap[i]==',' && (p_fill==0 || mqtt.cap[p_fill-1]==',')){ // only move meaningful comma
-							continue;
-						}
-						mqtt.cap[p_fill] = mqtt.cap[i];
-						p_fill++;
-					}
-				}
-				if(p_fill>1){ // at least one letter + ','
-					mqtt.cap[p_fill-1]=0x00; // remove last ','
-					snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Unsatisfied config: %s"), (char*)mqtt.cap);
-					logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
-					logger.p((char *) " -> ");
-					logger.pln(m_msg_buffer);
-				} else {
-					m_msg_buffer[0]=0x00; // clear previously reported retained errors
-				}
-				network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
-				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
-
 
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
@@ -633,11 +635,24 @@ char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev){
 	if (pc_shall_R_or_S != PC_TO_UNIT && pc_shall_R_or_S != UNIT_TO_PC) {
 		pc_shall_R_or_S = PC_TO_UNIT;
 	}
-	if (with_dev) {
-		// 2do .. safety
+	if (with_dev && strlen(mqtt.dev_short)+strlen(topic)+4<sizeof(m_topic_buffer)){
 		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
-	} else {
+		return m_topic_buffer;
+	} else if (!with_dev && strlen(mqtt.dev_short)+strlen(topic)+1<sizeof(m_topic_buffer)){
 		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, topic);
+		return m_topic_buffer;
+	} else {
+		// topic too long.
+		snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Topic too long: "), topic);
+		memcpy(m_msg_buffer+16,topic,min(strlen(topic),(unsigned int)10));
+		memcpy(m_msg_buffer+16+min(strlen(topic),(unsigned int)10),"...",3);
+		m_msg_buffer[16+min(strlen(topic),(unsigned int)10)+4]=0x00;
+
+		logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
+		logger.p((char *) " -> ");
+		logger.pln(m_msg_buffer);
+		network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
+
 	}
 	return m_topic_buffer;
 }

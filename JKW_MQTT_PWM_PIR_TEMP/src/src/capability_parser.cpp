@@ -58,6 +58,11 @@ bool capability_parser::parse(unsigned char * input, uint8_t* key){
 	return parse(input,key,(uint8_t*)"");
 }
 
+// call parse_wide_continuous("B1,B4","B",&key) will return true,key=1 on 1st and true,key=4 on 2nd call
+bool capability_parser::parse_wide_continuous(unsigned char* input, uint8_t* key_word, uint8_t* key_res){
+	return parse_wide(input,"%s%i", key_word, *key_res+1, 16, key_res, (uint8_t*)"");
+}
+
 // e.g. to check if B4 is in the config, run: parse_wide(config,"B",&m_pin)
 bool capability_parser::parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res){
 	return parse_wide(input,"%s%i", key_word, 0, 16, key_res, (uint8_t*)"");
