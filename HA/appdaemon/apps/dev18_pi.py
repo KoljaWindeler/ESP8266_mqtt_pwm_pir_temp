@@ -7,7 +7,10 @@ class PiWorld(hass.Hass):
         self.log("Starting Pi Service")
         self.listen_state(self.fuse, "sensor.dev18_update")
         self.run_daily(self.off, time(23, 0, 0))
-        self.run_at_sunset(self.on, offset = -15 * 60)
+        try:
+           self.run_at_sunset(self.on, offset = -15 * 60)
+        except:
+           pass
 
     ######################################################
 

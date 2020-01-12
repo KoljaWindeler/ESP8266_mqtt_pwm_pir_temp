@@ -25,11 +25,14 @@ class ventWorld(hass.Hass):
 
     def vent(self, entity="", attribute="", old="", new="", kwargs=""):
         #self.log("new vent value: "+new+" state "+str(self.state))
-        if(float(new)>0.04 and self.state==0):
-           self.state = 1
-           self.log("switching vent on")
-           self.turn_on("switch.dev4_gpio_5")
-           self.handle = self.run_in(self.vent_off, seconds=15*60)
+        try:
+           if(float(new)>0.04 and self.state==0):
+              self.state = 1
+              self.log("switching vent on")
+              self.turn_on("switch.dev4_gpio_5")
+              self.handle = self.run_in(self.vent_off, seconds=15*60)
+        except:
+           pass
 
     def vent_off(self, entity="", attribute="", old="", new="", kwargs=""):
         self.log("switching vent off")

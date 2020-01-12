@@ -8,8 +8,16 @@ class GmotionWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting gmotion Service")
+		self.set_state("sensor.error",state=" ")
+
 		self.listen_state(self.home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
 		self.listen_state(self.home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
+
+		self.listen_state(self.system_state, "binary_sensor.someone_is_home")
+		self.listen_state(self.system_state, "input_boolean.alarm_system")
+		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner")
+		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner_2")
+
 		self.sensor = []
 		self.sensor.append(["Cellar 1","59_motion",255])
 		self.sensor.append(["Cellar 2","59_motion_2",255])
@@ -31,6 +39,28 @@ class GmotionWorld(hass.Hass):
 
 		self.motion("","","","","")
 		self.home("","","","","")
+		self.system_state()
+
+
+	def system_state(self, entity="", attribute="", old="", new="", kwargs=""):
+		# assumption: system is off
+		sec_short = "on" #unlocked
+		sec_long = "disabled"
+		# system is on
+		if(self.get_state("input_boolean.alarm_system") == "on"):
+			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
+			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
+			if(self.get_state("binary_sensor.someone_is_home") == "on"):
+				sec_short = "on" #unlocked
+				sec_long = "enabled, but someone is home"		
+			elif((vac in ["cleaning", "returning"]) or (vac2 in ["cleaning", "returning"])):
+				sec_short = "on" #unlocked
+				sec_long = "enabeld, but vacuuming"
+			else:
+				sec_short = "off" #locked
+				sec_long = "enabled"
+		self.set_state("binary_sensor.sec_short",state=sec_short)
+		self.set_state("sensor.sec_long",state=sec_long)
 
 
 	def home(self, entity, attribute, old, new, kwargs):
@@ -104,7 +134,6 @@ class GmotionWorld(hass.Hass):
 		## 2.2. the vacuum status
 		## 2.3. the distance of us towards home
 		# 1.
-
 		if(self.get_state("device_tracker.illuminum_caro") != "home" and self.get_state("device_tracker.illuminum_kolja") != "home"):
 			# 2.
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
@@ -132,6 +161,7 @@ class GmotionWorld(hass.Hass):
 
 					self.log(msg)
 					self.call_service("notify/pb", title="Motion alert", message=msg)
+					self.call_service("notify/pb_c", title="Motion alert", message=msg)
 
 					if(self.msg_nr +1 < len(self.msg_delay)):
 						self.msg_nr = self.msg_nr +1
@@ -185,4 +215,3 @@ class GmotionWorld(hass.Hass):
 		d = radius * c
 		d = round(d,2)
 		return d
-

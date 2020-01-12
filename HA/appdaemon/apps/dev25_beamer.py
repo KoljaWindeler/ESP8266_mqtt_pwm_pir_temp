@@ -14,7 +14,7 @@ class beamerWorld(hass.Hass):
         self.log("Starting beamer Service")
         self.listen_state(self.led_toggle,"binary_sensor.dev25_button",new="on")
         self.listen_state(self.main_toggle,"binary_sensor.dev25_button1s", new="on")
-        self.listen_state(self.aw,"light.dev6", new="on")
+        self.listen_state(self.aw,"light.dev59", new="on")
         self.listen_state(self.mpc,"light.dev32", new="on")
 
     def aw(self, entity="", attribute="", old="", new="",kwargs=""):

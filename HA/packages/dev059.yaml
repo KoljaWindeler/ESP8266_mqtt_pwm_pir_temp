@@ -11,19 +11,6 @@
 # 16: led dimmer 
 # -----------------------------------------------
 
-light:
-  - platform: mqtt ### LED dimmer
-    name: "dev59"
-    state_topic: "dev59/r/gpio_14_state"
-    command_topic: "dev59/s/gpio_14_state"
-    retain: True
-    qos: 0
-    payload_on: "ON"
-    payload_off: "OFF"
-    optimistic: false
-
-# -----------------------------------------------
-
 homeassistant:
   customize:
     light.dev59:
@@ -34,6 +21,9 @@ homeassistant:
       friendly_name: "Basement 2"
     sensor.dev59_temperature:
       friendly_name: "59 Basement"
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
 
 # -----------------------------------------------
 

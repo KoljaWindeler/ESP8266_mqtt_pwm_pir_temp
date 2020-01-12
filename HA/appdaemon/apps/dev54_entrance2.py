@@ -13,8 +13,11 @@ class EntranceWorld2(hass.Hass):
         self.run_daily(self.six, time(6, 0, 0))
         self.run_daily(self.twentytwo, time(22, 0, 0))
         self.run_daily(self.twentythree, time(23, 0, 0))
-        self.run_at_sunrise(self.sunrise, offset = 30 * 60)
-        self.run_at_sunset(self.sunset, offset = 15 * 60)
+        try:
+           self.run_at_sunrise(self.sunrise, offset = 30 * 60)
+           self.run_at_sunset(self.sunset, offset = 15 * 60)
+        except:
+           pass
         self.listen_state(self.caro_home, "device_tracker.illuminum_caro", new = "home", duration = 10*60, arg1="Caro home")  # everyone is home for 10 min
         self.listen_state(self.kolja_home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
         self.listen_state(self.approaching, "proximity.caro_home")

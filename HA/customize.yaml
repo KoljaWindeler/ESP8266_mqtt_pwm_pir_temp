@@ -147,11 +147,11 @@
 # -----------------------------------------------
 # -----------------------------------------------
     automation.all_home_dev5:
-      friendly_name: "Entrance fast off"
+      friendly_name: "Foyer fast off"
     automation.midnight_dev5:
-      friendly_name: "Entrance late off"
+      friendly_name: "Foyer late off"
     automation.sunset_dev5:
-      friendly_name: "Entrance sunset on"
+      friendly_name: "Foyer sunset on"
 # -----------------------------------------------
     group.all_lights:
       hidden: false

@@ -35,6 +35,9 @@ xiaomi_vac:
 workshop:
   module: dev20_workshop
   class: workshopWorld
+workshop2:
+  module: dev28_workshop
+  class: workshop2World
 beamer:
   module: dev25_beamer
   class: beamerWorld
@@ -80,3 +83,6 @@ dingdong:
 temperature:
   module: temperature
   class: temperatureWorld
+lastUpdate:
+  module: lastUpdated
+  class: LastUpdatedWorld

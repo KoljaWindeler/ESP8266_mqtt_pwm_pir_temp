@@ -11,7 +11,7 @@ class SimulationWorld(hass.Hass):
 	def initialize(self):
 		self.log("Starting Simulation Service")
 		self.lights = ["joiner_livingroom","joiner_kitchen","dev24", "joiner_bedroom","dev54_2"]
-		self.names = ["Wohnzimmer", "Kueche", "Carlo", "Schlafzimmer","Entrance chandelier"]
+		self.names = ["Wohnzimmer", "Kueche", "Carlo", "Schlafzimmer","Foyer chandelier"]
 
 		self.run_at_sunset(self.simulation)
 		self.simulation()

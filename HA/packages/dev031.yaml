@@ -14,7 +14,7 @@ homeassistant:
       device_class: motion
     sensor.dev31_temperature:
       friendly_name: "31 Bedroom Caro temperature"
-      unit_of_measurement: "ºC"
+      unit_of_measurement: "°C"
       icon: "mdi:thermometer"
       device_class: "temperature"
 

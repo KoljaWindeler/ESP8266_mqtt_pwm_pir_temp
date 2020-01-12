@@ -1,0 +1,42 @@
+####### VALUE WILL BE OVERRIDDEN BY APPDAEMON ANYWAY ##############
+
+binary_sensor:
+  - platform: template
+    sensors:
+      sec_short:
+        value_template: "on"
+
+
+sensor:
+  - platform: template
+    sensors:
+# ---------------------------------------------------------
+      g_motion_t:
+        value_template: "loading"
+      g_motion_cellar_t:
+        value_template: "loading"
+      g_motion_basement_t:
+        value_template: "loading"
+      g_motion_upstairs_t:
+        value_template: "loading"
+# ---------------------------------------------------------
+      illuminum_kolja_t:
+        value_template: "loading"
+      illuminum_caro_t:
+        value_template: "loading"
+# ---------------------------------------------------------
+      note:
+        value_template: "loading"
+      error:
+        value_template: " "
+# ---------------------------------------------------------
+      sec_long:
+        value_template: "loading"
+
+
+homeassistant:
+  customize:
+    binary_sensor.sec_short:
+      icon: "mdi:lock"
+      device_class: "lock"
+      friendly_name: "Security System"
