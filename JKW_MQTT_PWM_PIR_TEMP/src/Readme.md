@@ -110,8 +110,9 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	This peripheral has no discovery support as of now.
 
 ### Simple light / relay
-	Configuration string: "SL" / "SL*"  with * = {0..5, 12..16}, default is 12
+	Configuration string: "SL" / "SL*" / "SLN*"  with * = {0..5, 12..16}, default is 12
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
+	SLN will work with inverted output logic.
 	Sub-Topic(s): Sub-Topic(s): none, is sub-peripheral to light class
 	This peripheral has discovery support and will show up as e.g. light.dev99.
 
@@ -134,8 +135,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	This peripheral has no discovery support as of now.
 
 ### PIR
-	Configuration string: "PIR" / "PIR*" with * = {0..5, 12..16}, default is 14
-	Purpose: publishes motion events instantly
+	Configuration string: "PIR" / "PIR*" / "PIRN*" with * = {0..5, 12..16}, default is 14
+	Purpose: publishes motion events instantly, multiple instances possible. PIRN works with inverted logic
 	Sub-Topic(s): "motion"
 	This peripheral has discovery support and will show up as e.g. binary_sensor.dev34_motino
 
@@ -199,6 +200,12 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Configuration string: "AUD"
 	Purpose: will provide a server (port 5522) that consumes special audio streams (send by a Raspberry). Output is the RX pin.
 	Sub-Topic(s): Sub-Topic(s): none, consumes direct streams
+	This peripheral has no discovery support as of now.
+
+### SerialBridge
+	Configuration string: "SERSER"
+	Purpose: will provide a server (port 1778) that forwards uart communication. Uart interface is set to 115200 8N1.
+	Sub-Topic(s): Sub-Topic(s): none
 	This peripheral has no discovery support as of now.
 
 ### Frequency counter
