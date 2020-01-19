@@ -22,24 +22,27 @@ uint8_t* PIR::get_key(){
 }
 
 bool PIR::parse(uint8_t* config){
+	uint8_t delay = 0;
+	cap.parse_wide(config,"%s%i", (uint8_t*)"PIRDL", 0, 255, &delay, (uint8_t*)"",true);
+
 	if(cap.parse(config,get_key())){
-		m_list = new PIR_SENSOR(14,false);
+		m_list = new PIR_SENSOR(14,false,delay);
 		// set list = 14
 	}
 	uint8_t m_pin = 255; // uint8_t will overrun to 0 on first call of continuous
 	while(cap.parse_wide_continuous(config,(uint8_t*)"PIR",&m_pin)){
 		if(m_list){
-			m_list->attache_member(new PIR_SENSOR(m_pin,false));
+			m_list->attache_member(new PIR_SENSOR(m_pin,false,delay));
 		} else {
-			m_list = new PIR_SENSOR(m_pin,false);
+			m_list = new PIR_SENSOR(m_pin,false,delay);
 		}
 	}
 	m_pin = 255; // uint8_t will overrun to 0 on first call of continuous
 	while(cap.parse_wide_continuous(config,(uint8_t*)"PIRN",&m_pin)){
 		if(m_list){
-			m_list->attache_member(new PIR_SENSOR(m_pin,true));
+			m_list->attache_member(new PIR_SENSOR(m_pin,true,delay));
 		} else {
-			m_list = new PIR_SENSOR(m_pin,true);
+			m_list = new PIR_SENSOR(m_pin,true,delay);
 		}
 	}
 	// for i in 1..14, parse and return list .. 
@@ -71,11 +74,7 @@ bool PIR::init(){
 void PIR::interrupt(){
 	PIR_SENSOR* next=m_list;
 	while(next){
-		if(next->interrupt()){ 
-			// break if correct interrupt sensor found
-			break;
-		}
-		// else continue
+		next->interrupt();
 		next=next->get_next();
 	}
 }
@@ -113,13 +112,15 @@ bool PIR::publish(){
 ///////////////////////////// PARENT ////////////////////////////
 ///////////////////////////// SENSOR ////////////////////////////
 
-PIR_SENSOR::PIR_SENSOR(uint8_t pin,boolean invert){
+PIR_SENSOR::PIR_SENSOR(uint8_t pin,boolean invert,uint8_t delay){
 	m_pin = pin;
 	m_invert = invert;
 	m_init_done = false;
 	m_discovery_pub = false;
 	m_next = NULL;
 	m_id = 0;
+	m_delay = delay; // * 100 -> 255 = 25500ms = 25.5sec
+	m_triggertime = 0;
 }
 
 PIR_SENSOR::~PIR_SENSOR(){
@@ -158,11 +159,11 @@ void PIR_SENSOR::attache_member(PIR_SENSOR* new_next){
 }
 
 bool PIR_SENSOR::init(){
-	pinMode(m_pin, INPUT);
+	
 	if(m_invert){ // low active
-		digitalWrite(m_pin, HIGH); // pull up to avoid interrupts without sensor
+		pinMode(m_pin, INPUT_PULLUP); // pull up to avoid interrupts without sensor
 	} else {
-		digitalWrite(m_pin, LOW); // pull up to avoid interrupts without sensor
+		pinMode(m_pin,INPUT);
 	}
 	attachInterrupt(digitalPinToInterrupt(m_pin), fooPIR, CHANGE);
 	interrupt(); // grab current state
@@ -172,36 +173,36 @@ bool PIR_SENSOR::init(){
 	
 
 bool PIR_SENSOR::interrupt(){
-	//if(pin == m_pin){
-		uint8_t state = digitalRead(m_pin);
-		if(m_invert){
-			state = !state;
-		}
-		m_state.check_set(state);
-	//	return true;
-	//}
+	uint8_t state = digitalRead(m_pin);
+	if(m_invert){
+		state = !state;
+	}
+	m_state.check_set(state);
 	return false;
 }
 
 bool PIR_SENSOR::publish(){
-	if (m_state.get_outdated()) {
-		// function called to publish the state of the PIR (on/off)
-		boolean ret = false;
+	if (m_state.get_outdated()) { 
+		if(millis() > m_triggertime){  // check if we're allow to call this again
+			// function called to publish the state of the PIR (on/off)
+			boolean ret = false;
 
-		logger.print(TOPIC_MQTT_PUBLISH, F("pir state "), COLOR_GREEN);
-		logger.p(m_pin);
-		sprintf(m_msg_buffer, MQTT_MOTION_TOPIC, m_pin);
-		if (m_state.get_value()) {
-			logger.pln(F(": motion"));
-			ret = network.publish(build_topic(m_msg_buffer,UNIT_TO_PC), (char*)STATE_ON);
-		} else {
-			logger.pln(F(": no motion"));
-			ret = network.publish(build_topic(m_msg_buffer,UNIT_TO_PC), (char*)STATE_OFF);
+			logger.print(TOPIC_MQTT_PUBLISH, F("pir state "), COLOR_GREEN);
+			logger.p(m_pin);
+			sprintf(m_msg_buffer, MQTT_MOTION_TOPIC, m_pin);
+			if (m_state.get_value()) {
+				logger.pln(F(": motion"));
+				ret = network.publish(build_topic(m_msg_buffer,UNIT_TO_PC), (char*)STATE_ON);
+			} else {
+				logger.pln(F(": no motion"));
+				ret = network.publish(build_topic(m_msg_buffer,UNIT_TO_PC), (char*)STATE_OFF);
+			}
+			if (ret) {
+				m_state.outdated(false);
+			}
+			m_triggertime = millis() + ((uint16_t)m_delay)*100; // set earlies possible recall to now + 100*delay (ms)
+			return ret;
 		}
-		if (ret) {
-			m_state.outdated(false);
-		}
-		return ret;
 	}
 
 #ifdef WITH_DISCOVERY

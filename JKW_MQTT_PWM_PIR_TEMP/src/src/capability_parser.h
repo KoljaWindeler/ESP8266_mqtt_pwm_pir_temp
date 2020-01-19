@@ -14,6 +14,7 @@ class capability_parser {
 		bool parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res);
 		bool parse_wide(unsigned char* input, uint8_t* key_word, uint8_t* key_res, uint8_t* dep);
 		bool parse_wide(unsigned char* input, const char* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep);
+		bool parse_wide(unsigned char* input, const char* key_schema, uint8_t* key_word, uint8_t key_start, uint8_t key_end, uint8_t* key_res, uint8_t* dep, bool force_all);
 		bool parse_wide_continuous(unsigned char* input, uint8_t* key_word, uint8_t* key_res);
 };
 

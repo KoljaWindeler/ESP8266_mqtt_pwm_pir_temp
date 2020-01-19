@@ -11,7 +11,7 @@ static constexpr char MQTT_DISCOVERY_M_MSG[]      = "{\"name\":\"%s_motion_%i\",
 
 class PIR_SENSOR {
 	public:
-		PIR_SENSOR(uint8_t pin, boolean invert);
+		PIR_SENSOR(uint8_t pin, boolean invert,uint8_t delay);
 		~PIR_SENSOR();
 		void attache_member(PIR_SENSOR* new_next);
 		bool init();
@@ -27,6 +27,8 @@ class PIR_SENSOR {
 		boolean m_discovery_pub;
 		PIR_SENSOR* m_next;
 		uint8_t m_id;
+		uint8_t m_delay;
+		uint32_t m_triggertime;
 };
 
 class PIR : public capability {
