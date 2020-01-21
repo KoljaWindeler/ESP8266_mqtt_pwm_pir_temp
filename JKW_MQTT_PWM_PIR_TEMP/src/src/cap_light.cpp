@@ -57,6 +57,9 @@ bool light::reg_provider(capability * p, uint8_t* t){
 	} else if(!strcmp((char*)t,"AI")){
 		type     = T_AI;
 		logger.pln(F("AI light"));
+	} else if(!strcmp((char*)t,"SHD")){
+		type     = T_SHELLY_DIMMER;
+		logger.pln(F("Shelly Dimmer"));
 	} else {
 		type     =  0;
 		logger.pln(F("UNKNOWN "));
@@ -812,6 +815,12 @@ void light::send_current_light(){
 #ifdef WITH_AI
 	if (type == T_AI) {
 		((AI *) provider)->setColor(temp.r, temp.g, temp.b);
+		return;
+	}
+#endif
+#ifdef WITH_SHELLY_DIMMER
+	if (type == T_SHELLY_DIMMER) {
+		((shelly_dimmer *) provider)->setColor(temp.r);
 		return;
 	}
 #endif

@@ -549,6 +549,9 @@ void loadPheripherals(uint8_t * config){
 	bake(new PWM(((uint8_t *) "PW2"), 4, 4, 4, 0, 0), &p_pwm2, config);     // kolja 2
 	bake(new PWM(((uint8_t *) "PW3"), 15, 13, 12, 14, 4), &p_pwm3, config); // H801 module 5 mosfets on gpio: R,G,B,W1,W2
 #endif
+#ifdef WITH_SHELLY_DIMMER
+	bake(new shelly_dimmer(),&p_shellyDimmer, config);  // shelly dimmer 
+#endif
 #ifdef WITH_PIR
 	bake(new PIR(), &p_pir, config);                 // Kolja_v2
 #endif
