@@ -1,3 +1,4 @@
+exit 0;
 sudo screen -S "HA" -d -m
 sudo screen -r "HA" -X stuff "su -s /bin/bash homeassistant -c 'whoami; source /srv/homeassistant/bin/activate; hass'\n"
 #sudo screen -S "AD" -d -m

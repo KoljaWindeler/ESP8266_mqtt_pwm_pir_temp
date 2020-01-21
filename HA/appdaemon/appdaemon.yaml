@@ -1,9 +1,13 @@
-log:
-  logfile: STDOUT
-  errorfile: STDERR
+logs:
+  main_log:
+    date_format: "%d.%m.%Y %H:%M:%S"
+  error_log:
+    date_format: "%d.%m.%Y %H:%M:%S"
+
 appdaemon:
   threads: 10
-  app_dir: /home/homeassistant/.homeassistant/appdaemon/apps
+  utility_delay: 5
+  app_dir: /conf/apps
   plugins:
     HASS:
       type: hass
@@ -11,4 +15,4 @@ appdaemon:
       token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4NjA1MTM1NzMsImlzcyI6ImYyMjg2ZjZhYjE5ZTQwM2E5YWNmNmU3OGFhYjNiNjdkIiwiaWF0IjoxNTQ1MTUzNTczfQ.qvw_4NZLP6oAMTsqkElDB8YduhkiDOd_QpIB91XLcE4
 hadashboard:
   dash_url: http://127.0.0.1:5050
-  dash_dir: /home/homeassistant/.homeassistant/appdaemon/dashboards
+  dash_dir: /conf/dashboards

@@ -6,6 +6,7 @@ class PresentsWorld(hass.Hass):
 		self.log("Starting Presents Service")
 		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor","light.dev56","light.dev18"]
 		self.listen_state(self.presents, "binary_sensor.someone_is_home") # 5 min away
+		self.chk_light()
 
 	def presents(self, entity, attribute, old, new,kwargs):
 		if(old=="on" and new=="off"):
@@ -14,13 +15,13 @@ class PresentsWorld(hass.Hass):
 			self.run_in(self.chk_light,5*60)
 			#self.call_service("notify/pb", title="testing", message=m)
 
-	def chk_light(self, kwargs):
+	def chk_light(self, kwargs=""):
 		if(self.get_state("binary_sensor.someone_is_home") == "off" and self.get_state("input_boolean.presents_simulation") == "off"):
 			self.log("Presents state just changed to 'nobody is home'")
 			# get all device that are on
 			remaining_lights_on = []
-			group = self.get_state("group.all_lights", attribute = "all")
-			for l in group["attributes"]["entity_id"]:
+			group = self.get_state("light")
+			for l in group:
 				if(self.get_state(l)=="on" and not(l in self.white_list)):
 					remaining_lights_on.append(l)
 			# if there are some, write a message

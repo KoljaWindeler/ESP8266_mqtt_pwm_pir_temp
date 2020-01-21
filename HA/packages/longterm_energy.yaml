@@ -1,7 +1,7 @@
 notify:
   - platform: file
     name: filenotify
-    filename: /opt/counter_total.csv
+    filename: /config/longterm_logs/counter_total.csv
 
 automation:
   - alias: sensor_values_to_file
@@ -17,4 +17,4 @@ automation:
 sensor:
   - platform: load_external
     name: long_term_power
-    feed_path: '/opt/counter_total.csv'
+    feed_path: '/config/longterm_logs/counter_total.csv'

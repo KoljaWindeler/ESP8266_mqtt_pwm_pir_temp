@@ -15,9 +15,9 @@ homeassistant:
   customize:
     light.dev59:
       friendly_name: "Basement"
-    binary_sensor.dev59_motion:
+    binary_sensor.dev59_motion_13:
       friendly_name: "Basement 1"
-    binary_sensor.dev59_motion_2:
+    binary_sensor.dev59_motion_16:
       friendly_name: "Basement 2"
     sensor.dev59_temperature:
       friendly_name: "59 Basement"
@@ -37,12 +37,12 @@ sensor:
 binary_sensor:
   - platform: mqtt
     state_topic: "dev59/r/gpio_13_state"
-    name: "dev59_motion"
+    name: "dev59_motion_13"
     device_class: motion
 
   - platform: mqtt
     state_topic: "dev59/r/gpio_16_state"
-    name: "dev59_motion_2"
+    name: "dev59_motion_16"
     device_class: motion
 
 # -----------------------------------------------

@@ -7,29 +7,25 @@ class motionLight(hass.Hass):
 	def initialize(self):
 		self.log("Starting Motion Service")
 		self.my_sensors = self.args["sensors"]
+		self.my_lights = self.args["lights"]
 		for i in self.my_sensors:
 			#self.log("Sensor: "+i)
 			self.listen_state(self.motion,i)
 		self.turn_light_off()
 
 	def turn_light_off(self, entity="", attribute="", old="", new="",kwargs=""):
-		self.turn_off("light.dev57")
-		self.turn_off("light.dev27")
+		for i in self.my_lights:
+			if(self.get_state(i) == "on"):
+				self.turn_off(i)
 		try:
 			self.cancel_timer(self.handle)
 		except:
 			pass
 
 	def turn_light_on(self, entity="", attribute="", old="", new="",kwargs=""):
-		ele = float(self.get_state("sun.sun", attribute="elevation"))
-#        self.log("licht an, elevation is "+str(ele))
-		if(ele < 15):
-			b=99
-			if (self.now_is_between("19:00:00", "06:00:00")):
-				b=11
-			#self.log("floor_up on")
-			self.turn_on("light.dev57",brightness=b)
-			self.turn_on("light.dev27",brightness=min(255,b*12))
+		for i in self.my_lights:
+			if(self.get_state(i) == "off"):
+				self.turn_on(i)
 
 	def motion(self, entity="", attribute="", old="", new="off",kwargs=""):
 		#self.log("Toggle motion")

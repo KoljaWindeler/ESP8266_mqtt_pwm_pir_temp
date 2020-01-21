@@ -9,51 +9,6 @@
       data:
         name: darkorange_trans
 # ------------------- autoload theme ------------------------
-# ------------------- cellar new --------------------------------
-  - alias: cellar_light_on_motion
-    initial_state: True
-    hide_entity: False
-    trigger: # trigger twice, whenever the motion sensors are off for 10min
-      - platform: state
-        entity_id: binary_sensor.dev59_motion
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 5
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev59_motion_2
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 5
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev54_motion_2
-        to: 'off'
-        for: 
-          hours: 0
-          minutes: 5
-          seconds: 0
-      - platform: state
-        entity_id: binary_sensor.dev59_motion
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev59_motion_2
-        to: 'on'
-      - platform: state
-        entity_id: binary_sensor.dev54_motion_2
-        to: 'on'
-    action:
-      - service_template: >
-          {% if is_state('binary_sensor.dev59_motion','on') or is_state('binary_sensor.dev54_motion_2','on') or is_state('binary_sensor.dev59_motion_2','on') %}
-            light.turn_on
-          {% else %}
-            light.turn_off
-          {% endif %}
-        entity_id: 
-          - light.dev59
-# ------------------- cellar new --------------------------------
 # ------------------- living room sunset new -------------------
   - alias: joiner_livingroom_in2
     initial_state: True

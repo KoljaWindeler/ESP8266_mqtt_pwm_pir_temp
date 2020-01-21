@@ -5,7 +5,7 @@ media_player:
     username: !secret gmusic_user
     password: !secret gmusic_pw
     device_id: !secret gmusic_device_id
-    token_path: /home/homeassistant/.homeassistant/
+    token_path: /config/
 
 input_select:
   gmusic_player_speakers:

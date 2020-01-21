@@ -1,5 +1,5 @@
 camera:
-  - platform: onvif
+  - platform: onvif_hd
     host: 192.168.2.204
     username: admin
     password: ""

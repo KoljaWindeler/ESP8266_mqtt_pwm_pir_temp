@@ -13,12 +13,15 @@ class temperatureWorld(hass.Hass):
     def t(self, entity, attribute, old, new, kwargs):
         #self.log("Sensor "+entity+" reported new value "+new)
         whitelist=["sensor.dev29_temperature"]
-        if(float(new)>50):
-            if(entity in whitelist):
-                msg="Whitelisted: "+self.friendly_name(entity)+" ("+entity+") new temperature: "+new
-                #self.log(msg)
-            else:
-                msg=self.friendly_name(entity)+" ("+entity+") on fire: "+new
-                self.log(msg)
-                self.call_service("notify/pb", title="FIRE", message=msg)
+        try:
+           if(float(new)>50):
+               if(entity in whitelist):
+                   msg="Whitelisted: "+self.friendly_name(entity)+" ("+entity+") new temperature: "+new
+                   #self.log(msg)
+               else:
+                   msg=self.friendly_name(entity)+" ("+entity+") on fire: "+new
+                   self.log(msg)
+                   self.call_service("notify/pb", title="FIRE", message=msg)
+        except:
+           pass
 
