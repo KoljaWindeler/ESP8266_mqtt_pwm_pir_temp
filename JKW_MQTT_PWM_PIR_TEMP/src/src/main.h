@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20200112" DEV
+	#define VERSION               "20200121" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -114,6 +114,7 @@
 	extern capability * p_pwm;
 	extern capability * p_pwm2;
 	extern capability * p_pwm3;
+	extern capability * p_shellyDimmer;
 	extern capability * p_rssi;
 	extern capability * p_simple_light;
 	extern capability * p_dht;
@@ -164,6 +165,7 @@
 #include "cap_record.h"
 #include "cap_energy_meter.h"
 #include "cap_SerialServer.h"
+#include "cap_shelly_dimmer.h"
 
 #endif // ifndef main_h
 

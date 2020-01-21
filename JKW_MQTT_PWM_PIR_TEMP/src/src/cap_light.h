@@ -27,6 +27,7 @@
 	#define T_NEO                    3
 	#define T_BOne                   4
 	#define T_AI                     5
+	#define T_SHELLY_DIMMER			 6
 
 	#define ANIMATION_STEP_TIME      15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
 	#define NEOPIXEL_LED_COUNT       24

@@ -9,6 +9,7 @@ capability *p_pir;
 capability *p_pwm;
 capability *p_pwm2;
 capability *p_pwm3;
+capability *p_shellyDimmer;
 capability *p_rssi;
 capability *p_simple_light;
 capability *p_dht;
