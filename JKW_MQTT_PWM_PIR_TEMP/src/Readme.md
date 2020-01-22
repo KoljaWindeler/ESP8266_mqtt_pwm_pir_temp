@@ -109,6 +109,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): none, is sub-peripheral to light class
 	This peripheral has no discovery support as of now.
 
+### Shelly dimmer
+	Configuration string: "SHD"
+	Purpose: will consume all light commands (dimm/color) and forward it to a neopixel string
+	Input Sub-Topic(s): none, is sub-peripheral to light class
+	Ouput Sub-Topic(s): publishes the wattage to "SHD_POWER" every 30 sec
+	This peripheral has no discovery support as of now but is in parted given by the light class
+
 ### Simple light / relay
 	Configuration string: "SL" / "SL*" / "SLN*"  with * = {0..5, 12..16}, default is 12
 	Purpose: will consume simple light commands and toggle the pin that is connected to the relay in a Sonoff basic/touch
@@ -137,8 +144,8 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 ### PIR
 	Configuration string: "PIR" / "PIR*" / "PIRN*" with * = {0..5, 12..16}, default is 14
 	Purpose: publishes motion events instantly, multiple instances possible. PIRN works with inverted logic
-	Sub-Topic(s): "motion"
-	This peripheral has discovery support and will show up as e.g. binary_sensor.dev34_motino
+	Sub-Topic(s): "motion_{used gpio}"
+	This peripheral has discovery support and will show up as e.g. binary_sensor.dev34_motion_14
 
 ### RF bridge
 	Configuration string: "RFB"

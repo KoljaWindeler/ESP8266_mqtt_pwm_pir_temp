@@ -1,8 +1,8 @@
-20200121
+20200122
 	- added inital shelly dimmer support
-	- dimming and on/off works. power reading doesn't
-		DATA:    [=====     ]  52.6% (used 43104 bytes from 81920 bytes)
-		PROGRAM: [====      ]  42.9% (used 411240 bytes from 958448 bytes)
+	- dimming, on/off and power reading supported, nothing else by now
+		DATA:    [=====     ]  52.6% (used 43120 bytes from 81920 bytes)
+		PROGRAM: [====      ]  42.9% (used 411488 bytes from 958448 bytes)
 20200112
 	- multiple PIR instances parallel
 	- PIR with inverted polarity

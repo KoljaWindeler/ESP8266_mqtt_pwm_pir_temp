@@ -6,6 +6,8 @@
 
 static constexpr char MQTT_SHELLY_DIMMER_POWER_TOPIC[] = "SHD_POWER";
 
+#define SHELLY_DIMMER_POWER_UPDATE_RATE 30000UL // 30 sec
+
 #define SHD_START   10
 #define SHD_ID      11
 #define SHD_CMD     12
