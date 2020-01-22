@@ -32,6 +32,11 @@ sensor:
     name: "dev15_uptime"
     unit_of_measurement: "min"
 
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev15/r/motion_5"
+    name: "dev15_motion"
+
 # -----------------------------------------------
 
 

@@ -4,11 +4,8 @@ from datetime import datetime, time
 class EntranceWorld2(hass.Hass):
 
     def initialize(self):
-        self.log("Starting Entrance Service 2")
-        self.listen_state(self.inside_off, "binary_sensor.dev54_motion_1", new = "off", duration = 120)
-        self.listen_state(self.inside_on, "binary_sensor.dev54_motion_1", new = "on")
+        self.log("Starting Entrance Service 2") 
         self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
-        self.inside_off()
 
         self.run_daily(self.six, time(6, 0, 0))
         self.run_daily(self.twentytwo, time(22, 0, 0))
@@ -116,32 +113,4 @@ class EntranceWorld2(hass.Hass):
             self.log("=================================")
 
 
-    ######################################################
-
-    def inside_on(self, entity, attribute, old, new,kwargs):
-        ele = float(self.get_state("sun.sun", attribute="elevation"))
-        now = datetime.now().time()
-        #if (now < time(5,00,00) or now > time(22,30,00)):
-        if(ele < 15):
-            #self.log("Turn on Chandelair")
-            # before 5 or after 22:30, use chandelair
-            #if(self.get_state("light.dev54")=="on"):
-            #    self.turn_off("light.dev54")
-            if(self.get_state("light.dev54_2")=="off"):
-                self.turn_on("light.dev54_2")
-        #else:
-        #    self.log("Turn on LEDs")
-        #    # after 5 and before 22:30, use LED
-        #    if(self.get_state("light.dev54_2")=="on"):
-        #        self.turn_off("light.dev54_2")
-        #    if(self.get_state("light.dev54")=="off"):
-        #        self.turn_on("light.dev54")
-
-    def inside_off(self, entity="", attribute="", old="", new="",kwargs=""):
-        #self.log("Turn all off")
-
-        if(self.get_state("light.dev54_2")=="on"):
-            self.turn_off("light.dev54_2")
-        #if(self.get_state("light.dev54")=="on"):
-        #    self.turn_off("light.dev54")
 

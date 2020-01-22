@@ -33,6 +33,15 @@ sensor:
       sec_long:
         value_template: "loading"
 
+input_boolean:
+  clear_error:
+    name: "Clear error"
+    initial: off
+  clear_note:
+    name: "Clear note"
+    initial: off
+
+
 
 homeassistant:
   customize:

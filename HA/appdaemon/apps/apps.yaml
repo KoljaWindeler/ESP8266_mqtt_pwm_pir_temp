@@ -17,12 +17,16 @@ adafruit:
 warmwater:
   module: dev29_warmwater
   class: warm_waterWorld
-map:
-  module: dev15_map
-  class: MapWorld
+
 floor_up:
   module: dev57_floor_upstairs 
-  class: floor_upWorld
+  class: motionLight
+  delay: 2
+  sensors:
+   - binary_sensor.0x00158d0002f0bc08_occupancy
+   - binary_sensor.dev57_motion
+   - binary_sensor.dev54_motion_1
+
 bedroom:
   module: bedroom
   class: bedroomWorld
@@ -86,3 +90,51 @@ temperature:
 lastUpdate:
   module: lastUpdated
   class: LastUpdatedWorld
+battery:
+  module: battery
+  class: BatteryWorld
+error:
+  module: error
+  class: ErrorWorld
+
+mL_cellar:
+  module: motionLight
+  class: motionLight
+  delay: 5
+  sensors:
+   - binary_sensor.dev59_motion_13
+   - binary_sensor.dev59_motion_16
+   - binary_sensor.dev54_motion_2
+  lights:
+   - light.dev59
+
+mL_foyer:
+  module: motionLight
+  class: motionLight
+  delay: 5
+  sensors:
+   - binary_sensor.dev9_gpio_4
+   - binary_sensor.dev54_motion_1
+  lights:
+   - light.dev54_2
+
+mL_foyerD:
+  module: motionLight
+  class: motionLight
+  delay: 2
+  sensors:
+   - binary_sensor.dev9_gpio_5
+  lights:
+   - light.dev9
+
+mL_Worldmap:
+  module: motionLight
+  class: motionLight
+  delay: 10
+  sensors:
+   - binary_sensor.dev15_motion
+  lights:
+   - light.dev12
+   - light.dev15
+
+

@@ -153,13 +153,4 @@
     automation.sunset_dev5:
       friendly_name: "Foyer sunset on"
 # -----------------------------------------------
-    group.all_lights:
-      hidden: false
-    group.all_automations:
-      hidden: false
-# -----------------------------------------------
-    binary_sensor.floorplan:
-      custom_ui_state_card: state-card-floorplan
-      config: !include floorplan.yaml
-# -----------------------------------------------
 

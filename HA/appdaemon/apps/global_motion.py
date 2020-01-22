@@ -19,8 +19,8 @@ class GmotionWorld(hass.Hass):
 		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner_2")
 
 		self.sensor = []
-		self.sensor.append(["Cellar 1","59_motion",255])
-		self.sensor.append(["Cellar 2","59_motion_2",255])
+		self.sensor.append(["Cellar 1","59_motion_13",255])
+		self.sensor.append(["Cellar 2","59_motion_16",255])
 		self.sensor.append(["Garage","8_motion",254])
 		self.sensor.append(["World map","15_motion",0])
 		self.sensor.append(["Entrance","54_motion_1",0])
@@ -36,6 +36,12 @@ class GmotionWorld(hass.Hass):
 		self.msg_delay = [0,3*60,8*60,15*60]
 		self.msg_ts = 0
 		self.msg_nr = 0
+
+		self.g_motion = 0
+		self.g_motion_upstairs = 0
+		self.g_motion_basement = 0
+		self.g_motion_cellar = 0
+
 
 		self.motion("","","","","")
 		self.home("","","","","")
@@ -74,14 +80,15 @@ class GmotionWorld(hass.Hass):
 
 	def motion(self, entity, attribute, old, new, kwargs):
 		#self.log("check motion")
+		#start = time.time()
 		cellar_m = "off"
 		basement_m = "off"
 		upstairs_m = "off"
-		m = False
+		m = "off"
 		for i in range(0,len(self.sensor)):
 			#self.log("binary_sensor.dev"+self.sensor[i]+": "+self.get_state("binary_sensor.dev"+self.sensor[i]))
 			if(self.get_state("binary_sensor.dev"+self.sensor[i][1]) == "on"):
-				m = True
+				m = "on"
 				self.sensor_trigger_count[i] = self.sensor_trigger_count[i]+1
 				if(self.sensor[i][2]==255):
 					cellar_m = "on"
@@ -90,16 +97,22 @@ class GmotionWorld(hass.Hass):
 				elif(self.sensor[i][2]==1):
 					upstairs_m = "on"
 		# per storry motion
-		self.set_state("binary_sensor.g_motion_cellar",state=cellar_m)
-		self.set_state("binary_sensor.g_motion_basement",state=basement_m)
-		self.set_state("binary_sensor.g_motion_upstairs",state=upstairs_m)
+		if(self.g_motion_cellar != cellar_m):
+			self.set_state("binary_sensor.g_motion_cellar",state=cellar_m)
+			self.g_motion_cellar = cellar_m
+		if(self.g_motion_basement != basement_m):
+			self.set_state("binary_sensor.g_motion_basement",state=basement_m)
+			self.g_motion_basement = basement_m
+		if(self.g_motion_upstairs != upstairs_m):
+			self.set_state("binary_sensor.g_motion_upstairs",state=upstairs_m)
+			self.g_motion_upstairs = upstairs_m
 		# gloabal motion
-		if(not(m)):
-			 self.set_state("binary_sensor.g_motion",state="off")
-		else:
-			self.set_state("binary_sensor.g_motion",state="on")
-			self.safety()
-
+		if(self.g_motion != m):
+			self.set_state("binary_sensor.g_motion",state=m)
+			if(m=="on"):
+				self.safety()
+		#end = time.time()
+		#self.log(end-start)
 
 
 	def safety(self, kwargs=""):

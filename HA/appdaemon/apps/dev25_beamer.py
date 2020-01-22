@@ -42,3 +42,7 @@ class beamerWorld(hass.Hass):
         self.log("Toggle main lights")
 #        self.set_state("light.joiner_workshop",state=new)
         self.toggle("switch.dev25_gpio_4") # bench only
+        # fake motion to turn light on
+        self.set_state("binary_sensor.dev59_motion_13",state="on")
+        time.sleep(1)
+        self.set_state("binary_sensor.dev59_motion_13",state="off")

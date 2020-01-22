@@ -1,22 +1,22 @@
 notify:
   - platform: file
     name: filenotify_bat_1
-    filename: /opt/battery_total_1.csv
+    filename: /config/longterm_logs/battery_total_1.csv
   - platform: file
     name: filenotify_bat_2
-    filename: /opt/battery_total_2.csv
+    filename: /config/longterm_logs/battery_total_2.csv
   - platform: file
     name: filenotify_bat_3
-    filename: /opt/battery_total_3.csv
+    filename: /config/longterm_logs/battery_total_3.csv
   - platform: file
     name: filenotify_bat_4
-    filename: /opt/battery_total_4.csv
+    filename: /config/longterm_logs/battery_total_4.csv
   - platform: file
     name: filenotify_bat_5
-    filename: /opt/battery_total_5.csv
+    filename: /config/longterm_logs/battery_total_5.csv
   - platform: file
     name: filenotify_bat_6
-    filename: /opt/battery_total_6.csv
+    filename: /config/longterm_logs/battery_total_6.csv
 
 
 automation:
@@ -48,19 +48,19 @@ automation:
 sensor:
   - platform: load_external
     name: long_term_battery_1
-    feed_path: '/opt/battery_total_1.csv'
+    feed_path: '/config/longterm_logs/battery_total_1.csv'
   - platform: load_external
     name: long_term_battery_2
-    feed_path: '/opt/battery_total_2.csv'
+    feed_path: '/config/longterm_logs/battery_total_2.csv'
   - platform: load_external
     name: long_term_battery_3
-    feed_path: '/opt/battery_total_3.csv'
+    feed_path: '/config/longterm_logs/battery_total_3.csv'
   - platform: load_external
     name: long_term_battery_4
-    feed_path: '/opt/battery_total_4.csv'
+    feed_path: '/config/longterm_logs/battery_total_4.csv'
   - platform: load_external
     name: long_term_battery_5
-    feed_path: '/opt/battery_total_5.csv'
+    feed_path: '/config/longterm_logs/battery_total_5.csv'
   - platform: load_external
     name: long_term_battery_6
-    feed_path: '/opt/battery_total_6.csv'
+    feed_path: '/config/longterm_logs/battery_total_6.csv'

@@ -22,9 +22,9 @@ class workshopWorld(hass.Hass):
            self.turn_off("light.dev28")
         else:
            self.turn_on("light.dev28")
-        self.set_state("binary_sensor.dev59_motion",state="on")
+        self.set_state("binary_sensor.dev59_motion_13",state="on")
         time.sleep(1)
-        self.set_state("binary_sensor.dev59_motion",state="off")
+        self.set_state("binary_sensor.dev59_motion_13",state="off")
 
 
     def vent_toggle(self, entity, attribute, old, new,kwargs):
