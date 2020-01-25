@@ -40,7 +40,7 @@ bool shelly_dimmer::init(){
 // return how many value you want to publish per second
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t shelly_dimmer::count_intervall_update(){
-	return 1;
+	return 0; // handled in loop and pushed directly
 }
 
 // will be called in loop, if you return true here, every else will be skipped !!
@@ -104,23 +104,23 @@ bool shelly_dimmer::loop(){
 		} else if(m_recv_state == SHD_CHK_2){
 			//logger.pln("chk2");
 			if((m_msg_in.chk & 0xff)==t){
-				/*logger.pln("ok, message ok");
+				//logger.pln("ok, message ok");
 				if(m_msg_in.cmd==0x10){
-					sprintf(m_msg_buffer,"%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",m_msg_in.data[0],m_msg_in.data[1],m_msg_in.data[2],m_msg_in.data[3],m_msg_in.data[4],m_msg_in.data[5],m_msg_in.data[6],m_msg_in.data[7],m_msg_in.data[8],m_msg_in.data[9],m_msg_in.data[10],m_msg_in.data[11]);
+					uint32_t power_raw = (((uint32_t)m_msg_in.data[7])<<24)+(((uint32_t)m_msg_in.data[6])<<16)+(((uint16_t)m_msg_in.data[5])<<8)+m_msg_in.data[4];			
+					if(power_raw){
+						m_power.set((uint16_t)(1000000UL/power_raw));
+					} else {
+						m_power.set(0);
+					}
+				} else if(m_msg_in.cmd != 0x01) { // no need to see all dimming messages, they will just flood the console when we dimm ourself
+					sprintf(m_msg_buffer,"Recv CMD: 0x%02x Length: 0x%02x -> %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",m_msg_in.cmd, m_msg_in.len, m_msg_in.data[0],m_msg_in.data[1],m_msg_in.data[2],m_msg_in.data[3],m_msg_in.data[4],m_msg_in.data[5],m_msg_in.data[6],m_msg_in.data[7],m_msg_in.data[8],m_msg_in.data[9],m_msg_in.data[10],m_msg_in.data[11]);
 					logger.p(m_msg_buffer);
 				}
-				else {*/
-				sprintf(m_msg_buffer,"Recv CMD: 0x%02x Length: 0x%02x -> %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\r\n",m_msg_in.cmd, m_msg_in.len, m_msg_in.data[0],m_msg_in.data[1],m_msg_in.data[2],m_msg_in.data[3],m_msg_in.data[4],m_msg_in.data[5],m_msg_in.data[6],m_msg_in.data[7],m_msg_in.data[8],m_msg_in.data[9],m_msg_in.data[10],m_msg_in.data[11]);
-				logger.p(m_msg_buffer);
-				//}
-				
-				// TODO PARSE message
 			}
 			m_recv_state = SHD_START;
 		}
 		//Serial.printf("Next state %i\r\n",m_recv_state);
-	} 
-	else if(millis()-m_last_char_recv>2000){
+	} else if(millis()-m_last_char_recv>SHELLY_DIMMER_POWER_UPDATE_RATE){ // 10 sec update 
 		send_cmd(0x10,0,(uint8_t*)m_msg_buffer);
 		m_last_char_recv = millis(); // avoid resend
 	}
@@ -132,7 +132,6 @@ bool shelly_dimmer::loop(){
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
 bool shelly_dimmer::intervall_update(uint8_t slot){
-	// todo publish power value
 	return false;
 }
 
@@ -154,7 +153,7 @@ void shelly_dimmer::setColor(uint8_t b){
 	uint8_t data[2];
 	data[0]=b_scale & 0xff;
 	data[1]=b_scale >> 8;
-	send_cmd(1,2,data,true);
+	send_cmd(1,2,data);
 }
 void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload){
 	send_cmd(cmd,len,payload,false);
@@ -186,32 +185,6 @@ void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload, boolean d
 }
 
 
-// internal function to send data to the tuya controller
-/*void shelly_dimmer::send_cmd(uint8_t cmd, uint16_t len, uint8_t* d){
-	char data[8+len];
-	data[0]=0x55; // header
-	data[1]=0xAA; // header
-	data[2]=0x00; // Version
-	data[3]=cmd;
-	data[4]=len>>8;
-	data[5]=len&0xff;
-	if(len>0){
-		for(uint16_t i=0;i<len;i++){
-			data[6+i]=*d;
-			d++;
-		}
-	}
-	data[6+len]=0x00;
-	for(uint16_t i=0;i<len+6;i++){
-		data[6+len]+=data[i];
-	}
-	Serial.write(data,7+len);
-
-	rfb_last_received=millis();
-	//rfb.rdy=false;
-	m_recv_state = RFB_START_0;
-}*/
-
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool shelly_dimmer::receive(uint8_t* p_topic, uint8_t* p_payload){
 	return false; // not for me
@@ -220,6 +193,15 @@ bool shelly_dimmer::receive(uint8_t* p_topic, uint8_t* p_payload){
 // if you have something very urgent, do this in this method and return true
 // will be checked on every main loop, so make sure you don't do this to often
 bool shelly_dimmer::publish(){
+	if(m_power.get_outdated()){
+		logger.print(TOPIC_MQTT_PUBLISH, F("Shelly Power "), COLOR_GREEN);
+		sprintf(m_msg_buffer,"%i",m_power.get_value());
+		logger.pln(m_msg_buffer);
+		if(network.publish(build_topic(MQTT_SHELLY_DIMMER_POWER_TOPIC,UNIT_TO_PC), m_msg_buffer)){
+			m_power.outdated(false);
+		}
+		return true;
+	}
 	return false;
 }
 #endif
