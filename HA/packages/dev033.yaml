@@ -1,0 +1,29 @@
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev33:
+      friendly_name: "Tower Carlo"
+    binary_sensor.dev33_button:
+      friendly_name: "Tower Carlo button"
+    binary_sensor.dev33_button1s:
+      friendly_name: "Tower Carlo button1s"
+    binary_sensor.dev33_motion:
+      friendly_name: "Tower Carlo motion"
+      device_class: motion
+    sensor.dev33_temperature:
+      friendly_name: "Tower Carlo temperature"
+      unit_of_measurement: "°C"
+      icon: "mdi:thermometer"
+      device_class: "temperature"
+    sensor.dev33_adc:
+      friendly_name: "Tower Carlo"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev33"
+    fname: "33 Tower Carlo"
+
+# -----------------------------------------------

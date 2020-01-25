@@ -4,14 +4,14 @@
 sensor:
   - platform: mqtt_jkw
     name: "dev23"
-    fname: "23 Carlo"
+    fname: "23 Carlo main"
 
 # -----------------------------------------------
 
 homeassistant:
   customize:
     light.dev23:
-      friendly_name: "Carlo"
+      friendly_name: "Carlo main"
 
 # -----------------------------------------------
 

@@ -5,7 +5,7 @@ class PiWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Pi Service")
-        self.listen_state(self.fuse, "sensor.dev18_update")
+#        self.listen_state(self.fuse, "sensor.dev18_update")
         self.run_daily(self.off, time(23, 0, 0))
         try:
            self.run_at_sunset(self.on, offset = -15 * 60)

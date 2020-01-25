@@ -13,9 +13,11 @@ class motionLight(hass.Hass):
 		self.turn_light_off()
 
 	def turn_light_off(self, entity="", attribute="", old="", new="",kwargs=""):
+		self.log("turning off")
 		self.turn_off("light.dev57")
 		self.turn_off("light.dev27")
 		try:
+			self.log("stopping timer after turn off")
 			self.cancel_timer(self.handle)
 		except:
 			pass
@@ -35,18 +37,23 @@ class motionLight(hass.Hass):
 		#self.log("Toggle motion")
 		# start with cleanup,
 		# either motion is on, so light should be on as well
-		self.turn_light_on()
-		# or it just turned off, so we should schedule a timer and stop the last
-		try:
-			self.cancel_timer(self.handle)
-		except:
-			pass
+		self.log("Trigger, "+entity+" state "+new)
+		if(new == "on"):
+			self.turn_light_on()
+			# or it just turned off, so we should schedule a timer and stop the last
+			try:
+				self.log("stopping timer after turn ON")
+				self.cancel_timer(self.handle)
+			except:
+				pass
 		# so if motion is off, check if all sensors are in the off state now
 		if(new == "off"):
+			time.sleep(1)
 			all_off = True
 			for i in self.my_sensors:
 				if(self.get_state(i) == "on"):
 					all_off = False
 					break
 			if(all_off):
+				self.log("setting timer to turn off")
 				self.handle = self.run_in(self.turn_light_off,int(self.args["delay"])*60)

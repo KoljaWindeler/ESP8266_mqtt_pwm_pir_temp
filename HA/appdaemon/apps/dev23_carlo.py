@@ -13,12 +13,12 @@ class carloWorld(hass.Hass):
     def initialize(self):
         self.log("Starting carlo Service")
         self.listen_state(self.main_toggle,"binary_sensor.dev23_button1s", new = "on")
-        self.listen_state(self.lampinions_toggle,"binary_sensor.dev23_button", new = "on")
+        self.listen_state(self.tower_toggle,"binary_sensor.dev23_button", new = "on")
 
-    def lampinions_toggle(self, entity, attribute, old, new,kwargs):
-        self.log("Toggle lampinion")
+    def tower_toggle(self, entity, attribute, old, new,kwargs):
+        self.log("Toggle tower")
         if(self.get_state("input_boolean.carlo_switch_lock")=="off"):
-           self.toggle("light.dev56")
+           self.toggle("light.dev33")
         else:
            self.log("carlo lock active")
 
