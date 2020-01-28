@@ -5,8 +5,10 @@
 
 capability_parser::capability_parser(){};
 
-
 bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep){
+	return parse(input,key,dep,true);
+}
+bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep, bool delete_key){
 	// in: P,S,...
 	uint8_t p=0;
 	uint8_t temp[10];
@@ -40,8 +42,11 @@ bool capability_parser::parse(unsigned char * input, uint8_t* key, uint8_t* dep)
 						logger.remColor(COLOR_PURPLE);
 					}
 				}
+				//Serial.println((char*)p_input);
 				// remove my token from config string, so only the non consumed token remain
-				memset(cap_start, 'x', strlen((const char*)key));
+				if(delete_key){
+					memset(cap_start, 'x', strlen((const char*)key));
+				}
 				//Serial.println("parse return true");
 				return true;
 			}
@@ -107,7 +112,7 @@ bool capability_parser::parse_wide(unsigned char* input, const char* key_schema,
 
 bool capability_parser::ensure_dep(unsigned char* input, uint8_t* dep){
 	//Serial.printf("ensure parsing. input: %s vs. dep %s\r\n",input,dep);
-	if(parse(input,dep)){
+	if(parse(input,dep,(uint8_t*)"",false)){
 		//Serial.println("ensure return false");
 		return false;
 	} else {
