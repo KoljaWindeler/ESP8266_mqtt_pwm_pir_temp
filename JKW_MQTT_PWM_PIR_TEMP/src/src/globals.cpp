@@ -12,6 +12,7 @@ capability *p_pwm3;
 capability *p_shellyDimmer;
 capability *p_rssi;
 capability *p_simple_light;
+capability *p_remote_simple_light;
 capability *p_dht;
 capability *p_ds;
 capability *p_ai;

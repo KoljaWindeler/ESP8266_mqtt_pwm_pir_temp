@@ -541,6 +541,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_SL
 	bake(new simple_light(), &p_simple_light, config);
 #endif
+#ifdef WITH_RSL
+	bake(new remote_simple_light(), &p_remote_simple_light, config);
+#endif
 #ifdef WITH_RSSI
 	bake(new rssi(), &p_rssi, config);
 #endif
@@ -573,7 +576,6 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_NEOSTRIP
 	bake(new NeoStrip(), &p_neo, config);
 #endif
-	bake(new light(), &p_light, config);
 #ifdef WITH_HLW
 	bake(new J_hlw8012(), &p_hlw, config);
 #endif
@@ -606,6 +608,7 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_IR
 	bake(new ir(), &p_ir, config);
 #endif
+	bake(new light(), &p_light, config);
 
 
 	// logger.p("RAM after init objects ");

@@ -117,6 +117,7 @@
 	extern capability * p_shellyDimmer;
 	extern capability * p_rssi;
 	extern capability * p_simple_light;
+	extern capability * p_remote_simple_light;
 	extern capability * p_dht;
 	extern capability * p_ds;
 	extern capability * p_ai;
@@ -144,6 +145,7 @@
 #include "cap_PIR.h"
 #include "cap_button.h"
 #include "cap_simple_light.h"
+#include "cap_remote_simple_light.h"
 #include "cap_rssi.h"
 #include "cap_PWM.h"
 #include "cap_DHT22.h"
