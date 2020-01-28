@@ -25,7 +25,7 @@ class create_group(hass.Hass):
 
   def initialize(self):
     domains = ["switch","light","sensor"]
-    domains = ["switch","light"] 
+    domains = ["switch","light"]
     ap_ssid = ["IOT255","IOT0","IOT1","IOT254"]
     entitylist = []
     for d in domains:

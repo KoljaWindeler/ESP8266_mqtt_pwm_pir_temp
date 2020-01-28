@@ -16,12 +16,12 @@ DEV15 -T- World map, PIR dimmer
 DEV16 -T- Energy meter
 DEV17 -O- Kellertuer
 DEV18 -T- love of pi
-
+DEV19 -T- Crip LED dimmer
 DEV20 -T- shelly workshop
 DEV21 -T- slampher in küche
 DEV22 - Xmas lichterkette, ehemals 57
-DEV23 -T- SonOff Touch Bedroom
-DEV24 -O- SonOff Touch carlo
+DEV23 -T- SonOff Touch carlo
+DEV24 -O- SonOff Touch lara
 DEV25 -T- Shellybeamer 
 DEV26 -T- Shelly 2.5oben
 DEV27 -O- B1 Flur oben
@@ -30,6 +30,8 @@ DEV29 -T- Warm Water trigger
 DEV30 -O- valve ctrl 
 DEV31 -T- SL bed light caro
 DEV32 -T- SL bed light kolja
+DEV33 -T- Shell Button, Carlo
+
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions Geheim
 DEV56 -T- Ikea LED lampinions carlo

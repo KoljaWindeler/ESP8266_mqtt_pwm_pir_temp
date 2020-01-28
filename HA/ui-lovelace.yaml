@@ -22,6 +22,8 @@ resources:
     type: module
   - url: /community_plugin/lovelace-home-feed-card/lovelace-home-feed-card.js
     type: js
+  - url: /community_plugin/text-divider-row/text-divider-row.js
+    type: module
 
 background: >-
   center / cover no-repeat
@@ -55,7 +57,9 @@ custom_header:
 
 views:
   - theme: dark-mode
+#################################################
 ############## home #########################
+#################################################
     cards:
 ### 1st column
 #### 2x big
@@ -183,8 +187,8 @@ views:
              - type: custom:long-term-card
                name: 'Power Month'
                display_mode: 'diff'
-               lower_bound: 0
-               upper_bound: 25
+               lower_bound: 8
+               upper_bound: 20
                formater: 'yyyy-mm-dd'
                maxDays: 30
                data_delimiter: ','
@@ -233,14 +237,15 @@ views:
              - type: entity-button
                tap_action:
                  action: toggle
-               entity: light.dev23
-               name: Carlo main
-               icon: mdi:ceiling-light
-             - type: "custom:button-card"
+               entity: light.dev33
+               name: Carlo Tower
+               icon: mdi:lighthouse
+             - type: entity-button
                tap_action:
                  action: toggle
-               entity: input_boolean.carlo_switch_lock
-               name: Carlo lock
+               entity: light.dev23
+               name: Carlo Main
+               icon: mdi:ceiling-light
 #### 2nd line
          - type: horizontal-stack
            cards:
@@ -288,7 +293,7 @@ views:
                tap_action:
                  action: toggle
                entity: light.dev59
-               icon: mdi:floor-plan
+               icon: mdi:home-floor-negative-1
                name: Cellar
              - type: entity-button
                tap_action:
@@ -325,305 +330,381 @@ views:
 #            entity: camera.cam_xia1
 #            name: L.
     icon: 'mdi:home-assistant'
+
+#################################################
 ########### all room glance ###########
+#################################################
+
   - cards:
 ##### upstairs
-      - type: glance
-        title: Bedroom
-        entities:
-          - entity: sensor.0x00158d00042505f7_humidity
-            name: Hum Z
-          - entity: sensor.0x00158d00042505f7_temperature
-            name: Temp Z
-          - entity: sensor.dev32_temperature
-            name: Temp
-          - entity: light.dev32
-            name: Kolja
-            tap_action:
-              action: toggle
-          - entity: light.dev31
-            tap_action:
-              action: toggle
-            name: Caro
-          - entity: light.dev19
-            tap_action:
-              action: toggle
-            name: Crip
-          - entity: light.dev26
-            tap_action:
-              action: toggle
-            name: Main
+      - type: vertical-stack
+        cards:
 
-      - type: glance
-        title: Carlo
-        entities:
-          - entity: sensor.carlo_humidity
-            name: Hum Z
-          - entity: sensor.carlo_temperature
-            name: Temp Z
-          - entity: light.dev23
-            tap_action:
-              action: toggle
-            name: Main
-          - entity: light.dev56
-            tap_action:
-              action: toggle
-            name: Lampion
-          - entity: camera.cam_xia4
-            name: Camera
+        - type: 'custom:text-divider-row'
+          style: | 
+             secondary-text-color: '#2980b9'
+          text: Upstairs
 
-      - type: glance
-        title: L.
-        entities:
-          - entity: sensor.0x00158d00041024ef_humidity
-            name: Hum Z
-          - entity: sensor.0x00158d00041024ef_temperature
-            name: Temp Z
-          - entity: sensor.dev55_temperature
-            name: Temp
-          - entity: camera.cam_xia1
-            name: Camera
-          - entity: light.dev24
-            tap_action:
-              action: toggle
-            name: Main
-          - entity: light.dev55
-            tap_action:
-              action: toggle
-            name: Lampion
+        - type: glance
+          title: Hallway upstairs
+          entities:
+            - entity: binary_sensor.dev57_motion
+              name: Motion
+            - entity: binary_sensor.0x00158d0002f0bc08_occupancy
+              name: "Motion Z"
+            - entity: light.dev57
+              tap_action:
+                action: toggle
+              name: Lampion
+            - entity: light.dev27
+              tap_action:
+                action: toggle
+              name: Stairway
 
+        - type: glance
+          title: Bedroom
+          entities:
+            - entity: sensor.0x00158d00042505f7_humidity
+              name: Hum Z
+            - entity: sensor.0x00158d00042505f7_temperature
+              name: Temp Z
+            - entity: sensor.dev32_temperature
+              name: Temp
+            - entity: light.dev32
+              name: Kolja
+              tap_action:
+                action: toggle
+            - entity: light.dev31
+              tap_action:
+                action: toggle
+              name: Caro
+            - entity: light.dev19
+              tap_action:
+                action: toggle
+              name: Crip
+            - entity: light.dev26
+              tap_action:
+                action: toggle
+              name: Main
+              icon: mdi:ceiling-light
+            - entity: switch.dev26_gpio_15
+              tap_action:
+                action: toggle
+              name: Vent
+              icon: "mdi:fan"
 
-      - type: glance
-        title: Hallway upstairs
-        entities:
-          - entity: binary_sensor.dev57_motion
-            name: Motion
-          - entity: binary_sensor.0x00158d0002f0bc08_occupancy
-            name: "Motion Z"
-          - entity: light.dev57
-            tap_action:
-              action: toggle
-            name: Lampion
-          - entity: light.dev27
-            tap_action:
-              action: toggle
-            name: Stairway
+        - type: glance
+          title: Carlo
+          entities:
+            - entity: sensor.carlo_humidity
+              name: Hum Z
+            - entity: sensor.carlo_temperature
+              name: Temp Z
+            - entity: light.dev23
+              tap_action:
+                action: toggle
+              name: Main
+              icon: mdi:ceiling-light
+            - entity: light.dev33
+              tap_action:
+                action: toggle
+              name: Tower
+              icon: mdi:lighthouse
+            - entity: light.dev56
+              tap_action:
+                action: toggle
+              name: Lampion
+            - entity: input_boolean.carlo_switch_lock
+              tap_action:
+                action: toggle
+              name: Carlo lock
+            - entity: camera.cam_xia4
+              name: Camera
+
+        - type: glance
+          title: L.
+          entities:
+            - entity: sensor.0x00158d00041024ef_humidity
+              name: Hum Z
+            - entity: sensor.0x00158d00041024ef_temperature
+              name: Temp Z
+            - entity: sensor.dev55_temperature
+              name: Temp
+            - entity: camera.cam_xia1
+              name: Camera
+            - entity: light.dev24
+              tap_action:
+                action: toggle
+              name: Main
+              icon: mdi:ceiling-light
+            - entity: light.dev55
+              tap_action:
+                action: toggle
+              name: Lampion
+
 ##### basement
-      - type: glance
-        title: Livingarea
-        entities: 
-          - entity: sensor.livingroom_humidity
-            name: Humidity
-          - entity: sensor.livingroom_temperature
-            name: Temp
-          - entity: light.dev1
-            tap_action:
-              action: toggle
-          - entity: light.dev2
-            tap_action:
-              action: toggle
-          - entity: light.dev3
-            tap_action:
-              action: toggle
-            name: Rack
-          - entity: light.dev5
-            tap_action:
-              action: toggle
-            name: Table
-          - entity: light.dev7
-            tap_action:
-              action: toggle
-          - entity: light.dev11
-            tap_action:
-              action: toggle
-          - entity: light.dev12
-            tap_action:
-              action: toggle
-          - entity: light.dev14
-            tap_action:
-              action: toggle
-          - entity: light.dev15
-            tap_action:
-              action: toggle
-          - binary_sensor.dev15_motion
+      - type: vertical-stack
+        cards:
+
+        - type: 'custom:text-divider-row'
+          text: Basement
+
+        - type: glance
+          title: Foyer
+          entities:
+            - entity: sensor.foyer_humidity
+              name: Hum Z
+            - entity: sensor.foyer_temperature
+              name: Temp Z
+            - entity: light.dev54_2
+              tap_action:
+                action: toggle
+            - entity: binary_sensor.dev54_motion_1
+              name: Motion C
+            - entity: binary_sensor.dev9_gpio_4
+              name: Motion
+            - entity: binary_sensor.dev9_gpio_5
+              name: Motion D
+            - entity: light.dev9
+              tap_action:
+                action: toggle
+              name: Dresser
+
+        - type: glance
+          title: Livingarea
+          entities: 
+            - entity: sensor.livingroom_humidity
+              name: Hum Z
+            - entity: sensor.livingroom_temperature
+              name: Temp Z
+            - entity: light.dev1
+              tap_action:
+                action: toggle
+            - entity: light.dev2
+              tap_action:
+                action: toggle
+            - entity: light.dev3
+              tap_action:
+                action: toggle
+              icon: mdi:bowl
+              name: Rack
+            - entity: light.dev5
+              tap_action:
+                action: toggle
+              name: Table
+            - entity: light.dev7
+              icon: mdi:lighthouse
+              tap_action:
+                action: toggle
+            - entity: light.dev11
+              icon: mdi:lighthouse
+              tap_action:
+                action: toggle
+            - entity: light.dev12
+              tap_action:
+                action: toggle
+            - entity: light.dev14
+              tap_action:
+                action: toggle
+            - entity: light.dev15
+              tap_action:
+                action: toggle
+            - binary_sensor.dev15_motion
 #          - binary_sensor.dev14_motion
 
-      - type: glance
-        title: Foyer
-        entities:
-          - entity: sensor.entrance_humidity
-            name: Hum Z
-          - entity: sensor.entrance_temperature
-            name: Temp Z
-          - entity: light.dev54_2
-            tap_action:
-              action: toggle
-          - entity: binary_sensor.dev54_motion_1
-            name: Motion C
-          - entity: binary_sensor.dev9_gpio_4
-            name: Motion
-          - entity: binary_sensor.dev9_gpio_5
-            name: Motion D
-          - entity: light.dev9
-            tap_action:
-              action: toggle
-            name: Dresser
+        - type: glance
+          title: Bathroom B.
+          entities: 
+            - entity: sensor.0x00158d00041d6d95_humidity
+              name: Hum Z
+            - entity: sensor.0x00158d00041d6d95_temperature
+              name: Temp Z
+
+        - type: glance
+          title: Caro
+          entities: 
+            - entity: sensor.0x00158d00044af1b0_humidity
+              name: Hum Z
+            - entity: sensor.0x00158d00044af1b0_temperature
+              name: Temp Z
+
+
 ##### cellar
-      - type: glance
-        title: Supply
-        entities:
-          - entity: sensor.0x00158d00041dfcce_humidity
-            name: Humidity Z
-          - entity: sensor.0x00158d00041dfcce_temperature
-            name: Temperature Z
-          - entity: sensor.dhcp_master_kb_sec_received
-            name: Download
-          - entity: sensor.dhcp_master_kb_sec_sent
-            name: Upload
-          - sensor.dev16_em_cur
+      - type: vertical-stack
+        cards:
 
+        - type: 'custom:text-divider-row'
+          text: Cellar
 
-      - type: glance
-        title: Cellar Bathroom
-        entities:
-          - sensor.dev13_adc
-
-      - type: glance
-        title: Movieroom
-        entities:
-          - entity: sensor.beamer_humidity
-            name: Hum Z
-          - entity: sensor.beamer_temperature
-            name: Temp Z
-          - entity: light.dev10
-            tap_action:
-              action: toggle
-            name: LEDs
-          - entity: switch.dev25_gpio_4
-            tap_action:
-              action: toggle
-            name: Main
-          - entity: switch.dev60_gpio_12
-            icon: "mdi:air-filter"
-            tap_action:
-              action: toggle
-            name: Vent
-          - entity: switch.dev60_gpio_13
-            icon: "mdi:door-open"
-            tap_action:
-              action: toggle
-            name: Window
-
-      - type: glance
-        title: Backdoor
-        entities:
-          - entity: binary_sensor.dev17_motion
-            name: Door
-
-      - type: glance
-        title: Workshop
-        entities:
-          - entity: light.dev20
-            tap_action:
-              action: toggle
-            name: Main
-          - entity: light.dev28
-            tap_action:
-              action: toggle
-            name: Bench
-          - entity: switch.dev28_gpio_15
-            tap_action:
-              action: toggle
-            name: Ventilaton
-          - entity: switch.dev28_gpio_4
-            tap_action:
-              action: toggle
-            name: Window
+        - type: glance
+          title: Cellar Hallway
+          entities:
+            - entity: sensor.dev59_temperature
+              name: Temp
+            - entity: light.dev59
+              tap_action:
+                action: toggle
+              name: Main
+            - entity: binary_sensor.dev59_motion_13
+              name: Down
+            - entity: binary_sensor.dev59_motion_16
+              name: Down 2
+            - entity: binary_sensor.dev54_motion_2
+              name: Up
           
-      - type: glance
-        title: Heater
-        entities:
-          - entity: sensor.dev4_humidity
-            name: Humidity
-          - entity: switch.dev4_gpio_12
-            name: Pump
-            tap_action:
-              action: toggle
-          - entity:  switch.dev29_gpio_4
-            name: Emu
-            tap_action:
-              action: toggle
-          - entity: sensor.dev29_temperature
-            name: Water
-          - entity: switch.dev4_gpio_5
-            tap_action:
-              action: toggle
-            name: Ventilaton
+
+        - type: glance
+          title: Supply
+          entities:
+            - entity: sensor.0x00158d00041dfcce_humidity
+              name: Hum Z
+            - entity: sensor.0x00158d00041dfcce_temperature
+              name: Temp Z
+            - entity: sensor.dhcp_master_kb_sec_received
+              name: Download
+            - entity: sensor.dhcp_master_kb_sec_sent
+              name: Upload
+            - sensor.dev16_em_cur
+
+
+        - type: glance
+          title: Cellar Bathroom
+          entities:
+            - sensor.dev13_adc
+
+        - type: glance
+          title: Movieroom
+          entities:
+            - entity: sensor.beamer_humidity
+              name: Hum Z
+            - entity: sensor.beamer_temperature
+              name: Temp Z
+            - entity: light.dev10
+              tap_action:
+                action: toggle
+              name: LEDs
+            - entity: switch.dev25_gpio_4
+              tap_action:
+                action: toggle
+              name: Main
+            - entity: switch.dev60_gpio_12
+              icon: "mdi:air-filter"
+              tap_action:
+                action: toggle
+              name: Vent
+            - entity: switch.dev60_gpio_13
+              icon: "mdi:door-open"
+              tap_action:
+                action: toggle
+              name: Window
+
+        - type: glance
+          title: Backdoor
+          entities:
+            - entity: binary_sensor.dev17_motion
+              name: Door
+
+        - type: glance
+          title: Workshop
+          entities:
+            - entity: sensor.0x00158d00044b00e0_humidity 
+              name: Hum Z
+            - entity: sensor.0x00158d00044b00e0_temperature
+              name: Temp Z
+            - entity: light.dev20
+              tap_action:
+                action: toggle
+              name: Main
+            - entity: light.dev28
+              tap_action:
+                action: toggle
+              name: Bench
+            - entity: switch.dev28_gpio_15
+              tap_action:
+                action: toggle
+              name: Ventilaton
+            - entity: switch.dev28_gpio_4
+              tap_action:
+                action: toggle
+              name: Window
+
           
-      - type: glance
-        title: Cellar Hallway
-        entities:
-          - entity: sensor.dev59_temperature
-            name: Temp
-          - entity: light.dev59
-            tap_action:
-              action: toggle
-            name: Main
-          - entity: binary_sensor.dev59_motion_13
-            name: Down
-          - entity: binary_sensor.dev59_motion_16
-            name: Down 2
-          - entity: binary_sensor.dev54_motion_2
-            name: Up
+        - type: glance
+          title: Heater
+          entities:
+            - entity: sensor.dev4_humidity
+              name: Humidity
+            - entity: switch.dev4_gpio_12
+              name: Pump
+              tap_action:
+                action: toggle
+            - entity:  switch.dev29_gpio_4
+              name: Emu
+              tap_action:
+                action: toggle
+            - entity: sensor.dev29_temperature
+              name: Water
+            - entity: switch.dev4_gpio_5
+              tap_action:
+                action: toggle
+              name: Ventilaton
           
 ##### Outdoor
-      - type: glance
-        title: House
-        entities:
-          - entity: sensor.outside_humidity
-            name: Humidity
-          - entity: sensor.outside_temperature
-            name: Temp
-          - entity: camera.cam_xia3
-            name: Garage
-          - entity: light.dev54_3
-            tap_action:
-              action: toggle
-            name: Corner
-          - entity: light.dev54_4
-            tap_action:
-              action: toggle
-            name: Door
-          - entity: light.dev18
-            tap_action:
-              action: toggle
-          - entity: camera.cam_dome1
-            name: Front
+      - type: vertical-stack
+        cards:
+        - type: 'custom:text-divider-row'
+          text: Outdoor
+        - type: glance
+          title: House
+          entities:
+            - entity: sensor.outside_humidity
+              name: Hum Z
+            - entity: sensor.outside_temperature
+              name: Temp Z
+            - entity: camera.cam_xia3
+              name: Garage
+            - entity: light.dev54_3
+              tap_action:
+                action: toggle
+              name: Corner
+            - entity: light.dev54_4
+              tap_action:
+                action: toggle
+              name: Door
+            - entity: light.dev18
+              tap_action:
+                action: toggle
+            - entity: camera.cam_dome1
+              name: Front
           
-      - type: glance
-        title: Garage
-        entities:
-          - entity: sensor.dev8_temperature
-            name: Temp
-          - entity: switch.dev8
-          - entity: binary_sensor.dev8_motion
-            name: Motion
+        - type: glance
+          title: Garage
+          entities:
+            - entity: sensor.dev8_temperature
+              name: Temp
+            - entity: switch.dev8
+            - entity: binary_sensor.dev8_motion
+              name: Motion
 
-      - type: glance
-        title: Garden
-        entities:
-          - entity: sensor.dev30_state
-          - entity: switch.dev4_gpio_12
-          - entity: switch.dev30_gpio_2
-          - entity: switch.dev30_gpio_16
-          - entity: switch.dev30_gpio_4
-          - entity: switch.dev30_gpio_5
-          - entity: switch.dev30_gpio_15
-          - entity: sensor.dev30_uptime
+        - type: glance
+          title: Garden
+          entities:
+            - entity: sensor.dev30_state
+            - entity: switch.dev4_gpio_12
+            - entity: switch.dev30_gpio_2
+            - entity: switch.dev30_gpio_16
+            - entity: switch.dev30_gpio_4
+            - entity: switch.dev30_gpio_5
+            - entity: switch.dev30_gpio_15
+            - entity: sensor.dev30_uptime
 
     icon: 'mdi:floor-plan'
-    title: All lights
+    title: All rooms
+
+#################################################
 ############# cams ##########################
+#################################################
+
   - cards:
       - type: picture-entity
         entity: camera.cam_dome1
@@ -676,7 +757,11 @@ views:
 #        entity: camera.pi106
     icon: 'mdi:cctv'
     title: Cams
+
+#################################################
 ################ media control #######################
+#################################################
+
   - cards:
       - type: vertical-stack
         cards:
@@ -858,123 +943,106 @@ views:
         show_header_toggle: false
     icon: 'mdi:cast-connected'
     title: Media
-########### outside ############################
-  - cards:
-#      - type: entities
-#        entities:
-#          - light.dev54_3
-#          - light.dev54_4
-#          - light.dev18
-#        show_header_toggle: false
-#        title: Outside light
-      - type: entities
-        entities:
-          - vacuum.xiaomi_vacuum_cleaner
-          - vacuum.xiaomi_vacuum_cleaner_2
-          - input_boolean.cleaning_done_today_0
-          - input_boolean.cleaning_done_today_1
-          - sensor.vac_triggered_0
-          - sensor.vac_triggered_1
-          - input_boolean.autostart_cleaning
-        show_header_toggle: false
-        title: Vacuuming
-      - type: history-graph
-        entities:
-          - sensor.dev29_temperature
-      - type: entities
-        entities:
-          - sensor.trash_0
-          - sensor.trash_1
-          - sensor.trash_2
-        title: Trash
-      - type: entities
-        entities:
-          - input_boolean.irrigation
-          - input_boolean.irrigation_override
-          - sensor.dev30_state
-          - switch.dev4_gpio_12
-          - switch.dev30_gpio_2
-          - switch.dev30_gpio_16
-          - switch.dev30_gpio_4
-          - switch.dev30_gpio_5
-          - switch.dev30_gpio_15
-          - sensor.dev30_uptime
-          - sensor.dark_sky_daytime_high_temperature_0d
-        show_header_toggle: false
-        title: Water
-    icon: 'mdi:home'
-    title: Second view
+
+#################################################
 ############## weather #########################
+#################################################
+
   - cards:
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-         - entity: sensor.outside_humidity
-           name: Outside
-           type: gauge
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.bathroom_u_humidity
-           name: Bathroom U.
-           type: gauge
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.carlo_humidity
-           name: Carlo
-           type: gauge
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-      - type: horizontal-stack
-        cards:
-         - entity: sensor.beamer_humidity
-           name: Beamer
-           type: gauge
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.livingroom_humidity
-           type: gauge
-           name: Livingroom
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.entrance_humidity
-           type: gauge
-           name: Foyer
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-      - type: horizontal-stack
-        cards:
-         - entity: sensor.0x00158d00041024ef_humidity
-           name: L
-           type: gauge
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.0x00158d00041dfcce_humidity
-           type: gauge
-           name: Supply
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
-         - entity: sensor.0x00158d00042505f7_humidity
-           type: gauge
-           name: Bedroom
-           severity:
-             green: 0
-             yellow: 0
-             red: 60
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.outside_humidity
+             name: Outside
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.bathroom_u_humidity
+             name: Bathroom U.
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.carlo_humidity
+             name: Carlo
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.beamer_humidity
+             name: Beamer
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.livingroom_humidity
+             type: gauge
+             name: Livingroom
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.foyer_humidity
+             type: gauge
+             name: Foyer
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.0x00158d00041024ef_humidity
+             name: L
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.0x00158d00041dfcce_humidity
+             type: gauge
+             name: Supply
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.0x00158d00042505f7_humidity
+             type: gauge
+             name: Bedroom
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.0x00158d00041d6d95_humidity
+             name: Bathroom B.
+             type: gauge
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.0x00158d00044af1b0_humidity
+             type: gauge
+             name: Caro
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
+           - entity: sensor.0x00158d00044b00e0_humidity
+             type: gauge
+             name: Workshop
+             severity:
+               green: 0
+               yellow: 0
+               red: 60
 
       - type: entities
         entities:
@@ -997,8 +1065,12 @@ views:
            name: "Livingroom 2"
          - entity: sensor.dev2_temperature
            name: "Livingroom 3"
-         - entity: sensor.entrance_temperature
+         - entity: sensor.foyer_temperature
            name: "Foyer"
+         - entity: sensor.0x00158d00044af1b0_temperature
+           name: "Caro"
+         - entity: sensor.0x00158d00041d6d95_temperature
+           name: Bathroom B.
          - type: divider
          - entity: sensor.dev59_temperature
            name: "Cellar"
@@ -1006,6 +1078,8 @@ views:
            name: "Beamer"
          - entity: sensor.0x00158d00041dfcce_temperature
            name: "Supply"
+         - entity: sensor.0x00158d00044b00e0_temperature
+           name: "Workshop"
          - type: divider
          - entity: sensor.outside_temperature
 
@@ -1046,7 +1120,7 @@ views:
            type: sensor 
          - detail: 2
            graph: line
-           entity: sensor.entrance_temperature
+           entity: sensor.foyer_temperature
            name: Foyer
            type: sensor 
 
@@ -1057,7 +1131,7 @@ views:
 #             - sensor.dev59_temperature
 #             - sensor.dev1_temperature
 #             - sensor.dev2_temperature
-#             - sensor.entrance_temperature
+#             - sensor.foyer_temperature
 #             - sensor.livingroom_temperature
 #             - sensor.bathroom_u_temperature
 #             - sensor.beamer_temperature
@@ -1075,7 +1149,9 @@ views:
         camera_view: live
     icon: 'mdi:weather-partly-cloudy'
     title: weather
+#################################################
 ############## security #########################
+#################################################
   - cards:
       - type: entities
         show_header_toggle: false
@@ -1148,7 +1224,10 @@ views:
     icon: 'mdi:security'
     title: Security
 
+#################################################
 ############ signal ###########################
+#################################################
+
   - cards:
       - type: entities
         title: Update
@@ -1185,6 +1264,7 @@ views:
           - sensor.dev30_update
           - sensor.dev31_update
           - sensor.dev32_update
+          - sensor.dev33_update
           - sensor.dev54_update
           - sensor.dev55_update
           - sensor.dev56_update
@@ -1226,6 +1306,7 @@ views:
           - sensor.dev30_rssi
           - sensor.dev31_rssi
           - sensor.dev32_rssi
+          - sensor.dev33_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
           - sensor.dev56_rssi
@@ -1266,6 +1347,7 @@ views:
           - sensor.dev30_info
           - sensor.dev31_info
           - sensor.dev32_info
+          - sensor.dev33_info
           - sensor.dev54_info
           - sensor.dev55_info
           - sensor.dev56_info
@@ -1348,6 +1430,7 @@ views:
           - sensor.dev30_ssid
           - sensor.dev31_ssid
           - sensor.dev32_ssid
+          - sensor.dev33_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
           - sensor.dev56_ssid
@@ -1389,6 +1472,7 @@ views:
           - sensor.dev30_capability
           - sensor.dev31_capability
           - sensor.dev32_capability
+          - sensor.dev33_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
           - sensor.dev56_capability
@@ -1398,7 +1482,59 @@ views:
         title: Capability
     icon: 'mdi:signal-variant'
     title: Signals
-#######################################
+
+#################################################
+########### Utilities ###########################
+#################################################
+
+  - cards:
+#      - type: entities
+#        entities:
+#          - light.dev54_3
+#          - light.dev54_4
+#          - light.dev18
+#        show_header_toggle: false
+#        title: Outside light
+      - type: entities
+        entities:
+          - vacuum.xiaomi_vacuum_cleaner
+          - vacuum.xiaomi_vacuum_cleaner_2
+          - input_boolean.cleaning_done_today_0
+          - input_boolean.cleaning_done_today_1
+          - sensor.vac_triggered_0
+          - sensor.vac_triggered_1
+          - input_boolean.autostart_cleaning
+        show_header_toggle: false
+        title: Vacuuming
+      - type: history-graph
+        entities:
+          - sensor.dev29_temperature
+      - type: entities
+        entities:
+          - sensor.trash_0
+          - sensor.trash_1
+          - sensor.trash_2
+        title: Trash
+      - type: entities
+        entities:
+          - input_boolean.irrigation
+          - input_boolean.irrigation_override
+          - sensor.dev30_state
+          - switch.dev4_gpio_12
+          - switch.dev30_gpio_2
+          - switch.dev30_gpio_16
+          - switch.dev30_gpio_4
+          - switch.dev30_gpio_5
+          - switch.dev30_gpio_15
+          - sensor.dev30_uptime
+          - sensor.dark_sky_daytime_high_temperature_0d
+        show_header_toggle: false
+        title: Water
+    icon: 'mdi:tools'
+    title: Tools
+#################################################
+########### POWER ###############################
+#################################################
   - cards:
       - detail: 2
         graph: line
@@ -1435,33 +1571,105 @@ views:
 
       - type: vertical-stack
         cards:
-         - type: horizontal-stack
-           cards:
-            - entity: sensor.outside_battery
-              name: Outside
-              type: gauge
-            - entity: sensor.bathroom_u_battery
-              name: Bathroom U.
-              type: gauge
-            - entity: sensor.carlo_battery
-              name: Carlo
-              type: gauge
-         - type: horizontal-stack
-           cards:
-            - entity: sensor.beamer_battery
-              name: Beamer
-              type: gauge
-            - entity: sensor.livingroom_battery
-              type: gauge
-              name: Livingroom
-            - entity: sensor.entrance_battery
-              type: gauge
-              name: Foyer
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.outside_battery
+             name: Outside
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.bathroom_u_battery
+             name: Bathroom U.
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.carlo_battery
+             name: Carlo
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.beamer_battery
+             name: Beamer
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.livingroom_battery
+             type: gauge
+             name: Livingroom
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.foyer_battery
+             type: gauge
+             name: Foyer
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.0x00158d00041024ef_battery
+             name: L
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.0x00158d00041dfcce_battery
+             type: gauge
+             name: Supply
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.0x00158d00042505f7_battery
+             type: gauge
+             name: Bedroom
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+        - type: horizontal-stack
+          cards:
+           - entity: sensor.0x00158d00041d6d95_battery
+             name: Bathroom B.
+             type: gauge
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.0x00158d00044af1b0_battery
+             type: gauge
+             name: Caro
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
+           - entity: sensor.0x00158d00044b00e0_battery
+             type: gauge
+             name: Workshop
+             severity:
+               green: 50
+               yellow: 30
+               red: 10
 
 
     icon: 'mdi:power-plug'
     title: power
-#######################################
+#################################################
+########## upstairs #############################
+#################################################
   - cards:
       - type: custom:group-card
         card:
@@ -1476,8 +1684,10 @@ views:
         group: group.iot1_light
 
     icon: 'mdi:home-floor-1'
-    title: All lights
-#######################################
+    title: upstairs
+#################################################
+############ basement ###########################
+#################################################
   - cards:
       - type: custom:group-card
         card:
@@ -1492,8 +1702,10 @@ views:
         group: group.iot0_light
 
     icon: 'mdi:home-floor-0'
-    title: All lights
-#######################################
+    title: basement
+#################################################
+########## cellar ###############################
+#################################################
   - cards:
       - detail: 2
         graph: line
@@ -1536,8 +1748,10 @@ views:
         group: group.iot255_light
 
     icon: 'mdi:home-floor-negative-1'
-    title: All lights
-#######################################
+    title: cellar
+#################################################
+######## All lights #############################
+#################################################
   - cards:
      - show_empty: true
        card:
@@ -1557,8 +1771,10 @@ views:
        type: 'custom:monster-card'
     icon: 'mdi:settings'
     title: All lights
-#######################################
-#######################################
+#################################################
+########## TESTING ##############################
+#################################################
+
   - cards:
       - detail: 2
         graph: line
@@ -1597,7 +1813,7 @@ views:
           - sensor.outside_linkquality
           - sensor.beamer_linkquality
           - sensor.livingroom_linkquality
-          - sensor.entrance_linkquality
+          - sensor.foyer_linkquality
       - type: custom:long-term-card
         name: 'Power Month'
         lower_bound: 0

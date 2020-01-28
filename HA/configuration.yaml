@@ -126,7 +126,7 @@ input_boolean:
     icon: mdi:airballoon
 
 mqtt:
- broker: 127.0.0.1
+ broker: 192.168.2.84
  port: 1883 
  discovery: true
  discovery_prefix: homeassistant
