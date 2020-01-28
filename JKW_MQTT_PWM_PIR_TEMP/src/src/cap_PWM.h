@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-class PWM : public capability {
+class PWM : public light_providing_capability {
 	public:
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2);
 		PWM(uint8_t* k, uint8_t pin0,uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
@@ -17,10 +17,15 @@ class PWM : public capability {
 		uint8_t* get_key();
 		uint8_t* get_dep();
 		bool publish();
-		void setColor(uint8_t r, uint8_t g, uint8_t b);
 
 		uint8_t getState(led* color);
 		void setState(uint8_t value);
+
+		// light providing capability specific calls
+		void set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px);
+		uint8_t get_modes();
+		void print_name();
+
 	private:
 		bool publishLightState();
 		bool publishLightBrightness();

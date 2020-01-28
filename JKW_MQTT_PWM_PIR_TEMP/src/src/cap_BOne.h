@@ -7,7 +7,7 @@
 #define MY9291_DI_PIN          12 // mtdi 12
 #define MY9291_DCKI_PIN        14 // mtms gpio 14?
 
-class BOne : public capability {
+class BOne : public light_providing_capability {
 	public:
 		BOne();
 		~BOne();
@@ -23,6 +23,11 @@ class BOne : public capability {
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		uint8_t getState(led* color);
 		uint8_t* get_dep();
+
+		// light providing capability specific calls
+		void set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px);
+		uint8_t get_modes();
+		void print_name();
 	private:
 		mqtt_parameter_8 m_state;
 		// uint8_t key[3];

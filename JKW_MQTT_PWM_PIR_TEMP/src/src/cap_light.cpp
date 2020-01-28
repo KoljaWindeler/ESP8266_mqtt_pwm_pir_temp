@@ -35,36 +35,25 @@ bool light::init(){
 	type = 0;
 	m_light_brightness.set(99,false); // init values, will be overwirtten by MQTT commands
 	m_animation_brightness.set(99,false);
+
+	provider[0] = NULL;
+	provider[1] = NULL;
+	provider[2] = NULL;
+
 	logger.println(TOPIC_GENERIC_INFO, F("light init"), COLOR_GREEN);
 	return true;
 }
 
 bool light::reg_provider(capability * p, uint8_t* t){
-	provider = p;
-	logger.print(TOPIC_GENERIC_INFO, F("light registered provider: "), COLOR_GREEN);
-	if(!strcmp((char*)t,"SL")){
-		type     = T_SL;
-		logger.pln(F("simple light"));
-	} else if(!strcmp((char*)t,"PWM") || !strcmp((char*)t,"PW2") || !strcmp((char*)t,"PW3")){
-		type     = T_PWM;
-		logger.pln(F("PWM light"));
-	} else if(!strcmp((char*)t,"NEO")){
-		type     = T_NEO;
-		logger.pln(F("neostrip light"));
-	} else if(!strcmp((char*)t,"BONE")){
-		type     = T_BOne;
-		logger.pln(F("B1 light"));
-	} else if(!strcmp((char*)t,"AI")){
-		type     = T_AI;
-		logger.pln(F("AI light"));
-	} else if(!strcmp((char*)t,"SHD")){
-		type     = T_SHELLY_DIMMER;
-		logger.pln(F("Shelly Dimmer"));
-	} else {
-		type     =  0;
-		logger.pln(F("UNKNOWN "));
-		logger.pln((char*)t);
+	uint8_t free_slot = 0;
+	while((free_slot<MAX_LIGHT_PROVIDER) & (provider[free_slot]!=NULL)){
+		free_slot++;
 	}
+	provider[free_slot] = (light_providing_capability*)p;
+	logger.print(TOPIC_GENERIC_INFO, F("light registered provider "), COLOR_GREEN);
+	logger.p(free_slot);
+	logger.p(": ");
+	provider[free_slot]->print_name();
 	return false;
 }
 
@@ -145,93 +134,64 @@ bool light::loop(){
 	// // RGB circle ////
 	if (m_animation_type.get_value()) {
 		if (millis() >= m_animation_dimm_time) {
-#ifdef WITH_NEOSTRIP
-			if (type == T_NEO) {
-				if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
-					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-						RgbColor c = Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255);
+			for(uint8_t provider_slot=0; (provider_slot<MAX_LIGHT_PROVIDER) & (provider[provider_slot]!=NULL); provider_slot++){
+				if (provider[provider_slot]->get_modes() & (1<<SUPPORTS_PER_PIXEL)) {
+					if (m_animation_type.get_value() == ANIMATION_RAINBOW_WHEEL) {
+						for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+							RgbColor c = Wheel(((i * 256 / NEOPIXEL_LED_COUNT) + m_animation_pos) & 255);
+							c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+							c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+							c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+							provider[provider_slot]->set_color(c.R, c.G, c.B, i);
+						}
+						m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+						provider[provider_slot]->show();
+						m_animation_dimm_time = millis() + ANIMATION_STEP_TIME; // schedule update
+					} else if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
+						RgbColor c = Wheel(m_animation_pos & 255);
 						c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
 						c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
 						c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
-						((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, i);
-					}
-					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-					((NeoStrip *) provider)->show();
-					m_animation_dimm_time = millis() + ANIMATION_STEP_TIME; // schedule update
-				} else if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
-					RgbColor c = Wheel(m_animation_pos & 255);
-					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
-					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
-					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
-					for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-						((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, i);
-					}
-					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-					((NeoStrip *) provider)->show();
-					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
-				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
-					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
-					RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
-					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
-					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
-					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
-					((NeoStrip *) provider)->setPixelColor(c.R, c.G, c.B, m_animation_pos % NEOPIXEL_LED_COUNT);
-					// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
-					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-					((NeoStrip *) provider)->show();
-					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
-				}
-			} else
-#endif
-			if (type == T_PWM || type == T_BOne || type == T_AI) {
-				if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
-					RgbColor c = Wheel(m_animation_pos & 255);
-					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
-					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
-					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
-#ifdef WITH_PWM
-					if(type == T_PWM){
-						((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-					}
-#endif
-#ifdef WITH_BONE
-					if (type == T_BOne) {
-						((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-					}
-#endif
-#ifdef WITH_AI
-					if (type == T_AI) {
-						((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-					}
-#endif
-					m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
-					m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
-				} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
-					// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
-					RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
-					c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
-					c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
-					c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
-					if(m_animation_pos % NEOPIXEL_LED_COUNT == 0){
-#ifdef WITH_PWM
-						if(type == T_PWM){
-							((PWM *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
+						for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+							provider[provider_slot]->set_color(c.R, c.G, c.B, i);
 						}
-#endif
-#ifdef WITH_BONE
-						if (type == T_BOne) {
-							((BOne *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-						}
-#endif
-#ifdef WITH_AI
-						if (type == T_AI) {
-							((AI *) provider)->setColor(c.R, c.G, c.B);                          // last two: warm white, cold white
-						}
-#endif
+						m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+						provider[provider_slot]->show();
+						m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
+					} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
+						// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
+						RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
+						c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+						c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+						c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+						provider[provider_slot]->set_color(c.R, c.G, c.B, m_animation_pos % NEOPIXEL_LED_COUNT);
+						// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
+						m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+						provider[provider_slot]->show();
+						m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
 					}
-					// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
-					m_animation_pos++; // move wheel by one, will overrun and therefore cycle
-					m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
+				} else if (provider[provider_slot]->get_modes() & (1<<SUPPORTS_PWM)) {
+					if (m_animation_type.get_value() == ANIMATION_RAINBOW_SIMPLE) {
+						RgbColor c = Wheel(m_animation_pos & 255);
+						c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+						c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+						c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+						provider[provider_slot]->set_color(c.R, c.G, c.B, 255);                          // last two: warm white, cold white
+						m_animation_pos++;                                          // move wheel by one, will overrun and therefore cycle
+						m_animation_dimm_time = millis() + 4 * ANIMATION_STEP_TIME; // schedule update
+					} else if (m_animation_type.get_value() == ANIMATION_COLOR_WIPE) {
+						// m_animation_pos geht bis 255/25 pixel = 10 colors,das wheel hat 255 pos, also 25 per 10 .. heh?
+						RgbColor c = Wheel(int(m_animation_pos / NEOPIXEL_LED_COUNT) * 76 & 255);
+						c.R = (((uint16_t)c.R)*m_animation_brightness.get_value())/99;
+						c.G = (((uint16_t)c.G)*m_animation_brightness.get_value())/99;
+						c.B = (((uint16_t)c.B)*m_animation_brightness.get_value())/99;
+						if(m_animation_pos % NEOPIXEL_LED_COUNT == 0){
+							provider[provider_slot]->set_color(c.R, c.G, c.B, 255);                          // last two: warm white, cold white
+						}
+						// max: 255/10=25,25*10 to scale, 250*3 *3 will jump to various colors
+						m_animation_pos++; // move wheel by one, will overrun and therefore cycle
+						m_animation_dimm_time = millis() + 3 * ANIMATION_STEP_TIME; // schedule update
+					}
 				}
 			}
 		} // timer
@@ -258,7 +218,13 @@ bool light::subscribe(){
 	network.subscribe(build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT)); // on off
 	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
-	if (type > T_SL) { // pwm, neo, b1, AI
+	uint8_t mvp=0;
+	for(uint8_t provider_slot=0; (provider_slot<MAX_LIGHT_PROVIDER) & (provider[provider_slot]!=NULL); provider_slot++){
+		if(provider[provider_slot]->get_modes()>mvp){
+			mvp = provider[provider_slot]->get_modes();
+		}
+	}
+	if (mvp&(1<<SUPPORTS_PWM)) { // pwm, neo, b1, AI
 		////////////////// color topic, ////////////////////////////////
 		//subscribe this before brightness topic
 		network.subscribe(build_topic(MQTT_LIGHT_COLOR_TOPIC,PC_TO_UNIT));
@@ -283,7 +249,7 @@ bool light::subscribe(){
 		network.subscribe(build_topic(MQTT_LIGHT_DIMM_DELAY_TOPIC,PC_TO_UNIT));
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_DIMM_DELAY_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
-	if (type > T_PWM) { // neo, b1, ai
+	if (mvp&(1<<SUPPORTS_RGB)) { // neo, b1, ai
 		network.subscribe(build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT)); // animation brightness topic
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_BRIGHTNESS_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 
@@ -294,7 +260,7 @@ bool light::subscribe(){
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_COLOR_WIPE_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
 
-	if (type == T_NEO) {
+	if (mvp&(1<<SUPPORTS_PER_PIXEL)) {
 		network.subscribe(build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC,PC_TO_UNIT)); // rainbow  topic
 		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_LIGHT_ANIMATION_RAINBOW_TOPIC,PC_TO_UNIT), COLOR_GREEN);
 	}
@@ -756,30 +722,9 @@ void light::setAnimationType(int type){
 	m_animation_type.set(type);
 	// switch off
 	if (m_animation_type.get_value() == ANIMATION_OFF) {
-#ifdef WITH_PWM
-		if (type == T_PWM) {
-			((PWM *) provider)->setColor(0, 0, 0);
-			return;
+		for(uint8_t provider_slot=0; (provider_slot<MAX_LIGHT_PROVIDER) & (provider[provider_slot]!=NULL); provider_slot++){
+			provider[provider_slot]->set_color(0,0,0, 255);
 		}
-#endif
-#ifdef WITH_NEOSTRIP
-		if (type == T_NEO) {
-			((NeoStrip *) provider)->setColor(0, 0, 0);
-			return;
-		}
-#endif
-#ifdef WITH_BONE
-		if (type == T_BOne) {
-			((BOne *) provider)->setColor(0, 0, 0);
-			return;
-		}
-#endif
-#ifdef WITH_AI
-		if (type == T_AI) {
-			((AI *) provider)->setColor(0, 0, 0);
-			return;
-		}
-#endif
 	}
 }
 
@@ -788,42 +733,9 @@ void light::send_current_light(){
 	temp.r = intens[_min(m_light_current.r,sizeof(intens)-1)];
 	temp.g = intens[_min(m_light_current.g,sizeof(intens)-1)];
 	temp.b = intens[_min(m_light_current.b,sizeof(intens)-1)];
-#ifdef WITH_SL
-	if (type == T_SL) {
-		((simple_light *) provider)->setColor(temp.r, temp.g, temp.b);
-		return;
+	for(uint8_t provider_slot=0; (provider_slot<MAX_LIGHT_PROVIDER) & (provider[provider_slot]!=NULL); provider_slot++){
+		provider[provider_slot]->set_color(temp.r, temp.g, temp.b, 255);
 	}
-#endif
-#ifdef WITH_PWM
-	if (type == T_PWM) {
-		((PWM *) provider)->setColor(temp.r, temp.g, temp.b);
-		return;
-	}
-#endif
-#ifdef WITH_NEOSTRIP
-	if (type == T_NEO) {
-		((NeoStrip *) provider)->setColor(temp.r, temp.g, temp.b);
-		return;
-	}
-#endif
-#ifdef WITH_BONE
-	if (type == T_BOne) {
-		((BOne *) provider)->setColor(temp.r, temp.g, temp.b);
-		return;
-	}
-#endif
-#ifdef WITH_AI
-	if (type == T_AI) {
-		((AI *) provider)->setColor(temp.r, temp.g, temp.b);
-		return;
-	}
-#endif
-#ifdef WITH_SHELLY_DIMMER
-	if (type == T_SHELLY_DIMMER) {
-		((shelly_dimmer *) provider)->setColor(temp.r);
-		return;
-	}
-#endif
 }
 
 RgbColor light::Wheel(byte WheelPos){

@@ -106,7 +106,17 @@ bool PWM::publish(){
 	return false;
 }
 
-void PWM::setColor(uint8_t r, uint8_t g, uint8_t b){
+
+uint8_t PWM::get_modes(){
+	return (1<<SUPPORTS_PWM) | (1<<SUPPORTS_RGB); 
+};
+
+void PWM::print_name(){
+	logger.pln(F("PWM"));
+};
+
+
+void PWM::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 	// make sure that we never have a brightness of zero when we're switched on
 	// rather set it to full brightness then to have it auto-off again
 	//if (m_state.get_value() && r == 0) {

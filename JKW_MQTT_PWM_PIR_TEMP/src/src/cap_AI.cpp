@@ -50,9 +50,16 @@ bool AI::init(){
 // bool AI::loop(){
 // 	return false; // i did nothing
 // }
+uint8_t AI::get_modes(){
+	return (1<<SUPPORTS_PWM) | (1<<SUPPORTS_RGB); 
+};
+
+void AI::print_name(){
+	logger.pln(F("AI bulb"));
+};
 
 
-void AI::setColor(uint8_t r, uint8_t g, uint8_t b){
+void AI::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 	uint8_t w=0;
 	if(r==b && b==g){
 		w=r;

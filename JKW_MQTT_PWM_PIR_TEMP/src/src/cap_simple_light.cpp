@@ -97,8 +97,16 @@ bool simple_light::publish(){
 	return false;
 }
 
+uint8_t simple_light::get_modes(){
+	return 0; // only simple on/off
+};
+
+void simple_light::print_name(){
+	logger.pln(F("simple light"));
+};
+
 // function called to adapt the state of the led
-void simple_light::setColor(uint8_t r, uint8_t g, uint8_t b){
+void simple_light::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 	m_state.set(r);
 	if (r) {
 		if(!m_invert){

@@ -6,7 +6,7 @@
 #include "main.h"
 #include <NeoPixelBus.h>
 
-class NeoStrip : public capability {
+class NeoStrip : public light_providing_capability {
 	public:
 		NeoStrip();
 		~NeoStrip();
@@ -23,8 +23,13 @@ class NeoStrip : public capability {
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
 		uint8_t getState(led* color);
 		void setState(uint8_t value);
+		
+		// light providing capability specific calls
+		void set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px);
+		uint8_t get_modes();
+		void print_name();
 		void show();
-		void setPixelColor(uint8_t r, uint8_t g, uint8_t b, uint8_t px);
+
 	private:
 		mqtt_parameter_8 m_state;
 		led m_light_current;

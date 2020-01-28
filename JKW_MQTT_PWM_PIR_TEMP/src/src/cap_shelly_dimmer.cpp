@@ -76,7 +76,7 @@ bool shelly_dimmer::loop(){
 			m_msg_in.len = t;
 			m_msg_in.data_p = 0;
 			m_recv_state++; // data .. 
-			if(m_msg_in.len==0){
+			if(m_msg_in.len == 0){
 				m_recv_state++; // if no data .. goto chk
 			}
 			m_msg_in.chk += t;
@@ -146,15 +146,24 @@ uint8_t* shelly_dimmer::get_dep(){
 	return (uint8_t*)"LIG";
 }
 
+uint8_t shelly_dimmer::get_modes(){
+	return (1<<SUPPORTS_PWM); 
+};
 
-void shelly_dimmer::setColor(uint8_t b){
+void shelly_dimmer::print_name(){
+	logger.pln(F("Shelly dimmer"));
+};
+
+
+void shelly_dimmer::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 	// input will be 0..255, so we have to wrap that to 0..1000
-	uint16_t b_scale = min(b*4,1000);
+	uint16_t r_scale = min(r*4,1000);
 	uint8_t data[2];
-	data[0]=b_scale & 0xff;
-	data[1]=b_scale >> 8;
+	data[0]=r_scale & 0xff;
+	data[1]=r_scale >> 8;
 	send_cmd(1,2,data);
 }
+
 void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload){
 	send_cmd(cmd,len,payload,false);
 }
@@ -162,10 +171,10 @@ void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload){
 void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload, boolean debug){
 	char data[len+7];
 	uint16_t chk = -1;
-	data[0]=0x01;		   // fix
-	data[1]=m_msg_in.id+1;  // id
-	data[2]=cmd;			// cmd e.g. 0x01= set brightness
-	data[3]=len;			// len
+	data[0]=0x01;				// fix
+	data[1]=m_msg_in.id+1;		// id
+	data[2]=cmd;				// cmd e.g. 0x01= set brightness
+	data[3]=len;				// len
 	for(uint8_t i=0;i<len;i++){
 		data[4+i]=payload[i];
 	}
@@ -173,9 +182,9 @@ void shelly_dimmer::send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload, boolean d
 	for(uint8_t i=0;i<4+len;i++){
 		chk+=data[i];
 	}
-	data[len+4]=chk >> 8;   // high nibble  
-	data[len+5]=chk & 0xff; // low nibble
-	data[len+6]=0x04;	   // fix
+	data[len+4]=chk >> 8;		// high nibble  
+	data[len+5]=chk & 0xff;		// low nibble
+	data[len+6]=0x04;			// fix
 	Serial.write(data,len+7);
 
 	if(debug){

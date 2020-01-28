@@ -22,12 +22,11 @@
 	static constexpr char MQTT_DISCOVERY_DIMM_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\"}";
 #endif
 
-	#define T_SL                     1
-	#define T_PWM                    2
-	#define T_NEO                    3
-	#define T_BOne                   4
-	#define T_AI                     5
-	#define T_SHELLY_DIMMER			 6
+	#define MAX_LIGHT_PROVIDER		 3
+
+	#define SUPPORTS_PWM			 0
+	#define SUPPORTS_RGB			 1
+	#define SUPPORTS_PER_PIXEL		 2
 
 	#define ANIMATION_STEP_TIME      15 // 256 steps per rotation * 15 ms/step = 3.79 sec pro rot
 	#define NEOPIXEL_LED_COUNT       24
@@ -75,7 +74,7 @@ private:
 		led m_light_backup;  // to be able to resume "dimm on" to the last set color
 
 		uint16_t m_pwm_dimm_time; // 10ms per Step, 255*0.01 = 2.5 sec
-		capability * provider;
+		light_providing_capability * provider[MAX_LIGHT_PROVIDER];
 		uint8_t type;
 		uint8_t m_animation_pos; // pointer im wheel
 		uint32_t m_animation_dimm_time;

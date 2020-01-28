@@ -44,32 +44,24 @@ void NeoStrip::setState(uint8_t value){
 	m_state.set(value);
 }
 
+uint8_t NeoStrip::get_modes(){
+	return (1<<SUPPORTS_PWM) | (1<<SUPPORTS_RGB) | (1<<SUPPORTS_PER_PIXEL); 
+};
 
-void NeoStrip::setColor(uint8_t r, uint8_t g, uint8_t b){ // 0..9
-	// limit max
-	/*
-	if (r >= sizeof(intens)) {
-		r = sizeof(intens) - 1;
-	}
-	if (g >= sizeof(intens)) {
-		g = sizeof(intens) - 1;
-	}
-	if (b >= sizeof(intens)) {
-		b = sizeof(intens) - 1;
-	}
+void NeoStrip::print_name(){
+	logger.pln(F("Shelly dimmer"));
+};
 
-	m_light_current.r = r;
-	m_light_current.g = g;
-	m_light_current.b = b;
-	*/
-	for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
-		strip.SetPixelColor(i, RgbColor(r,g,b));
-	}
-	strip.Show();
-}
 
-void NeoStrip::setPixelColor(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
-	strip.SetPixelColor(px, RgbColor(r,g,b));
+void NeoStrip::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
+	if(px==255){
+		for (int i = 0; i < NEOPIXEL_LED_COUNT; i++) {
+			strip.SetPixelColor(i, RgbColor(r,g,b));
+		}
+		strip.Show();
+	} else {
+		strip.SetPixelColor(px, RgbColor(r,g,b));
+	}
 }
 
 void NeoStrip::show(){

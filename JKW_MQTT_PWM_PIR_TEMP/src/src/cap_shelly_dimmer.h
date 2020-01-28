@@ -29,7 +29,7 @@ struct shelly_dimmer_msg {
 	uint8_t end;
 };
 
-class shelly_dimmer : public capability {
+class shelly_dimmer : public light_providing_capability {
 	public:
 		shelly_dimmer();
 		~shelly_dimmer();
@@ -44,7 +44,12 @@ class shelly_dimmer : public capability {
 		uint8_t* get_key();
         uint8_t* get_dep();
 		bool publish();
-        void setColor(uint8_t b);
+
+		// light providing capability specific calls
+		void set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px);
+		uint8_t get_modes();
+		void print_name();
+
 	private:
 		void send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload);
         void send_cmd(uint8_t cmd,uint8_t len,uint8_t *payload, boolean debug);

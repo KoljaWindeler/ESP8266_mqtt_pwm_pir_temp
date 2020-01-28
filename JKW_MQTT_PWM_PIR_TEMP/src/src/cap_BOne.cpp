@@ -56,7 +56,16 @@ uint8_t BOne::getState(led* color){
 	return m_state.get_value();
 }
 
-void BOne::setColor(uint8_t r, uint8_t g, uint8_t b){
+uint8_t BOne::get_modes(){
+	return (1<<SUPPORTS_PWM) | (1<<SUPPORTS_RGB); 
+};
+
+void BOne::print_name(){
+	logger.pln(F("B1 bulb"));
+};
+
+
+void BOne::set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){
 	uint8_t w=0;
 	if(r==b && b==g){
 		w=r;

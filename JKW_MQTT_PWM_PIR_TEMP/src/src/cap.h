@@ -21,5 +21,14 @@ public:
 	virtual uint8_t * get_key() = 0;
 };
 
+class light_providing_capability : public capability {
+	public:
+		light_providing_capability(){}
+		virtual void set_color(uint8_t r, uint8_t g, uint8_t b, uint8_t px){};
+		virtual uint8_t get_modes(){ return 0; };
+		virtual void print_name(){};
+		virtual void show(){};
+};
+
 
 #endif
