@@ -1,3 +1,8 @@
+20200128
+	- added remote simple light
+	- unified light provider interface
+		DATA:    [=====     ]  52.5% (used 43028 bytes from 81920 bytes)
+		PROGRAM: [====      ]  42.9% (used 410840 bytes from 958448 bytes)
 20200122
 	- added inital shelly dimmer support
 	- dimming, on/off and power reading supported, nothing else by now
