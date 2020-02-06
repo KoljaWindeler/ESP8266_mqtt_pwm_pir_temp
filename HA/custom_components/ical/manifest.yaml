@@ -1,0 +1,13 @@
+{
+  "domain": "ical",
+  "name": "ical",
+  "documentation": "https://github.com/KoljaWindeler/ESP8266_mqtt_pwm_pir_temp/new/master/HA/custom_components/ical",
+  "requirements": [
+    "recurring-ical-events",
+	  "icalevents"
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@KoljaWindeler"
+  ]
+}
