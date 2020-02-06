@@ -34,8 +34,10 @@ CONF_NAME = "name"
 CONF_ID = "id"
 CONF_TIMEFORMAT = "timeformat"
 CONF_LOOKAHEAD = "lookahead"
+CONF_SW = "startswith"
 
 DEFAULT_NAME = "ICAL_sensor"
+DEFAULT_SW = ""
 DEFAULT_ID = 1
 DEFAULT_TIMEFORMAT = "%A, %d.%m.%Y"
 DEFAULT_LOOKAHEAD = 365
@@ -46,6 +48,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 	vol.Optional(CONF_ID, default=DEFAULT_ID): vol.Coerce(int),
 	vol.Optional(CONF_TIMEFORMAT, default=DEFAULT_TIMEFORMAT): cv.string,
+	vol.Optional(CONF_SW, default=DEFAULT_SW): cv.string,
 	vol.Optional(CONF_LOOKAHEAD, default=DEFAULT_LOOKAHEAD): vol.Coerce(int),
 })
 
@@ -55,23 +58,25 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 	url = config.get(CONF_ICSURL)
 	name = config.get(CONF_NAME)
 	id = config.get(CONF_ID)
+	sw = config.get(CONF_SW)
 	timeformat = config.get(CONF_TIMEFORMAT)
 	lookahead = config.get(CONF_LOOKAHEAD)
 
 	devices = []
-	devices.append(ICAL_Sensor(hass, name, id, url, timeformat, lookahead))
+	devices.append(ICAL_Sensor(hass, name, id, url, timeformat, lookahead, sw))
 	async_add_devices(devices)
 
 
 class ICAL_Sensor(Entity):
 	"""Representation of a Sensor."""
 
-	def __init__(self,hass: HomeAssistantType,  name, id, url, timeformat, lookahead):
+	def __init__(self,hass: HomeAssistantType,  name, id, url, timeformat, lookahead, sw):
 		"""Initialize the sensor."""
 		self._state_attributes = None
 		self._state = None
 		self._name = name
 		self._url = url
+		self._sw = sw
 		self._timeformat = timeformat
 		self._lookahead = lookahead
 		self._lastUpdate = -1
@@ -120,17 +125,18 @@ class ICAL_Sensor(Entity):
 
 			reoccuring_events = recurring_ical_events.of(cal).between(start_date, end_date)
 
+			self.ical['pickup_date'] = "no pick up"
+
 			if(len(reoccuring_events)>0):
-				e=reoccuring_events[0]
-				date = e["DTSTART"].dt
-				self.ical['pickup_date'] = date.strftime(self._timeformat)
-				rem = date - datetime.datetime.now(pytz.utc)
-				extra['remaining'] = rem.days+1
-				if(e.has_key("SUMMARY")):
-					extra['description'] = self.fix_text(e["SUMMARY"])
-				self.ical['extra'] = extra
-			else:
-				self.ical['pickup_date'] = "no pick up"
+				for e in reoccuring_events:
+					if(e.has_key("SUMMARY")):
+						date = e["DTSTART"].dt
+						self.ical['pickup_date'] = date.strftime(self._timeformat)
+						rem = date - datetime.datetime.now(pytz.utc)
+						extra['remaining'] = rem.days+1
+						extra['description'] = self.fix_text(e["SUMMARY"])
+						if(extra['description'].startswith(self._sw)):
+							break
 
 		except:
 			self.ical['pickup_date'] = "failure"
