@@ -13,11 +13,11 @@ class motionLight(hass.Hass):
 		self.turn_light_off()
 
 	def turn_light_off(self, entity="", attribute="", old="", new="",kwargs=""):
-		self.log("turning off")
+#		self.log("turning off")
 		self.turn_off("light.dev57")
 		self.turn_off("light.dev27")
 		try:
-			self.log("stopping timer after turn off")
+#			self.log("stopping timer after turn off")
 			self.cancel_timer(self.handle)
 		except:
 			pass
@@ -37,12 +37,12 @@ class motionLight(hass.Hass):
 		#self.log("Toggle motion")
 		# start with cleanup,
 		# either motion is on, so light should be on as well
-		self.log("Trigger, "+entity+" state "+new)
+#		self.log("Trigger, "+entity+" state "+new)
 		if(new == "on"):
 			self.turn_light_on()
 			# or it just turned off, so we should schedule a timer and stop the last
 			try:
-				self.log("stopping timer after turn ON")
+#				self.log("stopping timer after turn ON")
 				self.cancel_timer(self.handle)
 			except:
 				pass
@@ -55,5 +55,5 @@ class motionLight(hass.Hass):
 					all_off = False
 					break
 			if(all_off):
-				self.log("setting timer to turn off")
+#				self.log("setting timer to turn off")
 				self.handle = self.run_in(self.turn_light_off,int(self.args["delay"])*60)

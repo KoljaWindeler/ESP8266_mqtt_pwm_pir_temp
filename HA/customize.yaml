@@ -109,7 +109,7 @@
     binary_sensor.g_motion_upstairs:
       friendly_name: "Global Motion upstairs"
     binary_sensor.g_motion_basement:
-      friendly_name: "Global Motion basement"
+      friendly_name: "Global Motion Ground floor"
     binary_sensor.g_motion_cellar:
       friendly_name: "Global Motion cellar"
     sensor.g_motion_t:

@@ -4,11 +4,6 @@
 @ Description : Grabs an Ical file and finds next event
 @ Notes:		Copy this file and place it in your
 				"Home Assistant Config folder\custom_components\sensor\" folder.
-				
-"requirements": [
-    "recurring-ical-events",
-	"icalevents"
-  ],
 """
 import asyncio
 
@@ -41,16 +36,17 @@ CONF_TIMEFORMAT = "timeformat"
 CONF_LOOKAHEAD = "lookahead"
 
 DEFAULT_NAME = "ICAL_sensor"
+DEFAULT_ID = 1
 DEFAULT_TIMEFORMAT = "%A, %d.%m.%Y"
 DEFAULT_LOOKAHEAD = 365
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Required(CONF_ICSURL): cv.string,
-	vol.Optional(CONF_NAME, default=DEFAULT_NAME),
-	vol.Optional(CONF_ID, default=DEFAULT_ID),
-	vol.Optional(CONF_TIMEFORMAT, default=DEFAULT_TIMEFORMAT),
-	vol.Optional(CONF_LOOKAHEAD, default=DEFAULT_LOOKAHEAD),
+	vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+	vol.Optional(CONF_ID, default=DEFAULT_ID): vol.Coerce(int),
+	vol.Optional(CONF_TIMEFORMAT, default=DEFAULT_TIMEFORMAT): cv.string,
+	vol.Optional(CONF_LOOKAHEAD, default=DEFAULT_LOOKAHEAD): vol.Coerce(int),
 })
 
 @asyncio.coroutine
@@ -79,7 +75,7 @@ class ICAL_Sensor(Entity):
 		self._timeformat = timeformat
 		self._lookahead = lookahead
 		self._lastUpdate = -1
-		
+
 		self.entity_id = async_generate_entity_id(ENTITY_ID_FORMAT, "ICAL_" + str(id), hass=hass)
 	@property
 	def name(self):
@@ -100,20 +96,21 @@ class ICAL_Sensor(Entity):
 	def icon(self):
 		"""Return the icon to use in the frontend."""
 		return ICON
-	
-	def fix_text(s):
+
+	def fix_text(self,s):
 		s=''.join(e for e in s if (e.isalnum() or e==' '))
 		s = s.replace(chr(195), 'u')
 		s = s.replace(chr(188), 'e')
 		return s
-		
+
 	def get_data(self):
-		self.ical = []
+		self.ical = {}
+		extra = {}
 		extra['description'] = "-"
 		extra['remaining'] = -1
 		self.ical['pickup_date'] = "-"
 		self.ical['extra'] = extra
-		
+
 		try:
 			cal_string = urlopen(self._url).read().decode('ISO-8859-1')
 			cal = Calendar.from_ical(cal_string)
@@ -122,7 +119,7 @@ class ICAL_Sensor(Entity):
 			end_date = datetime.datetime.now() + datetime.timedelta(self._lookahead)
 
 			reoccuring_events = recurring_ical_events.of(cal).between(start_date, end_date)
-			
+
 			if(len(reoccuring_events)>0):
 				e=reoccuring_events[0]
 				date = e["DTSTART"].dt
@@ -130,14 +127,14 @@ class ICAL_Sensor(Entity):
 				rem = date - datetime.datetime.now(pytz.utc)
 				extra['remaining'] = rem.days+1
 				if(e.has_key("SUMMARY")):
-					extra['description'] = fix_text(e["SUMMARY"])
+					extra['description'] = self.fix_text(e["SUMMARY"])
 				self.ical['extra'] = extra
 			else:
 				self.ical['pickup_date'] = "no pick up"
-				
+
 		except:
 			self.ical['pickup_date'] = "failure"
-			
+
 	def update(self):
 		"""Fetch new state data for the sensor.
 		This is the only method that should fetch new data for Home Assistant.

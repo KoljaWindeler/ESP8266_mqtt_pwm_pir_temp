@@ -5,7 +5,9 @@ class ConnectionWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Connection Service")
-        for i in range(1,60):
+        for i in range(1,160):
+            if(i==18):
+               continue
             e="sensor.dev"+str(i)+"_update"
             if(self.entity_exists(e)):
                 self.listen_state(self.t, "sensor.dev"+str(i)+"_update")

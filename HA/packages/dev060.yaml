@@ -32,4 +32,13 @@ sensor:
     name: "dev60"
     fname: "60 Beamer"
 
-# -----------------------------------------------
+# -------------- fake sensors for appdeamon ---------------
+
+  - platform: mqtt
+    state_topic: "dev60/r/countdown_state"
+    name: "dev60_countdown_state"
+
+switch:
+  - platform: mqtt
+    command_topic: "dev60/s/countdown"
+    name: "dev60_countdown"

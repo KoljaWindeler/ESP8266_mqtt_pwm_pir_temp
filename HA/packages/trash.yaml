@@ -1,51 +1,33 @@
 # -----------------------------------------------
 sensor:
-  - platform: trash
-    regioncode: "148"
-#    fname: "test"
- #   name: "test2"
+  - platform: ical
+    name: Packaging
+    url: https://www.rmg-gmbh.de/download/Hamb%C3%BChren.ics
+    id: 1
+  - platform: ical
+    name: Trash
+    url: http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D=148&tx_ckcellextermine_pi1%5Bics%5D=0&tx_ckcellextermine_pi1%5Bstartingpoint%5D=234&type=3333
+    id: 2
+  - platform: ical
+    name: Paper
+    url: http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D=148&tx_ckcellextermine_pi1%5Bics%5D=2&tx_ckcellextermine_pi1%5Bstartingpoint%5D=234&type=3333
+    id: 3
 
   - platform: template
     sensors:
       trash_0_rem:
         value_template: >-
-          {{ states.sensor.trash_0.attributes.remaining }}
+          {{ states.sensor.ical_1.attributes.remaining }}
         unit_of_measurement: 'day'
       trash_1_rem:
         value_template: >-
-          {{ states.sensor.trash_1.attributes.remaining }}
+          {{ states.sensor.ical_2.attributes.remaining }}
         unit_of_measurement: 'day'
       trash_2_rem:
         value_template: >-
-          {{ states.sensor.trash_2.attributes.remaining }}
+          {{ states.sensor.ical_3.attributes.remaining }}
         unit_of_measurement: 'day'
-#      trash_3_rem:
-#        value_template: >-
-#          {{ states.sensor.trash_3.attributes.remaining }}
-#        unit_of_measurement: 'day'
 # -----------------------------------------------
-homeassistant:
-  customize:
-    sensor.trash_0:
-      rgb_color: [160,160,160]
-    sensor.trash_1:
-      rgb_color: [30,120,10]
-    sensor.trash_2:
-      rgb_color: [31,78,155]
-#    sensor.trash_3:
-#      rgb_color: [255,152,0]
-# -----------------------------------------------
-group:
-  trash:
-    name: Trash
-    control: hidden
-    icon: mdi:comment-multiple-outline
-    view: no
-    entities:
-      - sensor.trash_0
-      - sensor.trash_1
-      - sensor.trash_2
-#      - sensor.trash_3
 # -----------------------------------------------
 automation:
   - alias: 'trash pickup msg'
@@ -64,16 +46,13 @@ automation:
       conditions:
         - condition: state
           entity_id: sensor.trash_0_rem
-          state: '0'
+          state: '1'
         - condition: state
           entity_id: sensor.trash_1_rem
-          state: '0'
+          state: '1'
         - condition: state
           entity_id: sensor.trash_2_rem
-          state: '0'
-#        - condition: state
-#          entity_id: sensor.trash_3_rem
- #         state: '0'
+          state: '1'
     action:
       - service: script.turn_on
         entity_id: script.seq_trash
@@ -88,15 +67,13 @@ script:
         data_template:
           title: "Trash pickup tomorrow"
           message: >
-           {% if is_state_attr("sensor.trash_0", "remaining","0") %} {{states.sensor.trash_0.attributes.friendly_name}} pickup tomorrow.{% endif %}
-           {% if is_state_attr("sensor.trash_1", "remaining","0") %} {{states.sensor.trash_1.attributes.friendly_name}} pickup tomorrow.{% endif %}
-           {% if is_state_attr("sensor.trash_2", "remaining","0") %} {{states.sensor.trash_2.attributes.friendly_name}} pickup tomorrow.{% endif %}
-#           {% if is_state_attr("sensor.trash_3", "remaining","0") %} {{states.sensor.trash_3.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_1", "remaining","1") %} {{states.sensor.ical_1.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_2", "remaining","1") %} {{states.sensor.ical_2.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_3", "remaining","1") %} {{states.sensor.ical_3.attributes.friendly_name}} pickup tomorrow.{% endif %}
       - service: notify.pb_c
         data_template:
           title: "Trash pickup tomorrow"
           message: >
-           {% if is_state_attr("sensor.trash_0", "remaining","0") %} {{states.sensor.trash_0.attributes.friendly_name}} pickup tomorrow.{% endif %}
-           {% if is_state_attr("sensor.trash_1", "remaining","0") %} {{states.sensor.trash_1.attributes.friendly_name}} pickup tomorrow.{% endif %}
-           {% if is_state_attr("sensor.trash_2", "remaining","0") %} {{states.sensor.trash_2.attributes.friendly_name}} pickup tomorrow.{% endif %}
-#           {% if is_state_attr("sensor.trash_3", "remaining","0") %} {{states.sensor.trash_3.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_1", "remaining","1") %} {{states.sensor.ical_1.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_2", "remaining","1") %} {{states.sensor.ical_2.attributes.friendly_name}} pickup tomorrow.{% endif %}
+           {% if is_state_attr("sensor.ical_3", "remaining","1") %} {{states.sensor.ical_3.attributes.friendly_name}} pickup tomorrow.{% endif %}

@@ -31,6 +31,8 @@ DEV30 -O- valve ctrl
 DEV31 -T- SL bed light caro
 DEV32 -T- SL bed light kolja
 DEV33 -T- Shell Button, Carlo
+DEV34 -T- Shelly, Stehlampe Spielecke
+DEV35 -T- Shelly, Wandschalter Spielecke
 
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions Geheim

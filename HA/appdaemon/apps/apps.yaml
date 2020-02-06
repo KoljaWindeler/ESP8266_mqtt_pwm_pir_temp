@@ -8,9 +8,6 @@ gmusic:
 sprinkler:
   module: sprinkler
   class: SprinklerWorld
-kitchen:
-  module: kitchen
-  class: kitchenWorld
 adafruit:
   module: adafruit
   class: AdafruitWorld
@@ -42,6 +39,9 @@ workshop:
 workshop2:
   module: dev28_workshop
   class: workshop2World
+movieroom_vent:
+  module: dev60_movieroom
+  class: mr_ventWorld
 beamer:
   module: dev25_beamer
   class: beamerWorld

@@ -208,6 +208,7 @@ views:
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_t ]]"
                icon: mdi:security
+             - type: divider
              - entity: binary_sensor.g_motion_upstairs
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_upstairs_t ]]"
@@ -216,6 +217,7 @@ views:
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_basement_t ]]"
                icon: mdi:home-floor-0
+               name: Global Motion ground floor
              - entity: binary_sensor.g_motion_cellar
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_cellar_t ]]"
@@ -442,12 +444,12 @@ views:
                 action: toggle
               name: Lampion
 
-##### basement
+##### Grond floor
       - type: vertical-stack
         cards:
 
         - type: 'custom:text-divider-row'
-          text: Basement
+          text: Grond floor
 
         - type: glance
           title: Foyer
@@ -507,6 +509,12 @@ views:
               tap_action:
                 action: toggle
             - entity: light.dev15
+              tap_action:
+                action: toggle
+            - entity: light.dev34
+              tap_action:
+                action: toggle
+            - entity: light.dev35
               tap_action:
                 action: toggle
             - binary_sensor.dev15_motion
@@ -597,6 +605,15 @@ views:
               tap_action:
                 action: toggle
               name: Window
+            - entity: switch.dev60_countdown
+              tap_action:
+                action: toggle
+              name: AutoV
+              icon: "mdi:timer-sand-empty"
+            - entity: sensor.dev60_countdown_state
+              name: Timer
+              icon: "mdi:timer-sand-empty"
+
 
         - type: glance
           title: Backdoor
@@ -1182,6 +1199,7 @@ views:
             type: "custom:secondaryinfo-entity-row"
             secondary_info: "[[ sensor.g_motion_t ]]"
             icon: mdi:security
+          - type: divider
           - entity: binary_sensor.g_motion_upstairs
             type: "custom:secondaryinfo-entity-row"
             secondary_info: "[[ sensor.g_motion_upstairs_t ]]"
@@ -1190,6 +1208,7 @@ views:
             type: "custom:secondaryinfo-entity-row"
             secondary_info: "[[ sensor.g_motion_basement_t ]]"
             icon: mdi:home-floor-0
+            name: Global Motion ground floor
           - entity: binary_sensor.g_motion_cellar
             type: "custom:secondaryinfo-entity-row"
             secondary_info: "[[ sensor.g_motion_cellar_t ]]"
@@ -1265,12 +1284,15 @@ views:
           - sensor.dev31_update
           - sensor.dev32_update
           - sensor.dev33_update
+          - sensor.dev34_update
+          - sensor.dev35_update
           - sensor.dev54_update
           - sensor.dev55_update
           - sensor.dev56_update
           - sensor.dev57_update
           - sensor.dev58_update
           - sensor.dev59_update
+          - sensor.dev60_update
       - type: entities
         title: Rssi
         show_header_toggle: false
@@ -1307,12 +1329,15 @@ views:
           - sensor.dev31_rssi
           - sensor.dev32_rssi
           - sensor.dev33_rssi
+          - sensor.dev34_rssi
+          - sensor.dev35_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
           - sensor.dev56_rssi
           - sensor.dev57_rssi
           - sensor.dev58_rssi
           - sensor.dev59_rssi
+          - sensor.dev60_rssi
       - type: entities
         show_header_toggle: false
         entities:
@@ -1348,12 +1373,15 @@ views:
           - sensor.dev31_info
           - sensor.dev32_info
           - sensor.dev33_info
+          - sensor.dev34_info
+          - sensor.dev35_info
           - sensor.dev54_info
           - sensor.dev55_info
           - sensor.dev56_info
           - sensor.dev57_info
           - sensor.dev58_info
           - sensor.dev59_info
+          - sensor.dev60_info
         title: Info
 #      - type: entities
 #        show_header_toggle: false
@@ -1431,12 +1459,15 @@ views:
           - sensor.dev31_ssid
           - sensor.dev32_ssid
           - sensor.dev33_ssid
+          - sensor.dev34_ssid
+          - sensor.dev35_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
           - sensor.dev56_ssid
           - sensor.dev57_ssid
           - sensor.dev58_ssid
           - sensor.dev59_ssid
+          - sensor.dev60_ssid
         title: SSID
       - type: entities
         show_header_toggle: false
@@ -1473,12 +1504,15 @@ views:
           - sensor.dev31_capability
           - sensor.dev32_capability
           - sensor.dev33_capability
+          - sensor.dev34_capability
+          - sensor.dev35_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
           - sensor.dev56_capability
           - sensor.dev57_capability
           - sensor.dev58_capability
           - sensor.dev59_capability
+          - sensor.dev60_capability
         title: Capability
     icon: 'mdi:signal-variant'
     title: Signals
@@ -1511,9 +1545,9 @@ views:
           - sensor.dev29_temperature
       - type: entities
         entities:
-          - sensor.trash_0
-          - sensor.trash_1
-          - sensor.trash_2
+          - sensor.ical_1
+          - sensor.ical_2
+          - sensor.ical_3
         title: Trash
       - type: entities
         entities:
@@ -1686,7 +1720,7 @@ views:
     icon: 'mdi:home-floor-1'
     title: upstairs
 #################################################
-############ basement ###########################
+############ Grond floor ###########################
 #################################################
   - cards:
       - type: custom:group-card
@@ -1702,7 +1736,7 @@ views:
         group: group.iot0_light
 
     icon: 'mdi:home-floor-0'
-    title: basement
+    title: Grond floor
 #################################################
 ########## cellar ###############################
 #################################################
