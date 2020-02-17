@@ -340,7 +340,9 @@ void reconnect(){
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
+
 				// INFO publishing
+				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "boot");
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
 				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
