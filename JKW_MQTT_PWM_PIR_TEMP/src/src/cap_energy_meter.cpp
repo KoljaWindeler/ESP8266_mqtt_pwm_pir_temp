@@ -14,6 +14,21 @@ energy_meter::~energy_meter(){
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
+		t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L1_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing EM cur L1 config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
+		t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L2_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing EM cur L2 config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
+		t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L3_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing EM cur L3 config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
 		t = discovery_topic_bake(MQTT_DISCOVERY_EM_TOTAL_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing EM total config "), COLOR_YELLOW);
 		logger.pln(t);
@@ -46,6 +61,9 @@ bool energy_meter::init(){
 	dataset       = 0;
 	identifier[0] = (char *) ENERGY_METER_TOTAL;
 	identifier[1] = (char *) ENERGY_METER_CUR;
+	identifier[2] = (char *) ENERGY_METER_CUR_L1;
+	identifier[3] = (char *) ENERGY_METER_CUR_L2;
+	identifier[4] = (char *) ENERGY_METER_CUR_L3;
 	return true;
 }
 
@@ -62,6 +80,10 @@ bool energy_meter::loop(){
 	while (swSer1->available()) {
 		char char_in = swSer1->read();
 		char_in &= 0x7F; // 8N1 to 7E1
+		//char t[2];
+		//t[0]=char_in;
+		//t[1]=0x00;
+		//logger.p(t);
 		//Serial.printf("Recv char %c\r\n",char_in);
 		if (m_state.get_value() < strlen(identifier[dataset])) {
 			//Serial.printf("section 1 %c\r\n",identifier[dataset][m_state.get_value()]);
@@ -77,17 +99,26 @@ bool energy_meter::loop(){
 				temp[i]=' ';
 			}
 
-			if (dataset == ENEGERY_METER_TOTAL) {
+			if (dataset == ENERGY_METER_ID_TOTAL) {
 				memcpy(m_total_kwh,temp,15);
 				m_total_kwh[15]=0x00;
 				//Serial.printf("found %s\n",m_total_kwh);
+			} else if(dataset == ENERGY_METER_ID_CUR_L1) {
+				memcpy(m_current_w_l1,temp,9);
+				m_current_w_l1[9]=0x00;
+			} else if(dataset == ENERGY_METER_ID_CUR_L2) {
+				memcpy(m_current_w_l2,temp,9);
+				m_current_w_l2[9]=0x00;
+			} else if(dataset == ENERGY_METER_ID_CUR_L3) {
+				memcpy(m_current_w_l3,temp,9);
+				m_current_w_l3[9]=0x00;
 			} else {
 				memcpy(m_current_w,temp,9);
 				m_current_w[9]=0x00;
 				//Serial.printf("found %s\n",m_current_w);
 			}
 			m_state.set(0);
-			dataset = !dataset;
+			dataset = (dataset+1)%5;
 		} else {
 			temp[m_state.get_value() - strlen(identifier[dataset])] = char_in;
 			m_state.set(m_state.get_value() + 1);
@@ -105,10 +136,23 @@ bool energy_meter::intervall_update(uint8_t slot){
 		logger.print(TOPIC_MQTT_PUBLISH, F("EM Total "), COLOR_GREEN);
 		logger.pln(m_total_kwh);
 		return network.publish(build_topic(MQTT_ENERGY_METER_TOTAL_TOPIC, UNIT_TO_PC), m_total_kwh);
-	} else {
+	} else if (slot % 2 == 1) {
+		bool ret = 1;
 		logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
 		logger.pln(m_current_w);
-		return network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC, UNIT_TO_PC), m_current_w);
+		ret &= network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC, UNIT_TO_PC), m_current_w);
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+		logger.pln(m_current_w_l1);
+		ret &= network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L1, UNIT_TO_PC), m_current_w_l1);
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+		logger.pln(m_current_w_l2);
+		ret &= network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L2, UNIT_TO_PC), m_current_w_l2);
+
+		logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+		logger.pln(m_current_w_l3);
+		return ret & network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L3, UNIT_TO_PC), m_current_w_l3);
 	}
 	return false;
 }
@@ -130,6 +174,27 @@ bool energy_meter::publish(){
 			char* m = new char[strlen(MQTT_DISCOVERY_EM_CUR_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_EM_CUR_MSG, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur discovery"), COLOR_GREEN);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L1_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_EM_CUR_L1_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_EM_CUR_L1_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur L1 discovery"), COLOR_GREEN);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L2_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_EM_CUR_L2_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_EM_CUR_L2_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur L2 discovery"), COLOR_GREEN);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_L3_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_EM_CUR_L3_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_EM_CUR_L3_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur L3 discovery"), COLOR_GREEN);
 			m_discovery_pub = network.publish(t,m);
 			delete[] m;
 			delete[] t;
