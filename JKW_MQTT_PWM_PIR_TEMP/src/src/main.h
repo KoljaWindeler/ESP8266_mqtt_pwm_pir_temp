@@ -54,7 +54,7 @@
 	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
-	#define MAX_CAPS          			 20
+	#define MAX_CAPS                 80
 
 	struct led {
 		uint8_t r;
@@ -68,7 +68,7 @@
 	void saveConfigCallback();
 	void loadConfig();
 	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S);
-	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev);
+	char * build_topic(const char * topic, uint8_t max_pre_topic_length, uint8_t pc_shall_R_or_S, bool with_dev, ...);
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();

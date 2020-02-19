@@ -7,9 +7,7 @@
 
 	static constexpr char MQTT_ENERGY_METER_TOTAL_TOPIC[]    = "em_tot"; // publish
 	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC[] = "em_cur"; // publish
-	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC_L1[] = "em_cur_l1"; // publish
-	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC_L2[] = "em_cur_l2"; // publish
-	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC_L3[] = "em_cur_l3"; // publish
+	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC_L[] = "em_cur_l%i"; // publish
 
 	static constexpr char ENERGY_METER_TOTAL[]     = "1-0:1.8.0*255("; // publish
 	static constexpr char ENERGY_METER_CUR[]       = "1-0:16.7.0*255("; // publish
@@ -20,12 +18,8 @@
 #ifdef WITH_DISCOVERY
 	static constexpr char MQTT_DISCOVERY_EM_CUR_TOPIC[]      = "homeassistant/sensor/%s_em_cur/config";
 	static constexpr char MQTT_DISCOVERY_EM_CUR_MSG[]      = "{\"name\":\"%s_em_cur\", \"stat_t\": \"%s/r/em_cur\"}";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L1_TOPIC[]      = "homeassistant/sensor/%s_em_cur_l1/config";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L1_MSG[]      = "{\"name\":\"%s_em_cur_l1\", \"stat_t\": \"%s/r/em_cur_l1\"}";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L2_TOPIC[]      = "homeassistant/sensor/%s_em_cur_l2/config";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L2_MSG[]      = "{\"name\":\"%s_em_cur_l2\", \"stat_t\": \"%s/r/em_cur_l2\"}";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L3_TOPIC[]      = "homeassistant/sensor/%s_em_cur_l3/config";
-	static constexpr char MQTT_DISCOVERY_EM_CUR_L3_MSG[]      = "{\"name\":\"%s_em_cur_l3\", \"stat_t\": \"%s/r/em_cur_l3\"}";
+	static constexpr char MQTT_DISCOVERY_EM_CUR_Li_TOPIC[]      = "homeassistant/sensor/%s_em_cur_l$i/config";
+	static constexpr char MQTT_DISCOVERY_EM_CUR_Li_MSG[]      = "{\"name\":\"%s_em_cur_l%i\", \"stat_t\": \"%s/r/em_cur_l%i\"}";
 	static constexpr char MQTT_DISCOVERY_EM_TOTAL_TOPIC[]      = "homeassistant/sensor/%s_em_tot/config";
 	static constexpr char MQTT_DISCOVERY_EM_TOTAL_MSG[]      = "{\"name\":\"%s_em_tot\", \"stat_t\": \"%s/r/em_tot\"}";
 #endif
