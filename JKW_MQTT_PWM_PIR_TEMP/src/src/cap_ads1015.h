@@ -10,11 +10,7 @@
 #endif
 
 
-
-static constexpr char MQTT_ADS1015_A0_TOPIC[]   = "ads_a0";
-static constexpr char MQTT_ADS1015_A1_TOPIC[]   = "ads_a1";
-static constexpr char MQTT_ADS1015_A2_TOPIC[]   = "ads_a2";
-static constexpr char MQTT_ADS1015_A3_TOPIC[]   = "ads_a3";
+static constexpr char MQTT_ADS1015_A_TOPIC[]   = "ads_a%i";
 
 #define SAMPLE_COUNT 		200
 #define ADS_DATA_RDY_PIN 	12 // D6 == gpio 12
@@ -150,6 +146,7 @@ class ads1015 : public capability {
 		uint16_t m_gain;          ///< ADC gain
 		uint8_t m_acdc_mode;
 		bool m_discovery_pub;
+		uint8_t m_accel;
 };
 
 

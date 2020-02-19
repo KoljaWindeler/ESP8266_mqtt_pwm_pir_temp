@@ -7,6 +7,7 @@ ads1015::ads1015(){
 	m_gain = ADS1015_REG_CONFIG_PGA_4_096V; // see init()
 	m_acdc_mode = ADS_DC_MODE; // see parse ()
 	m_discovery_pub = false;
+	m_accel = 1;
 };
 
 // simply the destructor
@@ -39,10 +40,19 @@ bool ads1015::parse(uint8_t* config){
 	if(cap.parse(config,(uint8_t*)"ADS_AC")){
 		ret = true;
 		m_acdc_mode = ADS_AC_MODE;
+	} else if(cap.parse_wide(config,"%s%i",(uint8_t*)"ADS_AC",1,10,&m_accel,(uint8_t*)"", true)){
+		ret = true;
+		m_acdc_mode = ADS_AC_MODE;
 	} else if(cap.parse(config,get_key())){
 		ret = true;
 		m_acdc_mode = ADS_DC_MODE;
+	} else if(cap.parse_wide(config,"%s%i",get_key(),1,10,&m_accel,(uint8_t*)"", true)){
+		ret = true;
+		m_acdc_mode = ADS_DC_MODE;
 	} else if(cap.parse(config,(uint8_t*)"ADS_DC")){
+		ret = true;
+		m_acdc_mode = ADS_DC_MODE;
+	} else if(cap.parse_wide(config,"%s%i",(uint8_t*)"ADS_DC",1,10,&m_accel,(uint8_t*)"", true)){
 		ret = true;
 		m_acdc_mode = ADS_DC_MODE;
 	}
@@ -78,7 +88,7 @@ bool ads1015::init(){
 // return how many value you want to publish per minute
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t ads1015::count_intervall_update(){
-	return 4*3;
+	return 4*m_accel;
 }
 
 // override-methode, only implement when needed
@@ -103,22 +113,15 @@ bool ads1015::intervall_update(uint8_t slot){
 		amp_volt = readADC_SingleEnded(slot%4); // todo
 	}
 		
-
-	logger.print(TOPIC_MQTT_PUBLISH, F(""));
-	sprintf(m_msg_buffer,"Ads1115 Channel %i voltage: ",(slot%4));
-	logger.p(m_msg_buffer);
+	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Channel "), COLOR_GREEN);
+	logger.p(slot%4);
+	logger.p(": ");
 	dtostrf(amp_volt, 3, 2, m_msg_buffer);
-	logger.pln(m_msg_buffer);
-	if(slot%4==0){
-		return network.publish(build_topic(MQTT_ADS1015_A0_TOPIC,UNIT_TO_PC), m_msg_buffer);
-	} else if(slot%4==1){
-		return network.publish(build_topic(MQTT_ADS1015_A1_TOPIC,UNIT_TO_PC), m_msg_buffer);
-	} else if(slot%4==2){
-		return network.publish(build_topic(MQTT_ADS1015_A2_TOPIC,UNIT_TO_PC), m_msg_buffer);
-	} else if(slot%4==3){
-		return network.publish(build_topic(MQTT_ADS1015_A3_TOPIC,UNIT_TO_PC), m_msg_buffer);
-	};
-	return false;
+	logger.p(m_msg_buffer);
+	logger.addColor(COLOR_GREEN);
+	logger.pln(F(" mV"));
+	logger.remColor(COLOR_GREEN);
+	return network.publish(build_topic(MQTT_ADS1015_A_TOPIC,7,UNIT_TO_PC, true, slot%4), m_msg_buffer);
 }
 
 // override-methode, only implement when needed
@@ -153,7 +156,7 @@ bool ads1015::publish(){
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_ADS_CHi_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
 				char* m = new char[strlen(MQTT_DISCOVERY_ADS_CHi_MSG)+2*strlen(mqtt.dev_short)];
 				sprintf(m, MQTT_DISCOVERY_ADS_CHi_MSG, mqtt.dev_short, i, mqtt.dev_short,i);
-				logger.print(TOPIC_MQTT_PUBLISH, F("ADS discovery CH"), COLOR_GREEN);
+				logger.print(TOPIC_MQTT_PUBLISH, F("ADS discovery CH "), COLOR_GREEN);
 				logger.pln(i);
 				m_discovery_pub = network.publish(t,m);
 				delete[] m;
@@ -198,15 +201,18 @@ uint16_t ads1015::getGain() {
 float ads1015::readADC_continues_ac_mV(uint8_t channel, uint16_t sample) {
 	float max_volt;
 	float min_volt;
-	float avg_volt;
+	//float avg_volt;
 	float amp_volt;
 	int16_t max = -32767; // min signed int
 	int16_t min = 32767; // Max signed int
 	int32_t avg = 0; // sum, so start with 0
 	int16_t res[sample];
+	uint32_t loop_limiter;
 	for(uint16_t i=0;i<sample;i++){
-		while(!digitalRead(ADS_DATA_RDY_PIN)){ 
+		loop_limiter = 0;
+		while(!digitalRead(ADS_DATA_RDY_PIN) && loop_limiter < 0xFFFF){ 
 			yield();
+			loop_limiter++;
 		};
 		res[i] = getLastConversionResults();
 	}
@@ -223,16 +229,18 @@ float ads1015::readADC_continues_ac_mV(uint8_t channel, uint16_t sample) {
 	// volt = zahl/65535*4.096*2 = zahl / 8 = zahl * 0,125
 	max_volt = ((float)max)*0.125;
 	min_volt = ((float)min)*0.125;
-	avg_volt = (((float)avg)*0.125)/sample;
+	//avg_volt = (((float)avg)*0.125)/sample;
 	amp_volt = max_volt-min_volt;
 
 	// Debug
+	/*
 	Serial.print("Max ");
 	Serial.print(max_volt);
 	Serial.print(" min ");
 	Serial.print(min_volt);
 	Serial.print(" avg ");
 	Serial.println(avg_volt);
+	*/
 
 	return amp_volt;
 }

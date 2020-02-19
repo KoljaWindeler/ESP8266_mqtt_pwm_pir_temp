@@ -239,6 +239,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 	Sub-Topic(s): "uptime"
 	This peripheral has no discovery support as of now.
 
+### ADS1115
+	Configuration string: "ADS" / "ADS_AC" / "ADS*" / "ADS_AC*"  with * = {1..10} 
+	Purpose: Grabs values from a i2c connected ADS1115, either returning the absolute value (DC-mode) or amplitude (AC-mode).
+	* = used as update-acceleration-factor. E.g. 5 = 5 updates per minute per channel. ADR Pin on the ADS1115 has to be tight to low.
+	Pin connection: SCL (D7 = GPIO3), SDA (D1 = GPIO5), INT (D6 = GPIO12). All pins require external pull ups
+	Sub-Topic(s): Sub-Topic(s): "ads_a{0..3}"
+	This peripheral supports discovery for all 4 channels.
 
 ### WiFi Configuration Access Point
 Todo, but basically a copy of the WiFiManager. Enhanced with some mqtt data saving / loading.
