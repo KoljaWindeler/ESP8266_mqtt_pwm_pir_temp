@@ -340,9 +340,7 @@ void reconnect(){
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
-
 				// INFO publishing
-				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "boot");
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
 				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
@@ -609,6 +607,9 @@ void loadPheripherals(uint8_t * config){
 #endif
 #ifdef WITH_IR
 	bake(new ir(), &p_ir, config);
+#endif
+#ifdef WITH_ADS1015
+	bake(new ads1015(), &p_ads1015, config);
 #endif
 	bake(new light(), &p_light, config);
 

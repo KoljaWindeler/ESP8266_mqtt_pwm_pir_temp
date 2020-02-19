@@ -10,6 +10,7 @@ capability *p_pwm;
 capability *p_pwm2;
 capability *p_pwm3;
 capability *p_shellyDimmer;
+capability *p_ads1015;
 capability *p_rssi;
 capability *p_simple_light;
 capability *p_remote_simple_light;
