@@ -106,7 +106,6 @@ automation:
 #------- DOOR BELL -----------
   - alias: doorbell_msg
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev54_button
@@ -120,7 +119,6 @@ automation:
 #------- Toggle LED -----------
   - alias: Toggle_Foyer_LED_by_switch
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: mqtt
         topic: "dev54/r/gpio_14_hold"
@@ -131,7 +129,6 @@ automation:
 #------- Toggle Chandelier -----------
   - alias: Toggle_Foyer_chanelier_by_switch
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: mqtt
         topic: "dev54/r/gpio_14_hold"

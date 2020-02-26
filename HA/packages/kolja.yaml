@@ -1,0 +1,11 @@
+person:
+  - name: Kolja
+    id: jkw
+    user_id: 7bf3ac0bc82549ba99e0fa7737e3f715
+    device_trackers:
+      - device_tracker.illuminum_kolja
+
+homeassistant:
+  customize:
+    person.kolja:
+      entitiy_picture:  /local/kolja.jpg

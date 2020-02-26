@@ -12,7 +12,7 @@ class harmonyWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting harmony Service")
-        self.remote=["remote.tvhub","remote.beamer_harmony"]
+        self.remote=["remote.tvhub","remote.beamer_harmony" ]
         self.binary=["harmony","harmony_beamer"]
 
         for i in range(0,len(self.remote)):

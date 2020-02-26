@@ -46,7 +46,7 @@ class LastUpdatedWorld(hass.Hass):
 			self.cancel_timer(self.timing_handle)
 		except:
 			pass
-		self.timing_handle = self.run_in(self.timer,seconds=60)
+		self.timing_handle = self.run_in(self.timer,delay=60)
 		self.update(kwargs="timer")
 
 	def update(self, entity="", attribute="", old="", new="", kwargs=""):

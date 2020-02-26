@@ -69,6 +69,7 @@ class MonsterCard extends HTMLElement {
   }
 
   setConfig(config) {
+    config = JSON.parse(JSON.stringify(config))
     if (!config.filter.include || !Array.isArray(config.filter.include)) {
       throw new Error('Please define filters');
     }

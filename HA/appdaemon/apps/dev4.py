@@ -8,8 +8,8 @@ class ventWorld(hass.Hass):
         self.listen_state(self.vent, "sensor.dev4_humidity_stat_mean")
         self.turn_off("switch.dev4_gpio_5")
         self.state = 0
-        self.run_daily(self.off, time(23, 0, 0))            # winter -> LEDs
-        self.run_at_sunset(self.on, offset = -15 * 60)      # winter -> LEDs
+        #self.run_daily(self.off, time(23, 0, 0))            # winter -> LEDs
+        #self.run_at_sunset(self.on, offset = -15 * 60)      # winter -> LEDs
 
     ######################################################
 
@@ -30,7 +30,7 @@ class ventWorld(hass.Hass):
               self.state = 1
               self.log("switching vent on")
               self.turn_on("switch.dev4_gpio_5")
-              self.handle = self.run_in(self.vent_off, seconds=15*60)
+              self.handle = self.run_in(self.vent_off, delay=15*60)
         except:
            pass
 

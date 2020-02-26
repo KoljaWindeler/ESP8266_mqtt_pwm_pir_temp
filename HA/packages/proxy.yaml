@@ -15,7 +15,6 @@ proximity:
 automation:
   - alias: proxy_caro
     initial_state: True
-    hide_entity: False
     trigger:
      - platform: numeric_state
        entity_id: proximity.caro_home

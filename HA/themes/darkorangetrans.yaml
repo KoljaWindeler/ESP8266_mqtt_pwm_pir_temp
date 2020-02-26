@@ -1,6 +1,7 @@
  darkorange_trans:
       ha-card-border-radius: '3px'
       ha-card-background: 'rgba(38,49,55, 0.95)'
+      -webkit-tap-highlight-color: 'rgba(255,0,0,0)'
       primary-color: "#ff9800"
       light-primary-color: "#ffc947"
       dark-primary-color: "#c66900"

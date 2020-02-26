@@ -36,6 +36,7 @@ async def async_setup(hass, config):
     Hacs.configuration = Configuration.from_dict(
         config[DOMAIN], config[DOMAIN].get("options")
     )
+    Hacs.configuration.config = config
     Hacs.configuration.config_type = "yaml"
     await startup_wrapper_for_yaml(Hacs)
     hass.async_create_task(
@@ -56,6 +57,7 @@ async def async_setup_entry(hass, config_entry):
             )
         return False
     Hacs.hass = hass
+
     Hacs.configuration = Configuration.from_dict(
         config_entry.data, config_entry.options
     )
@@ -123,7 +125,7 @@ async def hacs_startup(hacs):
     await setup_frontend(hacs)
 
     # Set up sensor
-    add_sensor(hacs)
+    await hacs.hass.async_add_executor_job(add_sensor, hacs)
 
     # Load HACS
     if not await load_hacs_repository(hacs):
@@ -142,13 +144,21 @@ async def hacs_startup(hacs):
         return False
 
     # Add aditional categories
+    hacs.common.categories = ELEMENT_TYPES
     if hacs.configuration.appdaemon:
-        ELEMENT_TYPES.append("appdaemon")
+        hacs.common.categories.append("appdaemon")
     if hacs.configuration.python_script:
-        ELEMENT_TYPES.append("python_script")
+        hacs.configuration.python_script = False
+        if hacs.configuration.config_type == "yaml":
+            hacs.logger.warning(
+                "Configuration option 'python_script' is deprecated and you should remove it from your configuration, HACS will know if you use 'python_script' in your Home Assistant configuration, this option will be removed in a future release."
+            )
     if hacs.configuration.theme:
-        ELEMENT_TYPES.append("theme")
-    hacs.common.categories = sorted(ELEMENT_TYPES)
+        hacs.configuration.theme = False
+        if hacs.configuration.config_type == "yaml":
+            hacs.logger.warning(
+                "Configuration option 'theme' is deprecated and you should remove it from your configuration, HACS will know if you use 'theme' in your Home Assistant configuration, this option will be removed in a future release."
+            )
 
     # Setup startup tasks
     if hacs.configuration.config_type == "yaml":
@@ -158,6 +168,9 @@ async def hacs_startup(hacs):
     else:
         async_call_later(hacs.hass, 5, hacs().startup_tasks())
 
+    # Show the configuration
+    hacs.configuration.print()
+
     # Mischief managed!
     return True
 
@@ -166,7 +179,7 @@ async def async_remove_entry(hass, config_entry):
     """Handle removal of an entry."""
     Hacs().logger.info("Disabling HACS")
     Hacs().logger.info("Removing recuring tasks")
-    for task in Hacs().tasks:
+    for task in Hacs().recuring_tasks:
         task()
     Hacs().logger.info("Removing sensor")
     try:

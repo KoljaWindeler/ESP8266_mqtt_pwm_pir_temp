@@ -53,7 +53,7 @@ class gmusicWorld(hass.Hass):
     ###############    ###############    ###############
 
     def play(self, entity="", attribute="", old="", new="", kwargs=""):
-        self.handle = self.run_in(self.set_vol, seconds=3)
+        self.handle = self.run_in(self.set_vol, delay=3)
         self.turn_off("media_player.gmusic_player")
         self.set_state("input_select.gmusic_player_source",state="Station")
         self.set_state("input_select.gmusic_player_station",state="I'm Feeling Lucky")

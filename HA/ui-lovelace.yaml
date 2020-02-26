@@ -4,6 +4,8 @@ resources:
     type: js
   - url: /local/group-card.js
     type: js
+#  - url: /community_plugin/group-card/group-card.js
+#    type: module
   - url: /local/long-term-card-bundle.js
     type: module
   - url: /community_plugin/custom-header/custom-header.js
@@ -40,7 +42,7 @@ custom_header:
   compact_mode: true
   header_text: >-
         <center>
-        <ha-icon icon='mdi:weather-{% if is_state("weather.dark_sky", "partlycloudy") -%}partly-cloudy{%- else -%}{{ states('weather.dark_sky')}}{%- endif %}'></ha-icon> {{states.weather.dark_sky.attributes.temperature }}° 
+        <ha-icon icon='mdi:weather-{% if is_state("weather.dark_sky", "partlycloudy") -%}partly-cloudy{%- else -%}{{ states('weather.dark_sky')}}{%- endif %}'></ha-icon> {{ states.sensor.outside_temperature.state }}° 
         | 
         {{ hours24LZ }}:{{ minutesLZ }}
         | 
@@ -71,11 +73,13 @@ views:
                tap_action:
                  action: toggle
                entity: light.joiner_livingroom
+               state_color: true
                icon: 'mdi:sofa'
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.joiner_kitchen
+               state_color: true
                icon: 'mdi:pot-mix'
 #### if message, show message
          - type: conditional
@@ -124,6 +128,7 @@ views:
                     - icon: 'mdi:power'
                       name: ' '
                       service: script.turn_on
+                      state_color: true
                       type: entity-button
                       tap_action:
                         service: script.tvoff
@@ -132,6 +137,7 @@ views:
                     - icon: 'mdi:volume-minus'
                       name: ' '
                       service: script.turn_on
+                      state_color: true
                       type: entity-button
                       tap_action:
                         service: script.yamaha_vol_down
@@ -140,6 +146,7 @@ views:
                     - icon: 'mdi:volume-plus'
                       name: ' '
                       service: script.turn_on
+                      state_color: true
                       type: entity-button
                       tap_action:
                         service: script.yamaha_vol_up
@@ -149,6 +156,7 @@ views:
                       name: ' '
                       service: script.turn_on
                       type: entity-button
+                      state_color: true
                       tap_action:
                         service: script.start_chromaudio
                         action: call-service
@@ -160,9 +168,30 @@ views:
                      volume: true
                      source: true
                      power_state: false
-                 - type: picture-entity
-                   entity: camera.cam_xia4
-                   name: Carlo
+#                 - type: picture-entity
+#                   entity: camera.cam_xia4
+#                   name: Carlo
+#### device tracker
+                 - type: horizontal-stack
+                   cards:
+                     - type: picture-entity
+                       entity: device_tracker.illuminum_kolja
+                       state_image:
+                           "home": /local/kolja.jpg
+                       image: /local/kolja_sw.jpg
+                       show_name: false
+                     - type: picture-entity
+                       entity: device_tracker.illuminum_caro
+                       image: /local/carlo.jpg
+                       show_name: false
+                     - type: picture-entity
+                       entity: device_tracker.illuminum_caro
+                       state_image:
+                          "home": /local/caro.jpg
+                       image: /local/caro_sw.jpg
+                       show_name: false
+
+
 
 ### 2nd column
       - type: vertical-stack
@@ -177,7 +206,7 @@ views:
                type: sensor 
              - detail: 2
                graph: line
-               entity: sensor.dark_sky_temperature
+               entity: sensor.outside_temperature
                name: Outside
                type: sensor 
 
@@ -208,20 +237,23 @@ views:
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_t ]]"
                icon: mdi:security
+               name: Global motion
              - type: divider
              - entity: binary_sensor.g_motion_upstairs
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_upstairs_t ]]"
                icon: mdi:home-floor-1
+               name: Upstairs
              - entity: binary_sensor.g_motion_basement
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_basement_t ]]"
                icon: mdi:home-floor-0
-               name: Global Motion ground floor
+               name: Ground floor
              - entity: binary_sensor.g_motion_cellar
                type: "custom:secondaryinfo-entity-row"
                secondary_info: "[[ sensor.g_motion_cellar_t ]]"
                icon: mdi:home-floor-negative-1
+               name: Basement
 
 ### 3rd column
 #### 1st line, Carlo + bedroom
@@ -236,18 +268,21 @@ views:
                icon: mdi:chart-bubble
 #               icon: mdi:string-light
                name: Lampin C
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.dev33
                name: Carlo Tower
                icon: mdi:lighthouse
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.dev23
                name: Carlo Main
                icon: mdi:ceiling-light
+               state_color: true
 #### 2nd line
          - type: horizontal-stack
            cards:
@@ -256,19 +291,22 @@ views:
                  action: toggle
                entity: light.dev55
                icon: mdi:chart-bubble
-               name: Lampin L.
+               name: Lampin Louisa
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
-               name: L. main
+               name: Louisa main
                icon: mdi:ceiling-light
                entity: light.dev24
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.dev19
                icon: mdi:baby
                name: Crip
+               state_color: true
 #### 3rd line
          - type: horizontal-stack
            cards:
@@ -277,17 +315,20 @@ views:
                  action: toggle
                entity: light.dev5
                name: Table
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.dev54_2
                icon: mdi:ceiling-light
                name: Foyer
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.joiner_bedroom
                name: Bedroom
+               state_color: true
 #### 4th line
          - type: horizontal-stack
            cards:
@@ -297,40 +338,23 @@ views:
                entity: light.dev59
                icon: mdi:home-floor-negative-1
                name: Cellar
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                entity: light.dev2
+               state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                icon: mdi:coach-lamp
                name: Entrance
                entity: light.dev54_4
-#### device tracker
-         - type: horizontal-stack
-           cards:
-             - type: picture-entity
-               entity: device_tracker.illuminum_kolja
-               state_image:
-                  "home": /local/kolja.jpg
-               image: /local/kolja_sw.jpg
-               show_name: false
-             - type: picture-entity
-               entity: device_tracker.illuminum_caro
-               image: /local/carlo.jpg
-               show_name: false
-             - type: picture-entity
-               entity: device_tracker.illuminum_caro
-               state_image:
-                  "home": /local/caro.jpg
-               image: /local/caro_sw.jpg
-               show_name: false
-
+               state_color: true
 
 #          - type: picture-entity
 #            entity: camera.cam_xia1
-#            name: L.
+#            name: Louisa
     icon: 'mdi:home-assistant'
 
 #################################################
@@ -390,6 +414,7 @@ views:
               name: Main
               icon: mdi:ceiling-light
             - entity: switch.dev26_gpio_15
+              state_color: true
               tap_action:
                 action: toggle
               name: Vent
@@ -417,6 +442,7 @@ views:
                 action: toggle
               name: Lampion
             - entity: input_boolean.carlo_switch_lock
+              state_color: true
               tap_action:
                 action: toggle
               name: Carlo lock
@@ -424,7 +450,7 @@ views:
               name: Camera
 
         - type: glance
-          title: L.
+          title: Louisa
           entities:
             - entity: sensor.0x00158d00041024ef_humidity
               name: Hum Z
@@ -514,9 +540,9 @@ views:
             - entity: light.dev34
               tap_action:
                 action: toggle
-            - entity: light.dev35
-              tap_action:
-                action: toggle
+#            - entity: light.dev35
+#              tap_action:
+#                action: toggle
             - binary_sensor.dev15_motion
 #          - binary_sensor.dev14_motion
 
@@ -592,20 +618,24 @@ views:
                 action: toggle
               name: LEDs
             - entity: switch.dev25_gpio_4
+              state_color: true
               tap_action:
                 action: toggle
               name: Main
             - entity: switch.dev60_gpio_12
+              state_color: true
               icon: "mdi:air-filter"
               tap_action:
                 action: toggle
               name: Vent
             - entity: switch.dev60_gpio_13
+              state_color: true
               icon: "mdi:door-open"
               tap_action:
                 action: toggle
               name: Window
             - entity: switch.dev60_countdown
+              state_color: true
               tap_action:
                 action: toggle
               name: AutoV
@@ -637,13 +667,17 @@ views:
                 action: toggle
               name: Bench
             - entity: switch.dev28_gpio_15
+              state_color: true
               tap_action:
                 action: toggle
               name: Ventilaton
+              icon: "mdi:air-filter"
             - entity: switch.dev28_gpio_4
+              state_color: true
               tap_action:
                 action: toggle
               name: Window
+              icon: "mdi:door-open"
 
           
         - type: glance
@@ -652,16 +686,20 @@ views:
             - entity: sensor.dev4_humidity
               name: Humidity
             - entity: switch.dev4_gpio_12
+              state_color: true
               name: Pump
               tap_action:
                 action: toggle
             - entity:  switch.dev29_gpio_4
+              state_color: true
               name: Emu
               tap_action:
                 action: toggle
             - entity: sensor.dev29_temperature
               name: Water
             - entity: switch.dev4_gpio_5
+              state_color: true
+              icon: "mdi:air-filter"
               tap_action:
                 action: toggle
               name: Ventilaton
@@ -695,7 +733,8 @@ views:
               name: Front
           
         - type: glance
-          title: Garage
+          title: Garag
+          state_color: truee
           entities:
             - entity: sensor.dev8_temperature
               name: Temp
@@ -705,6 +744,7 @@ views:
 
         - type: glance
           title: Garden
+          state_color: true
           entities:
             - entity: sensor.dev30_state
             - entity: switch.dev4_gpio_12
@@ -734,7 +774,7 @@ views:
       - type: picture-entity
         entity: camera.cam_xia1
         camera_view: live
-        name: L.
+        name: Louisa
 #      - type: picture-entity
 #        entity: camera.cam_xia5
 #        camera_view: live
@@ -792,6 +832,7 @@ views:
                   service: script.tvoff
                   action: call-service
                 entity: binary_sensor.always_on
+                state_color: true
               - icon: 'mdi:fire'
                 name: FireTV
                 service: script.turn_on
@@ -800,6 +841,7 @@ views:
                   service: script.start_fire
                   action: call-service
                 entity: binary_sensor.always_on
+                state_color: true
               - icon: 'mdi:cast-connected'
                 name: Ch TV
                 service: script.turn_on
@@ -808,6 +850,7 @@ views:
                   service: script.start_chrom
                   action: call-service
                 entity: binary_sensor.always_on
+                state_color: true
               - icon: 'mdi:cast-connected'
                 name: Ch Audio
                 service: script.turn_on
@@ -816,6 +859,7 @@ views:
                   service: script.start_chromaudio
                   action: call-service
                 entity: binary_sensor.always_on
+                state_color: true
           - type: horizontal-stack
             cards:
               - icon: 'mdi:menu'
@@ -826,6 +870,7 @@ views:
                   service: script.firehome
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:arrow-up-bold'
                 name: Fire
                 service: script.turn_on
@@ -834,22 +879,25 @@ views:
                   service: script.fireup
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:volume-plus'
-                name: Amp
+                name: Amp +2
                 service: script.turn_on
                 type: entity-button
                 tap_action:
                   service: script.yamaha_vol_up_2
                   action: call-service
                 entity: binary_sensor.harmony
-              - icon: 'mdi:arrow-up-bold'
-                name: TV
+                state_color: true
+              - icon: 'mdi:volume-plus'
+                name: Amp +5
                 service: script.turn_on
                 type: entity-button
                 tap_action:
-                  service: script.tvup
+                  service: script.yamaha_vol_up
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
           - type: horizontal-stack
             cards:
               - icon: 'mdi:arrow-left-bold'
@@ -860,6 +908,7 @@ views:
                   service: script.fireleft
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:check-circle'
                 name: Fire
                 service: script.turn_on
@@ -868,6 +917,7 @@ views:
                   service: script.fireok
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:arrow-right-bold'
                 name: Fire
                 service: script.turn_on
@@ -876,14 +926,16 @@ views:
                   service: script.fireright
                   action: call-service
                 entity: binary_sensor.harmony
-              - icon: 'mdi:music-circle'
-                name: TheBuzz
+                state_color: true
+              - icon: 'mdi:arrow-left-circle'
+                name: Fire
                 service: script.turn_on
                 type: entity-button
                 tap_action:
-                  service: script.the_buzz
+                  service: script.fireback
                   action: call-service
-                entity: binary_sensor.always_on
+                entity: binary_sensor.harmony
+                state_color: true
           - type: horizontal-stack
             cards:
               - icon: 'mdi:volume-mute'
@@ -894,6 +946,7 @@ views:
                   service: script.tvmute
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:arrow-down-bold'
                 name: Fire
                 service: script.turn_on
@@ -902,22 +955,25 @@ views:
                   service: script.firedown
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
               - icon: 'mdi:volume-minus'
-                name: AMP
+                name: Amp -2
                 service: script.turn_on
                 type: entity-button
                 tap_action:
                   service: script.yamaha_vol_down_2
                   action: call-service
                 entity: binary_sensor.harmony
-              - icon: 'mdi:arrow-down-bold'
-                name: TV
+                state_color: true
+              - icon: 'mdi:volume-minus'
+                name: Amp -5
                 service: script.turn_on
                 type: entity-button
                 tap_action:
-                  service: script.tvdown
+                  service: script.yamaha_vol_down
                   action: call-service
                 entity: binary_sensor.harmony
+                state_color: true
       - type: horizontal-stack
         cards:
          - type: entity-button
@@ -926,9 +982,11 @@ views:
            entity: switch.dev58_gpio_12
            icon: 'mdi:download-network'
            name: MediaPC
+           state_color: true
          - type: entity-button
            tap_action:
              action: toggle
+           state_color: true
            entity: light.dev10
       - type: horizontal-stack
         cards:
@@ -940,6 +998,7 @@ views:
              service: script.start_beamer
              action: call-service
            entity: binary_sensor.always_on
+           state_color: true
          - icon: 'mdi:power'
            name: BeamerOff
            service: script.turn_on
@@ -948,6 +1007,7 @@ views:
              service: script.beameroff
              action: call-service
            entity: binary_sensor.harmony_beamer
+           state_color: true
       - type: media-control
         entity: media_player.gmusic_player
       - type: media-control
@@ -1064,39 +1124,39 @@ views:
       - type: entities
         entities:
          - entity: sensor.bathroom_u_temperature
-           name: "Bathroom"
+           name: "Bathroom Z."
          - entity: sensor.carlo_temperature
-           name: "Carlo"
+           name: "Carlo Z."
          - entity: sensor.dev32_temperature
            name: "Bedroom"
          - entity: sensor.0x00158d00042505f7_temperature
-           name: "Bedroom Z"
+           name: "Bedroom Z."
          - entity: sensor.dev55_temperature
-           name: "L."
+           name: "Louisa"
          - entity: sensor.0x00158d00041024ef_temperature
-           name: "L. Z"
+           name: "Louisa Z"
          - type: divider
          - entity: sensor.livingroom_temperature
-           name: "Livingroom"
+           name: "Livingroom Z."
          - entity: sensor.dev1_temperature
            name: "Livingroom 2"
          - entity: sensor.dev2_temperature
            name: "Livingroom 3"
          - entity: sensor.foyer_temperature
-           name: "Foyer"
+           name: "Foyer Z."
          - entity: sensor.0x00158d00044af1b0_temperature
-           name: "Caro"
+           name: "Caro Z."
          - entity: sensor.0x00158d00041d6d95_temperature
-           name: Bathroom B.
+           name: Bathroom B. Z.
          - type: divider
          - entity: sensor.dev59_temperature
            name: "Cellar"
          - entity: sensor.beamer_temperature
-           name: "Beamer"
+           name: "Beamer Z."
          - entity: sensor.0x00158d00041dfcce_temperature
-           name: "Supply"
+           name: "Supply Z."
          - entity: sensor.0x00158d00044b00e0_temperature
-           name: "Workshop"
+           name: "Workshop Z."
          - type: divider
          - entity: sensor.outside_temperature
 
@@ -1177,6 +1237,8 @@ views:
             type: "custom:secondaryinfo-entity-row"
             secondary_info: "[[ sensor.sec_long ]]"
             icon: mdi:lock
+            name: System status
+            state_color: true
           - type: divider
           - input_boolean.alarm_system
           - input_boolean.presents_simulation
@@ -1195,26 +1257,30 @@ views:
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: binary_sensor.g_motion
-            type: "custom:secondaryinfo-entity-row"
-            secondary_info: "[[ sensor.g_motion_t ]]"
-            icon: mdi:security
-          - type: divider
-          - entity: binary_sensor.g_motion_upstairs
-            type: "custom:secondaryinfo-entity-row"
-            secondary_info: "[[ sensor.g_motion_upstairs_t ]]"
-            icon: mdi:home-floor-1
-          - entity: binary_sensor.g_motion_basement
-            type: "custom:secondaryinfo-entity-row"
-            secondary_info: "[[ sensor.g_motion_basement_t ]]"
-            icon: mdi:home-floor-0
-            name: Global Motion ground floor
-          - entity: binary_sensor.g_motion_cellar
-            type: "custom:secondaryinfo-entity-row"
-            secondary_info: "[[ sensor.g_motion_cellar_t ]]"
-            icon: mdi:home-floor-negative-1
+             - entity: binary_sensor.g_motion
+               type: "custom:secondaryinfo-entity-row"
+               secondary_info: "[[ sensor.g_motion_t ]]"
+               icon: mdi:security
+               name: Global motion
+             - type: divider
+             - entity: binary_sensor.g_motion_upstairs
+               type: "custom:secondaryinfo-entity-row"
+               secondary_info: "[[ sensor.g_motion_upstairs_t ]]"
+               icon: mdi:home-floor-1
+               name: Upstairs
+             - entity: binary_sensor.g_motion_basement
+               type: "custom:secondaryinfo-entity-row"
+               secondary_info: "[[ sensor.g_motion_basement_t ]]"
+               icon: mdi:home-floor-0
+               name: Ground floor
+             - entity: binary_sensor.g_motion_cellar
+               type: "custom:secondaryinfo-entity-row"
+               secondary_info: "[[ sensor.g_motion_cellar_t ]]"
+               icon: mdi:home-floor-negative-1
+               name: Basement
       - type: entities
         show_header_toggle: false
+        state_color: true
         entities:
           - binary_sensor.dev57_motion
           - entity: binary_sensor.0x00158d0002f0bc08_occupancy
@@ -1285,7 +1351,7 @@ views:
           - sensor.dev32_update
           - sensor.dev33_update
           - sensor.dev34_update
-          - sensor.dev35_update
+#          - sensor.dev35_update
           - sensor.dev54_update
           - sensor.dev55_update
           - sensor.dev56_update
@@ -1330,7 +1396,7 @@ views:
           - sensor.dev32_rssi
           - sensor.dev33_rssi
           - sensor.dev34_rssi
-          - sensor.dev35_rssi
+#          - sensor.dev35_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
           - sensor.dev56_rssi
@@ -1374,7 +1440,7 @@ views:
           - sensor.dev32_info
           - sensor.dev33_info
           - sensor.dev34_info
-          - sensor.dev35_info
+#          - sensor.dev35_info
           - sensor.dev54_info
           - sensor.dev55_info
           - sensor.dev56_info
@@ -1460,7 +1526,7 @@ views:
           - sensor.dev32_ssid
           - sensor.dev33_ssid
           - sensor.dev34_ssid
-          - sensor.dev35_ssid
+#          - sensor.dev35_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
           - sensor.dev56_ssid
@@ -1505,7 +1571,7 @@ views:
           - sensor.dev32_capability
           - sensor.dev33_capability
           - sensor.dev34_capability
-          - sensor.dev35_capability
+#          - sensor.dev35_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
           - sensor.dev56_capability
@@ -1570,11 +1636,18 @@ views:
 ########### POWER ###############################
 #################################################
   - cards:
-      - detail: 2
-        graph: line
-        entity: sensor.dev16_em_cur
-        name: EM current
-        type: sensor 
+      - type: history-graph
+        entities:
+          - sensor.dev16_em_cur_l1
+          - sensor.dev16_em_cur_l2
+          - sensor.dev16_em_cur_l3
+          - sensor.dev16_em_cur
+
+      - type: history-graph
+        entities:
+          - sensor.dev16_ads_ch1_kw
+          - sensor.dev16_ads_ch2_kw
+
       - type: custom:long-term-card
         name: 'Energy Month / Day'
         display_mode: 'diff'
@@ -1586,22 +1659,32 @@ views:
         unit: 'kWh'
         entities:
          - sensor.long_term_power
-#        color_thresholds:
-#            - value: 12
-#              color: "#fcca04"
-#            - value: 14
-#              color: "#ff8080"
       - type: custom:long-term-card
         name: 'Energy Year / Day'
         display_mode: 'diff'
         formater: 'yyyy-mm-dd'
         unit: 'kWh'
+        line_width: 1
         lower_bound: 0
         upper_bound: 25
         maxDays: 365
         data_delimiter: ','
         entities:
          - sensor.long_term_power
+      - type: custom:long-term-card
+        name: 'Energy Cost / Year'
+        display_mode: 'abs'
+        formater: 'yyyy-mm-dd'
+        maxDays: 365
+        data_delimiter: ','
+        unit: 'eur'
+        entities:
+         - sensor.long_term_energy_cost
+
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_ads_ch0_kw
+        type: sensor 
 
       - type: vertical-stack
         cards:
@@ -1820,6 +1903,7 @@ views:
         entity: sensor.dhcp_master_kb_sec_received
         name: Download
         type: sensor 
+
       - detail: 2
         graph: line
         entity: sensor.tankerkoenig_005056ba_7cb6_1ed2_bceb_504b1b68ad12_e5
@@ -1830,15 +1914,6 @@ views:
           - input_boolean.approx_warn
         show_header_toggle: false
 
-      - type: entity-button
-        entity: binary_sensor.0x00158d0002f0bc08_occupancy
-        name: motion zigbee
-
-      - type: entity-button
-        tap_action:
-          action: toggle
-        entity: switch.dev28_gpio_4
-        name: Workshop Air
       - type: history-graph
         #title: Linkquality
         entities:

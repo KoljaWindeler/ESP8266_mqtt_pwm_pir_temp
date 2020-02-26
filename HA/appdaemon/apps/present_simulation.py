@@ -60,5 +60,5 @@ class SimulationWorld(hass.Hass):
 		# set timer
 		if(next>0):
 			next*=60 # actually we want to run in minutes, comment this for testing
-			self.handle = self.run_in(self.simulation,seconds=next)
+			self.handle = self.run_in(self.simulation,delay=next)
 

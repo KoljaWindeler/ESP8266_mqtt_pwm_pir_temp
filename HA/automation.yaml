@@ -12,7 +12,6 @@
 # ------------------- living room sunset new -------------------
   - alias: joiner_livingroom_in2
     initial_state: True
-    hide_entity: False
     trigger:
       platform: sun
       event: sunset
@@ -39,7 +38,6 @@
 # --------------------- rearm new ------------------------------
   - alias: rearm_alarm_system
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.someone_is_home
@@ -51,7 +49,6 @@
 # --------------------- un-arm new ------------------------------
   - alias: dearm_alarm_system
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: mqtt
         topic: "alarm/dearm"
@@ -113,7 +110,6 @@
 #-------------------- night lights -------------------------
   - alias: night_light
     initial_state: True
-    hide_entity: False
     trigger:
       - platform: sun           # off 5 min after sunrise
         event: sunrise
@@ -133,7 +129,6 @@
 #-------------------- new kitchen -------------------------
 #  - alias: new_kitchen_in
 #    initial_state: True
-#    hide_entity: False
 #    trigger:
 #      - platform: state
 #        entity_id: light.dev3

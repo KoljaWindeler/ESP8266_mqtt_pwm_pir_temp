@@ -21,10 +21,30 @@ homeassistant:
     sensor.dev16_em_cur:
       friendly_name: "EM current"
       unit_of_measurement: "W"
+    sensor.dev16_em_cur_l1:
+      friendly_name: "EM current L1"
+      unit_of_measurement: "W"
+    sensor.dev16_em_cur_l2:
+      friendly_name: "EM current L2"
+      unit_of_measurement: "W"
+    sensor.dev16_em_cur_l3:
+      friendly_name: "EM current L3"
+      unit_of_measurement: "W"
     sensor.dev16_em_tot:
       friendly_name: "EM total"
       unit_of_measurement: "kWh"
-
+    sensor.dev16_ads_ch0:
+      friendly_name: "ADS CH0"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch1:
+      friendly_name: "ADS CH1"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch2:
+      friendly_name: "ADS CH2"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch3:
+      friendly_name: "ADS CH3"
+      unit_of_measurement: "mV"
 # -----------------------------------------------
 
 sensor:
@@ -32,4 +52,28 @@ sensor:
     name: "dev16"
     fname: "16 EM"
 
+# -------------- fake sensors for appdeamon ---------------
+
+  - platform: mqtt
+    state_topic: "dev16/r/energy_cost"
+    name: "energy_cost"
 # -----------------------------------------------
+
+  - platform: template
+    sensors: 
+        dev16_ads_ch0_kw: 
+           friendly_name: "Washing Machine"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch0')|float * 0.666) | round(2) }}"
+        dev16_ads_ch1_kw: 
+           friendly_name: "Gardenpump"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch1')|float * 0.666) | round(2) }}"
+        dev16_ads_ch2_kw: 
+           friendly_name: "Housepump + Beamer"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch2')|float * 0.666) | round(2) }}"
+        dev16_ads_ch3_kw: 
+           friendly_name: "ADS CH3"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch3')|float * 0.666) | round(2) }}"

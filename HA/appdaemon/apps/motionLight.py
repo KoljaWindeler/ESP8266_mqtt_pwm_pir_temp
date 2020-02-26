@@ -6,7 +6,7 @@ class motionLight(hass.Hass):
 
 	def initialize(self):
 		self.id = random.randrange(0,1000)
-		self.dbg = True
+		self.dbg = False
 		self.log(str(self.id)+" Starting Motion Service")
 		self.my_sensors = self.args["sensors"]
 		self.my_lights = self.args["lights"]
@@ -72,3 +72,5 @@ class motionLight(hass.Hass):
 				if(self.dbg):
 					self.log(str(self.id)+" all off, setting timer")
 				self.handle = self.run_in(self.turn_light_off,int(self.args["delay"])*60)
+				ttime, interval, kwargs = self.info_timer(self.handle)
+				self.log(ttime)

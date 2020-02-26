@@ -9,6 +9,8 @@ homeassistant:
       friendly_name: "32 Bedroom Kolja button"
     binary_sensor.dev32_button1s:
       friendly_name: "32 Bedroom Kolja button1s"
+    binary_sensor.dev32_button3s:
+      friendly_name: "32 Bedroom Kolja button3s"
     binary_sensor.dev32_motion:
       friendly_name: "32 Bedroom Kolja motion"
       device_class: motion
@@ -24,5 +26,12 @@ sensor:
   - platform: mqtt_jkw
     name: "dev32"
     fname: "32 Bedroom Kolja"
+
+# -----------------------------------------------
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: "dev32/r/button3s"
+    name: "dev32_button3s"
 
 # -----------------------------------------------

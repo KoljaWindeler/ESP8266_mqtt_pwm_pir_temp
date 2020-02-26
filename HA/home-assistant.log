@@ -1,0 +1,43 @@
+2020-01-25 16:12:45 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for tankerkoenig which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:12:46 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for hacs which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:12:48 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for gmusic_player which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:12:50 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for mqtt_jkw which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:12:53 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for statistics_jkw which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:12:57 WARNING (MainThread) [homeassistant.setup] Setup of input_boolean is taking over 10 seconds.
+2020-01-25 16:13:07 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for load_external which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:13:07 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for trash which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:13:15 WARNING (MainThread) [homeassistant.components.light] Setup of light platform mqtt is taking over 10 seconds.
+2020-01-25 16:13:22 WARNING (MainThread) [homeassistant.loader] You are using a custom integration for onvif_hd which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you do experience issues with Home Assistant.
+2020-01-25 16:13:29 ERROR (MainThread) [homeassistant.core] Error doing job: Exception in callback async_setup_entity_restore.<locals>._write_unavailable_states(<Event homeassistant_start[L]>) at /usr/src/homeassistant/homeassistant/helpers/entity_registry.py:490
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/usr/src/homeassistant/homeassistant/helpers/entity_registry.py", line 514, in _write_unavailable_states
+    states.async_set(entry.entity_id, STATE_UNAVAILABLE, attrs)
+  File "/usr/src/homeassistant/homeassistant/core.py", line 977, in async_set
+    state = State(entity_id, new_state, attributes, last_changed, None, context)
+  File "/usr/src/homeassistant/homeassistant/core.py", line 715, in __init__
+    f"Invalid entity id encountered: {entity_id}. "
+homeassistant.exceptions.InvalidEntityFormatError: Invalid entity id encountered: sensor.internetgatewaydevicev2__fritzbox_6490_cable_packetssec_received. Format should be <domain>.<object_id>
+2020-01-25 16:15:44 ERROR (MainThread) [frontend.js.latest.202001082] http://192.168.2.84:8123/frontend_latest/chunk.54ea6cb842a8f63d057a.js:3952:244 Uncaught TypeError: Cannot read property 'replaceChild' of null
+2020-01-25 16:15:44 ERROR (MainThread) [frontend.js.latest.202001082] http://192.168.2.84:8123/community_plugin/custom-header/custom-header.js:576:26048 Uncaught TypeError: Cannot read property 'split_mode' of undefined
+2020-01-25 16:16:00 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:17:05 ERROR (MainThread) [frontend.js.latest.202001082] http://192.168.2.84:8123/community_plugin/custom-header/custom-header.js:576:26048 Uncaught TypeError: Cannot read property 'split_mode' of undefined
+2020-01-25 16:17:08 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:17:11 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:17:26 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:18:32 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.42:80 ssl:None [Connect call failed ('192.168.2.42', 80)]
+2020-01-25 16:18:32 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.42:80 ssl:None [Connect call failed ('192.168.2.42', 80)]
+2020-01-25 16:18:32 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.103:80 ssl:None [Connect call failed ('192.168.2.103', 80)]
+2020-01-25 16:18:34 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:18:34 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.106:80 ssl:None [Connect call failed ('192.168.2.106', 80)]
+2020-01-25 16:18:42 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.106:80 ssl:None [Connect call failed ('192.168.2.106', 80)]
+2020-01-25 16:18:42 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.103:80 ssl:None [Connect call failed ('192.168.2.103', 80)]
+2020-01-25 16:18:43 ERROR (MainThread) [frontend.js.latest.202001082] http://192.168.2.84:8123/frontend_latest/chunk.410fb96752a1ad8548de.js:491:874 Uncaught TypeError: Cannot read property 'state' of undefined
+2020-01-25 16:23:50 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:29:06 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:31:51 ERROR (MainThread) [frontend.js.latest.202001082] http://192.168.2.84:8123/community_plugin/custom-header/custom-header.js:576:26048 Uncaught TypeError: Cannot read property 'split_mode' of undefined
+2020-01-25 16:31:53 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:32:55 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:34:05 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]
+2020-01-25 16:34:19 ERROR (MainThread) [homeassistant.components.generic.camera] Error getting new camera image: Cannot connect to host 192.168.2.202:80 ssl:None [Connect call failed ('192.168.2.202', 80)]

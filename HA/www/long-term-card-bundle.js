@@ -3691,7 +3691,7 @@
         tap_action: {
           action: 'more-info'
         },
-        ...config,
+        ...JSON.parse(JSON.stringify(config)),
         show: { ...DEFAULT_SHOW,
           ...config.show
         }

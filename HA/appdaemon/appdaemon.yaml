@@ -5,7 +5,12 @@ logs:
     date_format: "%d.%m.%Y %H:%M:%S"
 
 appdaemon:
-  threads: 10
+  latitude: 52.629050
+  longitude: 9.935938
+  elevation: 50
+  time_zone: Europe/Berlin
+
+  threads: 30
   utility_delay: 5
   app_dir: /conf/apps
   plugins:
@@ -13,6 +18,12 @@ appdaemon:
       type: hass
       ha_url: http://192.168.2.84:8123
       token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4NjA1MTM1NzMsImlzcyI6ImYyMjg2ZjZhYjE5ZTQwM2E5YWNmNmU3OGFhYjNiNjdkIiwiaWF0IjoxNTQ1MTUzNTczfQ.qvw_4NZLP6oAMTsqkElDB8YduhkiDOd_QpIB91XLcE4
+
 hadashboard:
   dash_url: http://127.0.0.1:5050
   dash_dir: /conf/dashboards
+
+http:
+  url: http://127.0.0.1:5050
+
+

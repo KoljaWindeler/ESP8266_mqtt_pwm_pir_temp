@@ -60,6 +60,13 @@ script:
         data:
           command: OK
           device: 64178691
+  fireback:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.tvhub
+        data:
+          command: Back
+          device: 64178691
   fireleft:
     sequence:
       - service: remote.send_command

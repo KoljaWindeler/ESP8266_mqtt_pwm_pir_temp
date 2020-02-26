@@ -49,12 +49,13 @@ class AdafruitWorld(hass.Hass):
 		elif(new=="wir_gehen_schlafen"):
 			self.turn_off("light.joiner_livingroom")
 			self.turn_off("light.joiner_kitchen")
+			self.turn_off("light.dev34")
 			self.turn_off("light.dev18")
 			self.turn_off("light.dev22")
 			self.turn_on("script.tvoff")
 			self.turn_on("light.dev54_2")
 			self.turn_on("light.dev12")
-			self.turn_off("switch.dev4_gpio_12") #pumpe/netz
+			#self.turn_off("switch.dev4_gpio_12") #pumpe/netz
 			self.turn_on("light.dev15")
 		elif(new=="garage"):
 			self.turn_on("switch.dev8")

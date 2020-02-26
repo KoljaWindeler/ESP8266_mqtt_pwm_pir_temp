@@ -1,4 +1,10 @@
---- 
+---
+cube:
+  module: cube
+  class: cubeWorld
+energy:
+  module: energy
+  class: EnergyWorld
 entrance2:
   module: dev54_entrance2
   class: EntranceWorld2
@@ -14,6 +20,9 @@ adafruit:
 warmwater:
   module: dev29_warmwater
   class: warm_waterWorld
+pumps:
+  module: pumps
+  class: PumpWorld
 
 floor_up:
   module: dev57_floor_upstairs 
@@ -93,6 +102,9 @@ lastUpdate:
 battery:
   module: battery
   class: BatteryWorld
+washingmachine:
+  module: washingmachine
+  class: WashingWorld
 error:
   module: error
   class: ErrorWorld

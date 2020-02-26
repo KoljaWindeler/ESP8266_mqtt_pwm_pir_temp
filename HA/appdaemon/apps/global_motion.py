@@ -50,20 +50,20 @@ class GmotionWorld(hass.Hass):
 
 	def system_state(self, entity="", attribute="", old="", new="", kwargs=""):
 		# assumption: system is off
-		sec_short = "on" #unlocked
+		sec_short = "off"
 		sec_long = "disabled"
 		# system is on
 		if(self.get_state("input_boolean.alarm_system") == "on"):
 			vac = self.get_state("vacuum.xiaomi_vacuum_cleaner")
 			vac2 = self.get_state("vacuum.xiaomi_vacuum_cleaner_2")
 			if(self.get_state("binary_sensor.someone_is_home") == "on"):
-				sec_short = "on" #unlocked
+				sec_short = "off" #unlocked
 				sec_long = "enabled, but someone is home"		
 			elif((vac in ["cleaning", "returning"]) or (vac2 in ["cleaning", "returning"])):
-				sec_short = "on" #unlocked
+				sec_short = "off" #unlocked
 				sec_long = "enabeld, but vacuuming"
 			else:
-				sec_short = "off" #locked
+				sec_short = "on" #locked
 				sec_long = "enabled"
 		self.set_state("binary_sensor.sec_short",state=sec_short)
 		self.set_state("sensor.sec_long",state=sec_long)
@@ -185,7 +185,7 @@ class GmotionWorld(hass.Hass):
 				# call me again in 30 sec
 			#else:
 			#	self.log("vacuum running")
-			self.handle = self.run_in(self.safety,seconds=10)
+			self.handle = self.run_in(self.safety,delay=10)
 		else:
 			#self.log("someone is home, resetting counters")
 			if(self.msg_nr>0):

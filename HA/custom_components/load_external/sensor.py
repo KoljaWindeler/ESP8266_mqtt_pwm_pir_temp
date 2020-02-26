@@ -50,14 +50,18 @@ class loadExternalSensor(Entity):
 
     def update(self):
         self._entries = []
-        with open(self._feed) as fp:
-           line = fp.readline()
-           cnt = 1
-           while line:
+        cnt = 0
+        try:
+           with open(self._feed) as fp:
+              line = fp.readline()
+              cnt = 1
+              while line:
 #               print("Line {}: {}".format(cnt, line.strip()))
-               line = fp.readline()
-               cnt += 1
-               self._entries.append(line)
+                  line = fp.readline()
+                  cnt += 1
+                  self._entries.append(line)
+        except:
+           pass
         self._state = cnt
 
     @property

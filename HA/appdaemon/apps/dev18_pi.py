@@ -5,7 +5,7 @@ class PiWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Pi Service")
-#        self.listen_state(self.fuse, "sensor.dev18_update")
+        self.listen_state(self.fuse, "sensor.dev30_update")
         self.run_daily(self.off, time(23, 0, 0))
         try:
            self.run_at_sunset(self.on, offset = -15 * 60)
@@ -24,18 +24,18 @@ class PiWorld(hass.Hass):
 
     def fuse(self, entity="", attribute="", old="", new="", kwargs=""):
         try:
-            g=int(self.get_state("sensor.dev8_update"))
+            v=int(self.get_state("sensor.dev30_update"))
             b=int(self.get_state("sensor.dev18_update"))
         except:
-            g=0
+            v=0
             b=0
 
-        if(b==8):
-            m="Also der Brunnen meldet sich seit "+str(b)+" minuten nicht mehr "
-            if(g>6):
-                m=m+"und die Garage ist auch schon ueber "+str(g)+" min offline, ich glaube es ist der FI raus"
+        if(v==8):
+            m="Also die Ventile melden sich seit "+str(v)+" minuten nicht mehr "
+            if(b>6):
+                m=m+"und der Brunnen auch schon ueber "+str(b)+" min offline, ich glaube es ist der FI raus"
             else:
-                m=m+"aber die Garage hat sich zuletzt vor "+str(g)+" minuten gemeldet, schein also nicht die Sicherung zu sein."
+                m=m+"aber der Brunnen hat sich zuletzt vor "+str(b)+" minuten gemeldet, schein also nicht die Sicherung zu sein."
             self.log(m)
             self.call_service("notify/pb", title="Connection loss", message=m)
             self.call_service("notify/pb_c", title="Connection loss", message=m)

@@ -55,6 +55,9 @@ sensor:
       dev4_hum_der:
         unit_of_measurement: "%"
         value_template: "{{ state_attr('sensor.dev4_humidity_stat', 'averaged_derivation') }}"
+
+  - platform: derivative
+    source: sensor.dev4_humidity
 # -----------------------------------------------
 switch:
   - platform: mqtt ### autostart fakesensor

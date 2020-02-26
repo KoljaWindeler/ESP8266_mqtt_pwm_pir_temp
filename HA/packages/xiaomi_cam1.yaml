@@ -16,7 +16,6 @@ camera:
 automation:
   - alias: alarm_system_cxia1
     initial_state: False
-    hide_entity: False
     trigger:
       - platform: state
         entity_id: binary_sensor.dev6_motion

@@ -32,7 +32,7 @@ class workshop2World(hass.Hass):
            self.log("starting circulation")
            self.turn_on("switch.dev28_gpio_16")
            self.turn_on("switch.dev28_gpio_4")
-           self.handle = self.run_in(self.air,seconds=20)
+           self.handle = self.run_in(self.air,delay=20)
 
     def air(self,kwarg=""):
         self.log("Turn on vent")
@@ -43,7 +43,7 @@ class workshop2World(hass.Hass):
            self.log("Turn on Countdown")
            self.turn_on("switch.dev28_gpio_4")
            self.set_state("sensor.dev28_countdown_state",state=self.ventilation_time)
-           self.handle_countdown = self.run_in(self.countdown_dec,seconds=60)
+           self.handle_countdown = self.run_in(self.countdown_dec,delay=60)
         else:
            self.cancel_timer(self.handle_countdown)
            self.set_state("sensor.dev28_countdown_state",state="0")
@@ -58,7 +58,7 @@ class workshop2World(hass.Hass):
            self.log("state error")
         if(t>1):
            self.set_state("sensor.dev28_countdown_state",state=str(t-1))
-           self.handle_countdown = self.run_in(self.countdown_dec,seconds=60)
+           self.handle_countdown = self.run_in(self.countdown_dec,delay=60)
         else:
            self.set_state("switch.dev28_countdown",state="off")
            self.turn_off("switch.dev28_gpio_4")

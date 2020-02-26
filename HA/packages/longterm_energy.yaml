@@ -2,6 +2,9 @@ notify:
   - platform: file
     name: filenotify
     filename: /config/longterm_logs/counter_total.csv
+  - platform: file
+    name: filenotify_cost
+    filename: /config/longterm_logs/cost_total.csv
 
 automation:
   - alias: sensor_values_to_file
@@ -13,8 +16,15 @@ automation:
       - service: notify.filenotify
         data_template: 
           message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.dev16_em_tot.state }}"
+      - service: notify.filenotify_cost
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.energy_cost.state }}"
 
 sensor:
   - platform: load_external
     name: long_term_power
     feed_path: '/config/longterm_logs/counter_total.csv'
+  - platform: load_external
+    name: long_term_energy_cost
+    feed_path: '/config/longterm_logs/cost_total.csv'
+
