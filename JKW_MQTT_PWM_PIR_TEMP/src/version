@@ -1,3 +1,7 @@
+20200219
+	- added support for ADS1115 at DC and AC mode
+		RAM:   [=====     ]  54.1% (used 44284 bytes from 81920 bytes)
+		Flash: [====      ]  43.5% (used 416904 bytes from 958448 bytes)
 20200128
 	- added remote simple light
 	- unified light provider interface
@@ -16,7 +20,6 @@
 	- Improved discovery handling
 		DATA:    [=====     ]  52.4% (used 42964 bytes from 81920 bytes)
 		PROGRAM: [====      ]  42.8% (used 409752 bytes from 958448 bytes)
-
 20191206
 	- fixed long device names, tested 49 (limit) working
 		DATA:    [=====     ]  52.3% (used 42884 bytes from 81920 bytes)

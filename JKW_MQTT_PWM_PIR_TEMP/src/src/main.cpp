@@ -215,9 +215,9 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 	}
 	// //////////////////// OTA via MQTT /////////////////////////////
 	else if (!strcmp(p_topic,
-	   build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT)) || !strcmp(p_topic, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false))) {                   // dev specific and global
+	   build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT)) || !strcmp(p_topic, build_topic(MQTT_OTA_TOPIC, strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false))) {                   // dev specific and global
 		// forward if global before processing, otherwise we reboot before we broadcast
-		if (!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false))) {
+		if (!strcmp(p_topic, build_topic(MQTT_OTA_TOPIC,strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false))) {
 			network.broadcast_publish_down(p_topic, (char *) p_payload, p_length);
 		}
 		// now process
@@ -329,8 +329,8 @@ void reconnect(){
 				network.subscribe(build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT)); // MQTT_OTA_TOPIC topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
-				network.subscribe(build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false)); // MQTT_OTA_TOPIC but global topic
-				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, PC_TO_UNIT, false), COLOR_GREEN);
+				network.subscribe(build_topic(MQTT_OTA_TOPIC, strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false)); // MQTT_OTA_TOPIC but global topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false), COLOR_GREEN);
 
 
 				for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_CAPS - 1; i++) {
@@ -340,9 +340,7 @@ void reconnect(){
 				}
 				logger.println(TOPIC_MQTT, F("subscribing finished"));
 
-
 				// INFO publishing
-				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "boot");
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
 				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
 				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
@@ -610,6 +608,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_IR
 	bake(new ir(), &p_ir, config);
 #endif
+#ifdef WITH_ADS1015
+	bake(new ads1015(), &p_ads1015, config);
+#endif
 	bake(new light(), &p_light, config);
 
 
@@ -636,38 +637,54 @@ void loadPheripherals(uint8_t * config){
 	}
 
 	logger.println(TOPIC_GENERIC_INFO, F("capabilities loaded"), COLOR_PURPLE);
+	sprintf(m_msg_buffer,"%i intervall updates",active_p_intervall_counter);
+	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_PURPLE);
 } // loadPheripherals
 
-// build topics with device id on the fly
-char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev){
-	if (pc_shall_R_or_S != PC_TO_UNIT && pc_shall_R_or_S != UNIT_TO_PC) {
-		pc_shall_R_or_S = PC_TO_UNIT;
-	}
-	if (with_dev && strlen(mqtt.dev_short)+strlen(topic)+4<sizeof(m_topic_buffer)){
-		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, topic);
+/* build topics with device id on the fly
+ *
+ * usually call version below e.g. build_topic(MQTT_ENERGY_METER_TOTAL_TOPIC, UNIT_TO_PC)
+ * 
+ * if MQTT_ENERGY_METER_TOTAL_TOPIC has parameter, e.g "ads_a%i" you can use this and call it
+ * build_topic((MQTT_ENERGY_METER_TOTAL_TOPIC, 7, UNIT_TO_PC, true, 1)
+ * where 7 is the max length of ads_a%i with the %i filled (+0x00 at the end) and 1 is the actual parameter
+ * 
+ */
+char * build_topic(const char * topic, uint8_t max_pre_topic_length, uint8_t pc_shall_R_or_S, bool with_dev, ...){
+	// create string
+	char* pre_topic = new char[max_pre_topic_length];
+	va_list args;
+	va_start (args,with_dev);
+	vsprintf(pre_topic, topic, args);
+	va_end (args);
+	
+	if (with_dev && strlen(mqtt.dev_short)+strlen(pre_topic)+4 < sizeof(m_topic_buffer)){
+		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, pre_topic);
 		return m_topic_buffer;
-	} else if (!with_dev && strlen(mqtt.dev_short)+strlen(topic)+1<sizeof(m_topic_buffer)){
-		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, topic);
+	} else if (!with_dev && strlen(mqtt.dev_short)+strlen(pre_topic)+1 < sizeof(m_topic_buffer)){
+		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, pre_topic);
 		return m_topic_buffer;
 	} else {
 		// topic too long.
-		snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Topic too long: "), topic);
-		memcpy(m_msg_buffer+16,topic,min(strlen(topic),(unsigned int)10));
-		memcpy(m_msg_buffer+16+min(strlen(topic),(unsigned int)10),"...",3);
-		m_msg_buffer[16+min(strlen(topic),(unsigned int)10)+4]=0x00;
+		snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("Topic too long: "), pre_topic);
+		memcpy(m_msg_buffer+16,topic,min(strlen(pre_topic),(unsigned int)10));
+		memcpy(m_msg_buffer+16+min(strlen(pre_topic),(unsigned int)10),"...",3);
+		m_msg_buffer[16+min(strlen(pre_topic),(unsigned int)10)+4]=0x00;
 
 		logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
 		logger.p((char *) " -> ");
 		logger.pln(m_msg_buffer);
 		network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
 
-	}
+	}	
 	return m_topic_buffer;
 }
 
+
 char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
-	return build_topic(topic, pc_shall_R_or_S, true);
+	return build_topic(topic, strlen(topic), pc_shall_R_or_S, true); 
 }
+
 
 // //////////////////////////////// network function ///////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@ bool rssi::init(){
 }
 
 bool rssi::parse(uint8_t* config){
-//	return cap.parse(config,get_key());
+	cap.parse(config,get_key()); // consume key
 	return true; // load always
 }
 

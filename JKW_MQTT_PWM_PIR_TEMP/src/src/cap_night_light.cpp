@@ -48,14 +48,14 @@ bool night_light::init(){
 // this is the chance to fire some subsctions
 // return is ignored
 bool night_light::subscribe(){
-	network.subscribe(build_topic(MQTT_NIGHT_LIGHT_TOPIC,PC_TO_UNIT,false)); // simple rainbow  topic
-	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_NIGHT_LIGHT_TOPIC,PC_TO_UNIT,false), COLOR_GREEN);
+	network.subscribe(build_topic(MQTT_NIGHT_LIGHT_TOPIC, strlen(MQTT_NIGHT_LIGHT_TOPIC),PC_TO_UNIT,false)); // simple rainbow  topic
+	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_NIGHT_LIGHT_TOPIC, strlen(MQTT_NIGHT_LIGHT_TOPIC),PC_TO_UNIT,false), COLOR_GREEN);
 	return true;
 }
 
 // will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
 bool night_light::receive(uint8_t* p_topic, uint8_t* p_payload){
-	if (!strcmp((const char *) p_topic, build_topic(MQTT_NIGHT_LIGHT_TOPIC,PC_TO_UNIT,false))) { // on / off with dimming
+	if (!strcmp((const char *) p_topic, build_topic(MQTT_NIGHT_LIGHT_TOPIC, strlen(MQTT_NIGHT_LIGHT_TOPIC),PC_TO_UNIT,false))) { // on / off with dimming
 		logger.println(TOPIC_MQTT, F("received night_light command"),COLOR_PURPLE);
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) {
 			digitalWrite(PIN_NIGHT_LIGHT,LOW);

@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20200128" DEV
+	#define VERSION               "20200219" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -54,7 +54,7 @@
 	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
-	#define MAX_CAPS          			 20
+	#define MAX_CAPS                 80
 
 	struct led {
 		uint8_t r;
@@ -68,7 +68,7 @@
 	void saveConfigCallback();
 	void loadConfig();
 	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S);
-	char * build_topic(const char * topic, uint8_t pc_shall_R_or_S, bool with_dev);
+	char * build_topic(const char * topic, uint8_t max_pre_topic_length, uint8_t pc_shall_R_or_S, bool with_dev, ...);
 	void loadPheripherals(uint8_t * peripherals);
 	void setup();
 	void loop();
@@ -137,6 +137,7 @@
 	extern capability * p_em;
 	extern capability * p_ir;
 	extern capability * p_SerSer;
+	extern capability * p_ads1015;
 
 	extern const uint8_t intens[100];
 
@@ -168,6 +169,7 @@
 #include "cap_energy_meter.h"
 #include "cap_SerialServer.h"
 #include "cap_shelly_dimmer.h"
+#include "cap_ads1015.h"
 
 #endif // ifndef main_h
 

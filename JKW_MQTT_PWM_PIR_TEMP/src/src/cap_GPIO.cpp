@@ -59,10 +59,8 @@ J_GPIO::~J_GPIO(){
 				delete[] t;
 
 				// try to delete retained messages
-				sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STATE_TOPIC, i);
-				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
-				sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
-				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
+				network.publish(build_topic(MQTT_J_GPIO_OUTPUT_STATE_TOPIC, 14, UNIT_TO_PC, true, i), (char *) "");
+				network.publish(build_topic(MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, 19, UNIT_TO_PC, true, i), (char *) "");
 			}
 			if (m_pin_in[i]) {
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPI_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
@@ -71,8 +69,7 @@ J_GPIO::~J_GPIO(){
 				network.publish(t,(char*)"");
 
 				// try to delete retained messages
-				sprintf(m_msg_buffer, MQTT_J_GPIO_INPUT_HOLD_TOPIC, i);
-				network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) "");
+				network.publish(build_topic(MQTT_J_GPIO_INPUT_HOLD_TOPIC, 13, UNIT_TO_PC, true, i), (char *) "");
 
 				m_discovery_pub[i] = false;
 				delete[] t;
