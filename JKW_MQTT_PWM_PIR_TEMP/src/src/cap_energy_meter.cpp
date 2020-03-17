@@ -173,7 +173,7 @@ bool energy_meter::publish(){
 			char* t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 			char* m = new char[strlen(MQTT_DISCOVERY_EM_CUR_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_EM_CUR_MSG, mqtt.dev_short, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur discovery"), COLOR_GREEN);
+			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur discovery Lall"), COLOR_GREEN);
 			m_discovery_pub = network.publish(t,m);
 			delete[] m;
 			delete[] t;
@@ -182,8 +182,10 @@ bool energy_meter::publish(){
 				t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_Li_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
 				m = new char[strlen(MQTT_DISCOVERY_EM_CUR_Li_MSG)+2*strlen(mqtt.dev_short)];
 				sprintf(m, MQTT_DISCOVERY_EM_CUR_Li_MSG, mqtt.dev_short, i, mqtt.dev_short, i);
-				logger.print(TOPIC_MQTT_PUBLISH, F("EM cur discovery L "), COLOR_GREEN);
+				logger.print(TOPIC_MQTT_PUBLISH, F("EM cur discovery L"), COLOR_GREEN);
+				logger.addColor(COLOR_GREEN);
 				logger.pln(i);
+				logger.remColor(COLOR_GREEN);
 				m_discovery_pub = network.publish(t,m);
 				delete[] m;
 				delete[] t;

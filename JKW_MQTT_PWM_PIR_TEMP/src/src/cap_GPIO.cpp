@@ -277,6 +277,11 @@ bool J_GPIO::subscribe(){
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_DIMM_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+
+			// dimm speed
+			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STEPTIME_TOPIC, i);
+			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
+			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
 		}
 	}
 
@@ -399,6 +404,15 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 				return true;
 			}
 
+			//// set dimm speed ////
+			// e.g. "gpio_5_steptime" -> "10"
+			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STEPTIME_TOPIC, i);
+			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { 
+				uint16_t t = atoi((const char *)p_payload);
+				m_dimmer[i]->set_step_time(min(((int)t),255));
+				return true;
+			}
+			
 			//// toggle pin output ////
 			// e.g. "gpio_5_toggle" -> "[doesn't matter]"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_TOGGLE_TOPIC, i);
@@ -548,6 +562,11 @@ dimmer::dimmer(uint8_t gpio, bool invers, uint8_t phy_log){
 		m_backup_v  = PWM_LOG_MAX; // override by MQTT msg
 	}
 };
+
+// sets the dimm speed 
+void dimmer::set_step_time(uint8_t step_time){
+	m_step_time = step_time;
+}
 
 // returns the maximum allowed input value
 uint8_t dimmer::get_max(){

@@ -8,13 +8,15 @@ ads1015::ads1015(){
 	m_acdc_mode = ADS_DC_MODE; // see parse ()
 	m_discovery_pub = false;
 	m_accel = 1;
+	m_nDevices = 1;
+	m_intervall_call = 0; // see init()
 };
 
 // simply the destructor
 ads1015::~ads1015(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		for(uint8_t i=0; i<4; i++){
+		for(uint8_t i=0; i<4*m_nDevices; i++){
 			char* t = discovery_topic_bake(MQTT_DISCOVERY_ADS_CHi_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
 			logger.print(TOPIC_MQTT_PUBLISH, F("Erasing ADS config "), COLOR_YELLOW);
 			logger.pln(t);
@@ -62,13 +64,33 @@ bool ads1015::parse(uint8_t* config){
 // will be callen if the key is part of the config
 bool ads1015::init(){
 	Wire.begin(ADS_SDA_PIN,ADS_SCL_PIN); 
-	setGain(ADS1015_REG_CONFIG_PGA_4_096V);
-	logger.print(TOPIC_GENERIC_INFO, F("ADS init, mode: "), COLOR_GREEN);
-	if(m_acdc_mode==ADS_AC_MODE){
-		logger.pln(F("AC"));
-	} else {
-		logger.pln(F("DC"));
+
+	m_nDevices = 0;	// check for up to 4 devices
+	for(uint8_t adr=0; adr<4; adr++){
+		Wire.beginTransmission(ADS1015_ADDRESS | adr);
+		if(Wire.endTransmission()==0){  // ack received
+			m_nDevices++;
+		}
 	}
+
+	setGain(ADS1015_REG_CONFIG_PGA_4_096V);
+
+	if(m_nDevices>0){
+		logger.print(TOPIC_GENERIC_INFO, F("ADS init, "), COLOR_GREEN);
+		logger.addColor(COLOR_GREEN);
+		logger.p(m_nDevices);
+		logger.p(F(" device(s) in "));
+		if(m_acdc_mode==ADS_AC_MODE){
+			logger.pln(F("AC mode"));
+		} else {
+			logger.pln(F("DC mode"));
+		}
+		logger.remColor(COLOR_GREEN);
+	} else {
+		logger.println(TOPIC_GENERIC_INFO, F("ADS, NO Device found !!"), COLOR_RED);
+	}
+
+
 	return true;
 }
 
@@ -88,7 +110,7 @@ bool ads1015::init(){
 // return how many value you want to publish per minute
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t ads1015::count_intervall_update(){
-	return 4*m_accel;
+	return 4 * m_accel * m_nDevices; 
 }
 
 // override-methode, only implement when needed
@@ -107,21 +129,26 @@ uint8_t ads1015::count_intervall_update(){
 bool ads1015::intervall_update(uint8_t slot){
 	float amp_volt;
 	if(m_acdc_mode == ADS_AC_MODE){
-		configureADC_continues(slot%4);
-		amp_volt = readADC_continues_ac_mV(slot%4,SAMPLE_COUNT); // read ac amplitude
+		configureADC_continues(m_intervall_call/4,m_intervall_call%4);
+		amp_volt = readADC_continues_ac_mV(m_intervall_call/4,m_intervall_call%4,SAMPLE_COUNT); // read ac amplitude
 	} else {
-		amp_volt = readADC_SingleEnded(slot%4); // todo
+		amp_volt = readADC_SingleEnded(((slot/4)%4),slot%4); // todo
 	}
 		
-	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Channel "), COLOR_GREEN);
-	logger.p(slot%4);
+	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Dev "), COLOR_GREEN);
+	logger.addColor(COLOR_GREEN);
+	logger.p((m_intervall_call/4));
+	logger.p(", Channel ");
+	logger.p(m_intervall_call%4);
 	logger.p(": ");
 	dtostrf(amp_volt, 3, 2, m_msg_buffer);
 	logger.p(m_msg_buffer);
-	logger.addColor(COLOR_GREEN);
 	logger.pln(F(" mV"));
 	logger.remColor(COLOR_GREEN);
-	return network.publish(build_topic(MQTT_ADS1015_A_TOPIC,7,UNIT_TO_PC, true, slot%4), m_msg_buffer);
+	bool ret = network.publish(build_topic(MQTT_ADS1015_A_TOPIC,7,UNIT_TO_PC, true, m_intervall_call), m_msg_buffer);
+
+	m_intervall_call = (m_intervall_call+1) % (m_nDevices*4);
+	return ret;
 }
 
 // override-methode, only implement when needed
@@ -152,12 +179,14 @@ bool ads1015::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			for(uint8_t i=0; i<4; i++){
+			for(uint8_t i=0; i<4*m_nDevices; i++){
 				char* t = discovery_topic_bake(MQTT_DISCOVERY_ADS_CHi_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
 				char* m = new char[strlen(MQTT_DISCOVERY_ADS_CHi_MSG)+2*strlen(mqtt.dev_short)];
 				sprintf(m, MQTT_DISCOVERY_ADS_CHi_MSG, mqtt.dev_short, i, mqtt.dev_short,i);
-				logger.print(TOPIC_MQTT_PUBLISH, F("ADS discovery CH "), COLOR_GREEN);
+				logger.print(TOPIC_MQTT_PUBLISH, F("ADS discovery CH"), COLOR_GREEN);
+				logger.addColor(COLOR_GREEN);
 				logger.pln(i);
+				logger.remColor(COLOR_GREEN);
 				m_discovery_pub = network.publish(t,m);
 				delete[] m;
 				delete[] t;
@@ -198,7 +227,7 @@ uint16_t ads1015::getGain() {
 }
 
 // read a given amount of the samples and calc the max, min, avg and thus amplitude
-float ads1015::readADC_continues_ac_mV(uint8_t channel, uint16_t sample) {
+float ads1015::readADC_continues_ac_mV(uint8_t ads_dev, uint8_t channel, uint16_t sample) {
 	float max_volt;
 	float min_volt;
 	//float avg_volt;
@@ -214,7 +243,7 @@ float ads1015::readADC_continues_ac_mV(uint8_t channel, uint16_t sample) {
 			yield();
 			loop_limiter++;
 		};
-		res[i] = getLastConversionResults();
+		res[i] = getLastConversionResults(ads_dev);
 	}
 	for(uint16_t i=0;i<sample;i++){
 		if(res[i]>max){
@@ -246,19 +275,19 @@ float ads1015::readADC_continues_ac_mV(uint8_t channel, uint16_t sample) {
 }
 
 // configure ADC to confinues mode
-bool ads1015::configureADC_continues(uint8_t channel) {
-	if (channel > 3) {
+bool ads1015::configureADC_continues(uint8_t ads_dev, uint8_t channel) {
+	if (channel > 3 || ads_dev>3) {
 		return false;
 	}
 
 	// Start with default values
 	uint16_t config =
-		ADS1015_REG_CONFIG_CQUE_4CONV |    // Disable the comparator (default val)
-		ADS1015_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
-		ADS1015_REG_CONFIG_CPOL_ACTVHI | // Alert/Rdy active low   (default val)
-		ADS1015_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-		ADS1015_REG_CONFIG_DR_3300SPS |   // 3300 samples per second (default) 00c0 = 0000 0000 1110 0000
-		ADS1015_REG_CONFIG_MODE_CONTIN;   // Continues mode (default)
+		ADS1015_REG_CONFIG_CQUE_4CONV |									// Disable the comparator (default val)
+		ADS1015_REG_CONFIG_CLAT_NONLAT |								// Non-latching (default val)
+		ADS1015_REG_CONFIG_CPOL_ACTVHI |								// Alert/Rdy active HIGH
+		ADS1015_REG_CONFIG_CMODE_TRAD |									// Traditional comparator (default val)
+		ADS1015_REG_CONFIG_DR_3300SPS_ADS1115_REG_CONFIG_DR_860SPS |	// 3300 samples per second (default) 00c0 = 0000 0000 1110 0000
+		ADS1015_REG_CONFIG_MODE_CONTIN;									// Continues mode (default)
 
 	// Set PGA/voltage range
 	config |= m_gain; 
@@ -282,35 +311,35 @@ bool ads1015::configureADC_continues(uint8_t channel) {
 	// Set 'start single-conversion' bit
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_HITHRESH, 0x8123); // set to high ti FFFF and low to 0000 to use rdy line
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_LOWTHRESH, 0x0000);
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_HITHRESH, 0x8123); // set to high ti FFFF and low to 0000 to use rdy line
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_LOWTHRESH, 0x0000);
 	
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
 
 	// give time to change
 	delay(m_conversionDelay);
 	
 	// read last result to avoid reading old data, e.g. from last channel
-	getLastConversionResults();
+	getLastConversionResults(ads_dev);
 
 	return true;
 }
 
 // configure the ADC and read single shot wise 
-uint16_t ads1015::readADC_SingleEnded(uint8_t channel) {
+uint16_t ads1015::readADC_SingleEnded(uint8_t ads_dev, uint8_t channel) {
 	if (channel > 3) {
 		return 0;
 	}
 
 	// Start with default values
 	uint16_t config =
-		ADS1015_REG_CONFIG_CQUE_NONE |    // Disable the comparator (default val)
-		ADS1015_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
-		ADS1015_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
-		ADS1015_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-		ADS1015_REG_CONFIG_DR_1600SPS |   // 1600 samples per second (default)
-		ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
+		ADS1015_REG_CONFIG_CQUE_NONE |									// Disable the comparator (default val)
+		ADS1015_REG_CONFIG_CLAT_NONLAT |								// Non-latching (default val)
+		ADS1015_REG_CONFIG_CPOL_ACTVLOW |								// Alert/Rdy active low   (default val)
+		ADS1015_REG_CONFIG_CMODE_TRAD | 								// Traditional comparator (default val)
+		ADS1015_REG_CONFIG_DR_1600SPS_ADS1115_REG_CONFIG_DR_128SPS |	// 1600 samples per second (default)
+		ADS1015_REG_CONFIG_MODE_SINGLE;									// Single-shot mode (default)
 
 	// Set PGA/voltage range
 	config |= m_gain; 
@@ -335,14 +364,14 @@ uint16_t ads1015::readADC_SingleEnded(uint8_t channel) {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
 
 	// Read the conversion results
 	// Shift 12-bit results right 4 bits for the ADS1015
-	return readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT);
+	return readRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONVERT);
 }
 
 /**************************************************************************/
@@ -354,15 +383,15 @@ positive or negative.
 @return the ADC reading
 */
 /**************************************************************************/
-int16_t ads1015::readADC_Differential_0_1() {
+int16_t ads1015::readADC_Differential_0_1(uint8_t ads_dev) {
 	// Start with default values
 	uint16_t config =
-		ADS1015_REG_CONFIG_CQUE_NONE |    // Disable the comparator (default val)
-		ADS1015_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
-		ADS1015_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
-		ADS1015_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-		ADS1015_REG_CONFIG_DR_1600SPS |   // 1600 samples per second (default)
-		ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
+		ADS1015_REG_CONFIG_CQUE_NONE |									// Disable the comparator (default val)
+		ADS1015_REG_CONFIG_CLAT_NONLAT |								// Non-latching (default val)
+		ADS1015_REG_CONFIG_CPOL_ACTVHI |								// Alert/Rdy active HIGH
+		ADS1015_REG_CONFIG_CMODE_TRAD |									// Traditional comparator (default val)
+		ADS1015_REG_CONFIG_DR_3300SPS_ADS1115_REG_CONFIG_DR_860SPS |	// 1600 samples per second (default)
+		ADS1015_REG_CONFIG_MODE_SINGLE;									// Single-shot mode (default)
 
 	// Set PGA/voltage range
 	config |= m_gain;
@@ -374,12 +403,12 @@ int16_t ads1015::readADC_Differential_0_1() {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
 	
-	return getLastConversionResults();
+	return getLastConversionResults(ads_dev);
 }
 
 /**************************************************************************/
@@ -391,15 +420,15 @@ positive or negative.
 @return the ADC reading
 */
 /**************************************************************************/
-int16_t ads1015::readADC_Differential_2_3() {
+int16_t ads1015::readADC_Differential_2_3(uint8_t ads_dev) {
 	// Start with default values
 	uint16_t config =
-		ADS1015_REG_CONFIG_CQUE_NONE |    // Disable the comparator (default val)
-		ADS1015_REG_CONFIG_CLAT_NONLAT |  // Non-latching (default val)
-		ADS1015_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
-		ADS1015_REG_CONFIG_CMODE_TRAD |   // Traditional comparator (default val)
-		ADS1015_REG_CONFIG_DR_1600SPS |   // 1600 samples per second (default)
-		ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
+		ADS1015_REG_CONFIG_CQUE_NONE |									// Disable the comparator (default val)
+		ADS1015_REG_CONFIG_CLAT_NONLAT |								// Non-latching (default val)
+		ADS1015_REG_CONFIG_CPOL_ACTVHI |								// Alert/Rdy active HIGH
+		ADS1015_REG_CONFIG_CMODE_TRAD |									// Traditional comparator (default val)
+		ADS1015_REG_CONFIG_DR_3300SPS_ADS1115_REG_CONFIG_DR_860SPS |	// 1600 samples per second (default)
+		ADS1015_REG_CONFIG_MODE_SINGLE;									// Single-shot mode (default)
 
 	// Set PGA/voltage range
 	config |= m_gain;
@@ -411,16 +440,16 @@ int16_t ads1015::readADC_Differential_2_3() {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
 	
-	return getLastConversionResults();
+	return getLastConversionResults(ads_dev);
 }
 
 // read the conversion register
-int16_t ads1015::getLastConversionResults() {
+int16_t ads1015::getLastConversionResults(uint8_t ads_dev) {
 	// Read the conversion results
-	return readRegister(m_i2cAddress, ADS1015_REG_POINTER_CONVERT);
+	return readRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONVERT);
 }

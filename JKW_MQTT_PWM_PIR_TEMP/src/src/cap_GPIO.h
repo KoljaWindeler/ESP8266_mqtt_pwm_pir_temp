@@ -22,6 +22,7 @@
 
 	static constexpr char MQTT_J_GPIO_OUTPUT_STATE_TOPIC[]      = "gpio_%i_state";
 	static constexpr char MQTT_J_GPIO_OUTPUT_DIMM_TOPIC[]       = "gpio_%i_dimm";
+	static constexpr char MQTT_J_GPIO_OUTPUT_STEPTIME_TOPIC[]   = "gpio_%i_steptime";
 	static constexpr char MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC[] = "gpio_%i_brightness";
 	static constexpr char MQTT_J_GPIO_INPUT_HOLD_TOPIC[]       = "gpio_%i_hold";
 	static constexpr char MQTT_J_GPIO_TOGGLE_TOPIC[] = "gpio_%i_toggle";
@@ -38,6 +39,7 @@ public:
 		void dimm_to(uint8_t t);
 		void dimm_to(uint8_t t, bool dimming);
 		uint8_t get_max();
+		void set_step_time(uint8_t step_time);
 private:
 		uint8_t m_gpio        = 0;
 		bool m_invers         = false;

@@ -1,3 +1,7 @@
+20200317
+	- added steptime to adjust dimm speed for gpio class
+		RAM:   [=====     ]  54.1% (used 44312 bytes from 81920 bytes)
+		Flash: [====      ]  43.6% (used 417420 bytes from 958448 bytes)
 20200219
 	- added support for ADS1115 at DC and AC mode
 		RAM:   [=====     ]  54.1% (used 44284 bytes from 81920 bytes)
