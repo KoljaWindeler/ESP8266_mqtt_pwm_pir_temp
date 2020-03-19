@@ -2,7 +2,6 @@
 
 // simply the constructor
 ads1015::ads1015(){
-	m_i2cAddress = ADS1015_ADDRESS; // assume ADR == GND 
 	m_conversionDelay = ADS1115_CONVERSIONDELAY;
 	m_gain = ADS1015_REG_CONFIG_PGA_4_096V; // see init()
 	m_acdc_mode = ADS_DC_MODE; // see parse ()
@@ -10,6 +9,17 @@ ads1015::ads1015(){
 	m_accel = 1;
 	m_nDevices = 1;
 	m_intervall_call = 0; // see init()
+
+	m_nDevicesAdr[0] = ADS1015_ADDRESS;
+	m_nDevicesAdr[1] = ADS1015_ADDRESS | 0x03;
+	m_nDevicesAdr[2] = ADS1015_ADDRESS | 0x01;
+	m_nDevicesAdr[3] = ADS1015_ADDRESS | 0x02;
+
+	m_devRdyPin[0] = 12; // D6
+	m_devRdyPin[1] = 0;  // D3
+	m_devRdyPin[2] = 16; // D0
+	m_devRdyPin[3] = 2;  // D4
+
 };
 
 // simply the destructor
@@ -67,9 +77,14 @@ bool ads1015::init(){
 
 	m_nDevices = 0;	// check for up to 4 devices
 	for(uint8_t adr=0; adr<4; adr++){
-		Wire.beginTransmission(ADS1015_ADDRESS | adr);
+		Wire.beginTransmission(m_nDevicesAdr[adr]);
 		if(Wire.endTransmission()==0){  // ack received
+			sprintf(m_msg_buffer,"ADC found at %x",m_nDevicesAdr[adr]);
+			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 			m_nDevices++;
+		} else {
+			sprintf(m_msg_buffer,"ADC NOT found at %x",m_nDevicesAdr[adr]);
+			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_YELLOW);
 		}
 	}
 
@@ -128,11 +143,12 @@ uint8_t ads1015::count_intervall_update(){
 // return is ignored
 bool ads1015::intervall_update(uint8_t slot){
 	float amp_volt;
+	
 	if(m_acdc_mode == ADS_AC_MODE){
 		configureADC_continues(m_intervall_call/4,m_intervall_call%4);
 		amp_volt = readADC_continues_ac_mV(m_intervall_call/4,m_intervall_call%4,SAMPLE_COUNT); // read ac amplitude
 	} else {
-		amp_volt = readADC_SingleEnded(((slot/4)%4),slot%4); // todo
+		amp_volt = readADC_SingleEnded(((m_intervall_call/4)%4),m_intervall_call%4); // todo
 	}
 		
 	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Dev "), COLOR_GREEN);
@@ -239,10 +255,13 @@ float ads1015::readADC_continues_ac_mV(uint8_t ads_dev, uint8_t channel, uint16_
 	uint32_t loop_limiter;
 	for(uint16_t i=0;i<sample;i++){
 		loop_limiter = 0;
-		while(!digitalRead(ADS_DATA_RDY_PIN) && loop_limiter < 0xFFFF){ 
+		while(!digitalRead(m_devRdyPin[ads_dev]) && loop_limiter < 0xFFFF){ 
 			yield();
 			loop_limiter++;
 		};
+		if(loop_limiter==0xFFFF){
+			Serial.println("Loop limited!!");
+		}
 		res[i] = getLastConversionResults(ads_dev);
 	}
 	for(uint16_t i=0;i<sample;i++){
@@ -311,11 +330,11 @@ bool ads1015::configureADC_continues(uint8_t ads_dev, uint8_t channel) {
 	// Set 'start single-conversion' bit
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_HITHRESH, 0x8123); // set to high ti FFFF and low to 0000 to use rdy line
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_LOWTHRESH, 0x0000);
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_HITHRESH, 0x8123); // set to high ti FFFF and low to 0000 to use rdy line
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_LOWTHRESH, 0x0000);
 	
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONFIG, config);
 
 	// give time to change
 	delay(m_conversionDelay);
@@ -364,14 +383,14 @@ uint16_t ads1015::readADC_SingleEnded(uint8_t ads_dev, uint8_t channel) {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
 
 	// Read the conversion results
 	// Shift 12-bit results right 4 bits for the ADS1015
-	return readRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONVERT);
+	return readRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONVERT);
 }
 
 /**************************************************************************/
@@ -403,7 +422,7 @@ int16_t ads1015::readADC_Differential_0_1(uint8_t ads_dev) {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
@@ -440,7 +459,7 @@ int16_t ads1015::readADC_Differential_2_3(uint8_t ads_dev) {
 	config |= ADS1015_REG_CONFIG_OS_SINGLE;
 
 	// Write config register to the ADC
-	writeRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONFIG, config);
+	writeRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONFIG, config);
 
 	// Wait for the conversion to complete
 	delay(m_conversionDelay);
@@ -451,5 +470,5 @@ int16_t ads1015::readADC_Differential_2_3(uint8_t ads_dev) {
 // read the conversion register
 int16_t ads1015::getLastConversionResults(uint8_t ads_dev) {
 	// Read the conversion results
-	return readRegister(m_i2cAddress | ads_dev, ADS1015_REG_POINTER_CONVERT);
+	return readRegister(m_nDevicesAdr[ads_dev], ADS1015_REG_POINTER_CONVERT);
 }
