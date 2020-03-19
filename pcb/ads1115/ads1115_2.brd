@@ -18116,52 +18116,52 @@ design rules under a new name.</description>
 <element name="ADC3" library="diy-modules" package="ADC-4CH-ADS1115_NO" value="ADC-4CH-ADS1115" x="45.2" y="12.3" rot="R90"/>
 <element name="ADC1" library="diy-modules" package="ADC-4CH-ADS1115_NO" value="ADC-4CH-ADS1115" x="44.1" y="32.2" rot="R270"/>
 <element name="ADC2" library="diy-modules" package="ADC-4CH-ADS1115_NO" value="ADC-4CH-ADS1115" x="73.3" y="32.3" rot="R270"/>
-<element name="R1" library="rcl" package="M0805" value="4.7k" x="11" y="35.1" smashed="yes" rot="MR270">
+<element name="R1" library="rcl" package="M0805" value="100R" x="11" y="35.1" smashed="yes" rot="MR270">
 <attribute name="NAME" x="11.73" y="32.87" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R4" library="rcl" package="M0805" value="4.7k" x="8.5" y="35.1" smashed="yes" rot="MR270">
+<element name="R4" library="rcl" package="M0805" value="100R" x="8.5" y="35.1" smashed="yes" rot="MR270">
 <attribute name="NAME" x="9.03" y="32.77" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R5" library="rcl" package="M0805" value="4.7k" x="5.9" y="35.1" smashed="yes" rot="MR270">
+<element name="R5" library="rcl" package="M0805" value="100R" x="5.9" y="35.1" smashed="yes" rot="MR270">
 <attribute name="NAME" x="6.23" y="32.77" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R6" library="rcl" package="M0805" value="4.7k" x="3.4" y="35.1" smashed="yes" rot="MR270">
+<element name="R6" library="rcl" package="M0805" value="100R" x="3.4" y="35.1" smashed="yes" rot="MR270">
 <attribute name="NAME" x="3.83" y="32.77" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R7" library="rcl" package="M0805" value="4.7k" x="40.2" y="35.6" smashed="yes" rot="MR270">
+<element name="R7" library="rcl" package="M0805" value="100R" x="40.2" y="35.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="40.73" y="33.17" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R8" library="rcl" package="M0805" value="4.7k" x="37.7" y="35.6" smashed="yes" rot="MR270">
+<element name="R8" library="rcl" package="M0805" value="100R" x="37.7" y="35.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="38.33" y="33.17" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R9" library="rcl" package="M0805" value="4.7k" x="35.2" y="35.6" smashed="yes" rot="MR270">
+<element name="R9" library="rcl" package="M0805" value="100R" x="35.2" y="35.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="35.83" y="33.17" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R10" library="rcl" package="M0805" value="4.7k" x="32.6" y="35.6" smashed="yes" rot="MR270">
+<element name="R10" library="rcl" package="M0805" value="100R" x="32.6" y="35.6" smashed="yes" rot="MR270">
 <attribute name="NAME" x="33.23" y="33.17" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R11" library="rcl" package="M0805" value="4.7k" x="69.5" y="34.9" smashed="yes" rot="MR270">
+<element name="R11" library="rcl" package="M0805" value="100R" x="69.5" y="34.9" smashed="yes" rot="MR270">
 <attribute name="NAME" x="70.13" y="32.37" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R12" library="rcl" package="M0805" value="4.7k" x="66.9" y="35.1" smashed="yes" rot="MR270">
+<element name="R12" library="rcl" package="M0805" value="100R" x="66.9" y="35.1" smashed="yes" rot="MR270">
 <attribute name="NAME" x="67.53" y="32.37" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R13" library="rcl" package="M0805" value="4.7k" x="64.4" y="35" smashed="yes" rot="MR270">
+<element name="R13" library="rcl" package="M0805" value="100R" x="64.4" y="35" smashed="yes" rot="MR270">
 <attribute name="NAME" x="65.03" y="30.67" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R14" library="rcl" package="M0805" value="4.7k" x="61.9" y="35" smashed="yes" rot="MR270">
+<element name="R14" library="rcl" package="M0805" value="100R" x="61.9" y="35" smashed="yes" rot="MR270">
 <attribute name="NAME" x="62.33" y="32.27" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R15" library="rcl" package="M0805" value="4.7k" x="74.4" y="11.5" smashed="yes" rot="MR90">
+<element name="R15" library="rcl" package="M0805" value="100R" x="74.4" y="11.5" smashed="yes" rot="MR90">
 <attribute name="NAME" x="75.57" y="10.53" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R16" library="rcl" package="M0805" value="4.7k" x="79.6" y="11.6" smashed="yes" rot="MR90">
+<element name="R16" library="rcl" package="M0805" value="100R" x="79.6" y="11.6" smashed="yes" rot="MR90">
 <attribute name="NAME" x="80.77" y="10.73" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R17" library="rcl" package="M0805" value="4.7k" x="63.9" y="11.7" smashed="yes" rot="MR90">
+<element name="R17" library="rcl" package="M0805" value="100R" x="63.9" y="11.7" smashed="yes" rot="MR90">
 <attribute name="NAME" x="65.17" y="11.03" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R18" library="rcl" package="M0805" value="4.7k" x="69.1" y="11.7" smashed="yes" rot="MR90">
+<element name="R18" library="rcl" package="M0805" value="100R" x="69.1" y="11.7" smashed="yes" rot="MR90">
 <attribute name="NAME" x="70.37" y="10.63" size="0.8128" layer="26" rot="MR90"/>
 </element>
 <element name="U$16" library="JKW_CHIP" package="2_SCREW_PIN" value="V1" x="5.3" y="45.6" smashed="yes" rot="R180">
@@ -18181,75 +18181,75 @@ design rules under a new name.</description>
 <attribute name="OC_FARNELL" value="unknown" x="3" y="14.2" size="1.778" layer="27" font="vector" rot="R270" display="off"/>
 <attribute name="MPN" value="" x="3" y="14.2" size="1.778" layer="27" font="vector" rot="R270" display="off"/>
 </element>
-<element name="R19" library="rcl" package="M0805" value="4.7k" x="67.1" y="3.2" smashed="yes" rot="MR180">
+<element name="R19" library="rcl" package="M0805" value="1k" x="67.1" y="3.2" smashed="yes" rot="MR180">
 <attribute name="NAME" x="66.13" y="1.93" size="0.8128" layer="26" rot="MR180"/>
 </element>
-<element name="R20" library="rcl" package="M0805" value="4.7k" x="59.1" y="9" smashed="yes" rot="MR180">
+<element name="R20" library="rcl" package="M0805" value="1k" x="59.1" y="9" smashed="yes" rot="MR180">
 <attribute name="NAME" x="57.83" y="7.73" size="0.8128" layer="26" rot="MR180"/>
 <attribute name="VALUE" x="57.83" y="11.54" size="0.8128" layer="28" rot="MR180"/>
 </element>
-<element name="R21" library="rcl" package="M0805" value="4.7k" x="59.2" y="11.6" smashed="yes" rot="MR180">
+<element name="R21" library="rcl" package="M0805" value="1k" x="59.2" y="11.6" smashed="yes" rot="MR180">
 <attribute name="NAME" x="58.03" y="13.73" size="0.8128" layer="26" rot="MR180"/>
 </element>
-<element name="R22" library="rcl" package="M0805" value="4.7k" x="57.3" y="12.2"/>
-<element name="R23" library="rcl" package="M0805" value="4.7k" x="58.5" y="40.8" smashed="yes" rot="MR45">
+<element name="R22" library="rcl" package="M0805" value="1k" x="57.3" y="12.2"/>
+<element name="R23" library="rcl" package="M0805" value="1k" x="58.5" y="40.8" smashed="yes" rot="MR45">
 <attribute name="NAME" x="60.296053125" y="40.8" size="0.8128" layer="26" rot="MR45"/>
 </element>
-<element name="R24" library="rcl" package="M0805" value="4.7k" x="62.2" y="42.4" smashed="yes" rot="MR45">
+<element name="R24" library="rcl" package="M0805" value="1k" x="62.2" y="42.4" smashed="yes" rot="MR45">
 <attribute name="NAME" x="63.996053125" y="42.4" size="0.8128" layer="26" rot="MR45"/>
 </element>
-<element name="R25" library="rcl" package="M0805" value="4.7k" x="66" y="42" smashed="yes" rot="MR90">
+<element name="R25" library="rcl" package="M0805" value="1k" x="66" y="42" smashed="yes" rot="MR90">
 <attribute name="NAME" x="67.17" y="40.43" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R26" library="rcl" package="M0805" value="4.7k" x="71" y="42" smashed="yes" rot="MR90">
+<element name="R26" library="rcl" package="M0805" value="1k" x="71" y="42" smashed="yes" rot="MR90">
 <attribute name="NAME" x="72.07" y="40.93" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R27" library="rcl" package="M0805" value="4.7k" x="32.6" y="41.8" smashed="yes" rot="MR90">
+<element name="R27" library="rcl" package="M0805" value="1k" x="32.6" y="41.8" smashed="yes" rot="MR90">
 <attribute name="NAME" x="29.97" y="40.43" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R28" library="rcl" package="M0805" value="4.7k" x="36.9" y="41.6" smashed="yes" rot="MR180">
+<element name="R28" library="rcl" package="M0805" value="1k" x="36.9" y="41.6" smashed="yes" rot="MR180">
 <attribute name="NAME" x="35.93" y="40.43" size="0.8128" layer="26" rot="MR180"/>
 </element>
-<element name="R29" library="rcl" package="M0805" value="4.7k" x="41" y="42.9" smashed="yes" rot="MR135">
+<element name="R29" library="rcl" package="M0805" value="1k" x="41" y="42.9" smashed="yes" rot="MR135">
 <attribute name="NAME" x="41.1" y="41.303946875" size="0.8128" layer="26" rot="MR135"/>
 </element>
-<element name="R30" library="rcl" package="M0805" value="4.7k" x="47.4" y="41.5" smashed="yes" rot="MR180">
+<element name="R30" library="rcl" package="M0805" value="1k" x="47.4" y="41.5" smashed="yes" rot="MR180">
 <attribute name="NAME" x="46.43" y="40.33" size="0.8128" layer="26" rot="MR180"/>
 </element>
-<element name="R31" library="rcl" package="M0805" value="4.7k" x="3.3" y="41.7" smashed="yes" rot="MR90">
+<element name="R31" library="rcl" package="M0805" value="1k" x="3.3" y="41.7" smashed="yes" rot="MR90">
 <attribute name="NAME" x="1.37" y="40.63" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R32" library="rcl" package="M0805" value="4.7k" x="6.2" y="41.7" smashed="yes" rot="MR90">
+<element name="R32" library="rcl" package="M0805" value="1k" x="6.2" y="41.7" smashed="yes" rot="MR90">
 <attribute name="NAME" x="7.47" y="40.43" size="0.8128" layer="26" rot="MR90"/>
 </element>
-<element name="R33" library="rcl" package="M0805" value="4.7k" x="10.3" y="42.4" smashed="yes" rot="MR135">
+<element name="R33" library="rcl" package="M0805" value="1k" x="10.3" y="42.4" smashed="yes" rot="MR135">
 <attribute name="NAME" x="10.3" y="40.603946875" size="0.8128" layer="26" rot="MR135"/>
 </element>
-<element name="R34" library="rcl" package="M0805" value="4.7k" x="15.5" y="41.7" smashed="yes" rot="MR180">
+<element name="R34" library="rcl" package="M0805" value="1k" x="15.5" y="41.7" smashed="yes" rot="MR180">
 <attribute name="NAME" x="19.97" y="41.37" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R35" library="rcl" package="M0805" value="4.7k" x="68.4" y="43.5" smashed="yes" rot="MR0">
+<element name="R35" library="rcl" package="M0805" value="n.a." x="68.4" y="43.5" smashed="yes" rot="MR0">
 <attribute name="NAME" x="69.37" y="44.67" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R36" library="rcl" package="M0805" value="4.7k" x="58" y="43.6" smashed="yes" rot="MR0">
+<element name="R36" library="rcl" package="M0805" value="n.a." x="58" y="43.6" smashed="yes" rot="MR0">
 <attribute name="NAME" x="58.87" y="44.77" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R37" library="rcl" package="M0805" value="4.7k" x="15.5" y="43.7" smashed="yes" rot="MR0">
+<element name="R37" library="rcl" package="M0805" value="n.a." x="15.5" y="43.7" smashed="yes" rot="MR0">
 <attribute name="NAME" x="19.87" y="42.67" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R38" library="rcl" package="M0805" value="4.7k" x="5.1" y="44.1" smashed="yes" rot="MR0">
+<element name="R38" library="rcl" package="M0805" value="n.a." x="5.1" y="44.1" smashed="yes" rot="MR0">
 <attribute name="NAME" x="5.43" y="43.07" size="0.8128" layer="26" rot="MR270"/>
 </element>
-<element name="R39" library="rcl" package="M0805" value="4.7k" x="47.4" y="43.6" smashed="yes" rot="MR0">
+<element name="R39" library="rcl" package="M0805" value="n.a." x="47.4" y="43.6" smashed="yes" rot="MR0">
 <attribute name="NAME" x="48.27" y="44.77" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R40" library="rcl" package="M0805" value="4.7k" x="36.9" y="43.6" smashed="yes" rot="MR0">
+<element name="R40" library="rcl" package="M0805" value="n.a." x="36.9" y="43.6" smashed="yes" rot="MR0">
 <attribute name="NAME" x="37.67" y="44.77" size="0.8128" layer="26" rot="MR0"/>
 </element>
-<element name="R41" library="rcl" package="M0805" value="4.7k" x="77.1" y="8.9" smashed="yes" rot="MR180">
+<element name="R41" library="rcl" package="M0805" value="n.a." x="77.1" y="8.9" smashed="yes" rot="MR180">
 <attribute name="NAME" x="76.23" y="7.63" size="0.8128" layer="26" rot="MR180"/>
 </element>
-<element name="R42" library="rcl" package="M0805" value="4.7k" x="66.5" y="9.1" smashed="yes" rot="MR180">
+<element name="R42" library="rcl" package="M0805" value="n.a." x="66.5" y="9.1" smashed="yes" rot="MR180">
 <attribute name="NAME" x="65.23" y="7.83" size="0.8128" layer="26" rot="MR180"/>
 </element>
 </elements>

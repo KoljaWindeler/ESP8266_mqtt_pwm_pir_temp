@@ -21170,22 +21170,22 @@ W = angled&lt;p&gt;
 <part name="P+6" library="supply1" deviceset="VCC" device=""/>
 <part name="GND7" library="supply1" deviceset="GND" device=""/>
 <part name="P+7" library="supply1" deviceset="VCC" device=""/>
-<part name="R1" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R4" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R5" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R6" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R7" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R8" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R9" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R10" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R11" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R12" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R13" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R14" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R15" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R16" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R17" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R18" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
+<part name="R1" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R4" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R5" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R6" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R7" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R8" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R9" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R10" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R11" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R12" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R13" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R14" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R15" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R16" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R17" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
+<part name="R18" library="rcl" deviceset="R-EU_" device="M0805" value="100R"/>
 <part name="U$16" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="U$17" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="U$2" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
@@ -21196,30 +21196,30 @@ W = angled&lt;p&gt;
 <part name="U$19" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="U$20" library="JKW_CHIP" deviceset="2_PIN_CONNECTOR" device="" value="V1"/>
 <part name="SV1" library="con-lstb" deviceset="MA04-1" device=""/>
-<part name="R19" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R20" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R21" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R22" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R23" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R24" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R25" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R26" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R27" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R28" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R29" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R30" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R31" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R32" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R33" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R34" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R35" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R36" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R37" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R38" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R39" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R40" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R41" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
-<part name="R42" library="rcl" deviceset="R-EU_" device="M0805" value="4.7k"/>
+<part name="R19" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R20" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R21" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R22" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R23" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R24" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R25" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R26" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R27" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R28" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R29" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R30" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R31" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R32" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R33" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R34" library="rcl" deviceset="R-EU_" device="M0805" value="1k"/>
+<part name="R35" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R36" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R37" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R38" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R39" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R40" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R41" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
+<part name="R42" library="rcl" deviceset="R-EU_" device="M0805" value="n.a."/>
 </parts>
 <sheets>
 <sheet>
