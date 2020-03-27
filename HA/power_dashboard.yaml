@@ -1,0 +1,107 @@
+name: Power overview
+
+
+views:
+#################################################
+##############  POWER  ##########################
+#################################################
+  - cards:
+      - type: history-graph
+        entities:
+          - sensor.dev16_em_cur_l1
+          - sensor.dev16_em_cur_l2
+          - sensor.dev16_em_cur_l3
+          - sensor.dev16_em_cur
+
+      - type: history-graph
+        entities:
+          - sensor.dev16_ads_ch1_kw
+          - sensor.dev16_ads_ch2_kw
+
+      - type: custom:long-term-card
+        name: 'Energy Month / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        lower_bound: 0
+        upper_bound: 25
+        maxDays: 30
+        data_delimiter: ','
+        unit: 'kWh'
+        entities:
+         - sensor.long_term_power
+      - type: custom:long-term-card
+        name: 'Energy Year / Day'
+        display_mode: 'diff'
+        formater: 'yyyy-mm-dd'
+        unit: 'kWh'
+        line_width: 1
+        lower_bound: 0
+        upper_bound: 25
+        maxDays: 365
+        data_delimiter: ','
+        entities:
+         - sensor.long_term_power
+      - type: custom:long-term-card
+        name: 'Energy Cost / Year'
+        display_mode: 'abs'
+        formater: 'yyyy-mm-dd'
+        maxDays: 365
+        data_delimiter: ','
+        unit: 'eur'
+        entities:
+         - sensor.long_term_energy_cost
+
+      - detail: 2
+        graph: line
+        entity: sensor.dev16_ads_ch0_kw
+        type: sensor 
+
+     
+      - type: entities
+        entities:
+           - entity: sensor.outside_battery
+             name: Outside
+           - entity: sensor.bathroom_u_battery
+             name: Bathroom U.
+           - entity: sensor.carlo_battery
+             name: Carlo
+           - entity: sensor.beamer_battery
+             name: Beamer
+           - entity: sensor.livingroom_battery
+             name: Livingroom
+           - entity: sensor.foyer_battery
+             name: Foyer
+           - entity: sensor.0x00158d00041024ef_battery
+             name: Louisa
+           - entity: sensor.0x00158d00041dfcce_battery
+             name: Supply
+           - entity: sensor.0x00158d00042505f7_battery
+             name: Bedroom
+           - entity: sensor.0x00158d00041d6d95_battery
+             name: Bathroom B.
+           - entity: sensor.0x00158d00044af1b0_battery
+             name: Caro
+           - entity: sensor.0x00158d00044b00e0_battery
+             name: Workshop
+
+      - type: entities
+        entities:
+           - entity: sensor.dev16_ads_ch0_kw
+           - entity: sensor.dev16_ads_ch1_kw
+           - entity: sensor.dev16_ads_ch2_kw
+           - entity: sensor.dev16_ads_ch3_kw
+           - entity: sensor.dev16_ads_ch4_kw
+           - entity: sensor.dev16_ads_ch5_kw
+           - entity: sensor.dev16_ads_ch6_kw
+           - entity: sensor.dev16_ads_ch7_kw
+           - entity: sensor.dev16_ads_ch8_kw
+           - entity: sensor.dev16_ads_ch9_kw
+           - entity: sensor.dev16_ads_ch10_kw
+           - entity: sensor.dev16_ads_ch11_kw
+
+
+    icon: 'mdi:power-plug'
+    title: power
+#################################################
+##############  POWER  ##########################
+#################################################

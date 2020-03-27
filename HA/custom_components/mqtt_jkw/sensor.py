@@ -79,7 +79,7 @@ class JkwMqttSensor(Entity):
         self._icon = icon
         self._unit_of_measurement = unit_of_measurement
         self._update = update
-        self._last_update = time.time()
+        self._last_update = 0
         self.entity_id = async_generate_entity_id(ENTITY_ID_FORMAT, name, hass=hass)
 
     def async_added_to_hass(self):

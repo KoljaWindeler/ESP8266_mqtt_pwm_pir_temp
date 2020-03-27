@@ -42,7 +42,8 @@ class motionLight(hass.Hass):
 				self.turn_on(i)
 
 	def motion(self, entity="", attribute="", old="", new="off",kwargs=""):
-		self.log(str(self.id)+" Toggle motion "+entity+" to "+new)
+		if(self.dbg):
+			self.log(str(self.id)+" Toggle motion "+entity+" to "+new)
 		# start with cleanup,
 		# either motion is on, so light should be on as well
 		try:
@@ -73,4 +74,5 @@ class motionLight(hass.Hass):
 					self.log(str(self.id)+" all off, setting timer")
 				self.handle = self.run_in(self.turn_light_off,int(self.args["delay"])*60)
 				ttime, interval, kwargs = self.info_timer(self.handle)
-				self.log(ttime)
+				if(self.dbg):
+					self.log(ttime)

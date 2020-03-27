@@ -10,7 +10,7 @@ appdaemon:
   elevation: 50
   time_zone: Europe/Berlin
 
-  threads: 30
+  total_threads: 30
   utility_delay: 5
   app_dir: /conf/apps
   plugins:

@@ -1,10 +1,10 @@
 import appdaemon.plugins.hass.hassapi as hass
-from datetime import datetime, time 
+from datetime import datetime, time
 
 class EntranceWorld2(hass.Hass):
 
     def initialize(self):
-        self.log("Starting Entrance Service 2") 
+        self.log("Starting Entrance Service 2")
         self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
 
         self.run_daily(self.six, time(6, 0, 0))
@@ -41,8 +41,8 @@ class EntranceWorld2(hass.Hass):
 
     def ring(self, entity, attribute, old, new,kwargs):
         self.log("========= ring ========================")
-        self.outside_wish("on",kwargs)
-        self.run_in(self.outside_wish,10*60,w="auto") # turn off after 10 min
+        self.outside_wish("on!",kwargs)
+        self.run_in(self.outside,5*60) # turn off after 5 min
 
 
     def approaching(self, entity, attribute, old, new,kwargs):
@@ -80,7 +80,11 @@ class EntranceWorld2(hass.Hass):
         rising = self.get_state("sun.sun", attribute="rising")
         self.log("current elevation "+str(ele))
 
-        if(w=="on"):
+        if(w=="on!"):
+            self.log("COMMAND! to turn on lights")
+            self.turn_on("light.joiner_outdoor")
+            self.log("=================================")
+        elif(w=="on"):
             self.log("request to turn on lights")
             if(ele < 2):
                 self.log("request granted, sun is low, turning on")
@@ -90,7 +94,7 @@ class EntranceWorld2(hass.Hass):
                 self.log("request rejected, sun is up, turning off")
                 self.turn_off("light.joiner_outdoor")
                 self.log("=================================")
-        elif(w=="auto"):
+        else: #if(w=="auto"):
             self.log("request in auto mode")
             if(now >= time(23,00,00)):
                 self.log("after 11 turn off")

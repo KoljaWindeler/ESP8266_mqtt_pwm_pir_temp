@@ -19,7 +19,7 @@ class PumpWorld(hass.Hass):
 		self.starts = [0,0]
 		self.seconds = [0,0]
 
-		self.thr_power = [[600,720],[590,720]]
+		self.thr_power = [[210,290],[560,720]]
 
 		self.listen_state(self.update, self.s[0])
 		self.listen_state(self.update, self.s[1])

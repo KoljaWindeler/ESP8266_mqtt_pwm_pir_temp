@@ -28,6 +28,8 @@ homeassistant:
       friendly_name: "Workshop Vent countdown"
     switch.dev28_countdown:
       friendly_name: "Workshop Vent countdown"
+    switch.dev28_countdown_l:
+      friendly_name: "Workshop Vent long countdown"
 
 # -----------------------------------------------
 
@@ -46,3 +48,6 @@ switch:
   - platform: mqtt
     command_topic: "dev28/s/countdown"
     name: "dev28_countdown"
+  - platform: mqtt
+    command_topic: "dev28/s/countdown_l"
+    name: "dev28_countdown_l"

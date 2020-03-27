@@ -7,7 +7,7 @@
     action:
       service: frontend.set_theme
       data:
-        name: darkorange_trans
+        name: dark_orange
 # ------------------- autoload theme ------------------------
 # ------------------- living room sunset new -------------------
   - alias: joiner_livingroom_in2

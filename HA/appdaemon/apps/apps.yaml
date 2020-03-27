@@ -150,3 +150,6 @@ mL_Worldmap:
    - light.dev15
 
 
+test:
+  module:  test
+  class:  TestWorld2

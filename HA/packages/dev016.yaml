@@ -45,6 +45,30 @@ homeassistant:
     sensor.dev16_ads_ch3:
       friendly_name: "ADS CH3"
       unit_of_measurement: "mV"
+    sensor.dev16_ads_ch4:
+      friendly_name: "ADS CH4"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch5:
+      friendly_name: "ADS CH5"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch6:
+      friendly_name: "ADS CH6"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch7:
+      friendly_name: "ADS CH7"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch8:
+      friendly_name: "ADS CH8"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch9:
+      friendly_name: "ADS CH9"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch10:
+      friendly_name: "ADS CH10"
+      unit_of_measurement: "mV"
+    sensor.dev16_ads_ch11:
+      friendly_name: "ADS CH11"
+      unit_of_measurement: "mV"
 # -----------------------------------------------
 
 sensor:
@@ -74,6 +98,38 @@ sensor:
            unit_of_measurement: 'W'
            value_template: "{{ (states('sensor.dev16_ads_ch2')|float * 0.666) | round(2) }}"
         dev16_ads_ch3_kw: 
-           friendly_name: "ADS CH3"
+           friendly_name: "Pool Pump?"
            unit_of_measurement: 'W'
            value_template: "{{ (states('sensor.dev16_ads_ch3')|float * 0.666) | round(2) }}"
+        dev16_ads_ch4_kw: 
+           friendly_name: "ADS CH4"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch4')|float * 0.666) | round(2) }}"
+        dev16_ads_ch5_kw: 
+           friendly_name: "ADS CH5"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch5')|float * 0.666) | round(2) }}"
+        dev16_ads_ch6_kw: 
+           friendly_name: "ADS CH6"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch6')|float * 0.666) | round(2) }}"
+        dev16_ads_ch7_kw: 
+           friendly_name: "ADS CH7"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch7')|float * 0.666) | round(2) }}"
+        dev16_ads_ch8_kw: 
+           friendly_name: "ADS CH8"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch8')|float * 0.666) | round(2) }}"
+        dev16_ads_ch9_kw: 
+           friendly_name: "ADS CH9"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch9')|float * 0.666) | round(2) }}"
+        dev16_ads_ch10_kw: 
+           friendly_name: "ADS CH10"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch10')|float * 0.666) | round(2) }}"
+        dev16_ads_ch11_kw: 
+           friendly_name: "Workshop?"
+           unit_of_measurement: 'W'
+           value_template: "{{ (states('sensor.dev16_ads_ch11')|float * 0.666) | round(2) }}"

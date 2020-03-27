@@ -1,31 +1,4 @@
 name: My Awesome Home
-resources:
-  - url: /local/monster-card.js
-    type: js
-  - url: /local/group-card.js
-    type: js
-#  - url: /community_plugin/group-card/group-card.js
-#    type: module
-  - url: /local/long-term-card-bundle.js
-    type: module
-  - url: /community_plugin/custom-header/custom-header.js
-    type: module
-  - url: /community_plugin/mini-media-player/mini-media-player-bundle.js
-    type: module
-  - url: /community_plugin/secondaryinfo-entity-row/secondaryinfo-entity-row.js
-    type: js
-  - url: /community_plugin/lovelace-card-tools/card-tools.js
-    type: module
-  - url: /community_plugin/lovelace-template-entity-row/template-entity-row.js
-    type: module
-  - url: /community_plugin/lovelace-card-mod/card-mod.js
-    type: module
-  - url: /community_plugin/button-card/button-card.js
-    type: module
-  - url: /community_plugin/lovelace-home-feed-card/lovelace-home-feed-card.js
-    type: js
-  - url: /community_plugin/text-divider-row/text-divider-row.js
-    type: module
 
 background: >-
   center / cover no-repeat
@@ -265,8 +238,7 @@ views:
                tap_action:
                  action: toggle
                entity: light.dev56
-               icon: mdi:chart-bubble
-#               icon: mdi:string-light
+               icon: mdi:string-lights
                name: Lampin C
                state_color: true
              - type: entity-button
@@ -281,7 +253,7 @@ views:
                  action: toggle
                entity: light.dev23
                name: Carlo Main
-               icon: mdi:ceiling-light
+               icon: mdi:track-light
                state_color: true
 #### 2nd line
          - type: horizontal-stack
@@ -290,14 +262,14 @@ views:
                tap_action:
                  action: toggle
                entity: light.dev55
-               icon: mdi:chart-bubble
-               name: Lampin Louisa
+               icon: mdi:string-lights
+               name: Lampin L
                state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
                name: Louisa main
-               icon: mdi:ceiling-light
+               icon: mdi:track-light
                entity: light.dev24
                state_color: true
              - type: entity-button
@@ -343,13 +315,14 @@ views:
                tap_action:
                  action: toggle
                entity: light.dev2
+               icon: mdi:floor-lamp
                state_color: true
              - type: entity-button
                tap_action:
                  action: toggle
-               icon: mdi:coach-lamp
-               name: Entrance
-               entity: light.dev54_4
+               icon: mdi:floor-lamp-dual
+               name: PlayArea
+               entity: light.dev34
                state_color: true
 
 #          - type: picture-entity
@@ -469,6 +442,12 @@ views:
               tap_action:
                 action: toggle
               name: Lampion
+
+        - type: glance
+          title: Bathroom
+          entities:
+            - entity: sensor.bathroom_u_humidity
+              name: Humidity Z
 
 ##### Grond floor
       - type: vertical-stack
@@ -733,7 +712,7 @@ views:
               name: Front
           
         - type: glance
-          title: Garag
+          title: Garage
           state_color: truee
           entities:
             - entity: sensor.dev8_temperature
@@ -1580,6 +1559,17 @@ views:
           - sensor.dev59_capability
           - sensor.dev60_capability
         title: Capability
+
+      - type: history-graph
+        #title: Linkquality
+        entities:
+          - sensor.bathroom_u_linkquality
+          - sensor.carlo_linkquality
+          - sensor.outside_linkquality
+          - sensor.beamer_linkquality
+          - sensor.livingroom_linkquality
+          - sensor.foyer_linkquality
+
     icon: 'mdi:signal-variant'
     title: Signals
 
@@ -1606,15 +1596,18 @@ views:
           - input_boolean.autostart_cleaning
         show_header_toggle: false
         title: Vacuuming
+
       - type: history-graph
         entities:
           - sensor.dev29_temperature
+
       - type: entities
         entities:
-          - sensor.ical_1
-          - sensor.ical_2
-          - sensor.ical_3
+          - sensor.ics_1
+          - sensor.ics_2
+          - sensor.ics_3
         title: Trash
+
       - type: entities
         entities:
           - input_boolean.irrigation
@@ -1630,6 +1623,50 @@ views:
           - sensor.dark_sky_daytime_high_temperature_0d
         show_header_toggle: false
         title: Water
+
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity
+        name: Cellar Humidity
+        type: sensor 
+
+      - detail: 2
+        graph: line
+        entity: sensor.dev4_humidity_stat_mean
+        name: Cellar Humidity
+        type: sensor 
+
+      - entities: 
+          - entity: switch.dev4_gpio_5
+            name: Dryroom
+          - entity: switch.dev28_gpio_15
+            name: Shop
+          - entity: switch.dev60_gpio_12
+            name: Beamer
+        title: Ventilation
+        type: history-graph
+
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: switch.dev28_countdown
+            icon: 'mdi:clock'
+            state_color: true
+            name: Shop 30min
+          - type: entity-button
+            tap_action:
+              action: toggle
+            entity: switch.dev28_countdown_l
+            icon: 'mdi:clock'
+            state_color: true
+            name: Shop Long
+          - entity: sensor.dev28_countdown_state
+            name: Countdown
+            type: gauge
+            max: 30
+
     icon: 'mdi:tools'
     title: Tools
 #################################################
@@ -1787,85 +1824,57 @@ views:
 #################################################
 ########## upstairs #############################
 #################################################
-  - cards:
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Switch on IOT1
-        group: group.iot1_switch
-
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Light on IOT1
-        group: group.iot1_light
-
-    icon: 'mdi:home-floor-1'
-    title: upstairs
+#  - cards:
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Switch on IOT1
+#        group: group.iot1_switch
+#
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Light on IOT1
+#        group: group.iot1_light
+#
+#    icon: 'mdi:home-floor-1'
+#    title: upstairs
 #################################################
 ############ Grond floor ###########################
 #################################################
-  - cards:
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Switch on IOT0
-        group: group.iot0_switch
-
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Light on IOT0
-        group: group.iot0_light
-
-    icon: 'mdi:home-floor-0'
-    title: Grond floor
+#  - cards:
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Switch on IOT0
+#        group: group.iot0_switch
+#
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Light on IOT0
+#        group: group.iot0_light
+#
+#    icon: 'mdi:home-floor-0'
+#    title: Grond floor
 #################################################
 ########## cellar ###############################
 #################################################
-  - cards:
-      - detail: 2
-        graph: line
-        entity: sensor.dev4_humidity
-        name: Cellar Humidity
-        type: sensor 
-      - detail: 2
-        graph: line
-        entity: sensor.dev4_humidity_stat_mean
-        name: Cellar Humidity
-        type: sensor 
-      - entities: 
-          - switch.dev4_gpio_5
-        title: Dryroom Ventilation
-        type: history-graph
-
-      - type: horizontal-stack
-        cards:
-          - type: entity-button
-            tap_action:
-              action: toggle
-            entity: switch.dev28_countdown
-            icon: 'mdi:clock'
-            name: Shop Ventilation
-          - entity: sensor.dev28_countdown_state
-            name: Countdown
-            type: gauge
-            max: 30
-
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Switch on IOT255
-        group: group.iot255_switch
-
-      - type: custom:group-card
-        card:
-           type: entities 
-           title: Light on IOT255
-        group: group.iot255_light
-
-    icon: 'mdi:home-floor-negative-1'
-    title: cellar
+#  - cards:
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Switch on IOT255
+#        group: group.iot255_switch
+#
+#      - type: custom:group-card
+#        card:
+#           type: entities 
+#           title: Light on IOT255
+#        group: group.iot255_light
+#
+#    icon: 'mdi:home-floor-negative-1'
+#    title: cellar
 #################################################
 ######## All lights #############################
 #################################################
@@ -1893,73 +1902,10 @@ views:
 #################################################
 
   - cards:
-      - detail: 2
-        graph: line
-        entity: sensor.dev13_adc
-        name: leakage
-        type: sensor 
-      - detail: 2
-        graph: line
-        entity: sensor.dhcp_master_kb_sec_received
-        name: Download
-        type: sensor 
-
-      - detail: 2
-        graph: line
-        entity: sensor.tankerkoenig_005056ba_7cb6_1ed2_bceb_504b1b68ad12_e5
-        name: E5 Sprit
-        type: sensor 
       - type: entities
         entities:
           - input_boolean.approx_warn
         show_header_toggle: false
-
-      - type: history-graph
-        #title: Linkquality
-        entities:
-          - sensor.bathroom_u_linkquality
-          - sensor.carlo_linkquality
-          - sensor.outside_linkquality
-          - sensor.beamer_linkquality
-          - sensor.livingroom_linkquality
-          - sensor.foyer_linkquality
-      - type: custom:long-term-card
-        name: 'Power Month'
-        lower_bound: 0
-        upper_bound: 100
-        height: 250
-        icon: mdi:server
-        display_mode: 'abs'
-        formater: 'yyyy-mm-dd'
-        maxDays: 300
-        data_delimiter: ','
-        unit: '%'
-        entities:
-         - entity: sensor.long_term_battery_1
-           show_fill: false
-           show_graph: true
-           show_legend: false
-         - entity: sensor.long_term_battery_2
-           show_fill: false
-           show_legend: false
-           show_graph: true
-         - entity: sensor.long_term_battery_3
-           show_fill: false
-           show_legend: false
-           show_graph: true
-         - entity: sensor.long_term_battery_4
-           show_fill: false
-           show_legend: false
-           show_graph: true
-         - entity: sensor.long_term_battery_5
-           show_fill: false
-           show_legend: false
-           show_graph: true
-         - entity: sensor.long_term_battery_6
-           show_fill: false
-           show_legend: false
-           show_graph: true
-
 
     title: T
 #######################################
