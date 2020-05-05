@@ -1,0 +1,32 @@
+name: Testing
+
+
+views:
+#################################################
+########## TESTING ##############################
+#################################################
+
+  - cards:
+      - type: entities
+        entities:
+          - input_boolean.approx_warn
+        show_header_toggle: false
+
+      - type: entities
+        entities:
+          - sensor.ics_1
+          - sensor.ics_2
+          - sensor.ics_3
+        title: Trash
+      - type: entities
+        entities:
+          - sensor.ics_4
+          - sensor.ics_5
+          - sensor.ics_4_txt
+          - sensor.ics_5_txt
+          - sensor.ics_6
+        title: Work schedule
+
+
+    title: T
+#######################################

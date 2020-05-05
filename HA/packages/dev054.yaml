@@ -103,19 +103,6 @@ binary_sensor:
 # -----------------------------------------------
 
 automation:
-#------- DOOR BELL -----------
-  - alias: doorbell_msg
-    initial_state: True
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.dev54_button
-        to: 'on'
-    action:
-#      - service: script.turn_on
-#        entity_id: script.seq_dingdong
-      - service: script.turn_on
-        entity_id: script.seq_dingdong_dome
-
 #------- Toggle LED -----------
   - alias: Toggle_Foyer_LED_by_switch
     initial_state: True

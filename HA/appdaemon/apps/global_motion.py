@@ -19,18 +19,19 @@ class GmotionWorld(hass.Hass):
 		self.listen_state(self.system_state, "vacuum.xiaomi_vacuum_cleaner_2")
 
 		self.sensor = []
-		self.sensor.append(["Cellar 1","59_motion_13",255])
-		self.sensor.append(["Cellar 2","59_motion_16",255])
-		self.sensor.append(["Garage","8_motion",254])
-		self.sensor.append(["World map","15_motion",0])
-		self.sensor.append(["Entrance","54_motion_1",0])
-		self.sensor.append(["Entrance_cellar","54_motion_2",255])
-		self.sensor.append(["Floor upstairs","57_motion",1])
-		self.sensor.append(["Cellar door","17_motion",255])
+		self.sensor.append(["Cellar 1","dev59_motion_13",255])
+		self.sensor.append(["Cellar 2","dev59_motion_16",255])
+		self.sensor.append(["Garage","dev8_motion",254])
+		self.sensor.append(["World map","dev15_motion",0])
+		self.sensor.append(["Entrance","dev54_motion_1",0])
+		self.sensor.append(["Entrance_cellar","dev54_motion_2",255])
+		self.sensor.append(["Floor upstairs","dev57_motion",1])
+		self.sensor.append(["Cellar door","dev17_motion",255])
+		self.sensor.append(["Cellar heater","0x00158d0003f85cf0_occupancy",255])
 		self.sensor_trigger_count = []
 		self.sensor_trigger_count_reported = []
 		for i in range(0,len(self.sensor)):
-			self.listen_state(self.motion, "binary_sensor.dev"+self.sensor[i][1])
+			self.listen_state(self.motion, "binary_sensor."+self.sensor[i][1])
 			self.sensor_trigger_count_reported.append(0)
 			self.sensor_trigger_count.append(0)
 		self.msg_delay = [0,3*60,8*60,15*60]
@@ -86,8 +87,8 @@ class GmotionWorld(hass.Hass):
 		upstairs_m = "off"
 		m = "off"
 		for i in range(0,len(self.sensor)):
-			#self.log("binary_sensor.dev"+self.sensor[i]+": "+self.get_state("binary_sensor.dev"+self.sensor[i]))
-			if(self.get_state("binary_sensor.dev"+self.sensor[i][1]) == "on"):
+			#self.log("binary_sensor."+self.sensor[i]+": "+self.get_state("binary_sensor."+self.sensor[i]))
+			if(self.get_state("binary_sensor."+self.sensor[i][1]) == "on"):
 				m = "on"
 				self.sensor_trigger_count[i] = self.sensor_trigger_count[i]+1
 				if(self.sensor[i][2]==255):

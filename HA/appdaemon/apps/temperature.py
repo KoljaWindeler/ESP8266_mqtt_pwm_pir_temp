@@ -22,6 +22,7 @@ class temperatureWorld(hass.Hass):
                    msg=self.friendly_name(entity)+" ("+entity+") on fire: "+new
                    self.log(msg)
                    self.call_service("notify/pb", title="FIRE", message=msg)
+                   self.call_service("notify/pb_c", title="FIRE", message=msg)
         except:
            pass
 

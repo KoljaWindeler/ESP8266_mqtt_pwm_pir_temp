@@ -2,6 +2,12 @@
 # ------ JOINER ------------------------------------
 # --------------------------------------------------
   - platform: group
+    name: "joiner_kitchen_livingroom"
+    entities:
+      - light.joiner_kitchen
+      - light.joiner_livingroom
+# --------------------------------------------------
+  - platform: group
     name: "joiner_kitchen"
     entities:
       - light.dev21

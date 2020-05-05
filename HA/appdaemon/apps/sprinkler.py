@@ -41,7 +41,7 @@ class SprinklerWorld(hass.Hass):
 		self.listen_state(self.start,"input_boolean.irrigation", new = "on")
 		self.listen_state(self.start_o,"input_boolean.irrigation_override", new = "on")
 		self.turn_off(SWITCH_PUMP)
-		self.run_daily(self.start_o, datetime.time(7, 0, 0))
+		self.run_daily(self.start_o, datetime.time(8, 0, 0))
 
 
 	def start_o(self, entity="", attribute="", old="", new="",kwargs=""):
@@ -55,11 +55,15 @@ class SprinklerWorld(hass.Hass):
 		self.set_state("sensor.dev30_state",state="Starting")
 		self.max_time = 15 #30 # Minutes!
 
+		self.limited_config = [[[SWITCH_VALVE5],1]]
+
 		self.config = [
-			[[SWITCH_VALVE4],1], # one valve, 2xt200, regular time
+			[[SWITCH_VALVE4,SWITCH_VALVE5],1], # one valve, 2xt200 + vegtables, regular time
 			[[SWITCH_VALVE2],1], # one valve, 3xt200, regular time
 			[[SWITCH_VALVE1,SWITCH_VALVE3],1.5] # two valves, 150% time
 				]
+
+		self.valve_list = [SWITCH_VALVE1,SWITCH_VALVE2,SWITCH_VALVE3,SWITCH_VALVE4,SWITCH_VALVE5]
 
 		#today_max_temp = int(float(self.g("sensor.yweather_temperature_max","28")))
 		if(self.g("input_boolean.irrigation_override","off")=="off"):
@@ -67,7 +71,10 @@ class SprinklerWorld(hass.Hass):
 			if(today_max_temp > 28):
 				self.max_time = 30
 			elif(today_max_temp < 22):
-				self.max_time = 0
+				if(today_max_temp > 5):
+					# leave the time at 15 min, but only run limted config (only veggetables)
+					self.log("running limited config only")
+					self.config = self.limited_config
 			self.log("Today max temp is "+str(today_max_temp)+", will irrigate for "+str(self.max_time)+ " min")
 			rain_today = int(float(self.g("sensor.dev30_uptime","0"))/5)
 		else:
@@ -82,7 +89,9 @@ class SprinklerWorld(hass.Hass):
 			self.state = 100 # Prepare pump, substep 0
 			self.sm() # start statemachine
 		else:
-			self.turn_off("input_boolean.irrigation")
+			self.state = 4000 # Prepare pump, substep 0
+			self.sm() # start statemachine
+
 
 		
 	def sm(self, entity="", attribute="", old="", new="",kwargs=""):
@@ -124,10 +133,9 @@ class SprinklerWorld(hass.Hass):
 				time.sleep(2) # give a little time to start the pump, else check_stop will stop us imidiatly
 				self.log("Opening all valves to reduce pump pressure")
 				self.set_state("sensor.dev30_state",state="Open all valves")
-				for ring in range(0,len(self.config)):
-					for sprinkler in range(0,len(self.config[ring][0])):
-						self.log("Valve "+self.config[ring][0][sprinkler]+" open")
-						self.turn_on(self.config[ring][0][sprinkler])
+				for sprinkler in range(0,len(self.valve_list)):
+					self.log("Valve "+self.valve_list[sprinkler]+" open")
+					self.turn_on(self.valve_list[sprinkler])
 				
 				self.state = 161
 			
@@ -170,10 +178,9 @@ class SprinklerWorld(hass.Hass):
 			self.log("Pump ready")
 			time.sleep(2) # give a little time to g states
 			self.log("Closing all valves")
-			for ring in range(0,len(self.config)):
-				for sprinkler in range(0,len(self.config[ring][0])):
-					self.turn_off(self.config[ring][0][sprinkler])
-					self.log("Valve "+self.config[ring][0][sprinkler]+" closed")
+			for sprinkler in range(0,len(self.valve_list)):
+				self.turn_off(self.valve_list[sprinkler])
+				self.log("Valve "+self.valve_list[sprinkler]+" closed")
 			self.log("Preperation completed, starting the irrigation")
 			self.log("################################################")
 			self.set_state("sensor.dev30_state",state="Preparation done")
@@ -216,7 +223,7 @@ class SprinklerWorld(hass.Hass):
 								self.turn_off(self.config[ring][0][sprinkler])
 
 							# was this the last ring?
-							if(ring == len(self.config)):
+							if(ring+1 == len(self.config)):
 								# yes, all done, finish up
 								self.state = 4000
 							else:
@@ -244,11 +251,10 @@ class SprinklerWorld(hass.Hass):
 			self.log("Shutting down pump")
 			self.turn_off(SWITCH_PUMP)
 
-			# shut down all values
-			for ring in range(0,len(self.config)):
-				for sprinkler in range(0,len(self.config[ring][0])):
-					self.turn_off(self.config[ring][0][sprinkler])
-					self.log("Valve "+self.config[ring][0][sprinkler]+" closed")
+			# shut down all valves
+			for sprinkler in range(0,len(self.valve_list)):
+				self.turn_off(self.valve_list[sprinkler])
+				self.log("Valve "+self.valve_list[sprinkler]+" closed")
 
 			# toggle rain time reset
 			self.turn_on("switch.dev30_reset_rain_time")

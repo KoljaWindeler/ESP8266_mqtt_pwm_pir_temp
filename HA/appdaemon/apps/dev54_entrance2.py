@@ -5,7 +5,9 @@ class EntranceWorld2(hass.Hass):
 
     def initialize(self):
         self.log("Starting Entrance Service 2")
+        self.ring_cnt = [0,0]
         self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
+        self.listen_state(self.backdoor, "binary_sensor.dev17_motion", new = "on") #klingel
 
         self.run_daily(self.six, time(6, 0, 0))
         self.run_daily(self.twentytwo, time(22, 0, 0))
@@ -19,6 +21,8 @@ class EntranceWorld2(hass.Hass):
         self.listen_state(self.kolja_home, "device_tracker.illuminum_kolja", new = "home", duration = 10*60, arg1="Kolja home")  # everyone is home for 10 min
         self.listen_state(self.approaching, "proximity.caro_home")
         self.listen_state(self.approaching, "proximity.kolja_home")
+        #self.backdoor()
+
 
     ######################################################
 
@@ -40,10 +44,40 @@ class EntranceWorld2(hass.Hass):
     ######################################################
 
     def ring(self, entity, attribute, old, new,kwargs):
-        self.log("========= ring ========================")
-        self.outside_wish("on!",kwargs)
+        self.log("========= ring ========================") # log output
+        self.outside_wish("on!",kwargs) # turn light on
+        fn = "/tmp/dome1_"+str(self.ring_cnt[0]) # save filename without filetype ending
+        self.ring_cnt[0] = (self.ring_cnt[0] + 1) % 10 # inc
+        self.call_service("camera/record",   entity_id="camera.cam_dome1", filename=fn+".mp4", duration="20", lookback="5") # save video
+        self.call_service("camera/snapshot", entity_id="camera.cam_dome1", filename=fn+".jpg") # save snapshot
+        self.notify_vid(arg={"arg":{"t":"Frontdoor","m":"Ding Dong","d":{"file":""}}}) # send info
+        self.run_in(self.notify_vid,1, arg={"t":"Frontdoor image","m":"Sensor triggered","d":{"file": fn+".jpg"}}) # send image
+        self.run_in(self.notify_vid,20,arg={"t":"Frontdoor video","m":"http://192.168.2.84:8081/"+fn.replace("/tmp/","")+".mp4","d":{"file":""}}) # send link to video
         self.run_in(self.outside,5*60) # turn off after 5 min
 
+    def backdoor(self, entity="", attribute="", old="", new="",kwargs=""):
+        self.log("========= backdoor ========================") # log output
+        fn = "/tmp/dome2_"+str(self.ring_cnt[1]) # save filename without firetype ending
+        self.ring_cnt[1] = (self.ring_cnt[1] + 1) % 10 # inc
+        self.call_service("camera/record",   entity_id="camera.cam_dome2", filename=fn+".mp4", duration="20", lookback="5") # save video
+        self.call_service("camera/snapshot", entity_id="camera.cam_dome2", filename=fn+".jpg") # save snapshot
+        if(self.get_state("input_boolean.alarm_system") == "on" and self.get_state("binary_sensor.someone_is_home") == "off"):
+           self.notify_vid(arg={"arg":{"t":"Backdoor","m":"Triggered","d":{"file":""}}}) # send info
+           self.run_in(self.notify_vid,1, arg={"t":"Backdoor image","m":"Sensor triggered","d":{"file": fn+".jpg"}}) # send image
+           self.run_in(self.notify_vid,20,arg={"t":"Backdoor video","m":"http://192.168.2.84:8081/"+fn.replace("/tmp/","")+".mp4","d":{"file":""}}) # send link to video
+
+    def notify_vid(self, arg):
+        #self.log(arg)
+        t=arg["arg"]["t"]
+        m=arg["arg"]["m"]
+        d=arg["arg"]["d"]
+        self.log("sending notification: "+t)
+        if(d["file"]!=""):
+           self.call_service("notify/pb",   title=t, message=m, data=d)
+           self.call_service("notify/pb_c", title=t, message=m, data=d)
+        else:
+           self.call_service("notify/pb",   title=t, message=m)
+           self.call_service("notify/pb_c", title=t, message=m)
 
     def approaching(self, entity, attribute, old, new,kwargs):
         #self.log("proxy")

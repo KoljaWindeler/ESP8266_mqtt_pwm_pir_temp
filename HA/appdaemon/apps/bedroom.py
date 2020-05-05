@@ -20,6 +20,7 @@ class bedroomWorld(hass.Hass):
         self.set_state("sensor.dev26_5_hold",state="0")
         self.listen_state(self.ventilation_toggle,"sensor.dev26_5_hold", new = "1")
         self.listen_state(self.bedlight_toggle,"binary_sensor.dev26_gpio_5", new = "on")
+        self.listen_state(self.mpc,"light.dev32", new="on")
 
     def bedlight_off(self, entity, attribute, old, new,kwargs):
         self.log("Switch bedlight lights off")
@@ -43,3 +44,17 @@ class bedroomWorld(hass.Hass):
 
     def crip_toggle(self, entity, attribute, old, new,kwargs):
         self.toggle("light.dev19") # crip
+
+    def mpc(self, entity="", attribute="", old="", new="",kwargs=""):
+        now = datetime.datetime.now().time()
+        if(now >= datetime.time(22,00,00)):
+            if(self.get_state("switch.dev58_gpio_12")=="on"):
+               t="media pc on"
+               m="your bedlight just turn on after 10 and the media pc is still running"
+               self.call_service("notify/pb", title=t, message=m)
+            if(self.get_state("binary_sensor.dev17_motion")=="on"):
+               t="Cellar door open"
+               m="your bedlight just turn on after 10 and the cellar door is still open!"
+               self.call_service("notify/pb", title=t, message=m)
+               self.call_service("notify/pb_c", title=t, message=m)
+

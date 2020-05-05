@@ -1,6 +1,6 @@
 # ------------------- autoload theme ------------------------
   - alias: 'Set theme at startup'
-    initial_state: 'on'
+    initial_state: 'off'
     trigger:
      - platform: homeassistant
        event: start
@@ -75,37 +75,6 @@
        title: "Leakage detected"
        message: "Leakage triggered"
 # ------------------- value trigger for leakage ------------
-# ------------------- value trigger for over temp new ----------
-  - alias: 'over temp'
-    initial_state: 'on'
-    trigger:
-     - platform: numeric_state
-       entity_id: sensor.dev11_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev1_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev16_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev4_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev2_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev10_temperature
-       above: 50
-     - platform: numeric_state
-       entity_id: sensor.dev9_temperature
-       above: 50
-    action:
-     service: notify.pb
-     data:
-       title: "over temp detected"
-       message: "over temp triggered"
-# ------------------- value trigger for over temp ----------
 # ----------------------------------------------------------
 #-------------------- night lights -------------------------
   - alias: night_light
@@ -126,19 +95,3 @@
           {% endif %}
         entity_id: 
           - light.night
-#-------------------- new kitchen -------------------------
-#  - alias: new_kitchen_in
-#    initial_state: True
-#    trigger:
-#      - platform: state
-#        entity_id: light.dev3
-#    action:
-#      - service_template: >
-#          {% if is_state('light.dev3','on') %}
-#            light.turn_on
-#          {% else %}
-#            light.turn_off
-#          {% endif %}
-#        entity_id: 
-#          - light.dev21
-#-------------------- new kitchen -------------------------

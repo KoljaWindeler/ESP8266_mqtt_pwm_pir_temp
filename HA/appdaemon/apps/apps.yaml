@@ -139,6 +139,15 @@ mL_foyerD:
   lights:
    - light.dev9
 
+mL_Heater:
+  module: motionLight
+  class: motionLight
+  delay: 10
+  sensors:
+   - binary_sensor.0x00158d0003f85cf0_occupancy
+  lights:
+   - light.dev35
+
 mL_Worldmap:
   module: motionLight
   class: motionLight

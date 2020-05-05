@@ -1,13 +1,9 @@
 name: My Awesome Home
 
-background: >-
-  center / cover no-repeat
-  url("/local/background4.jpg")
-  fixed
-
 swipe_nav: 
    wrap: false 
    animate: flip
+
 
 custom_header:
   shadow: true
@@ -33,7 +29,7 @@ custom_header:
 views:
   - theme: dark-mode
 #################################################
-############## home #########################
+################## home #########################
 #################################################
     cards:
 ### 1st column
@@ -48,6 +44,13 @@ views:
                entity: light.joiner_livingroom
                state_color: true
                icon: 'mdi:sofa'
+             - type: entity-button
+               tap_action:
+                 action: toggle
+               entity: light.joiner_kitchen_livingroom
+               name: "Both"
+               state_color: true
+               icon: 'mdi:arrow-left-right-bold-outline'
              - type: entity-button
                tap_action:
                  action: toggle
@@ -137,6 +140,7 @@ views:
                  - type: custom:mini-media-player
                    entity: media_player.gmusic_player
                    icon: mdi:google-play
+                   artwork: cover
                    hide:
                      volume: true
                      source: true
@@ -172,18 +176,28 @@ views:
 #### 2x big temp
          - type: horizontal-stack
            cards:
-             - detail: 2
-               graph: line
-               entity: sensor.dev1_temperature
+             - type: custom:mini-graph-card
                name: Livingroom
-               type: sensor 
-             - detail: 2
-               graph: line
-               entity: sensor.outside_temperature
+               entities:
+                - sensor.dev1_temperature
+#               color_thresholds:
+#                 - value: 18
+#                   color: "#3b4bff"
+#                 - value: 20
+#                   color: "#ffc830"
+#                 - value: 24
+#                   color: "#c0392b"
+             - type: custom:mini-graph-card
                name: Outside
-               type: sensor 
-
-
+               entities:
+                - sensor.outside_temperature
+ #              color_thresholds:
+ #                - value: 10
+ #                  color: "#3b4bff"
+ #                - value: 15
+ #                  color: "#ffc830"
+ #                - value: 25
+ #                  color: "#c0392b"
          - type: horizontal-stack
            cards:
              - type: custom:long-term-card
@@ -197,11 +211,25 @@ views:
                unit: 'kWh'
                entities:
                 - sensor.long_term_power
-             - detail: 2
-               graph: line
-               entity: sensor.dev16_em_cur
+#             - detail: 2
+#               graph: line
+#               entity: sensor.dev16_em_cur
+#               name: House Power
+#               type: sensor 
+             - type: custom:mini-graph-card
                name: House Power
-               type: sensor 
+               smoothing: false
+               points_per_hour: 6
+               entities:
+                - sensor.dev16_em_cur
+               color_thresholds:
+                 - value: 500
+                   color: "#0c7d0e"
+                 - value: 2000
+                   color: "#d35400"
+                 - value: 4000
+                   color: "#c0392b"
+
 #### safety state
          - type: entities
            show_header_toggle: false
@@ -299,6 +327,7 @@ views:
                tap_action:
                  action: toggle
                entity: light.joiner_bedroom
+               icon: mdi:bed-double-outline
                name: Bedroom
                state_color: true
 #### 4th line
@@ -573,9 +602,9 @@ views:
               name: Hum Z
             - entity: sensor.0x00158d00041dfcce_temperature
               name: Temp Z
-            - entity: sensor.dhcp_master_kb_sec_received
+            - entity: sensor.dhcp_master_kib_sec_received
               name: Download
-            - entity: sensor.dhcp_master_kb_sec_sent
+            - entity: sensor.dhcp_master_kib_sec_sent
               name: Upload
             - sensor.dev16_em_cur
 
@@ -584,6 +613,9 @@ views:
           title: Cellar Bathroom
           entities:
             - sensor.dev13_adc
+            - sensor.dev16_ads_ch0_kw
+            - sensor.dev16_ads_ch10_kw
+
 
         - type: glance
           title: Movieroom
@@ -629,6 +661,9 @@ views:
           entities:
             - entity: binary_sensor.dev17_motion
               name: Door
+            - entity: camera.cam_dome2
+              name: Door Cam
+
 
         - type: glance
           title: Workshop
@@ -674,6 +709,13 @@ views:
               name: Emu
               tap_action:
                 action: toggle
+            - entity: binary_sensor.0x00158d0003f85cf0_occupancy
+              name: "Motion Z"
+            - entity: light.dev35
+              state_color: true
+              tap_action:
+                action: toggle
+              name: Main
             - entity: sensor.dev29_temperature
               name: Water
             - entity: switch.dev4_gpio_5
@@ -717,6 +759,7 @@ views:
           entities:
             - entity: sensor.dev8_temperature
               name: Temp
+            - sensor.dev16_ads_ch8_kw
             - entity: switch.dev8
             - entity: binary_sensor.dev8_motion
               name: Motion
@@ -727,12 +770,30 @@ views:
           entities:
             - entity: sensor.dev30_state
             - entity: switch.dev4_gpio_12
+              tap_action:
+                action: toggle
             - entity: switch.dev30_gpio_2
+              tap_action:
+                action: toggle
             - entity: switch.dev30_gpio_16
+              tap_action:
+                action: toggle
             - entity: switch.dev30_gpio_4
+              tap_action:
+                action: toggle
             - entity: switch.dev30_gpio_5
+              tap_action:
+                action: toggle
             - entity: switch.dev30_gpio_15
+              tap_action:
+                action: toggle
+            - entity: switch.dev30_gpio_14
+              tap_action:
+                action: toggle
             - entity: sensor.dev30_uptime
+            - sensor.dev16_ads_ch1_kw
+            - sensor.dev16_ads_ch2_kw
+            - sensor.dev16_ads_ch3_kw
 
     icon: 'mdi:floor-plan'
     title: All rooms
@@ -784,6 +845,10 @@ views:
         entity: camera.cam_xia4
         camera_view: live
         name: Carlo
+      - type: picture-entity
+        entity: camera.cam_dome2
+        camera_view: live
+        name: Cellar
 #      - type: picture-entity
 #        entity: camera.cam_xia52
 #        camera_view: live
@@ -1276,6 +1341,7 @@ views:
             name: "Cellar stair motion"
           - binary_sensor.dev59_motion_13
           - binary_sensor.dev59_motion_16
+          - binary_sensor.0x00158d0003f85cf0_occupancy
           - type: divider
           - binary_sensor.dev8_motion
 #          - binary_sensor.dev10_motion
@@ -1287,291 +1353,6 @@ views:
         aspect_ratio: 90%
     icon: 'mdi:security'
     title: Security
-
-#################################################
-############ signal ###########################
-#################################################
-
-  - cards:
-      - type: entities
-        title: Update
-        show_header_toggle: false
-        entities:
-          - sensor.dev1_update
-          - sensor.dev2_update
-          - sensor.dev3_update
-          - sensor.dev4_update
-          - sensor.dev5_update
-#          - sensor.dev6_update
-          - sensor.dev7_update
-          - sensor.dev8_update
-          - sensor.dev10_update
-          - sensor.dev11_update
-          - sensor.dev12_update
-          - sensor.dev13_update
-          - sensor.dev14_update
-          - sensor.dev15_update
-          - sensor.dev16_update
-          - sensor.dev17_update
-          - sensor.dev18_update
-          - sensor.dev19_update
-          - sensor.dev20_update
-          - sensor.dev21_update
-#          - sensor.dev22_update
-          - sensor.dev23_update
-          - sensor.dev24_update
-          - sensor.dev25_update
-          - sensor.dev26_update
-          - sensor.dev27_update
-          - sensor.dev28_update
-          - sensor.dev29_update
-          - sensor.dev30_update
-          - sensor.dev31_update
-          - sensor.dev32_update
-          - sensor.dev33_update
-          - sensor.dev34_update
-#          - sensor.dev35_update
-          - sensor.dev54_update
-          - sensor.dev55_update
-          - sensor.dev56_update
-          - sensor.dev57_update
-          - sensor.dev58_update
-          - sensor.dev59_update
-          - sensor.dev60_update
-      - type: entities
-        title: Rssi
-        show_header_toggle: false
-        entities:
-          - sensor.dev1_rssi
-          - sensor.dev2_rssi
-          - sensor.dev3_rssi
-          - sensor.dev4_rssi
-          - sensor.dev5_rssi
-#          - sensor.dev6_rssi
-          - sensor.dev7_rssi
-          - sensor.dev8_rssi
-          - sensor.dev10_rssi
-          - sensor.dev11_rssi
-          - sensor.dev12_rssi
-          - sensor.dev13_rssi
-          - sensor.dev14_rssi
-          - sensor.dev15_rssi
-          - sensor.dev16_rssi
-          - sensor.dev17_rssi
-          - sensor.dev18_rssi
-          - sensor.dev19_rssi
-          - sensor.dev20_rssi
-          - sensor.dev21_rssi
-#          - sensor.dev22_rssi
-          - sensor.dev23_rssi
-          - sensor.dev24_rssi
-          - sensor.dev25_rssi
-          - sensor.dev26_rssi
-          - sensor.dev27_rssi
-          - sensor.dev28_rssi
-          - sensor.dev29_rssi
-          - sensor.dev30_rssi
-          - sensor.dev31_rssi
-          - sensor.dev32_rssi
-          - sensor.dev33_rssi
-          - sensor.dev34_rssi
-#          - sensor.dev35_rssi
-          - sensor.dev54_rssi
-          - sensor.dev55_rssi
-          - sensor.dev56_rssi
-          - sensor.dev57_rssi
-          - sensor.dev58_rssi
-          - sensor.dev59_rssi
-          - sensor.dev60_rssi
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - sensor.dev1_info
-          - sensor.dev2_info
-          - sensor.dev3_info
-          - sensor.dev4_info
-          - sensor.dev5_info
-#          - sensor.dev6_info
-          - sensor.dev7_info
-          - sensor.dev8_info
-          - sensor.dev10_info
-          - sensor.dev11_info
-          - sensor.dev12_info
-          - sensor.dev13_info
-          - sensor.dev14_info
-          - sensor.dev15_info
-          - sensor.dev16_info
-          - sensor.dev17_info
-          - sensor.dev18_info
-          - sensor.dev19_info
-          - sensor.dev20_info
-          - sensor.dev21_info
-#          - sensor.dev22_info
-          - sensor.dev23_info
-          - sensor.dev24_info
-          - sensor.dev25_info
-          - sensor.dev26_info
-          - sensor.dev27_info
-          - sensor.dev28_info
-          - sensor.dev29_info
-          - sensor.dev30_info
-          - sensor.dev31_info
-          - sensor.dev32_info
-          - sensor.dev33_info
-          - sensor.dev34_info
-#          - sensor.dev35_info
-          - sensor.dev54_info
-          - sensor.dev55_info
-          - sensor.dev56_info
-          - sensor.dev57_info
-          - sensor.dev58_info
-          - sensor.dev59_info
-          - sensor.dev60_info
-        title: Info
-#      - type: entities
-#        show_header_toggle: false
-#        entities:
-#          - sensor.dev1_bssid
-#          - sensor.dev2_bssid
-#          - sensor.dev3_bssid
-#          - sensor.dev4_bssid
-#          - sensor.dev5_bssid
-#          - sensor.dev6_bssid
-#          - sensor.dev7_bssid
-#          - sensor.dev8_bssid
-#          - sensor.dev10_bssid
-#          - sensor.dev11_bssid
-#          - sensor.dev12_bssid
-#          - sensor.dev13_bssid
-#          - sensor.dev14_bssid
-#          - sensor.dev15_bssid
-#          - sensor.dev16_bssid
-#          - sensor.dev17_bssid
-#          - sensor.dev18_bssid
-#          - sensor.dev19_bssid
-#          - sensor.dev20_bssid
-#          - sensor.dev21_bssid
-#          - sensor.dev22_bssid
-#          - sensor.dev23_bssid
-#          - sensor.dev24_bssid
-#          - sensor.dev25_bssid
-#          - sensor.dev26_bssid
-#          - sensor.dev27_bssid
-#          - sensor.dev28_bssid
-#          - sensor.dev29_bssid
-#          - sensor.dev30_bssid
-#          - sensor.dev31_bssid
-#          - sensor.dev32_bssid
-#          - sensor.dev54_bssid
-#          - sensor.dev55_bssid
-#          - sensor.dev56_bssid
-#          - sensor.dev57_bssid
-#          - sensor.dev58_bssid
-#          - sensor.dev59_bssid
-#        title: Bssid
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - sensor.dev1_ssid
-          - sensor.dev2_ssid
-          - sensor.dev3_ssid
-          - sensor.dev4_ssid
-          - sensor.dev5_ssid
-#          - sensor.dev6_ssid
-          - sensor.dev7_ssid
-          - sensor.dev8_ssid
-          - sensor.dev10_ssid
-          - sensor.dev11_ssid
-          - sensor.dev12_ssid
-          - sensor.dev13_ssid
-          - sensor.dev14_ssid
-          - sensor.dev15_ssid
-          - sensor.dev16_ssid
-          - sensor.dev17_ssid
-          - sensor.dev18_ssid
-          - sensor.dev19_ssid
-          - sensor.dev20_ssid
-          - sensor.dev21_ssid
-#          - sensor.dev22_ssid
-          - sensor.dev23_ssid
-          - sensor.dev24_ssid
-          - sensor.dev25_ssid
-          - sensor.dev26_ssid
-          - sensor.dev27_ssid
-          - sensor.dev28_ssid
-          - sensor.dev29_ssid
-          - sensor.dev30_ssid
-          - sensor.dev31_ssid
-          - sensor.dev32_ssid
-          - sensor.dev33_ssid
-          - sensor.dev34_ssid
-#          - sensor.dev35_ssid
-          - sensor.dev54_ssid
-          - sensor.dev55_ssid
-          - sensor.dev56_ssid
-          - sensor.dev57_ssid
-          - sensor.dev58_ssid
-          - sensor.dev59_ssid
-          - sensor.dev60_ssid
-        title: SSID
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - sensor.dev1_capability
-          - sensor.dev2_capability
-          - sensor.dev3_capability
-          - sensor.dev4_capability
-          - sensor.dev5_capability
-#          - sensor.dev6_capability
-          - sensor.dev7_capability
-          - sensor.dev8_capability
-          - sensor.dev10_capability
-          - sensor.dev11_capability
-          - sensor.dev12_capability
-          - sensor.dev13_capability
-          - sensor.dev14_capability
-          - sensor.dev15_capability
-          - sensor.dev16_capability
-          - sensor.dev17_capability
-          - sensor.dev18_capability
-          - sensor.dev19_capability
-          - sensor.dev20_capability
-          - sensor.dev21_capability
-#          - sensor.dev22_capability
-          - sensor.dev23_capability
-          - sensor.dev24_capability
-          - sensor.dev25_capability
-          - sensor.dev26_capability
-          - sensor.dev27_capability
-          - sensor.dev28_capability
-          - sensor.dev29_capability
-          - sensor.dev30_capability
-          - sensor.dev31_capability
-          - sensor.dev32_capability
-          - sensor.dev33_capability
-          - sensor.dev34_capability
-#          - sensor.dev35_capability
-          - sensor.dev54_capability
-          - sensor.dev55_capability
-          - sensor.dev56_capability
-          - sensor.dev57_capability
-          - sensor.dev58_capability
-          - sensor.dev59_capability
-          - sensor.dev60_capability
-        title: Capability
-
-      - type: history-graph
-        #title: Linkquality
-        entities:
-          - sensor.bathroom_u_linkquality
-          - sensor.carlo_linkquality
-          - sensor.outside_linkquality
-          - sensor.beamer_linkquality
-          - sensor.livingroom_linkquality
-          - sensor.foyer_linkquality
-
-    icon: 'mdi:signal-variant'
-    title: Signals
 
 #################################################
 ########### Utilities ###########################
@@ -1610,6 +1391,13 @@ views:
 
       - type: entities
         entities:
+          - sensor.ics_4
+          - sensor.ics_5
+          - sensor.ics_6
+        title: Holidays
+
+      - type: entities
+        entities:
           - input_boolean.irrigation
           - input_boolean.irrigation_override
           - sensor.dev30_state
@@ -1619,6 +1407,7 @@ views:
           - switch.dev30_gpio_4
           - switch.dev30_gpio_5
           - switch.dev30_gpio_15
+          - switch.dev30_gpio_14
           - sensor.dev30_uptime
           - sensor.dark_sky_daytime_high_temperature_0d
         show_header_toggle: false
@@ -1669,158 +1458,6 @@ views:
 
     icon: 'mdi:tools'
     title: Tools
-#################################################
-########### POWER ###############################
-#################################################
-  - cards:
-      - type: history-graph
-        entities:
-          - sensor.dev16_em_cur_l1
-          - sensor.dev16_em_cur_l2
-          - sensor.dev16_em_cur_l3
-          - sensor.dev16_em_cur
-
-      - type: history-graph
-        entities:
-          - sensor.dev16_ads_ch1_kw
-          - sensor.dev16_ads_ch2_kw
-
-      - type: custom:long-term-card
-        name: 'Energy Month / Day'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        lower_bound: 0
-        upper_bound: 25
-        maxDays: 30
-        data_delimiter: ','
-        unit: 'kWh'
-        entities:
-         - sensor.long_term_power
-      - type: custom:long-term-card
-        name: 'Energy Year / Day'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        unit: 'kWh'
-        line_width: 1
-        lower_bound: 0
-        upper_bound: 25
-        maxDays: 365
-        data_delimiter: ','
-        entities:
-         - sensor.long_term_power
-      - type: custom:long-term-card
-        name: 'Energy Cost / Year'
-        display_mode: 'abs'
-        formater: 'yyyy-mm-dd'
-        maxDays: 365
-        data_delimiter: ','
-        unit: 'eur'
-        entities:
-         - sensor.long_term_energy_cost
-
-      - detail: 2
-        graph: line
-        entity: sensor.dev16_ads_ch0_kw
-        type: sensor 
-
-      - type: vertical-stack
-        cards:
-        - type: horizontal-stack
-          cards:
-           - entity: sensor.outside_battery
-             name: Outside
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.bathroom_u_battery
-             name: Bathroom U.
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.carlo_battery
-             name: Carlo
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-        - type: horizontal-stack
-          cards:
-           - entity: sensor.beamer_battery
-             name: Beamer
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.livingroom_battery
-             type: gauge
-             name: Livingroom
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.foyer_battery
-             type: gauge
-             name: Foyer
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-        - type: horizontal-stack
-          cards:
-           - entity: sensor.0x00158d00041024ef_battery
-             name: L
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.0x00158d00041dfcce_battery
-             type: gauge
-             name: Supply
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.0x00158d00042505f7_battery
-             type: gauge
-             name: Bedroom
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-        - type: horizontal-stack
-          cards:
-           - entity: sensor.0x00158d00041d6d95_battery
-             name: Bathroom B.
-             type: gauge
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.0x00158d00044af1b0_battery
-             type: gauge
-             name: Caro
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-           - entity: sensor.0x00158d00044b00e0_battery
-             type: gauge
-             name: Workshop
-             severity:
-               green: 50
-               yellow: 30
-               red: 10
-
-
-    icon: 'mdi:power-plug'
-    title: power
 #################################################
 ########## upstairs #############################
 #################################################
@@ -1875,37 +1512,3 @@ views:
 #
 #    icon: 'mdi:home-floor-negative-1'
 #    title: cellar
-#################################################
-######## All lights #############################
-#################################################
-  - cards:
-     - show_empty: true
-       card:
-         type: entities
-         title: All lights
-       filter:
-         include:
-           - domain: light
-       type: 'custom:monster-card'
-     - show_empty: true
-       card:
-         type: entities
-         title: All switches
-       filter:
-         include:
-           - domain: switch
-       type: 'custom:monster-card'
-    icon: 'mdi:settings'
-    title: All lights
-#################################################
-########## TESTING ##############################
-#################################################
-
-  - cards:
-      - type: entities
-        entities:
-          - input_boolean.approx_warn
-        show_header_toggle: false
-
-    title: T
-#######################################

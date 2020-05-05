@@ -3,15 +3,27 @@ sensor:
   - platform: ics
     name: Packaging
     url: https://www.rmg-gmbh.de/download/Hamb%C3%BChren.ics
+    show_blank: "blank"
     id: 1
+    icon: "mdi:recycle"
+
   - platform: ics
     name: Trash
     url: http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D=148&tx_ckcellextermine_pi1%5Bics%5D=0&tx_ckcellextermine_pi1%5Bstartingpoint%5D=234&type=3333
     id: 2
+    icon: "mdi:trash-can-outline"
+
   - platform: ics
     name: Paper
     url: http://www.zacelle.de/privatkunden/muellabfuhr/abfuhrtermine/?tx_ckcellextermine_pi1%5Bot%5D=148&tx_ckcellextermine_pi1%5Bics%5D=2&tx_ckcellextermine_pi1%5Bstartingpoint%5D=234&type=3333
     id: 3
+    icon: "mdi:package-variant"
+
+  - platform: template
+    sensors:
+      ics_4_txt:
+        value_template: '{{ states.sensor.ics_4.attributes.description}} @ {{states.sensor.ics_4.state}}'
+        friendly_name: "Work Next"
 
 # -----------------------------------------------
 # -----------------------------------------------

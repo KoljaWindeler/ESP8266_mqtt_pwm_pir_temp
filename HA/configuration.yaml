@@ -45,6 +45,8 @@ lovelace:
       type: js
     - url: /hacsfiles/text-divider-row/text-divider-row.js
       type: module
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
 
   dashboards: 
     power-dashboard-yaml:
@@ -53,6 +55,36 @@ lovelace:
       icon: 'mdi:power-plug'
       show_in_sidebar: true
       filename: power_dashboard.yaml
+    beamer-dashboard-yaml:
+      mode: yaml 
+      title: Beamer
+      icon: 'mdi:play-network'
+      show_in_sidebar: true
+      filename: beamer_dashboard.yaml
+    rssi-dashboard-yaml:
+      mode: yaml 
+      title: RSSI
+      icon: 'mdi:signal-variant'
+      show_in_sidebar: true
+      filename: rssi_dashboard.yaml
+    security-dashboard-yaml:
+      mode: yaml 
+      title: Security
+      icon: 'mdi:security'
+      show_in_sidebar: true
+      filename: alarm_dashboard.yaml
+    all-dashboard-yaml:
+      mode: yaml 
+      title: All
+      icon: 'mdi:toggle-switch'
+      show_in_sidebar: false
+      filename: all_dashboard.yaml
+    test-dashboard-yaml:
+      mode: yaml 
+      title: Test
+      icon: 'mdi:folder-key-network-outline'
+      show_in_sidebar: true
+      filename: test_dashboard.yaml
 
 config:
 #mobile_app:
@@ -93,6 +125,8 @@ frontend:
     - /local/livingroom.jpg
   extra_html_url_es5:
     - /local/custom_ui/state-card-tiles_es5.html
+  extra_module_url:
+    - /local/custom-sidebar.js
   javascript_version: auto
 
 #panel_custom:
@@ -142,7 +176,7 @@ recorder:
 #  exclude:
 #    entities:
 #      binary_sensor.dev15_motion
-logbook:
+#logbook:
 sun:
 system_health:
 stream:

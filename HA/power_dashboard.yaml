@@ -83,9 +83,15 @@ views:
              name: Caro
            - entity: sensor.0x00158d00044b00e0_battery
              name: Workshop
+           - entity: sensor.0x00158d0003f85cf0_battery
+             name: Motion Heater
+           - entity: sensor.0x00158d0002f0bc08_battery
+             name: Motion hallway U.
 
       - type: entities
         entities:
+           - entity: sensor.dev16_em_cur
+           - type: divider
            - entity: sensor.dev16_ads_ch0_kw
            - entity: sensor.dev16_ads_ch1_kw
            - entity: sensor.dev16_ads_ch2_kw

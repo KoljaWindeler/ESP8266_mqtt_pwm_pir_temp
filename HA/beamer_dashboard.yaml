@@ -1,0 +1,215 @@
+name: Beamer
+
+views:
+#################################################
+########### BEAMER ##############################
+#################################################
+
+  - cards:
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:power'
+                name: All
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_off
+                  action: call-service
+                entity: binary_sensor.always_on
+                state_color: true
+              - icon: 'mdi:fire'
+                name: FireTV
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_start_fire
+                  action: call-service
+                entity: binary_sensor.always_on
+                state_color: true
+              - icon: 'mdi:cast-connected'
+                name: Laptop
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_start_pc
+                  action: call-service
+                entity: binary_sensor.always_on
+                state_color: true
+              - icon: 'mdi:power'
+                name: Beamer
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_beamer_power
+                  action: call-service
+                entity: binary_sensor.always_on
+                state_color: true
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:menu'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_firehome
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:arrow-up-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_fireup
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:volume-plus'
+                name: Amp +2
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_tvvolumeup_4
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:volume-plus'
+                name: Amp +5
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_tvvolumeup_10
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:arrow-left-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_fireleft
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:check-circle'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_fireok
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:arrow-right-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_fireright
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:arrow-left-circle'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_fireback
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+          - type: horizontal-stack
+            cards:
+              - icon: 'mdi:volume-mute'
+                name: AMP
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_tvmute
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:arrow-down-bold'
+                name: Fire
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_firedown
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:volume-minus'
+                name: Amp -2
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_tvvolumedown_4
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+              - icon: 'mdi:volume-minus'
+                name: Amp -5
+                service: script.turn_on
+                type: entity-button
+                tap_action:
+                  service: script.beamer_tvvolumedown_10
+                  action: call-service
+                entity: binary_sensor.harmony_beamer
+                state_color: true
+
+                
+      - type: horizontal-stack
+        cards:
+         - type: entity-button
+           tap_action:
+             action: toggle
+           entity: switch.dev58_gpio_12
+           icon: 'mdi:download-network'
+           name: MediaPC
+           state_color: true
+         - type: entity-button
+           tap_action:
+             action: toggle
+           state_color: true
+           entity: light.dev10
+
+
+
+      - type: glance
+        title: Movieroom
+        entities:
+          - entity: switch.dev25_gpio_4
+            state_color: true
+            tap_action:
+              action: toggle
+            name: Main
+          - entity: switch.dev60_gpio_12
+            state_color: true
+            icon: "mdi:air-filter"
+            tap_action:
+              action: toggle
+            name: Vent
+          - entity: switch.dev60_gpio_13
+            state_color: true
+            icon: "mdi:door-open"
+            tap_action:
+              action: toggle
+            name: Window
+          - entity: switch.dev60_countdown
+            state_color: true
+            tap_action:
+              action: toggle
+            name: AutoV
+            icon: "mdi:timer-sand-empty"
+          - entity: sensor.dev60_countdown_state
+            name: Timer
+            icon: "mdi:timer-sand-empty"
+
+
+    icon: 'mdi:cast-connected'
+    title: Media
+#######################################

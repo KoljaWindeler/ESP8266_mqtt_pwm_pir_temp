@@ -7,8 +7,10 @@ binary_sensor:
         value_template: false
 
 
-
+################# SCRIPT ##############
 script:
+
+  ############### TV ##############
   chrome_pause:
     sequence:
       - service: media_player.media_play_pause
@@ -106,18 +108,6 @@ script:
         entity_id: remote.tvhub
         data:
           activity: "40817320"
-  start_beamer:
-    sequence:
-      - service: remote.turn_on
-        entity_id: remote.beamer_harmony
-        data:
-          activity: "40703112"
-  beameroff:
-    sequence:
-      - service: remote.turn_on
-        entity_id: remote.beamer_harmony
-        data:
-          activity: "-1"
   start_chrom:
     sequence:
       - service: remote.turn_on
@@ -139,3 +129,156 @@ script:
           command: ChannelDown
           device: 47580277
 
+  ############### TV ##############
+  #################################
+
+  #################################
+  ############# BEAMER ############
+  
+  ## activity
+  beamer_start_pc:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "40703112"
+      - service: homeassistant.turn_on 
+        entity_id: switch.dev60_gpio_13
+
+  beamer_start_fire:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "40751805"
+      - service: homeassistant.turn_on 
+        entity_id: switch.dev60_gpio_13
+  beamer_off:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "-1"
+      - service: homeassistant.turn_off
+        entity_id: switch.dev60_gpio_13
+
+  ## beamer
+  beamer_beamer_power:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: PowerToggle
+          device: 64439580
+          
+  ## amplifier
+  beamer_tvmute:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: Mute
+          device: 64439581
+  beamer_tvvolumeup_10:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeUp
+          device: 64439581
+          num_repeats: 10
+          delay_secs: 0.0
+  beamer_tvvolumedown_10:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeDown
+          device: 64439581
+          num_repeats: 10
+          delay_secs: 0.0
+  beamer_tvvolumeup_4:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeUp
+          device: 64439581
+          num_repeats: 4
+          delay_secs: 0.0
+  beamer_tvvolumedown_4:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeDown
+          device: 64439581
+          num_repeats: 4
+          delay_secs: 0.0
+  beamer_tvvolumeup:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeUp
+          device: 64439581
+  beamer_tvvolumedown:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: VolumeDown
+          device: 64439581
+
+  ## fire TV
+  beamer_firedown:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: DirectionDown
+          device: 64439579
+  beamer_fireup:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: DirectionUp
+          device: 64439579
+  beamer_fireok:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: OK
+          device: 64439579
+  beamer_fireback:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: Back
+          device: 64439579
+  beamer_fireleft:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: DirectionLeft
+          device: 64439579
+  beamer_fireright:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: DirectionRight
+          device: 64439579
+  beamer_firehome:
+    sequence:
+      - service: remote.send_command
+        entity_id: remote.beamer_harmony
+        data:
+          command: Home
+          device: 64439579
+  ############# BEAMER ############
+  #################################
