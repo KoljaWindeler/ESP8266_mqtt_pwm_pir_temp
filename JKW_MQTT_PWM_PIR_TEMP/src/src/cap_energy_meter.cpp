@@ -45,7 +45,12 @@ energy_meter::~energy_meter(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded undetr all circumstances
 bool energy_meter::parse(uint8_t * config){
-	return cap.parse(config, get_key());
+	if(cap.parse_wide(config,"%s%i",(uint8_t*)"EM",1,10,&m_freq,(uint8_t*)"", true)){
+		return true;
+	} else if(cap.parse(config, get_key())){
+		return true;
+	}
+	return false;
 }
 
 // the will be requested to check if the key is in the config strim
@@ -64,13 +69,14 @@ bool energy_meter::init(){
 	identifier[2] = (char *) ENERGY_METER_CUR_L1;
 	identifier[3] = (char *) ENERGY_METER_CUR_L2;
 	identifier[4] = (char *) ENERGY_METER_CUR_L3;
+	m_freq = 1;
 	return true;
 }
 
 // return how many value you want to publish per second
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t energy_meter::count_intervall_update(){
-	return 2; // technically we're not publishing anything but we need to be called on a fixed time base
+	return 2 * m_freq; // technically we're not publishing anything but we need to be called on a fixed time base
 }
 
 // will be called in loop, if you return true here, every else will be skipped !!

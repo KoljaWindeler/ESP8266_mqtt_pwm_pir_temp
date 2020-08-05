@@ -53,6 +53,7 @@ private:
 		char temp[16];
 		SoftwareSerial * swSer1;
 		uint8_t dataset;
+		uint8_t m_freq;
 		char* identifier[5];
 		bool m_discovery_pub;
 	};
