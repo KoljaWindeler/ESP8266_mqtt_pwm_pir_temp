@@ -5,6 +5,9 @@ notify:
   - platform: file
     name: filenotify_cost
     filename: /config/longterm_logs/cost_total.csv
+  - platform: file
+    name: filenotify_solar
+    filename: /config/longterm_logs/solar.csv
 
 automation:
   - alias: sensor_values_to_file
@@ -15,10 +18,13 @@ automation:
     action:
       - service: notify.filenotify
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.dev16_em_tot.state }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.dev37_em_tot.state }}"
       - service: notify.filenotify_cost
         data_template: 
           message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.energy_cost.state }}"
+      - service: notify.filenotify_solar
+        data_template: 
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.kaco_kwh.state }}"
 
 sensor:
   - platform: load_external

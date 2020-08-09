@@ -1,0 +1,13 @@
+sensor:
+  - platform: command_line
+    name: kaco
+    command: wget -qO - http://192.168.2.194/realtime.csv | awk -F";" '{printf("%.2f\n", $12*100000/65535)}'
+    unit_of_measurement: "W"
+    scan_interval: 20
+  - platform: command_line
+    name: kaco_kwh
+    command: wget -qO - 192.168.2.194/`date +%Y%m%d`.csv | cat -e | awk -F"^" '{print $2}' | awk -F";" '{print $5}'
+    unit_of_measurement: "kWh"
+    scan_interval: 300
+    
+ 

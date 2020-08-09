@@ -2,7 +2,7 @@ alarm_control_panel:
   - platform: manual
     code: !secret alarm_pin
     delay_time: 0
-    pending_time: 0
+    arming_time: 0
 
 switch:    
   - platform: mqtt

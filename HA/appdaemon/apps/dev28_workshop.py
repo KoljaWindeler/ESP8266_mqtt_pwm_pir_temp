@@ -1,11 +1,12 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 class workshop2World(hass.Hass):
 
     def initialize(self):
         self.log("Starting workshop2 Service")
+        wait.wait_available(self,["switch.dev28_gpio_4","switch.dev28_countdown","switch.dev28_countdown_l","sensor.dev28_countdown_state"],False)
         self.ventilation_time_s = 30
         self.ventilation_time_l = 8*60-1 # 8 std
         self.ventilation_time_l_duty = 0.1

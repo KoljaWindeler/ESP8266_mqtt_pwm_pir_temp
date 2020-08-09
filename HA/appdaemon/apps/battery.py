@@ -2,12 +2,13 @@ import math
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
 from threading import Timer
-
+import wait
 
 class BatteryWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Battery Service")
+		wait.wait_available(self,"sensor",True)
 		all = self.get_state("sensor")
 		self.sensors = []
 		self.threshold = 15

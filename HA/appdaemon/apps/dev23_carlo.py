@@ -1,6 +1,6 @@
 import appdaemon.plugins.hass.hassapi as hass 
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -12,6 +12,7 @@ class carloWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting carlo Service")
+        wait.wait_available(self,["binary_sensor.dev23_button1s","binary_sensor.dev23_button"],False)
         self.listen_state(self.main_toggle,"binary_sensor.dev23_button1s", new = "on")
         self.listen_state(self.tower_toggle,"binary_sensor.dev23_button", new = "on")
 

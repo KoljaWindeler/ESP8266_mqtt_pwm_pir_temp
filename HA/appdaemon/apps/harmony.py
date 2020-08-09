@@ -20,6 +20,9 @@ class harmonyWorld(hass.Hass):
            self.state(entity=self.remote[i], new=self.get_state(self.remote[i]))
 
     def state(self, entity="", attribute="", old="", new="",kwargs=""):
+        if(not(isinstance(new,str)) or not(isinstance(old,str))):
+           self.log("not a string")
+           return
         i=self.remote.index(entity)
         if(not(new=="off")):
             self.set_state("binary_sensor."+self.binary[i],state="on")

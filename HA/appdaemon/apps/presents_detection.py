@@ -13,7 +13,18 @@ class PresentsWorld(hass.Hass):
 			#m="nobody at home, checking in 5min"
 			#self.log(m)
 			self.run_in(self.chk_light,5*60)
+			self.run_in(self.chk_door,2*60)
 			#self.call_service("notify/pb", title="testing", message=m)
+
+	def chk_door(self, kwargs=""):
+		if(self.get_state("binary_sensor.someone_is_home") == "off"):
+			self.log("Presents state just changed to 'nobody is home'")
+			if(self.get_state("binary_sensor.dev17_motion") == "on"):
+				m = "everyone is gone for 2 minutes but the basement door is still open"
+				t = "This might interest you"
+				self.call_service("notify/pb", title=t, message=m)
+				self.call_service("notify/pb", title=t, message=m)
+				self.log(m)
 
 	def chk_light(self, kwargs=""):
 		if(self.get_state("binary_sensor.someone_is_home") == "off" and self.get_state("input_boolean.presents_simulation") == "off"):

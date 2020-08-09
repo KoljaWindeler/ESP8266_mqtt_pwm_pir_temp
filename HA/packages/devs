@@ -13,7 +13,7 @@ DEV12 -O- b1 light bulb, flur unten
 DEV13 -T- leakage controller
 DEV14 -T- kitchen fridge, PIR, simple light
 DEV15 -T- World map, PIR dimmer
-DEV16 -T- Energy meter
+DEV16 -T- ADS_AC
 DEV17 -O- Kellertuer
 DEV18 -T- love of pi
 DEV19 -T- Crip LED dimmer
@@ -33,6 +33,9 @@ DEV32 -T- SL bed light kolja
 DEV33 -T- Shell Button, Carlo
 DEV34 -T- Shelly, Stehlampe Spielecke
 DEV35 -T- Shelly, Wandschalter Spielecke
+DEV36 -T- Shelly, Aussenlicht
+DEV37 -T- EM
+DEV38 -T- Poolheater
 
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions Geheim

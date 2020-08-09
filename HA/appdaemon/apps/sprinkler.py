@@ -41,7 +41,7 @@ class SprinklerWorld(hass.Hass):
 		self.listen_state(self.start,"input_boolean.irrigation", new = "on")
 		self.listen_state(self.start_o,"input_boolean.irrigation_override", new = "on")
 		self.turn_off(SWITCH_PUMP)
-		self.run_daily(self.start_o, datetime.time(8, 0, 0))
+		self.run_daily(self.start_o, datetime.time(9, 0, 0))
 
 
 	def start_o(self, entity="", attribute="", old="", new="",kwargs=""):
@@ -58,9 +58,9 @@ class SprinklerWorld(hass.Hass):
 		self.limited_config = [[[SWITCH_VALVE5],1]]
 
 		self.config = [
-			[[SWITCH_VALVE4,SWITCH_VALVE5],1], # one valve, 2xt200 + vegtables, regular time
-			[[SWITCH_VALVE2],1], # one valve, 3xt200, regular time
-			[[SWITCH_VALVE1,SWITCH_VALVE3],1.5] # two valves, 150% time
+			[[SWITCH_VALVE4,SWITCH_VALVE5],1.5], # one valve, 2xt200 + vegtables, regular time
+			[[SWITCH_VALVE2,SWITCH_VALVE3],1], # one valve, 3xt200, regular time
+			[[SWITCH_VALVE1],1] # two valves, 150% time
 				]
 
 		self.valve_list = [SWITCH_VALVE1,SWITCH_VALVE2,SWITCH_VALVE3,SWITCH_VALVE4,SWITCH_VALVE5]

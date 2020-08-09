@@ -1,6 +1,6 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -12,6 +12,8 @@ class bedroomWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting bedroom Service")
+        wait.wait_available(self,["binary_sensor.dev31_button","binary_sensor.dev31_button1s","binary_sensor.dev32_button1s","binary_sensor.dev31_button3s","binary_sensor.dev32_button3s","sensor.dev26_5_hold","sensor.dev26_5_hold","binary_sensor.dev26_gpio_5","light.dev32"],False)
+
         self.listen_state(self.crip_toggle,"binary_sensor.dev31_button", new = "on")
         self.listen_state(self.bedlight_off,"binary_sensor.dev31_button1s", new = "on")
         self.listen_state(self.bedlight_off,"binary_sensor.dev32_button1s", new = "on")

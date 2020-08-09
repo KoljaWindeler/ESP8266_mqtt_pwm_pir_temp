@@ -1,4 +1,7 @@
 ---
+owntracks:
+  module: owntracks
+  class: OwntracksWorld
 cube:
   module: cube
   class: cubeWorld
@@ -23,6 +26,9 @@ warmwater:
 pumps:
   module: pumps
   class: PumpWorld
+security:
+  module: security
+  class: SecurityWorld 
 
 floor_up:
   module: dev57_floor_upstairs 

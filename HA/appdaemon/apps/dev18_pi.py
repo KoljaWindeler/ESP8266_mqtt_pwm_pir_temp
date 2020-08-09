@@ -1,10 +1,12 @@
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, time
+import wait
 
 class PiWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Pi Service")
+        wait.wait_available(self,"sensor.dev30_update",False)
         self.listen_state(self.fuse, "sensor.dev30_update")
         self.run_daily(self.off, time(23, 0, 0))
         try:

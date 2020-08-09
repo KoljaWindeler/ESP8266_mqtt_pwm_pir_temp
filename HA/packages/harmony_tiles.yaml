@@ -145,6 +145,15 @@ script:
       - service: homeassistant.turn_on 
         entity_id: switch.dev60_gpio_13
 
+  beamer_start_chrome:
+    sequence:
+      - service: remote.turn_on
+        entity_id: remote.beamer_harmony
+        data:
+          activity: "41123989"
+      - service: homeassistant.turn_on 
+        entity_id: switch.dev60_gpio_13
+
   beamer_start_fire:
     sequence:
       - service: remote.turn_on

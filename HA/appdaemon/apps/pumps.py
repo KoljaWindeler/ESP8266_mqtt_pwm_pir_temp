@@ -27,8 +27,8 @@ class PumpWorld(hass.Hass):
 		self.run_daily(self.eval, datetime.time(18, 20, 0))
 
 	def update(self, entity='', attribute='', old='', new='',kwargs=''):
-		#self.log("updated power of "+entity+" to: "+new)
-		if(not(entity in self.s)):
+		#self.log("updated power or new=='unknown' or old=='unknown' of "+entity+" to: "+new)
+		if(not(entity in self.s) or new=='unknown' or old=='unknown'):
 			return
 		e=self.s.index(entity)
 		p=int(float(new)-float(old))

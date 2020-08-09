@@ -19,6 +19,8 @@ homeassistant:
       device_class: "temperature"
     switch.dev29_gpio_4:
       friendly_name: "Warm Water Emu"
+    binary_sensor.dev29_gpio_5:
+      friendly_name: "Heater Error"
 
 # -----------------------------------------------
 
@@ -26,5 +28,16 @@ sensor:
   - platform: mqtt_jkw
     name: "dev29"
     fname: "29 Warm Water"
+
+  - platform: statistics_jkw
+    entity_id: sensor.dev29_temperature
+    name: dev29_temperature_stat
+    sampling_size: 10
+
+  - platform: template
+    sensors:
+      dev29_temperature_der:
+        unit_of_measurement: "%"
+        value_template: "{{ state_attr('sensor.dev29_temperature_stat_mean', 'averaged_derivation') }}"
 
 # -----------------------------------------------

@@ -1,10 +1,13 @@
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, time
+import wait
 
 class ConnectionWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Connection Service")
+        wait.wait_available(self,"sensor.dev1_update",True)
+
         for i in range(1,160):
             if(i==18):
                continue

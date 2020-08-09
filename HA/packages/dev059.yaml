@@ -17,8 +17,10 @@ homeassistant:
       friendly_name: "Basement"
     binary_sensor.dev59_motion_13:
       friendly_name: "Basement 1"
+      device_class: "motion"
     binary_sensor.dev59_motion_16:
       friendly_name: "Basement 2"
+      device_class: "motion"
     sensor.dev59_temperature:
       friendly_name: "59 Basement"
       unit_of_measurement: "°C"

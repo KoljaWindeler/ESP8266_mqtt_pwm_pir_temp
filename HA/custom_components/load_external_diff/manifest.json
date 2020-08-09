@@ -1,0 +1,8 @@
+{
+  "domain": "load_external_diff",
+  "name": "load_external_diff",
+  "documentation": "https://github.com/custom-components/load_external/blob/master/README.md",
+  "dependencies": [],
+  "codeowners": ["@jkw"],
+  "requirements": []
+}

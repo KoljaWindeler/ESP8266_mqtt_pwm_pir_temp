@@ -1,12 +1,14 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 class motionLight(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Motion Service")
 		self.my_sensors = self.args["sensors"]
+		wait.wait_available(self,self.my_sensors,False)
+		
 		for i in self.my_sensors:
 			#self.log("Sensor: "+i)
 			self.listen_state(self.motion,i)

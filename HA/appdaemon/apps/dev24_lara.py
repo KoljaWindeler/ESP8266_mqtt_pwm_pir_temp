@@ -1,6 +1,6 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -12,6 +12,7 @@ class laraWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting lara Service")
+        wait.wait_available(self,["binary_sensor.dev24_button1s","binary_sensor.dev24_button"],False)
         self.listen_state(self.main_toggle,"binary_sensor.dev24_button1s", new = "on")
         self.listen_state(self.lampinions_toggle,"binary_sensor.dev24_button", new = "on")
 

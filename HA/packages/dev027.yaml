@@ -48,14 +48,14 @@ homeassistant:
       
     light.dev27_simple_rainbow:
       icon: "mdi:traffic-light"
-      friendly_name: "027 UpStairs Rain"
+      friendly_name: "27 UpStairs Rain"
 
 # -----------------------------------------------
 
 sensor:
   - platform: mqtt_jkw
     name: "dev27"
-    fname: "027 B1"
+    fname: "27 B1"
     
   - platform: mqtt
     state_topic: "dev27/r/uptime"

@@ -1,7 +1,7 @@
 import appdaemon.plugins.hass.hassapi as hass 
 import datetime, time
 import urllib.request
-
+import wait
 
 #
 # Hellow World App
@@ -13,6 +13,7 @@ class AdafruitWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Adafruit Service")
+		wait.wait_available(self,"sensor.adafruit",False)
 		self.listen_state(self.start,"sensor.adafruit")
 
 	def roundshot(self, url, msg):
@@ -51,7 +52,6 @@ class AdafruitWorld(hass.Hass):
 			self.turn_off("light.joiner_kitchen")
 			self.turn_off("light.dev34")
 			self.turn_off("light.dev18")
-			self.turn_off("light.dev22")
 			self.turn_on("script.tvoff")
 			self.turn_on("light.dev54_2")
 			self.turn_on("light.dev12")

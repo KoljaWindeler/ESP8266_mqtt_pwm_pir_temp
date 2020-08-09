@@ -1,10 +1,12 @@
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, time
+import wait
 
 class cubeWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting cube Service")
+		# wait.wait_available(self,"sensor.0x00158d0002a7051f_action",False)
 		self.listen_state(self.cube, "sensor.0x00158d0002a7051f_action", attribute = "action")
 
     ######################################################

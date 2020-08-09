@@ -1,7 +1,7 @@
 
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -13,6 +13,8 @@ class mr_ventWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting movieroom_vent Service")
+        wait.wait_available(self,["switch.dev60_countdown","sensor.dev60_countdown_state"],False)
+
         self.ventilation_time = 10
         self.listen_state(self.countdown,"switch.dev60_countdown")
         self.set_state("sensor.dev60_countdown_state",state="0")

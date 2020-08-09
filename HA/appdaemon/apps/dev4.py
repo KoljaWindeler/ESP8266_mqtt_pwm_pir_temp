@@ -1,10 +1,12 @@
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, time
+import wait
 
 class ventWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting vent Service")
+        wait.wait_available(self,["sensor.dev4_humidity_stat_mean"],False)
         self.listen_state(self.vent, "sensor.dev4_humidity_stat_mean")
         self.turn_off("switch.dev4_gpio_5")
         self.state = 0

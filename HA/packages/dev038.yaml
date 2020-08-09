@@ -1,0 +1,18 @@
+
+homeassistant:
+  customize:
+    switch.dev38_gpio_5:
+      friendly_name: "Pool heater"
+      icon: mdi:fan
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev38"
+    fname: "38 Power heater"
+  - platform: mqtt
+    state_topic: "dev38_heattime"
+    name: "dev38_heattime"
+    unit_of_measurement: "min"
+
+# -----------------------------------------------

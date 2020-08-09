@@ -1,10 +1,13 @@
 import appdaemon.plugins.hass.hassapi as hass
 from datetime import datetime, time
+import wait
 
 class EntranceWorld2(hass.Hass):
 
     def initialize(self):
         self.log("Starting Entrance Service 2")
+        wait.wait_available(self,["binary_sensor.dev54_button","binary_sensor.dev17_motion","device_tracker.illuminum_caro","device_tracker.illuminum_kolja","proximity.caro_home","proximity.kolja_home"],False)
+
         self.ring_cnt = [0,0]
         self.listen_state(self.ring, "binary_sensor.dev54_button", new = "on") #klingel
         self.listen_state(self.backdoor, "binary_sensor.dev17_motion", new = "on") #klingel

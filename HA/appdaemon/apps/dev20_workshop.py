@@ -1,6 +1,6 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -12,6 +12,7 @@ class workshopWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting Workshop Service")
+        wait.wait_available(self,["light.dev20","binary_sensor.dev20_button1s"],False)
         self.listen_state(self.group_toggle,"light.dev20")
         self.listen_state(self.vent_toggle,"binary_sensor.dev20_button1s", new="on")
 

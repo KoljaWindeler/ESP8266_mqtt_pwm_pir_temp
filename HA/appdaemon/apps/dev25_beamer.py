@@ -1,6 +1,6 @@
 import appdaemon.plugins.hass.hassapi as hass
 import datetime, time
-
+import wait
 
 #
 # Hellow World App
@@ -12,6 +12,7 @@ class beamerWorld(hass.Hass):
 
     def initialize(self):
         self.log("Starting beamer Service")
+        wait.wait_available(self,["binary_sensor.dev25_button","light.dev59","binary_sensor.dev25_button1s"],False)
         self.listen_state(self.led_toggle,"binary_sensor.dev25_button",new="on")
         self.listen_state(self.main_toggle,"binary_sensor.dev25_button1s", new="on")
         self.listen_state(self.aw,"light.dev59", new="on")

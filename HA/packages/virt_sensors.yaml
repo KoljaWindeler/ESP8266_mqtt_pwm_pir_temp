@@ -32,6 +32,22 @@ sensor:
 # ---------------------------------------------------------
       sec_long:
         value_template: "loading"
+# ---------------------------------------------------------
+      house_power_rem:
+        value_template: "{{ ((states('sensor.kaco')|float) +(states('sensor.dev37_em_cur')|float) -(states('sensor.dev16_ads_ch0_kw')|float) -(states('sensor.dev16_ads_ch1_kw')|float) -(states('sensor.dev16_ads_ch2_kw')|float) -(states('sensor.dev16_ads_ch3_kw')|float) -(states('sensor.dev16_ads_ch4_kw')|float) -(states('sensor.dev16_ads_ch5_kw')|float) -(states('sensor.dev16_ads_ch6_kw')|float) -(states('sensor.dev16_ads_ch7_kw')|float) -(states('sensor.dev16_ads_ch8_kw')|float) -(states('sensor.dev16_ads_ch9_kw')|float) -(states('sensor.dev16_ads_ch10_kw')|float) -(states('sensor.dev16_ads_ch11_kw')|float)+0.01)| round(2) }}"
+        unit_of_measurement: "W"
+      house_power:
+        value_template: "{{ ((states('sensor.kaco')|float) +(states('sensor.dev37_em_cur')|float)+0.01)| round(2) }}"
+        unit_of_measurement: "W"
+# ---------------------------------------------------------
+  - platform: mqtt ### LED dimmer
+    name: "pool_temp"
+    state_topic: "pool_temp"
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+    device_class: "temperature"
+# ---------------------------------------------------------
+
 
 input_boolean:
   clear_error:
@@ -49,3 +65,5 @@ homeassistant:
       icon: "mdi:lock"
       device_class: "lock"
       friendly_name: "Security System"
+    sensor.pool_temp:
+      friendly_name: "Stable Pool temperature"

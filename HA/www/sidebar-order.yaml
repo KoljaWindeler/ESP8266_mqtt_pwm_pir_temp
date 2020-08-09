@@ -7,12 +7,12 @@ order:
 
   - item: developer tools
     bottom: true
+  - item: logbook
+    bottom: true
 
   - item: map
     hide: true
   - item: history
     hide: true
     bottom: true
-  - item: logbook
-    hide: true
     

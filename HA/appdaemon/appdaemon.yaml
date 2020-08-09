@@ -16,6 +16,10 @@ appdaemon:
   plugins:
     HASS:
       type: hass
+#      appdaemon_startup_conditions: 
+#        delay: 30
+      plugin_startup_conditions:
+        delay: 30
       ha_url: http://192.168.2.84:8123
       token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4NjA1MTM1NzMsImlzcyI6ImYyMjg2ZjZhYjE5ZTQwM2E5YWNmNmU3OGFhYjNiNjdkIiwiaWF0IjoxNTQ1MTUzNTczfQ.qvw_4NZLP6oAMTsqkElDB8YduhkiDOd_QpIB91XLcE4
 

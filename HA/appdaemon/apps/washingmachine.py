@@ -37,6 +37,9 @@ class WashingWorld(hass.Hass):
 
 	def update_wm(self, entity='', attribute='', old='', new='',kwargs=''):
 		#self.log("updated power to: "+new+" current state is "+str(self.state))
+		if(old=="unknown" or new=="unknown"):
+		   self.log("unknown!")
+		   return
 		if(self.state_wm < 2):
 			#self.log("state <2")
 			if(float(new) >= self.thr_power):
@@ -47,7 +50,7 @@ class WashingWorld(hass.Hass):
 				self.wash_ts = datetime.datetime.now()
 		elif(self.state_wm == 2):
 			if(float(new) >= self.thr_power):
-				self.log("high power, washing")
+				#self.log("high power, washing")
 				self.wash_ts = datetime.datetime.now()
 			elif(self.wash_ts + datetime.timedelta(minutes=self.thr_min) < datetime.datetime.now()):
 				self.log("low power, for 10 minutes, i guess we're done")
@@ -67,8 +70,8 @@ class WashingWorld(hass.Hass):
 				self.handle_t.append(self.run_in(self.chk,60*60))
 				self.handle_t.append(self.run_in(self.chk,90*60))
 				self.handle_t.append(self.run_in(self.chk,120*60))
-			else:
-				self.log("low power, but during 10 min backoff time")
+			#else:
+				#self.log("low power, but during 10 min backoff time")
 
 	def motion(self, entity='', attribute='', old='', new='',kwargs=''):
 		self.log("motion: "+entity+" new="+new+" state_wm "+str(self.state_wm))
@@ -87,13 +90,13 @@ class WashingWorld(hass.Hass):
 		self.log("chk, state_wm is "+str(self.state_wm))
 		t="Washing machine"
 		if(self.state_wm==3): #30
-			m="Hello ??"
+			m=":*"
 			self.state_wm = 4
 		elif(self.state_wm==4): #60
-			m="i mean ... seriously ??"
+			m="whenever you're ready"
 			self.state_wm = 5
 		elif(self.state_wm==5): #90
-			m="we need to talk"
+			m="waiting for you"
 			self.state_wm = 6
 		elif(self.state_wm==6): #120
 			m="honey, I miss you"
