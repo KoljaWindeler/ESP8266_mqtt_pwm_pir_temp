@@ -412,7 +412,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 				m_dimmer[i]->set_step_time(min(((int)t),255));
 				return true;
 			}
-			
+
 			//// toggle pin output ////
 			// e.g. "gpio_5_toggle" -> "[doesn't matter]"
 			sprintf(m_msg_buffer, MQTT_J_GPIO_TOGGLE_TOPIC, i);
@@ -480,6 +480,11 @@ bool J_GPIO::publish(){
 						} else {
 							logger.pln((char *) STATE_OFF);
 							ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) STATE_OFF);
+
+							// after publishing off, also reset the hold timer
+							sprintf(m_msg_buffer, MQTT_J_GPIO_INPUT_HOLD_TOPIC, i);
+							sprintf(m_msg_buffer + strlen(m_msg_buffer) + 1, "%i", m_state[i].get_value());
+							ret &= network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), m_msg_buffer + strlen(m_msg_buffer) + 1);
 						}
 					} else { // publishes on hold topics
 						logger.pln((char) (m_state[i].get_value()));
