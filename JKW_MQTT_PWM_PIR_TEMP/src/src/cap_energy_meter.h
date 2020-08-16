@@ -7,6 +7,7 @@
 
 	static constexpr char MQTT_ENERGY_METER_TOTAL_TOPIC[]    = "em_tot"; // publish
 	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC[] = "em_cur"; // publish
+	static constexpr char MQTT_ENERGY_METER_CUR_FAST_TOPIC[] = "em_cur_fast"; // publish
 	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC_L[] = "em_cur_l%i"; // publish
 
 	static constexpr char ENERGY_METER_TOTAL[]     = "1-0:1.8.0*255("; // publish
@@ -18,6 +19,8 @@
 #ifdef WITH_DISCOVERY
 	static constexpr char MQTT_DISCOVERY_EM_CUR_TOPIC[]      = "homeassistant/sensor/%s_em_cur/config";
 	static constexpr char MQTT_DISCOVERY_EM_CUR_MSG[]      = "{\"name\":\"%s_em_cur\", \"stat_t\": \"%s/r/em_cur\"}";
+	static constexpr char MQTT_DISCOVERY_EM_CUR_FAST_TOPIC[]      = "homeassistant/sensor/%s_em_cur_fast/config";
+	static constexpr char MQTT_DISCOVERY_EM_CUR_FAST_MSG[]      = "{\"name\":\"%s_em_cur_fast\", \"stat_t\": \"%s/r/em_cur_fast\"}";
 	static constexpr char MQTT_DISCOVERY_EM_CUR_Li_TOPIC[]      = "homeassistant/sensor/%s_em_cur_l$i/config";
 	static constexpr char MQTT_DISCOVERY_EM_CUR_Li_MSG[]      = "{\"name\":\"%s_em_cur_l%i\", \"stat_t\": \"%s/r/em_cur_l%i\"}";
 	static constexpr char MQTT_DISCOVERY_EM_TOTAL_TOPIC[]      = "homeassistant/sensor/%s_em_tot/config";
@@ -54,6 +57,7 @@ private:
 		SoftwareSerial * swSer1;
 		uint8_t dataset;
 		uint8_t m_freq;
+		uint8_t m_slot;
 		char* identifier[5];
 		bool m_discovery_pub;
 	};

@@ -45,7 +45,7 @@ energy_meter::~energy_meter(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded undetr all circumstances
 bool energy_meter::parse(uint8_t * config){
-	if(cap.parse_wide(config,"%s%i",(uint8_t*)"EM",1,10,&m_freq,(uint8_t*)"", true)){
+	if(cap.parse_wide(config,"%s%i",(uint8_t*)"EM",1,100,&m_freq,(uint8_t*)"", true)){
 		return true;
 	} else if(cap.parse(config, get_key())){
 		return true;
@@ -76,6 +76,9 @@ bool energy_meter::init(){
 // return how many value you want to publish per second
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t energy_meter::count_intervall_update(){
+	if(m_freq == 99){
+		return 35; // 30x fast, l1,l2,l3,l,total
+	}
 	return 2 * m_freq; // technically we're not publishing anything but we need to be called on a fixed time base
 }
 
@@ -138,6 +141,36 @@ bool energy_meter::loop(){
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
 bool energy_meter::intervall_update(uint8_t slot){
+	if(m_freq == 99){
+		bool ret = 1;
+		if(m_slot == 0){
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Total "), COLOR_GREEN);
+			logger.pln(m_total_kwh);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_TOTAL_TOPIC, UNIT_TO_PC), m_total_kwh);
+		} else if(m_slot == 6){
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+			logger.pln(m_current_w);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC, UNIT_TO_PC), m_current_w);
+		} else if(m_slot == 13){
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+			logger.pln(m_current_w_l1);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L,10,UNIT_TO_PC, true, 1), m_current_w_l1);
+		} else if(m_slot == 20){
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+			logger.pln(m_current_w_l2);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L,10,UNIT_TO_PC, true, 2), m_current_w_l2);
+		} else if(m_slot == 27){
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+			logger.pln(m_current_w_l3);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_CUR_TOPIC_L,10,UNIT_TO_PC, true, 3), m_current_w_l3);
+		} else {
+			logger.print(TOPIC_MQTT_PUBLISH, F("EM Cur "), COLOR_GREEN);
+			logger.pln(m_current_w);
+			ret = network.publish(build_topic(MQTT_ENERGY_METER_CUR_FAST_TOPIC, UNIT_TO_PC), m_current_w);
+		}
+		m_slot = (m_slot + 1) % 35;
+		return ret;
+	}
 	if (slot % 2 == 0) {
 		logger.print(TOPIC_MQTT_PUBLISH, F("EM Total "), COLOR_GREEN);
 		logger.pln(m_total_kwh);
@@ -180,6 +213,14 @@ bool energy_meter::publish(){
 			char* m = new char[strlen(MQTT_DISCOVERY_EM_CUR_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_EM_CUR_MSG, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur discovery Lall"), COLOR_GREEN);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+
+			t = discovery_topic_bake(MQTT_DISCOVERY_EM_CUR_FAST_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_EM_CUR_FAST_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_EM_CUR_FAST_MSG, mqtt.dev_short, mqtt.dev_short);
+			logger.println(TOPIC_MQTT_PUBLISH, F("EM cur discovery L fast"), COLOR_GREEN);
 			m_discovery_pub = network.publish(t,m);
 			delete[] m;
 			delete[] t;
