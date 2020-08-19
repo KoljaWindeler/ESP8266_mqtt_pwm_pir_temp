@@ -30,6 +30,9 @@ homeassistant:
     sensor.dev37_em_cur_l3:
       friendly_name: "EM current L3"
       unit_of_measurement: "W"
+    sensor.dev37_em_cur_fast:
+      friendly_name: "EM current fast"
+      unit_of_measurement: "W"
     sensor.dev37_em_tot:
       friendly_name: "EM total"
       unit_of_measurement: "kWh"
@@ -47,3 +50,7 @@ sensor:
     name: "energy_cost"
 # -----------------------------------------------
 
+  - platform: statistics
+    entity_id: sensor.dev37_em_cur
+    name: dev37_em_stst
+    sampling_size: 1440

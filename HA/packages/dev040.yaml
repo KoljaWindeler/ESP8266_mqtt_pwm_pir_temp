@@ -1,0 +1,18 @@
+
+homeassistant:
+  customize:
+    switch.dev40_gpio_12:
+      friendly_name: "Dehumidifier 2"
+      icon: mdi:fan
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev40"
+    fname: "40 Dehumidifier 2"
+  - platform: mqtt
+    state_topic: "dev40_drytime"
+    name: "dev40_drytime"
+    unit_of_measurement: "min"
+
+# -----------------------------------------------

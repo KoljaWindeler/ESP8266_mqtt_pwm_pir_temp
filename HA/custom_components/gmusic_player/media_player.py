@@ -111,7 +111,7 @@ class GmusicComponent(MediaPlayerDevice):
                 raise Exception("Legacy login failed! Please check logs for any gmusicapi related WARNING")
 
         self.hass = hass
-        self._api = Mobileclient()
+        self._api = Mobileclient(debug_logging=False)
 
         _username = config.get(CONF_USERNAME)
         _password = config.get(CONF_PASSWORD)

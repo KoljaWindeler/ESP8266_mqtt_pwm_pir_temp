@@ -7,76 +7,58 @@ views:
 #################################################
 
   - cards:
-      - type: entities
-        entities:
-          - input_boolean.approx_warn
-        show_header_toggle: false
-
-      - type: entities
-        entities:
-          - sensor.ics_1
-          - sensor.ics_2
-          - sensor.ics_3
-        title: Trash
-      - type: entities
-        entities:
-          - sensor.ics_4
-          - sensor.ics_5
-          - sensor.ics_4_txt
-          - sensor.ics_5_txt
-          - sensor.ics_6
-        title: Work schedule
-
       - type: vertical-stack
         cards:
-         - type: 'custom:text-divider-row'
-           style: |
-              secondary-text-color: '#2980b9'
-           text: Producer
-         - type: horizontal-stack
-           cards:
-             - type: entity-filter 
-               entities:
-                  - entity: sensor.kaco
-                    name: Solar
-               state_filter:
-                  - operator: ">"
-                    value: 1
-               card:
-                  type: glance
-                  show_icon: false        
-               show_empty: false
-             - type: glance
-               show_icon: false        
-               entities:
-                  - entity: sensor.dev37_em_cur
-                    name: Net
-         - type: 'custom:text-divider-row'
-           text: Consumer
-         - type: horizontal-stack
-           cards:
-             - type: entity-filter 
-               entities:
-                  - entity: switch.dev4_gpio_12
-                    name: Garden Pump
-                  - entity: sensor.dev16_ads_ch0_kw
-                    name: Washing Machine
-                  - entity: sensor.dev16_ads_ch1_kw
-                    name: Garden sicker
-                  - entity: sensor.dev16_ads_ch2_kw
-                    name: House sicker
-                  - entity: sensor.dev16_ads_ch3_kw
-                    name: Pool Pump
-                  - entity: sensor.dev16_ads_ch11_kw
-                    name: Pool Heat
-                  - entity: sensor.house_power
-                    name: House
-               state_filter:
-                  - "on"
-                  - operator: ">"
-                    value: 80
-               card:
-                  type: glance
-                  show_icon: false        
         
+         - type: history-graph
+           entities:
+             - sensor.dev37_em_cur
+             - switch.dev40_gpio_12
+             - switch.dev30_gpio_0
+             - switch.dev38_gpio_5
+
+         - type: custom:long-term-card
+           name: 'Energy Year / Day'
+           display_mode: 'diff'
+           formater: 'yyyy-mm-dd'
+           unit: 'kWh'
+           line_width: 1
+           lower_bound: 0
+           upper_bound: 25
+           maxDays: 365
+           data_delimiter: ','
+           entities:
+            - sensor.long_term_power
+     ########## battery ########      
+      - type: entities
+        entities:
+           - entity: sensor.outside_battery
+             name: Outside
+           - entity: sensor.bathroom_u_battery
+             name: Bathroom U.
+           - entity: sensor.carlo_battery
+             name: Carlo
+           - entity: sensor.beamer_battery
+             name: Beamer
+           - entity: sensor.livingroom_battery
+             name: Livingroom
+           - entity: sensor.foyer_battery
+             name: Foyer
+           - entity: sensor.0x00158d00041024ef_battery
+             name: Louisa
+           - entity: sensor.0x00158d00041dfcce_battery
+             name: Supply
+           - entity: sensor.0x00158d00042505f7_battery
+             name: Bedroom
+           - entity: sensor.0x00158d00041d6d95_battery
+             name: Bathroom B.
+           - entity: sensor.0x00158d00044af1b0_battery
+             name: Caro
+           - entity: sensor.0x00158d00044b00e0_battery
+             name: Workshop
+           - entity: sensor.0x00158d0003f85cf0_battery
+             name: Motion Heater
+           - entity: sensor.0x00158d0002f0bc08_battery
+             name: Motion hallway U.
+     ########## battery ########      
 #######################################

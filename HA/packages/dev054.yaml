@@ -116,6 +116,7 @@ automation:
 #------- Toggle Chandelier -----------
   - alias: Toggle_Foyer_chanelier_by_switch
     initial_state: True
+    mode: restart
     trigger:
       - platform: mqtt
         topic: "dev54/r/gpio_14_hold"

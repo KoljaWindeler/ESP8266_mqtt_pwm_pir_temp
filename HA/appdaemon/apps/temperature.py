@@ -17,17 +17,20 @@ class temperatureWorld(hass.Hass):
 
     def set_pool(self, entity, attribute, old, new, kwargs):
         #self.log("updateing pool power: "+str(new)+" timeout "+str(self.pool_kw_timeout))
-        if(float(new)>self.pool_kw_thres):
-            t = self.get_state("sensor.dev30_temperature")
-            self.log("pool temp: "+str(t))
+        try:
+           if(float(new)>self.pool_kw_thres):
+               t = self.get_state("sensor.dev30_temperature")
+               #self.log("pool temp: "+str(t))
 
-            if(self.pool_kw_timeout >= 10):
-                self.call_service("mqtt/publish",topic="pool_temp", payload = str(t), qos = "2", retain="true")
-                #self.set_state("sensor.pool_temp",state = t)
-            else:
-                self.pool_kw_timeout += 1
-        else:
-            self.pool_kw_timeout = 0
+               if(self.pool_kw_timeout >= 10):
+                  self.call_service("mqtt/publish",topic="pool_temp", payload = str(t), qos = "2", retain="true")
+                   #self.set_state("sensor.pool_temp",state = t)
+               else:
+                   self.pool_kw_timeout += 1
+           else:
+               self.pool_kw_timeout = 0
+        except:
+           pass
 
     def t(self, entity, attribute, old, new, kwargs):
         #self.log("Sensor "+entity+" reported new value "+new)

@@ -1,0 +1,16 @@
+{
+  "domain": "energy_calc",
+  "name": "energy_calc",
+  "documentation": "https://github.com/KoljaWindeler/energy_calc/blob/master/README.md",
+  "config_flow": true,
+  "requirements": [
+    "tzlocal",
+    "integrationhelper",
+    "voluptuous",
+    "python-dateutil>2.7.3"
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@KoljaWindeler"
+  ]
+}

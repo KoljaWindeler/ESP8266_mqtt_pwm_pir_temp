@@ -36,13 +36,15 @@ DEV35 -T- Shelly, Wandschalter Spielecke
 DEV36 -T- Shelly, Aussenlicht
 DEV37 -T- EM
 DEV38 -T- Poolheater
+DEV39 -T- Dehumidifier
+DEV40 -T- Dehumidifier2
 
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions Geheim
 DEV56 -T- Ikea LED lampinions carlo
 DEV57 -T- Ikea LED lampinions flur
 DEV58 -T- media pc gpio 12
-DEV59 -T- zigbee bridge
+DEV59 -T- zigbee bridge, cellar
 DEV60 -T- beamer vent
 
 ===============================================

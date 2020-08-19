@@ -17,6 +17,17 @@ homeassistant:
   customize: !include customize.yaml
   packages: !include_dir_named packages
 
+
+
+
+# Example configuration.yaml entry
+logger: 
+  default: warning
+  logs: 
+    custom_components.gmusic_player: critical
+    gmusicapi: critical
+    homeassistant.components.owntracks: fatal
+
 mobile_app:
 lovelace:
   mode: yaml
@@ -28,6 +39,8 @@ lovelace:
       type: js
     - url: /local/group-card.js
       type: js
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
     - url: /local/long-term-card-bundle.js
       type: module
     - url: /hacsfiles/power-wheel-card/power-wheel-card.js
@@ -168,9 +181,12 @@ history:
 recorder:
   db_url: sqlite:////dev/shm/ha.sql
   purge_keep_days: 10
-#  exclude:
-#    entities:
-#      binary_sensor.dev15_motion
+  exclude:
+    entities:
+      - sensor.house_power_rem
+      - sensor.house_power
+      - sensor.dev37_em_cur_fast
+      
 logbook:
 sun:
 system_health:

@@ -25,36 +25,41 @@ class WashingWorld(hass.Hass):
 		self.handle_t = []
 
 	def update_light(self, entity='', attribute='', old='', new='',kwargs=''):
-		if(float(new)>125):
-			self.state_light += 1
-			if(self.state_light==20):
-				t="Washing machine"
-				m="Hi, downstairs bathroom light on for "+str(self.state_light)+" min"
-				self.call_service("notify/pb", title=t, message=m)
-				self.call_service("notify/pb_c", title=t, message=m)
-		else:
-			self.state_light += 0
+		try:
+			if(self.get_state("switch.dev40_gpio_12")=="on"):
+				new = float(new)-280
+			if(float(new)>125):
+				self.state_light += 1
+				if(self.state_light==20):
+					t="Washing machine"
+					m="Hi, downstairs bathroom light on for "+str(self.state_light)+" min"
+					self.call_service("notify/pb", title=t, message=m)
+					self.call_service("notify/pb_c", title=t, message=m)
+			else:
+				self.state_light += 0
+		except:
+			pass
 
 	def update_wm(self, entity='', attribute='', old='', new='',kwargs=''):
 		#self.log("updated power to: "+new+" current state is "+str(self.state))
 		if(old=="unknown" or new=="unknown"):
 		   self.log("unknown!")
 		   return
-		if(self.state_wm < 2):
+		if(self.state_wm < 20):
 			#self.log("state <2")
 			if(float(new) >= self.thr_power):
 				self.log("high power, inc state_wm")
 				self.state_wm += 1
-			if(self.state_wm == 2):
-				self.log("state_wm == 2, setting time")
+			if(self.state_wm == 20):
+				self.log("state_wm == 20, setting time")
 				self.wash_ts = datetime.datetime.now()
-		elif(self.state_wm == 2):
+		elif(self.state_wm == 20):
 			if(float(new) >= self.thr_power):
 				#self.log("high power, washing")
 				self.wash_ts = datetime.datetime.now()
 			elif(self.wash_ts + datetime.timedelta(minutes=self.thr_min) < datetime.datetime.now()):
 				self.log("low power, for 10 minutes, i guess we're done")
-				self.state_wm = 3
+				self.state_wm = 30
 
 				self.handle_m.clear()
 				self.handle_m.append(self.listen_state(self.motion, "binary_sensor.dev59_motion_13"))
@@ -75,7 +80,7 @@ class WashingWorld(hass.Hass):
 
 	def motion(self, entity='', attribute='', old='', new='',kwargs=''):
 		self.log("motion: "+entity+" new="+new+" state_wm "+str(self.state_wm))
-		if(self.state_wm>=3):
+		if(self.state_wm>=30):
 			if(new=="on"):
 				try:
 					for i in self.handle_t:
@@ -89,16 +94,16 @@ class WashingWorld(hass.Hass):
 	def chk(self, entity='', attribute='', old='', new='',kwargs=''):
 		self.log("chk, state_wm is "+str(self.state_wm))
 		t="Washing machine"
-		if(self.state_wm==3): #30
+		if(self.state_wm==30): #30
 			m=":*"
-			self.state_wm = 4
-		elif(self.state_wm==4): #60
+			self.state_wm = 31
+		elif(self.state_wm==31): #60
 			m="whenever you're ready"
-			self.state_wm = 5
-		elif(self.state_wm==5): #90
+			self.state_wm = 32
+		elif(self.state_wm==32): #90
 			m="waiting for you"
-			self.state_wm = 6
-		elif(self.state_wm==6): #120
+			self.state_wm = 33
+		elif(self.state_wm==33): #120
 			m="honey, I miss you"
 			self.state_wm = 0
 			for a in self.handle_m:

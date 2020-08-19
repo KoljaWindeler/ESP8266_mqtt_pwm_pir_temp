@@ -63,9 +63,9 @@ beamer:
 carlo:
   module: dev23_carlo
   class: carloWorld
-lara:
-  module: dev24_lara
-  class: laraWorld
+louisa:
+  module: dev24_louisa
+  class: louisaWorld
 pi:
   module: dev18_pi
   class: PiWorld

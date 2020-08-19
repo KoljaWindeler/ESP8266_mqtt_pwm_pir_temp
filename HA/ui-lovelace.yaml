@@ -12,11 +12,11 @@ custom_header:
   options_hide: true
   header_text: >-
         <center>
+        {{states("sensor.dev37_em_cur_fast") | float | round}}W
+        | 
         <ha-icon icon='mdi:weather-{% if is_state("weather.dark_sky", "partlycloudy") -%}partly-cloudy{%- else -%}{{ states('weather.dark_sky')}}{%- endif %}'></ha-icon> {{ states.sensor.outside_temperature.state }}° 
         | 
         {{ hours24LZ }}:{{ minutesLZ }}
-        | 
-        {{ dayNumLZ }}.{{ monthNumLZ }}.
         </center>
   exceptions:
     - conditions:
@@ -312,24 +312,10 @@ views:
                name: Livingroom
                entities:
                 - sensor.dev1_temperature
-#               color_thresholds:
-#                 - value: 18
-#                   color: "#3b4bff"
-#                 - value: 20
-#                   color: "#ffc830"
-#                 - value: 24
-#                   color: "#c0392b"
              - type: custom:mini-graph-card
                name: Outside
                entities:
                 - sensor.outside_temperature
- #              color_thresholds:
- #                - value: 10
- #                  color: "#3b4bff"
- #                - value: 15
- #                  color: "#ffc830"
- #                - value: 25
- #                  color: "#c0392b"
          - type: horizontal-stack
            cards:
              - type: custom:long-term-card
@@ -349,6 +335,7 @@ views:
                points_per_hour: 6
                entities:
                 - sensor.dev37_em_cur
+               color_thresholds_transition: hard
                color_thresholds:
                  - value: -2000
                    color: "#0c7d0e"
@@ -358,19 +345,7 @@ views:
                    color: "#c0392b"
          - type: horizontal-stack
            cards:
-#            - type: custom:mini-graph-card
-#              name: Sum power
-#              smoothing: false
-#              points_per_hour: 6
-#              entities:
-#               - sensor.kaco
-#              color_thresholds:
-#               - value: 4000
-#                 color: "#0c7d0e"
-#               - value: 0
-#                 color: "#c0392b"
             - type: custom:power-wheel-card 
-#              color_icons: false
               style: | 
                  ha-card {
                       padding: 6px !important;                 
@@ -381,14 +356,10 @@ views:
                  }
               consuming_color: "#bdbdbd"
               producing_color: "#bdbdbd"
-              solar_power_entity: sensor.kaco
-              grid_power_entity: sensor.dev37_em_cur
+              solar_power_entity: sensor.kaco_194
+              grid_power_entity: sensor.dev37_em_cur_fast
               production_is_positive: false
 
-
-#          - type: picture-entity
-#            entity: camera.cam_xia1
-#            name: Louisa
     icon: 'mdi:home-assistant'
 
 #################################################
@@ -836,76 +807,6 @@ views:
     icon: 'mdi:floor-plan'
     title: All rooms
 
-#################################################
-############# cams ##########################
-#################################################
-
-#  - cards:
-#      - type: picture-entity
-#        entity: camera.cam_dome1
-#        camera_view: live
-#        name: Door
-#        show_state: False
-#      - type: picture-entity
-#        show_state: False
-#        entity: camera.cam_xia3
-#        camera_view: live
-#        name: Garage
-#      - type: picture-entity
-#        entity: camera.cam_xia1
-#        show_state: False
-#        camera_view: live
-#        name: Louisa
-#      - type: picture-entity
-#        entity: camera.cam_xia5
-#        camera_view: live
-#      - type: horizontal-stack
-#        cards:
-#          - icon: 'mdi:arrow-left-bold'
-#            name: ' '
-#            type: entity-button
-#            entity: switch.camxia5_left
-#          - icon: 'mdi:arrow-up-bold'
-#            name: ' '
-#            type: entity-button
-#            entity: switch.camxia5_up
-#          - icon: 'mdi:arrow-down-bold'
-#            name: ' '
-#            type: entity-button
-#            entity: switch.camxia5_down
-#          - icon: 'mdi:arrow-right-bold'
-#            name: ' '
-#            type: entity-button
-#            entity: switch.camxia5_right
-#      - type: picture-entity
-#        entity: camera.cam_xia1
-#      - type: picture-entity
-#        entity: camera.cam_xia2
-#        camera_view: live
-#      - type: picture-entity
-#        show_state: False
-#        entity: camera.cam_xia4
-#        camera_view: live
-#        name: Carlo
-#      - type: picture-entity
-#        entity: camera.cam_dome2
-#        show_state: False
-#        camera_view: live
-#        name: Cellar
-#      - type: picture-entity
-#        entity: camera.cam_dome3
-#        show_state: False
-#        camera_view: live
-#        name: Garden
-#      - type: picture-entity
-#        entity: camera.cam_xia52
-#        camera_view: live
-#      - type: picture-entity
-#        entity: camera.pi103
-#      - type: picture-entity
-#        entity: camera.pi106
-#    icon: 'mdi:cctv'
-#    title: Cams
 
 #################################################
 ############## weather #########################
@@ -1122,13 +1023,6 @@ views:
 #################################################
 
   - cards:
-#      - type: entities
-#        entities:
-#          - light.dev54_3
-#          - light.dev54_4
-#          - light.dev18
-#        show_header_toggle: false
-#        title: Outside light
       - type: entities
         entities:
           - vacuum.xiaomi_vacuum_cleaner
@@ -1146,12 +1040,6 @@ views:
         entity: sensor.dev29_temperature
         name: Warm water
         type: sensor 
-
-#      - detail: 2
-#        graph: line
-#        entity: sensor.dev29_temperature_der
-#        name: Warm water derivate
-#        type: sensor 
 
       - type: entities
         entities:
@@ -1243,61 +1131,6 @@ views:
 
     icon: 'mdi:tools'
     title: Tools
-#################################################
-########## upstairs #############################
-#################################################
-#  - cards:
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Switch on IOT1
-#        group: group.iot1_switch
-#
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Light on IOT1
-#        group: group.iot1_light
-#
-#    icon: 'mdi:home-floor-1'
-#    title: upstairs
-#################################################
-############ Grond floor ###########################
-#################################################
-#  - cards:
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Switch on IOT0
-#        group: group.iot0_switch
-#
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Light on IOT0
-#        group: group.iot0_light
-#
-#    icon: 'mdi:home-floor-0'
-#    title: Grond floor
-#################################################
-########## cellar ###############################
-#################################################
-#  - cards:
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Switch on IOT255
-#        group: group.iot255_switch
-#
-#      - type: custom:group-card
-#        card:
-#           type: entities 
-#           title: Light on IOT255
-#        group: group.iot255_light
-#
-#    icon: 'mdi:home-floor-negative-1'
-#    title: cellar
-
 
 #################################################
 ##############  POWER  ##########################
@@ -1314,7 +1147,7 @@ views:
            cards:
              - type: entity-filter 
                entities:
-                  - entity: sensor.kaco
+                  - entity: sensor.kaco_194
                     name: Solar
                state_filter:
                   - operator: ">"
@@ -1322,11 +1155,11 @@ views:
                card:
                   type: glance
                   show_icon: false        
-               show_empty: false
+               show_empty: false 
              - type: entity-filter
                show_icon: false        
                entities:
-                  - entity: sensor.dev37_em_cur
+                  - entity: sensor.dev37_em_cur_fast
                     name: Net
                state_filter:
                   - operator: ">"
@@ -1367,7 +1200,7 @@ views:
              - type: entity-filter
                show_icon: false        
                entities:
-                  - entity: sensor.dev37_em_cur
+                  - entity: sensor.dev37_em_cur_fast
                     name: Net
                state_filter:
                   - operator: "<"
@@ -1376,132 +1209,89 @@ views:
                   type: glance
                   show_icon: false        
                show_empty: false
+             - type: custom:auto-entities
+               card: 
+                 type: glance
+                 show_state: false
+               filter:
+                 include:
+                   - domain: light
+                     state: "on"
+                     options:
+                        tap_action:
+                           action: toggle
+                   - domain: switch
+                     state: "on"
+                     options:
+                        tap_action:
+                           action: toggle
+                 exclude:
+                   - entity_id: light.joiner*
+                   - entity_id: switch.dev57*
+                   - entity_id: light.night
      ########## list of consumper and producer ########
 
      ########## details ########  
-      - type: entities
-        entities:
-           - entity: sensor.dev37_em_cur
-           - entity: sensor.kaco
-             name: Solar
-           - entity: sensor.house_power
-             name: House
-           - type: divider
-           - entity: sensor.house_power_rem
-             name: House remaining
-           - entity: sensor.dev16_ads_ch0_kw
-           - entity: sensor.dev16_ads_ch1_kw
-           - entity: sensor.dev16_ads_ch2_kw
-           - entity: sensor.dev16_ads_ch3_kw
-           - entity: sensor.dev16_ads_ch4_kw
-           - entity: sensor.dev16_ads_ch5_kw
-           - entity: sensor.dev16_ads_ch6_kw
-           - entity: sensor.dev16_ads_ch7_kw
-           - entity: sensor.dev16_ads_ch8_kw
-           - entity: sensor.dev16_ads_ch9_kw
-           - entity: sensor.dev16_ads_ch10_kw
-           - entity: sensor.dev16_ads_ch11_kw
+      - type: vertical-stack
+        cards:
+         - type: entities
+           entities:
+              - entity: sensor.energy_calc
+              - entity: sensor.dev37_em_tot
+                name: Grid kWh
+              - entity: sensor.kaco_194_kwh
+         - type: entities
+           entities:
+              - entity: sensor.dev37_em_cur
+                name: Grid slow
+              - entity: sensor.kaco_194
+                name: Solar
+              - entity: sensor.house_power
+                name: House
+         - type: entities
+           entities:
+              - entity: sensor.house_power_rem
+                name: House remaining
+              - entity: sensor.dev16_ads_ch0_kw
+              - entity: sensor.dev16_ads_ch1_kw
+              - entity: sensor.dev16_ads_ch2_kw
+              - entity: sensor.dev16_ads_ch3_kw
+              - entity: sensor.dev16_ads_ch4_kw
+              - entity: sensor.dev16_ads_ch5_kw
+              - entity: sensor.dev16_ads_ch6_kw
+              - entity: sensor.dev16_ads_ch7_kw
+              - entity: sensor.dev16_ads_ch8_kw
+              - entity: sensor.dev16_ads_ch9_kw
+              - entity: sensor.dev16_ads_ch10_kw
+              - entity: sensor.dev16_ads_ch11_kw
      ########## details ########  
 
      ########## graph ########  
-      - type: history-graph
-        entities:
-          - sensor.dev37_em_cur_l1
-          - sensor.dev37_em_cur_l2
-          - sensor.dev37_em_cur_l3
-          - sensor.dev37_em_cur
+      - type: vertical-stack
+        cards:
 
-      - type: history-graph
-        entities:
-          - sensor.dev16_ads_ch1_kw
-          - sensor.dev16_ads_ch2_kw
-
-      - type: custom:long-term-card
-        name: 'Energy Month / Day'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        lower_bound: 0
-        upper_bound: 25
-        maxDays: 30
-        data_delimiter: ','
-        unit: 'kWh'
-        entities:
-         - sensor.long_term_power
-      - type: custom:long-term-card
-        name: 'Energy Year / Day'
-        display_mode: 'diff'
-        formater: 'yyyy-mm-dd'
-        unit: 'kWh'
-        line_width: 1
-        lower_bound: 0
-        upper_bound: 25
-        maxDays: 365
-        data_delimiter: ','
-        entities:
-         - sensor.long_term_power
-      - type: custom:long-term-card
-        name: 'Energy Cost / Year'
-        display_mode: 'abs'
-        formater: 'yyyy-mm-dd'
-        maxDays: 365
-        data_delimiter: ','
-        unit: 'eur'
-        entities:
-         - sensor.long_term_energy_cost
-
-      - detail: 2
-        graph: line
-        entity: sensor.dev37_em_tot
-        type: sensor 
-
-      - detail: 2
-        graph: line
-        entity: sensor.dev16_ads_ch0_kw
-        type: sensor 
-
-      - detail: 2
-        graph: line
-        entity: sensor.kaco
-        type: sensor 
-
-      - detail: 2
-        graph: line
-        entity: sensor.kaco_kwh
-        type: sensor 
+         - type: custom:long-term-card
+           name: 'Energy Month / Day'
+           display_mode: 'diff'
+           formater: 'yyyy-mm-dd'
+           lower_bound: 0
+           upper_bound: 15
+           maxDays: 30
+           data_delimiter: ','
+           unit: 'kWh'
+           entities:
+            - sensor.long_term_power
+         - type: custom:long-term-card
+           name: 'Energy Cost / Year'
+           display_mode: 'abs'
+           formater: 'yyyy-mm-dd'
+           maxDays: 365
+           data_delimiter: ','
+           unit: 'eur'
+           entities:
+            - sensor.long_term_energy_cost
      ########## graph ########  
 
-     ########## battery ########      
-      - type: entities
-        entities:
-           - entity: sensor.outside_battery
-             name: Outside
-           - entity: sensor.bathroom_u_battery
-             name: Bathroom U.
-           - entity: sensor.carlo_battery
-             name: Carlo
-           - entity: sensor.beamer_battery
-             name: Beamer
-           - entity: sensor.livingroom_battery
-             name: Livingroom
-           - entity: sensor.foyer_battery
-             name: Foyer
-           - entity: sensor.0x00158d00041024ef_battery
-             name: Louisa
-           - entity: sensor.0x00158d00041dfcce_battery
-             name: Supply
-           - entity: sensor.0x00158d00042505f7_battery
-             name: Bedroom
-           - entity: sensor.0x00158d00041d6d95_battery
-             name: Bathroom B.
-           - entity: sensor.0x00158d00044af1b0_battery
-             name: Caro
-           - entity: sensor.0x00158d00044b00e0_battery
-             name: Workshop
-           - entity: sensor.0x00158d0003f85cf0_battery
-             name: Motion Heater
-           - entity: sensor.0x00158d0002f0bc08_battery
-             name: Motion hallway U.
-     ########## battery ########      
 
     icon: 'mdi:power-plug'
     title: power
@@ -1555,6 +1345,7 @@ views:
           - sensor.dev36_update
           - sensor.dev37_update
           - sensor.dev38_update
+          - sensor.dev40_update
           - sensor.dev54_update
           - sensor.dev55_update
           - sensor.dev56_update
@@ -1603,6 +1394,7 @@ views:
           - sensor.dev36_rssi
           - sensor.dev37_rssi
           - sensor.dev38_rssi
+          - sensor.dev40_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
           - sensor.dev56_rssi
@@ -1650,6 +1442,7 @@ views:
           - sensor.dev36_info
           - sensor.dev37_info
           - sensor.dev38_info
+          - sensor.dev40_info
           - sensor.dev54_info
           - sensor.dev55_info
           - sensor.dev56_info
@@ -1739,6 +1532,7 @@ views:
           - sensor.dev36_ssid
           - sensor.dev37_ssid
           - sensor.dev38_ssid
+          - sensor.dev40_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
           - sensor.dev56_ssid
@@ -1787,6 +1581,7 @@ views:
           - sensor.dev36_capability
           - sensor.dev37_capability
           - sensor.dev38_capability
+          - sensor.dev40_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
           - sensor.dev56_capability

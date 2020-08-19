@@ -9,7 +9,7 @@ homeassistant:
 sensor:
   - platform: mqtt_jkw
     name: "dev38"
-    fname: "38 Power heater"
+    fname: "38 Poool heater"
   - platform: mqtt
     state_topic: "dev38_heattime"
     name: "dev38_heattime"
