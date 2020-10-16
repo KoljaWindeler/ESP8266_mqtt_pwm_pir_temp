@@ -11,4 +11,5 @@ HA/gmusic_authtoken
 HA/scripts/screenlog.0
 HA/secrets.yaml
 HA/emulated_hue_ids.json
+__pycache__
 

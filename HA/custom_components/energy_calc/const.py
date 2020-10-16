@@ -1,3 +1,4 @@
+from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.components.sensor import PLATFORM_SCHEMA, ENTITY_ID_FORMAT
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -29,6 +30,10 @@ DEFAULT_ICON = 'mdi:weather-sunny'
 DEFAULT_NAME = "energy_calc"
 
 
+# error
+ERROR_GEN_ID_NOT_FOUND = "error_gen_id"
+ERROR_NET_ID_NOT_FOUND = "error_net_id"
+
 # extend schema to load via YAML
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Required(CONF_NET): cv.string,
@@ -39,50 +44,59 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 
-def check_data(user_input):
+def check_data(user_input, hass):
 	"""Check validity of the provided date."""
-	ret = {}
-	if(CONF_energy_calc_URL in user_input):
-		try:
-			url = "http://"+user_input[CONF_energy_calc_URL]+"/realtime.csv"
-			ret = requests.get(url).content
-			return {}
-		except Exception:
-			ret["base"] = ERROR_URL
-			return ret
 
-def ensure_config(user_input):
+	entities = []
+	entities.append([user_input[CONF_NET],ERROR_NET_ID_NOT_FOUND])
+	entities.append([user_input[CONF_GEN],ERROR_GEN_ID_NOT_FOUND])
+
+	ret = {}
+	for d in entities:
+		if(d[0].find(ENTITY_ID_FORMAT.replace("{}",""))>=0):
+				test_entity_id = d[0].split(ENTITY_ID_FORMAT.replace("{}",""))
+				if(len(test_entity_id)>=2):
+					if(async_generate_entity_id(ENTITY_ID_FORMAT, test_entity_id[1], hass=hass) == d[0]):
+						ret["base"] = d[1]
+						return ret
+				else:
+					ret["base"] = d[1]
+					return ret
+		else:
+			ret["base"] = d[1]
+			return ret
+	return ret
+
+
+
+def ensure_config(user_input, hass):
 	"""Make sure that needed Parameter exist and are filled with default if not."""
 	out = {}
-	out[CONF_NAME] = ""
-	out[CONF_energy_calc_URL] = ""
+	out[CONF_NAME] = DEFAULT_NAME
 	out[CONF_ICON] = DEFAULT_ICON
-	out[CONF_INTERVAL] = DEFAULT_INTERVAL
-	out[CONF_KWH_INTERVAL] = DEFAULT_KWH_INTERVAL
+	out[CONF_GEN] = ""
+	out[CONF_NET] = ""
 
 	if user_input is not None:
 		if CONF_NAME in user_input:
 			out[CONF_NAME] = user_input[CONF_NAME]
-		if CONF_energy_calc_URL in user_input:
-			out[CONF_energy_calc_URL] = user_input[CONF_energy_calc_URL]
 		if CONF_ICON in user_input:
 			out[CONF_ICON] = user_input[CONF_ICON]
-		if CONF_INTERVAL in user_input:
-			out[CONF_INTERVAL] = user_input[CONF_INTERVAL]
-		if CONF_KWH_INTERVAL in user_input:
-			out[CONF_KWH_INTERVAL] = user_input[CONF_KWH_INTERVAL]
+		if CONF_GEN in user_input:
+			out[CONF_GEN] = user_input[CONF_GEN]
+		if CONF_NET in user_input:
+			out[CONF_NET] = user_input[CONF_NET]
 	return out
 
 
-def create_form(user_input):
+def create_form(user_input, hass):
 	"""Create form for UI setup."""
-	user_input = ensure_config(user_input)
+	user_input = ensure_config(user_input, hass)
 
 	data_schema = OrderedDict()
-	data_schema[vol.Required(CONF_NAME, default=user_input[CONF_NAME])] = str
-	data_schema[vol.Required(CONF_energy_calc_URL, default=user_input[CONF_energy_calc_URL])] = str
+	data_schema[vol.Optional(CONF_NAME, default=user_input[CONF_NAME])] = str
 	data_schema[vol.Optional(CONF_ICON, default=user_input[CONF_ICON])] = str
-	data_schema[vol.Optional(CONF_INTERVAL, default=user_input[CONF_INTERVAL])] = vol.Coerce(int)
-	data_schema[vol.Optional(CONF_KWH_INTERVAL, default=user_input[CONF_KWH_INTERVAL])] = vol.Coerce(int)
+	data_schema[vol.Required(CONF_NET, default=user_input[CONF_NET])] = str
+	data_schema[vol.Required(CONF_GEN, default=user_input[CONF_GEN])] = str
 
 	return data_schema

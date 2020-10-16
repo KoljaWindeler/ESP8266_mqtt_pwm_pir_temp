@@ -88,48 +88,48 @@ sensor:
         dev16_ads_ch0_kw: 
            friendly_name: "00 Washing Machine"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch0')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch0')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch1_kw: 
            friendly_name: "01 Garden drain pump"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch1')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch1')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch2_kw: 
            friendly_name: "02 House drain pump + Beamer"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch2')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch2')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch3_kw: 
-           friendly_name: "03 Pool pump"
+           friendly_name: "03 Pool pump + WW Heater"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch3')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch3')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch4_kw: 
            friendly_name: "04 ADS CH4"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch4')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch4')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch5_kw: 
            friendly_name: "05 ADS CH5"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch5')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch5')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch6_kw: 
            friendly_name: "06 ADS CH6"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch6')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch6')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch7_kw: 
            friendly_name: "07 Ref measurement"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch7')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch7')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch8_kw: 
            friendly_name: "08 Garage Back"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch8')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch8')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch9_kw: 
            friendly_name: "09 C. Office, Hallway"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch9')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch9')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch10_kw: 
            friendly_name: "10 C. Bath, Supply"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch10')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch10')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"
         dev16_ads_ch11_kw: 
            friendly_name: "11 Pool Heater"
            unit_of_measurement: 'W'
-           value_template: "{{ [(((states('sensor.dev16_ads_ch11')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.55) | round(2), 0.00] | max }}"
+           value_template: "{{ [(((states('sensor.dev16_ads_ch11')|float)-(states('sensor.dev16_ads_ch7')|float)) * 0.66) | round(2), 0.00] | max }}"

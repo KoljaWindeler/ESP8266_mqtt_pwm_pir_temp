@@ -1,14 +1,3 @@
-# ------------------- autoload theme ------------------------
-  - alias: 'Set theme at startup'
-    initial_state: 'off'
-    trigger:
-     - platform: homeassistant
-       event: start
-    action:
-      service: frontend.set_theme
-      data:
-        name: dark_orange
-# ------------------- autoload theme ------------------------
 # ------------------- living room sunset new -------------------
   - alias: joiner_livingroom_in2
     initial_state: True

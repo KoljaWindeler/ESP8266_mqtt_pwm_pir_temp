@@ -1,0 +1,25 @@
+### ball living room
+# SL, DS18B20
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev43:
+      friendly_name: "Hallway D3"
+      icon: "mdi:lamp"
+    light.dev43_2:
+      friendly_name: "Hallway D3"
+      icon: "mdi:lamp"
+    light.dev43_simple_rainbow:
+      icon: "mdi:traffic-light"
+      friendly_name: "Hallway B1 Simple Rainbow 3"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev43"
+    fname: "43 Hallway D B1"
+
+# -----------------------------------------------
+

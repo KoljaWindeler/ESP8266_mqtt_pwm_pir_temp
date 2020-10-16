@@ -33,6 +33,9 @@ sensor:
       sec_long:
         value_template: "loading"
 # ---------------------------------------------------------
+      zero:
+        value_template: "0"
+# ---------------------------------------------------------
       house_power_rem:
         value_template: "{{ ((states('sensor.kaco_194')|float) +(states('sensor.dev37_em_cur_fast')|float) -(states('sensor.dev16_ads_ch0_kw')|float) -(states('sensor.dev16_ads_ch1_kw')|float) -(states('sensor.dev16_ads_ch2_kw')|float) -(states('sensor.dev16_ads_ch3_kw')|float) -(states('sensor.dev16_ads_ch4_kw')|float) -(states('sensor.dev16_ads_ch5_kw')|float) -(states('sensor.dev16_ads_ch6_kw')|float) -(states('sensor.dev16_ads_ch7_kw')|float) -(states('sensor.dev16_ads_ch8_kw')|float) -(states('sensor.dev16_ads_ch9_kw')|float) -(states('sensor.dev16_ads_ch10_kw')|float) -(states('sensor.dev16_ads_ch11_kw')|float)+0.01)| round(2) }}"
         unit_of_measurement: "W"
@@ -67,3 +70,5 @@ homeassistant:
       friendly_name: "Security System"
     sensor.pool_temp:
       friendly_name: "Stable Pool temperature"
+    sensor.zero:
+      friendly_name: "Zero"

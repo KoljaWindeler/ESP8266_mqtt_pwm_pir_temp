@@ -2,7 +2,7 @@
 Custom component to grab data from a energy_calc solar inverter.
 
 @ Author	  : Kolja Windeler
-@ Date		  : 2020/08/10
+@ Date		  : 2020/08/24
 @ Description : Grabs and parses the data of a energy_calc inverter
 
 https://github.com/home-assistant/core/blob/dev/homeassistant/components/recorder/models.py
@@ -95,10 +95,10 @@ class energy_calc_sensor(Entity):
 			async_track_state_change(self.hass, self._net, async_listener)
 			if "recorder" in self.hass.config.components:
 				# Only use the database if it's configured
-				_LOGGER.error("+++++++++++++  recorder in config +++++++++++++")
+				#_LOGGER.error("+++++++++++++  recorder in config +++++++++++++")
 				self.hass.async_create_task(self._async_initialize_from_database())
-			else:
-				_LOGGER.error("+++++++++++++ no recorder in config +++++++++++++")
+			#else:
+			#	_LOGGER.error("+++++++++++++ no recorder in config +++++++++++++")
 
 		self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, async_energy_calc_startup)
 
@@ -112,32 +112,23 @@ class energy_calc_sensor(Entity):
 		try:
 			if(new_state.state=="unknown"):
 				return
-
-			now = 0
-			if hasattr(new_state, "created"): #db entries have a "created" that is most likely the best data
-				now = new_state.created.replace(tzinfo=None)
-			elif hasattr(new_state, "last_changed"): # life data have a last_changed
-				now = new_state.last_changed.replace(tzinfo=None)
-			else:
-				_LOGGER.error("no useable date found")
+			try:
+				test = float(new_state.state)
+			except:
 				return
+
+			# fix missing timezones
+			if(new_state.last_changed.tzinfo == None):
+				new_state.last_changed = new_state.last_changed.replace(tzinfo=timezone('UTC'))
+			now = new_state.last_changed
 
 			v = 0
 			w = self.energy_calc['extra']
 			self._sample += 1
 
-			# reset data when day changes, we're using NET here because solar won't change over night
-			if(w['last_updated_net']==None or now.day != w['last_updated_net'].day):
-				_LOGGER.error("reset data, due to day change")
-				_LOGGER.error("Sample "+str(self._sample)+" old was "+str(now)+" and last_update_net "+str(w['last_updated_net']))
-				self.energy_calc['extra']['generated_kwh'] = 0
-				self.energy_calc['extra']['feed_in_kwh'] = 0
-				self.energy_calc['extra']['feed_out_kwh'] = 0
-				self.energy_calc['extra']['self_consumed_kwh'] = 0
-				self.energy_calc['extra']['total_consumed_kwh'] = 0
-
 			# decide if the is grid or solar
 			if(new_state.entity_id == self._gen):
+
 				#_LOGGER.error("GEN")
 				v = self.energy_calc['extra']['generator_w']
 				# if this is the very first dataset, lets set the timedelta to 0, so it won't have an effect but set all parameter for the next round
@@ -159,6 +150,17 @@ class energy_calc_sensor(Entity):
 				self.energy_calc['extra']['generator_w'] = float(new_state.state)
 			elif(new_state.entity_id == self._net):
 				#_LOGGER.error("NET")
+
+				# reset data when day changes, we're using NET here because solar won't change over night
+				if(w['last_updated_net']==None or now.day != w['last_updated_net'].day):
+					_LOGGER.error("reset data, due to day change")
+					_LOGGER.error("Sample "+str(self._sample)+" old was "+str(now)+" and last_update_net "+str(w['last_updated_net']))
+					self.energy_calc['extra']['generated_kwh'] = 0
+					self.energy_calc['extra']['feed_in_kwh'] = 0
+					self.energy_calc['extra']['feed_out_kwh'] = 0
+					self.energy_calc['extra']['self_consumed_kwh'] = 0
+					self.energy_calc['extra']['total_consumed_kwh'] = 0
+
 				############ calc ################
 				v = self.energy_calc['extra']['net_w']
 				# if this is the very first dataset, lets set the timedelta to 0, so it won't have an effect but set all parameter for the next round
@@ -211,7 +213,8 @@ class energy_calc_sensor(Entity):
 				else:
 					self.energy_calc['extra']['home_from_solar_per'] = 0
 
-				self.energy_calc['extra']['home_w'] = self.energy_calc['extra']['generator_w'] + v
+				self.energy_calc['extra']['home_w'] = self.energy_calc['extra']['generator_w'] + self.energy_calc['extra']['net_w']
+
 
 			self.async_schedule_update_ha_state(True)
 
@@ -270,8 +273,10 @@ class energy_calc_sensor(Entity):
 			date_net = ""
 			try:
 				fmt = "%Y-%m-%d %H:%M:%S"
-				date_solar = w['last_updated_gen'].replace(tzinfo=timezone('UTC')).astimezone(get_localzone()).strftime(fmt)
-				date_net = w['last_updated_net'].replace(tzinfo=timezone('UTC')).astimezone(get_localzone()).strftime(fmt)
+#				date_solar = w['last_updated_gen'].replace(tzinfo=timezone('UTC')).astimezone(get_localzone()).strftime(fmt)
+#				date_net = w['last_updated_net'].replace(tzinfo=timezone('UTC')).astimezone(get_localzone()).strftime(fmt)
+				date_solar = w['last_updated_gen'].astimezone(get_localzone()).strftime(fmt)
+				date_net = w['last_updated_net'].astimezone(get_localzone()).strftime(fmt)
 			except:
 				pass
 			self._state_attributes = {
@@ -305,7 +310,7 @@ class energy_calc_sensor(Entity):
 		current datetime - MaxAge.
 		"""
 		# limit range
-		records_older_then = datetime.datetime.now().replace(microsecond=0, second=0, minute=0, hour=0)
+		records_older_then = datetime.datetime.now(get_localzone()).replace(microsecond=0, second=0, minute=0, hour=0)
 		#_LOGGER.error("DB time limit:")
 		#_LOGGER.error(records_older_then)
 
@@ -318,19 +323,23 @@ class energy_calc_sensor(Entity):
 
 			# grab solar data
 			query = session.query(States).filter(States.entity_id == self._gen)
-#			query = query.filter(States.last_updated >= records_older_then)
 			query = query.filter(States.created >= records_older_then)
 			states_gen = execute(query)
 
 			# merge and sort by date
 			states = states_net + states_gen
-			states.sort(key=lambda x: x.created)
+			_LOGGER.error(states[0].last_updated)
 
-			_LOGGER.error(str(len(states))+" entries found in db")
+
+			states.sort(key=lambda x: x.last_updated)
+
+			#_LOGGER.error(str(len(states))+" entries found in db")
 			session.expunge_all()
 
 		for state in states:
 			#all should be older based on the filter .. but we've seen strange behavior
-			if(state.created > records_older_then):
-				self.add_state(entity="", new_state=state)
-		_LOGGER.error("db done")
+			#if(state.last_updated > records_older_then):
+			self.add_state(entity="", new_state=state)
+			#else:
+			#	_LOGGER.error("strange:"+str(state.last_updated))
+		#_LOGGER.error("db done")

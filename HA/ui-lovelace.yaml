@@ -1,5 +1,5 @@
 name: My Awesome Home
-
+#background: var(--background-image)
 swipe_nav: 
    wrap: false 
    animate: flip
@@ -316,19 +316,50 @@ views:
                name: Outside
                entities:
                 - sensor.outside_temperature
+               tap_action: 
+                 action: call-service
+                 service: browser_mod.more_info
+                 service_data:
+                   deviceID: this
+                   entity_id: sensor.outside_temperature
+                   large: true 
          - type: horizontal-stack
            cards:
              - type: custom:long-term-card
+               data_field: 1
                name: 'Power Month'
                display_mode: 'diff'
-               lower_bound: 0
-               upper_bound: 20
-               formater: 'yyyy-mm-dd'
+               formater: '-yyyy-mm-dd'
                maxDays: 30
                data_delimiter: ','
                unit: 'kWh'
                entities:
                 - sensor.long_term_power
+               tap_action: 
+                 action: call-service
+                 service: browser_mod.popup
+                 service_data:
+                    title: Power Month
+                    large: true
+                    deviceID: this
+                    hide_header: true
+                    card:
+                      type: custom:long-term-card
+                      data_field: 1
+                      name: 'Power Month'
+                      display_mode: 'diff'
+                      formater: '-yyyy-mm-dd'
+                      line_width: 1
+                      show:
+                        points: true
+                        labels: true
+                        extrama: true
+                      maxDays: 30
+                      data_delimiter: ','
+                      unit: 'kWh'
+                      entities:
+                        - sensor.long_term_power
+
              - type: custom:mini-graph-card
                name: House Power
                smoothing: false
@@ -343,6 +374,19 @@ views:
                    color: "#d35400"
                  - value: 2000
                    color: "#c0392b"
+               tap_action: 
+                 action: call-service
+                 service: browser_mod.popup
+                 service_data:
+                    title: House power
+                    large: true
+                    deviceID: this
+                    hide_header: true
+                    card:
+                      type: history-graph
+                      entities:
+                         - sensor.dev37_em_cur
+                         
          - type: horizontal-stack
            cards:
             - type: custom:power-wheel-card 
@@ -451,8 +495,8 @@ views:
               tap_action:
                 action: toggle
               name: Carlo lock
-            - entity: camera.cam_xia4
-              name: Camera
+#            - entity: camera.cam_xia4
+#              name: Camera
 
         - type: glance
           title: Louisa
@@ -463,8 +507,8 @@ views:
               name: Temp Z
             - entity: sensor.dev55_temperature
               name: Temp
-            - entity: camera.cam_xia1
-              name: Camera
+#            - entity: camera.cam_xia1
+#              name: Camera
             - entity: light.dev24
               tap_action:
                 action: toggle
@@ -540,6 +584,12 @@ views:
               tap_action:
                 action: toggle
             - entity: light.dev12
+              tap_action:
+                action: toggle
+            - entity: light.dev42
+              tap_action:
+                action: toggle
+            - entity: light.dev43
               tap_action:
                 action: toggle
             - entity: light.dev14
@@ -660,7 +710,7 @@ views:
           entities:
             - entity: binary_sensor.dev17_motion
               name: Door
-            - entity: camera.cam_dome2
+            - entity: camera.cam_dome2_profile_000
               name: Door Cam
 
 
@@ -698,6 +748,21 @@ views:
           entities:
             - entity: sensor.dev4_humidity
               name: Humidity
+            - entity: switch.dev41_gpio_4
+              state_color: true
+              name: WW 1 (1000W)
+              tap_action:
+                action: toggle
+            - entity: switch.dev41_gpio_5
+              name: WW 2 (500W)
+              state_color: true
+              tap_action:
+                action: toggle
+            - entity: switch.dev41_gpio_12
+              name: WW 3 (500W)
+              state_color: true
+              tap_action:
+                action: toggle
             - entity: switch.dev4_gpio_12
               state_color: true
               name: Irrigation Pump
@@ -751,7 +816,7 @@ views:
             - entity: light.dev18
               tap_action:
                 action: toggle
-            - entity: camera.cam_dome1
+            - entity: camera.cam_dome1_profile_000
               name: Front
           
         - type: glance
@@ -801,7 +866,7 @@ views:
             - sensor.dev16_ads_ch1_kw
             - sensor.dev16_ads_ch2_kw
             - sensor.dev16_ads_ch3_kw
-            - entity: camera.cam_dome3
+            - entity: camera.cam_dome3_profile_000
               name: Cam
 
     icon: 'mdi:floor-plan'
@@ -1035,11 +1100,37 @@ views:
         show_header_toggle: false
         title: Vacuuming
 
-      - detail: 2
-        graph: line
-        entity: sensor.dev29_temperature
-        name: Warm water
-        type: sensor 
+      - type: vertical-stack
+        cards:
+         - type: entities
+           entities:
+             - entity: switch.dev41_gpio_5
+               name: WW 2 (500W)
+             - entity: sensor.ww2
+             - type: divider
+             - entity: switch.dev41_gpio_12
+               name: WW 3 (500W)
+             - entity: sensor.ww3
+             - type: divider
+             - entity: switch.dev41_gpio_4
+               name: WW 1 (1000W)
+             - entity: sensor.ww1
+           show_header_toggle: false
+           title: Heaters
+          
+         - detail: 2
+           graph: line
+           entity: sensor.dev29_temperature
+           name: Warm water
+           type: sensor 
+#           tap_action: 
+#             action: call-service
+#             service: browser_mod.more_info
+#             service_data:
+#               deviceID: this
+#               entity_id: sensor.dev29_temperature
+#               large: true 
+
 
       - type: entities
         entities:
@@ -1077,7 +1168,8 @@ views:
          - entity: sensor.pool_temp
            name: Stable Pool water
          - entity: switch.dev30_gpio_0
-         - entity: sensor.dev30_pumptime
+#         - entity: sensor.dev30_pumptime
+         - entity: sensor.pump_time
            name: Pump time
          - entity: switch.dev38_gpio_5
          - entity: sensor.dev38_heattime
@@ -1085,49 +1177,55 @@ views:
         show_header_toggle: false
         title: Pool
 
-
-      - detail: 2
-        graph: line
-        entity: sensor.dev4_humidity
-        name: Cellar Humidity
-        type: sensor 
-
-      - detail: 2
-        graph: line
-        entity: sensor.dev4_humidity_stat_mean
-        name: Cellar Humidity
-        type: sensor 
-
-      - entities: 
-          - entity: switch.dev4_gpio_5
-            name: Dryroom
-          - entity: switch.dev28_gpio_15
-            name: Shop
-          - entity: switch.dev60_gpio_12
-            name: Beamer
-        title: Ventilation
-        type: history-graph
-
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-          - type: entity-button
-            tap_action:
-              action: toggle
-            entity: switch.dev28_countdown
-            icon: 'mdi:clock'
-            state_color: true
-            name: Shop 30min
-          - type: entity-button
-            tap_action:
-              action: toggle
-            entity: switch.dev28_countdown_l
-            icon: 'mdi:clock'
-            state_color: true
-            name: Shop Long
-          - entity: sensor.dev28_countdown_state
-            name: Countdown
-            type: gauge
-            max: 30
+         - type: entities
+           entities:
+             - entity: switch.dev40_gpio_12
+         - detail: 2
+           graph: line
+           entity: sensor.dev4_humidity
+           name: Cellar Humidity
+           type: sensor 
+
+         - detail: 2
+           graph: line
+           entity: sensor.dev4_humidity_stat_mean
+           name: Cellar Humidity
+           type: sensor 
+
+      - type: vertical-stack
+        cards:
+         - entities: 
+             - entity: switch.dev4_gpio_5
+               name: Dryroom
+             - entity: switch.dev28_gpio_15
+               name: Shop
+             - entity: switch.dev60_gpio_12
+               name: Beamer
+           title: Ventilation
+           type: history-graph
+
+         - type: horizontal-stack
+           cards:
+             - type: entity-button
+               tap_action:
+                 action: toggle
+               entity: switch.dev28_countdown
+               icon: 'mdi:clock'
+               state_color: true
+               name: Shop 30min
+             - type: entity-button
+               tap_action:
+                 action: toggle
+               entity: switch.dev28_countdown_l
+               icon: 'mdi:clock'
+               state_color: true
+               name: Shop Long
+             - entity: sensor.dev28_countdown_state
+               name: Countdown
+               type: gauge
+               max: 30
 
     icon: 'mdi:tools'
     title: Tools
@@ -1229,6 +1327,8 @@ views:
                    - entity_id: light.joiner*
                    - entity_id: switch.dev57*
                    - entity_id: light.night
+                   - attributes: 
+                       type: browser_mod
      ########## list of consumper and producer ########
 
      ########## details ########  
@@ -1237,6 +1337,7 @@ views:
          - type: entities
            entities:
               - entity: sensor.energy_calc
+              - entity: sensor.energy_calc_home_from_solar
               - entity: sensor.dev37_em_tot
                 name: Grid kWh
               - entity: sensor.kaco_194_kwh
@@ -1269,14 +1370,49 @@ views:
      ########## graph ########  
       - type: vertical-stack
         cards:
+         - type: custom:mini-graph-card
+           name: Power
+           line_width: 1
+           smoothing: false
+           points_per_hour: 6
+           entities:
+            - sensor.dev37_em_cur
+            - sensor.zero
+            - sensor.energy_calc_home
+            - sensor.kaco_194
+           tap_action: 
+             action: call-service
+             service: browser_mod.popup
+             service_data:
+                title: House power
+                large: true
+                deviceID: this
+                hide_header: true
+                card:
+                  type: history-graph
+                  entities:
+                     - sensor.dev37_em_cur
+                     - sensor.energy_calc_home
+                     - sensor.kaco_194
 
+#         - type: custom:long-term-card
+#           name: 'Grid Month'
+#           display_mode: 'diff'
+#           formater: '-yyyy-mm-dd'
+#           lower_bound: 0
+#           upper_bound: 15
+#           line_width: 1
+#           maxDays: 30
+#           data_delimiter: ','
+#           unit: 'kWh'
+#           entities:
+#            - sensor.long_term_power
          - type: custom:long-term-card
-           name: 'Energy Month / Day'
+           name: 'Grid Year'
            display_mode: 'diff'
-           formater: 'yyyy-mm-dd'
-           lower_bound: 0
-           upper_bound: 15
-           maxDays: 30
+           formater: '-yyyy-mm-dd'
+           line_width: 1
+           maxDays: 365
            data_delimiter: ','
            unit: 'kWh'
            entities:
@@ -1284,12 +1420,24 @@ views:
          - type: custom:long-term-card
            name: 'Energy Cost / Year'
            display_mode: 'abs'
-           formater: 'yyyy-mm-dd'
+           line_width: 1
+           formater: '-yyyy-mm-dd'
            maxDays: 365
            data_delimiter: ','
            unit: 'eur'
            entities:
             - sensor.long_term_energy_cost
+         - type: custom:long-term-card
+           name: 'Solar / Year'
+           display_mode: 'abs'
+           formater: '-yyyy-mm-dd'
+           line_width: 1
+           maxDays: 365
+           data_delimiter: ','
+           unit: 'kWh'
+           lower_bound: 0
+           entities:
+            - sensor.long_term_solar
      ########## graph ########  
 
 
@@ -1316,6 +1464,7 @@ views:
 #          - sensor.dev6_update
           - sensor.dev7_update
           - sensor.dev8_update
+          - sensor.dev9_update
           - sensor.dev10_update
           - sensor.dev11_update
           - sensor.dev12_update
@@ -1346,6 +1495,9 @@ views:
           - sensor.dev37_update
           - sensor.dev38_update
           - sensor.dev40_update
+          - sensor.dev41_update
+          - sensor.dev42_update
+          - sensor.dev43_update
           - sensor.dev54_update
           - sensor.dev55_update
           - sensor.dev56_update
@@ -1353,6 +1505,8 @@ views:
           - sensor.dev58_update
           - sensor.dev59_update
           - sensor.dev60_update
+#          - sensor.dev61_update
+#          - sensor.dev62_update
       - type: entities
         title: Rssi
         show_header_toggle: false
@@ -1365,6 +1519,7 @@ views:
 #          - sensor.dev6_rssi
           - sensor.dev7_rssi
           - sensor.dev8_rssi
+          - sensor.dev9_rssi
           - sensor.dev10_rssi
           - sensor.dev11_rssi
           - sensor.dev12_rssi
@@ -1395,6 +1550,9 @@ views:
           - sensor.dev37_rssi
           - sensor.dev38_rssi
           - sensor.dev40_rssi
+          - sensor.dev41_rssi
+          - sensor.dev42_rssi
+          - sensor.dev43_rssi
           - sensor.dev54_rssi
           - sensor.dev55_rssi
           - sensor.dev56_rssi
@@ -1402,6 +1560,8 @@ views:
           - sensor.dev58_rssi
           - sensor.dev59_rssi
           - sensor.dev60_rssi
+#          - sensor.dev61_rssi
+#          - sensor.dev62_rssi
       - type: entities
         show_header_toggle: false
         entities:
@@ -1413,6 +1573,7 @@ views:
 #          - sensor.dev6_info
           - sensor.dev7_info
           - sensor.dev8_info
+          - sensor.dev9_info
           - sensor.dev10_info
           - sensor.dev11_info
           - sensor.dev12_info
@@ -1443,6 +1604,9 @@ views:
           - sensor.dev37_info
           - sensor.dev38_info
           - sensor.dev40_info
+          - sensor.dev41_info
+          - sensor.dev42_info
+          - sensor.dev43_info
           - sensor.dev54_info
           - sensor.dev55_info
           - sensor.dev56_info
@@ -1450,6 +1614,8 @@ views:
           - sensor.dev58_info
           - sensor.dev59_info
           - sensor.dev60_info
+#          - sensor.dev61_info
+#          - sensor.dev62_info
         title: Info
 #      - type: entities
 #        show_header_toggle: false
@@ -1503,6 +1669,7 @@ views:
 #          - sensor.dev6_ssid
           - sensor.dev7_ssid
           - sensor.dev8_ssid
+          - sensor.dev9_ssid
           - sensor.dev10_ssid
           - sensor.dev11_ssid
           - sensor.dev12_ssid
@@ -1533,6 +1700,9 @@ views:
           - sensor.dev37_ssid
           - sensor.dev38_ssid
           - sensor.dev40_ssid
+          - sensor.dev41_ssid
+          - sensor.dev42_ssid
+          - sensor.dev43_ssid
           - sensor.dev54_ssid
           - sensor.dev55_ssid
           - sensor.dev56_ssid
@@ -1540,6 +1710,8 @@ views:
           - sensor.dev58_ssid
           - sensor.dev59_ssid
           - sensor.dev60_ssid
+#          - sensor.dev61_ssid
+#          - sensor.dev62_ssid
         title: SSID
       - type: entities
         show_header_toggle: false
@@ -1552,6 +1724,7 @@ views:
 #          - sensor.dev6_capability
           - sensor.dev7_capability
           - sensor.dev8_capability
+          - sensor.dev9_capability
           - sensor.dev10_capability
           - sensor.dev11_capability
           - sensor.dev12_capability
@@ -1582,6 +1755,9 @@ views:
           - sensor.dev37_capability
           - sensor.dev38_capability
           - sensor.dev40_capability
+          - sensor.dev41_capability
+          - sensor.dev42_capability
+          - sensor.dev43_capability
           - sensor.dev54_capability
           - sensor.dev55_capability
           - sensor.dev56_capability
@@ -1589,6 +1765,8 @@ views:
           - sensor.dev58_capability
           - sensor.dev59_capability
           - sensor.dev60_capability
+#          - sensor.dev61_capability
+#          - sensor.dev62_capability
         title: Capability
 
       - type: history-graph
@@ -1616,7 +1794,7 @@ views:
          - type: horizontal-stack
            cards:
             - type: picture-entity
-              entity: camera.cam_dome1
+              entity: camera.cam_dome1_profile_000
               camera_view: live
               name: Door
               show_name: False
@@ -1630,31 +1808,31 @@ views:
          - type: horizontal-stack
            cards:
             - type: picture-entity
-              entity: camera.cam_dome2
+              entity: camera.cam_dome2_profile_000
               camera_view: live
               name: Cellar
               show_name: False
               show_state: False
             - type: picture-entity
-              entity: camera.cam_dome3
+              entity: camera.cam_dome3_profile_000
               camera_view: live
               name: Garden
               show_name: False
               show_state: False
-         - type: horizontal-stack
-           cards:
-            - type: picture-entity
-              entity: camera.cam_xia4
-              camera_view: live
-              name: Carlo
-              show_name: False
-              show_state: False
-            - type: picture-entity
-              entity: camera.cam_xia1
-              camera_view: live
-              name: Louisa
-              show_name: False
-              show_state: False
+#         - type: horizontal-stack
+#           cards:
+#            - type: picture-entity
+#              entity: camera.cam_xia4
+#              camera_view: live
+#              name: Carlo
+#              show_name: False
+#              show_state: False
+#            - type: picture-entity
+#              entity: camera.cam_xia1
+#              camera_view: live
+#              name: Louisa
+#              show_name: False
+#              show_state: False
 
       - type: conditional
         conditions: 
@@ -1741,6 +1919,13 @@ views:
         show_header_toggle: false
         state_color: true
         entities:
+          - entity: binary_sensor.mymotiondetectorrule_cell_motion_detection
+            name: Door Cam
+          - entity: binary_sensor.mymotiondetectorrule_cell_motion_detection_2
+            name: Garden Cam
+          - entity: binary_sensor.mymotiondetectorrule_cell_motion_detection_3
+            name: Cellar cam
+          - type: divider
           - binary_sensor.dev57_motion
           - entity: binary_sensor.0x00158d0002f0bc08_occupancy
             name: "Hallway U"

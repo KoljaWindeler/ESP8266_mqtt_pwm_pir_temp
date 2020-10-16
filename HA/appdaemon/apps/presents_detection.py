@@ -4,7 +4,7 @@ class PresentsWorld(hass.Hass):
 
 	def initialize(self):
 		self.log("Starting Presents Service")
-		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor","light.dev56","light.dev18"]
+		self.white_list = ["light.dev12","light.dev12_2","light.dev15","light.dev54_3","light.dev54_4","light.joiner_outdoor","light.dev56","light.dev18","light.dev42","light.dev43"]
 		self.listen_state(self.presents, "binary_sensor.someone_is_home") # 5 min away
 		self.run_in(self.chk_light,3*60) # delay 3 min so states can settle
 

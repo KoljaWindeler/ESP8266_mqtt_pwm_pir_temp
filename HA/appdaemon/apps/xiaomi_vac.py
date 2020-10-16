@@ -54,7 +54,7 @@ class xiaomi_vacWorld(hass.Hass):
 
 	def presents(self, entity, attribute, old, new,kwargs):
 		self.log("VAC ... "+str(old)+" -> "+str(new))
-		if(new=="on"):
+		if(new=="off"):
 			try:
 				self.cancel_timer(self.handle)
 				self.log("vacuum timer stopped")
@@ -62,7 +62,7 @@ class xiaomi_vacWorld(hass.Hass):
 				pass
 			self.handle = self.run_in(self.vacuum_start,300)
 			self.log("vacuum timer set")
-		elif(new=="off"):
+		elif(new=="on"):
 			try:
 				self.cancel_timer(self.handle)
 				self.log("vacuum timer stopped")
@@ -71,12 +71,12 @@ class xiaomi_vacWorld(hass.Hass):
 			self.vacuum_stop()
 
 
-	def vacuum_stop(self):
+	def vacuum_stop(self, kwargs=""):
 		self.log("someone is home, stop vacuuming.")
 		for vac in self.vacs:
 			self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vacs.index(vac))))
 			self.call_service("vacuum/return_to_base", entity_id=vac)
-	def vacuum_start(self):
+	def vacuum_start(self, kwargs=""):
 		self.log("Home alone.")
 		for vac in self.vacs:
 			self.log("Vac: "+vac+" tct: "+str(self.g_tct(self.vacs.index(vac))))

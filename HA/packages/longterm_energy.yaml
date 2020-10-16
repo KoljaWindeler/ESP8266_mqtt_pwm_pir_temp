@@ -24,7 +24,7 @@ automation:
           message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.energy_cost.state }}"
       - service: notify.filenotify_solar
         data_template: 
-          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.kaco_194_kwh.state }}"
+          message: "{{now().strftime('%Y-%m-%d')}},{{ states.sensor.kaco_194_kwh.state }}, {{ states.sensor.energy_calc.state }}"
 
 sensor:
   - platform: load_external
@@ -33,4 +33,7 @@ sensor:
   - platform: load_external
     name: long_term_energy_cost
     feed_path: '/config/longterm_logs/cost_total.csv'
+  - platform: load_external
+    name: long_term_solar
+    feed_path: '/config/longterm_logs/solar.csv'
 

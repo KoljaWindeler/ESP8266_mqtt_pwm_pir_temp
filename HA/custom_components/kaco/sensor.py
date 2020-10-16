@@ -72,8 +72,9 @@ class kaco_sensor(Entity):
 				'gridCur3': 0,
 				'temp': 0,
 				'kwh_today': 0,
-				'status': "loading",
 				'max_power': 0,
+				'status': "loading",
+				'status_code': 0,
 
 				'last_updated': None,
 				'reload_at': None,
@@ -147,10 +148,12 @@ class kaco_sensor(Entity):
 
 				self.kaco['extra']['temp'] = float(ds[12])/100
 				self.kaco['extra']['status'] = t[int(ds[13])]
+				self.kaco['extra']['status_code'] = int(ds[13])
 				self.kaco['power'] = round(float(ds[11])/(65535/100000))
-				# just to show off
-				if(self.kaco['power']>self.kaco['extra']['max_power']):
+
+				if(self.kaco['power'] > self.kaco['extra']['max_power']):
 					self.kaco['extra']['max_power'] = self.kaco['power']
+
 
 			if(now > self._lastUpdate_kwh + datetime.timedelta(seconds = self._kwh_interval)):
 				d = await self.hass.async_add_executor_job(partial(requests.get, url_today, timeout=2))
@@ -158,16 +161,13 @@ class kaco_sensor(Entity):
 
 				if(len(d)>10):
 					ds = d.split('\r')[1]
-					ds = ds.split(';')
-					if(len(ds)>=5):
-						kwh = float(ds[4])
+					if(len(ds.split(';'))>4):
+						kwh = float(ds.split(';')[4])
 						self.kaco['extra']['kwh_today'] = kwh
 						self._lastUpdate_kwh = now
 		except requests.exceptions.Timeout:
 			pass
 			#print("timeout exception on Kaco integration")
-		except requests.exceptions.ConnectionError:
-			print("kaco: connection error")
 		except Exception:
 			self.exc()
 

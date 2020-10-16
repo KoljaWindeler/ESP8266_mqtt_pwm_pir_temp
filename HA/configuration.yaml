@@ -14,11 +14,14 @@ homeassistant:
    - /tmp
    - /mnt
    - /opt
+  media_dirs:
+    media: /media
+    recordings: /tmp/cams
   customize: !include customize.yaml
   packages: !include_dir_named packages
 
 
-
+default_config:
 
 # Example configuration.yaml entry
 logger: 
@@ -32,9 +35,6 @@ mobile_app:
 lovelace:
   mode: yaml
   resources:
-#    - url: /hacsfiles/popup-backdrop-filter/popup-backdrop-filter.js
-#      type: module
-
     - url: /local/monster-card.js
       type: js
     - url: /local/group-card.js
@@ -67,30 +67,6 @@ lovelace:
       type: module
 
   dashboards: 
-#    power-dashboard-yaml:
-#      mode: yaml 
-#      title: Power
-#      icon: 'mdi:power-plug'
-#      show_in_sidebar: true
-#      filename: power_dashboard.yaml
-#    beamer-dashboard-yaml:
-#      mode: yaml 
-#      title: Media
-#      icon: 'mdi:play-network'
-#      show_in_sidebar: true
-#      filename: beamer_dashboard.yaml
-#    rssi-dashboard-yaml:
-#      mode: yaml 
-#      title: RSSI
-#      icon: 'mdi:signal-variant'
-#      show_in_sidebar: true
-#      filename: rssi_dashboard.yaml
-#    security-dashboard-yaml:
-#      mode: yaml 
-#      title: Security
-#      icon: 'mdi:security'
-#      show_in_sidebar: true
-#      filename: alarm_dashboard.yaml
     all-dashboard-yaml:
       mode: yaml 
       title: All
@@ -136,9 +112,6 @@ zone:
 # Enables the frontend
 frontend:
   themes: !include_dir_merge_named themes/
-  extra_module_url:
-    - /local/custom-sidebar.js
-  javascript_version: auto
 
 #panel_custom:
 #  - name: floorplan
@@ -189,7 +162,6 @@ recorder:
       
 logbook:
 sun:
-system_health:
 stream:
 #emulated_hue:
 
@@ -231,7 +203,14 @@ camera:
     still_image_url: http://192.168.2.106/cam_full.jpg
 
 
-
+browser_mod:
+  prefix: "bm_"
+  devices:
+    d597bd88-74872538:
+      name: bm_Kolja_P20
+    1f8bb2c3-ef8bbfff:
+      name: bm_Kolja_yoga
+      
 group:
   IOT255_switch:
   IOT0_switch:

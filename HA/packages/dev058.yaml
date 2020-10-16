@@ -2,7 +2,7 @@
 
 homeassistant:
   customize:
-    light.dev58:
+    switch.dev58_gpio_12:
       friendly_name: "MediaPC"
     binary_sensor.dev58_button:
       friendly_name: "MediaPC button"

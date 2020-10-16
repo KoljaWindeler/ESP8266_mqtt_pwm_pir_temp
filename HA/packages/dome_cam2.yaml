@@ -1,8 +1,0 @@
-camera:
-  - platform: onvif_hd
-    host: 192.168.2.210
-    username: admin
-    password: ""
-    port: 8899
-    name: cam_dome2
-

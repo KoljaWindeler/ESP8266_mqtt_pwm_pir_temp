@@ -29,14 +29,15 @@ class WashingWorld(hass.Hass):
 			if(self.get_state("switch.dev40_gpio_12")=="on"):
 				new = float(new)-280
 			if(float(new)>125):
-				self.state_light += 1
+				#self.log("state: "+str(self.state_light))
+				self.state_light += 0.25 # currently updates every 15 sec
 				if(self.state_light==20):
 					t="Washing machine"
 					m="Hi, downstairs bathroom light on for "+str(self.state_light)+" min"
 					self.call_service("notify/pb", title=t, message=m)
 					self.call_service("notify/pb_c", title=t, message=m)
 			else:
-				self.state_light += 0
+				self.state_light = 0
 		except:
 			pass
 

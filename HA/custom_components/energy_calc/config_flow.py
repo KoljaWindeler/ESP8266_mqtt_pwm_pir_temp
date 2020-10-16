@@ -26,12 +26,12 @@ class kacoFlowHandler(config_entries.ConfigFlow):
 		self._errors = {}
 		if user_input is not None:
 			# there is user input, check and save if valid (see const.py)
-			self._errors = check_data(user_input)
+			self._errors = check_data(user_input, self.hass)
+			self.data = user_input
 			if self._errors == {}:
-				self.data = user_input
 				return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
 		# no user input, or error. Show form
-		return self.async_show_form(step_id="user", data_schema=vol.Schema(create_form(user_input)), errors=self._errors)
+		return self.async_show_form(step_id="user", data_schema=vol.Schema(create_form(user_input,self.hass)), errors=self._errors)
 
 	# TODO .. what is this good for?
 	async def async_step_import(self, user_input):  # pylint: disable=unused-argument
@@ -67,13 +67,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 		self._errors = {}
 		if user_input is not None:
 			# there is user input, check and save if valid (see const.py)
-			self._errors = check_data(user_input)
+			self._errors = check_data(user_input, self.hass)
+			self.data.update(user_input)
 			if self._errors == {}:
-				self.data.update(user_input)
 				return self.async_create_entry(title=self.data[CONF_NAME], data=self.data)
 				#return await self.async_step_finish(user_input)
 		elif self.data is not None:
 			# if we came straight from init
 			user_input = self.data
 		# no user input, or error. Show form
-		return self.async_show_form(step_id="init", data_schema=vol.Schema(create_form(user_input)), errors=self._errors)
+		return self.async_show_form(step_id="init", data_schema=vol.Schema(create_form(user_input,self.hass)), errors=self._errors)

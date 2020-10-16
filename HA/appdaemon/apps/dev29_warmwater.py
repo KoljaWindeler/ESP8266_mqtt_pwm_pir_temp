@@ -42,6 +42,10 @@ class warm_waterWorld(hass.Hass):
             m="Ahhh fuck! Heater in Error mode"
             self.call_service("notify/pb", title="Heating", message=m)
             self.call_service("notify/pb_c", title="Heating", message=m)
+        elif(old=="on" and new=="off"):
+            m="Puh! Heater not longer in Error mode"
+            self.call_service("notify/pb", title="Heating", message=m)
+            self.call_service("notify/pb_c", title="Heating", message=m)
 
     def heating(self, entity="", attribute="", old="", new="", kwargs=""):
        now = datetime.datetime.now()

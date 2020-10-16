@@ -1,39 +1,39 @@
 {
     "config": {
-        "title": "KACO - Solar inverter",
+        "title": "energy_calc",
         "step": {
             "user": {
-                "title": "KACO",
-                "description": "Enter the sensor name and configure sensor parameters. More info on https://github.com/koljawindeler/kaco#configuration-options.",
+                "title": "energy_calc",
+                "description": "Enter the sensor name and configure sensor parameters. More info on https://github.com/koljawindeler/energy_calc#configuration-options.",
                 "data": {
                     "name": "Friendly name (can be changed later on)",
-                    "url": "The ip of the Inverter, e.g. 192.168.2.194",
                     "icon": "Icon  (see https://materialdesignicons.com/).",
-                    "kwh_interval": "Sec between two kwh updates, default: 120",
-                    "interval": "Sec between two updates, default: 20"
+                    "net_id": "Entity ID of the grid measurement",
+                    "gen_id": "Entity ID of the solar measurement"
                 }
             }
         },
         "error": {
-            "url_error": "The URL is not valid, could not download data."
+            "error_gen_id": "Solar entity not found",
+            "error_net_id": "Grid entity not found"
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "KACO",
-                "description": "Enter the sensor name and configure sensor parameters. More info on https://github.com/koljawindeler/kaco#configuration-options.",
+                "title": "energy_calc",
+                "description": "Enter the sensor name and configure sensor parameters. More info on https://github.com/koljawindeler/energy_calc#configuration-options.",
                 "data": {
                     "name": "Friendly name (can be changed later on)",
-                    "url": "The ip of the Inverter, e.g. 192.168.2.194",
-                    "icon": "Icon  (see https://materialdesignicons.com/).",
-                    "interval": "Sec between two updates, default: 20",
-                    "kwh_interval": "Sec between two kwh updates, default: 120"
+                    "net_id": "Entity ID of the grid measurement",
+                    "gen_id": "Entity ID of the solar measurement",
+                    "icon": "Icon  (see https://materialdesignicons.com/)."
                 }
             }
         },
         "error": {
-            "url_error": "The URL is not valid, could not download data."
+            "error_gen_id": "Solar entity not found",
+            "error_net_id": "Grid entity not found"
         }
     }
 }

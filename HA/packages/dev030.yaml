@@ -71,10 +71,17 @@ sensor:
   - platform: mqtt
     state_topic: "dev30/r/state"
     name: "dev30_state"
-  - platform: mqtt
-    state_topic: "dev30_pumptime"
-    name: "dev30_pumptime"
-    unit_of_measurement: "min"
+#  - platform: mqtt
+#    state_topic: "dev30_pumptime"
+#    name: "dev30_pumptime"
+#    unit_of_measurement: "min"
+  - platform: history_stats
+    name: pump_time
+    entity_id: switch.dev30_gpio_0
+    state: 'on'
+    type: time
+    start: '{{ now().replace(hour=0, minute=0, second=0) }}'
+    end: '{{ now() }}'
 
 # -----------------------------------------------
 

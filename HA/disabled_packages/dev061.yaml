@@ -1,0 +1,14 @@
+# -----------------------------------------------
+
+homeassistant:
+  customize:
+    light.dev61:
+      friendly_name: "A11"
+
+# -----------------------------------------------
+
+sensor:
+  - platform: mqtt_jkw
+    name: "dev61"
+    fname: "61 A11"
+

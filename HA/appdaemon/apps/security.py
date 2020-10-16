@@ -88,8 +88,8 @@ class SecurityWorld(hass.Hass):
 
 	def cams(self):
 		if(self.status):
-			self.call_service("camera/record", entity_id="camera.cam_dome1", filename="/tmp/alarm_cam1_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
-			self.call_service("camera/record", entity_id="camera.cam_dome2", filename="/tmp/alarm_cam2_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
-			self.call_service("camera/record", entity_id="camera.cam_dome3", filename="/tmp/alarm_cam3_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
+			self.call_service("camera/record", entity_id="camera.cam_dome1_profile_000", filename="/tmp/alarm_cam1_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
+			self.call_service("camera/record", entity_id="camera.cam_dome2_profile_000", filename="/tmp/alarm_cam2_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
+			self.call_service("camera/record", entity_id="camera.cam_dome3_profile_000", filename="/tmp/alarm_cam3_"+str(self.cam_recording_id)+".mp4", duration="60", lookback="5") # save video
 			self.cam_recording_id += 1
 			self.run_in(self.cams,60)

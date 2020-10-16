@@ -109,8 +109,12 @@ bool energy_meter::loop(){
 			}
 
 			if (dataset == ENERGY_METER_ID_TOTAL) {
-				memcpy(m_total_kwh,temp,15);
-				m_total_kwh[15]=0x00;
+				uint32_t t1 = atoi(m_total_kwh);
+				uint32_t t2 = atoi(temp);
+				if((abs(t1-t2)<t1*0.1) || t1==0){
+					memcpy(m_total_kwh,temp,15);
+					m_total_kwh[15]=0x00;
+				}
 				//Serial.printf("found %s\n",m_total_kwh);
 			} else if(dataset == ENERGY_METER_ID_CUR_L1) {
 				memcpy(m_current_w_l1,temp,9);

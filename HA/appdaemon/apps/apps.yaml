@@ -163,6 +163,8 @@ mL_Worldmap:
   lights:
    - light.dev12
    - light.dev15
+   - light.dev42
+   - light.dev43
 
 
 test:

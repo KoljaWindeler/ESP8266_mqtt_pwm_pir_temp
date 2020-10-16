@@ -19,7 +19,7 @@ class bedroomWorld(hass.Hass):
         self.listen_state(self.bedlight_off,"binary_sensor.dev32_button1s", new = "on")
         self.listen_state(self.bedlight_c_on,"binary_sensor.dev31_button3s", new = "on")
         self.listen_state(self.bedlight_on,"binary_sensor.dev32_button3s", new = "on")
-        self.listen_state(self.ventilation_toggle,"sensor.dev26_5_hold", new = "1")
+        self.listen_state(self.ventilation_toggle,"sensor.dev26_5_hold")
         self.listen_state(self.bedlight_toggle,"binary_sensor.dev26_gpio_5", new = "on")
         self.listen_state(self.mpc,"light.dev32", new="on")
 
@@ -37,10 +37,22 @@ class bedroomWorld(hass.Hass):
 
     def bedlight_toggle(self, entity, attribute, old, new,kwargs):
         self.log("Toggle bed lights")
-        self.toggle("light.joiner_bedroom")
+        now = datetime.datetime.now().time()
+        if(now >= datetime.time(21,00,00)):
+           self.toggle("light.dev19") # crip
+        else:
+           self.toggle("light.joiner_bedroom")
 
     def ventilation_toggle(self, entity, attribute, old, new,kwargs):
-        self.toggle("switch.dev26_gpio_15") # ventilator
+        self.log("Toggle bed vent")
+        now = datetime.datetime.now().time()
+        if(now >= datetime.time(21,00,00)):
+           if(new =="1"):
+              self.toggle("light.joiner_bedroom")
+           elif(new =="2"):
+              self.toggle("switch.dev26_gpio_15") # ventilator
+        elif(new == "1"):
+           self.toggle("switch.dev26_gpio_15") # ventilator
 
     def crip_toggle(self, entity, attribute, old, new,kwargs):
         self.toggle("light.dev19") # crip

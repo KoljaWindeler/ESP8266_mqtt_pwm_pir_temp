@@ -38,6 +38,7 @@ DEV37 -T- EM
 DEV38 -T- Poolheater
 DEV39 -T- Dehumidifier
 DEV40 -T- Dehumidifier2
+DEV41 -T- WW heater
 
 DEV54 -O- ULTRA ENTRANCE
 DEV55 -T- Ikea LED lampinions Geheim
