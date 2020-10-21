@@ -73,17 +73,19 @@ bool ads1015::parse(uint8_t* config){
 
 // will be callen if the key is part of the config
 bool ads1015::init(){
+	//test();
 	Wire.begin(ADS_SDA_PIN,ADS_SCL_PIN); 
+	//Wire.setClock(400000);
 
 	m_nDevices = 0;	// check for up to 4 devices
 	for(uint8_t adr=0; adr<4; adr++){
 		Wire.beginTransmission(m_nDevicesAdr[adr]);
 		if(Wire.endTransmission()==0){  // ack received
-			sprintf(m_msg_buffer,"ADC found at %x",m_nDevicesAdr[adr]);
+			sprintf(m_msg_buffer,"ADC found at 0x%x",m_nDevicesAdr[adr]);
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 			m_nDevices++;
 		} else {
-			sprintf(m_msg_buffer,"ADC NOT found at %x",m_nDevicesAdr[adr]);
+			sprintf(m_msg_buffer,"ADC NOT found at 0x%x",m_nDevicesAdr[adr]);
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_YELLOW);
 		}
 	}
@@ -105,7 +107,7 @@ bool ads1015::init(){
 		logger.println(TOPIC_GENERIC_INFO, F("ADS, NO Device found !!"), COLOR_RED);
 	}
 
-
+	//test();
 	return true;
 }
 
@@ -136,6 +138,12 @@ uint8_t ads1015::count_intervall_update(){
 //	return false; // i did nothing
 //}
 
+void ads1015::test(){
+	sprintf(m_msg_buffer,"pre intervall: %i",m_intervall_call);
+	logger.pln(m_msg_buffer);
+	network.publish(build_topic(MQTT_TRACE_TOPIC,UNIT_TO_PC), m_msg_buffer);
+}
+
 // override-methode, only implement when needed
 // will be callen as often as count_intervall_update() returned, "slot" will help
 // you to identify if its the first / call or whatever
@@ -143,6 +151,7 @@ uint8_t ads1015::count_intervall_update(){
 // return is ignored
 bool ads1015::intervall_update(uint8_t slot){
 	float amp_volt;
+	//test();
 	
 	if(m_acdc_mode == ADS_AC_MODE){
 		configureADC_continues(m_intervall_call/4,m_intervall_call%4);
@@ -150,6 +159,7 @@ bool ads1015::intervall_update(uint8_t slot){
 	} else {
 		amp_volt = readADC_SingleEnded(((m_intervall_call/4)%4),m_intervall_call%4); // todo
 	}
+	readADC_SingleEnded(((m_intervall_call/4)%4),m_intervall_call%4); // to read one sample and shut down
 		
 	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Dev "), COLOR_GREEN);
 	logger.addColor(COLOR_GREEN);
@@ -157,10 +167,10 @@ bool ads1015::intervall_update(uint8_t slot){
 	logger.p(", Channel ");
 	logger.p(m_intervall_call%4);
 	logger.p(": ");
+	logger.remColor(COLOR_GREEN);
 	dtostrf(amp_volt, 3, 2, m_msg_buffer);
 	logger.p(m_msg_buffer);
 	logger.pln(F(" mV"));
-	logger.remColor(COLOR_GREEN);
 	bool ret = network.publish(build_topic(MQTT_ADS1015_A_TOPIC,7,UNIT_TO_PC, true, m_intervall_call), m_msg_buffer);
 
 	m_intervall_call = (m_intervall_call+1) % (m_nDevices*4);

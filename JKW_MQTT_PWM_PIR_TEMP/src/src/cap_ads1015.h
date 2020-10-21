@@ -109,6 +109,7 @@ class ads1015 : public capability {
 		int16_t getLastConversionResults(uint8_t ads_dev);
 		void setGain(uint16_t gain);
 		uint16_t getGain(void);
+		void test(void);
 	private:
 		void writeRegister(uint8_t i2cAddress, uint8_t reg, uint16_t value);
 		uint16_t readRegister(uint8_t i2cAddress, uint8_t reg);
