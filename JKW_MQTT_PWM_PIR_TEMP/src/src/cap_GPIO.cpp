@@ -226,7 +226,7 @@ bool J_GPIO::loop(){
 					m_state[i].set(1); // for input: 1 == on
 					m_timing_parameter[i] = millis(); // timestamp of first push
 				} else {
-					m_state[i].check_set(min(10, (uint8_t) ((millis() - m_timing_parameter[i]) / 1000) + 1)); // will count the hold seconds up to 10
+					m_state[i].check_set(min((uint32_t)10, (uint32_t) ((millis() - m_timing_parameter[i]) / 1000) + 1)); // will count the hold seconds up to 10
 				}
 			}
 			// reset timing paramter once the pin was released again
@@ -482,9 +482,7 @@ bool J_GPIO::publish(){
 							ret = network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), (char *) STATE_OFF);
 
 							// after publishing off, also reset the hold timer
-							sprintf(m_msg_buffer, MQTT_J_GPIO_INPUT_HOLD_TOPIC, i);
-							sprintf(m_msg_buffer + strlen(m_msg_buffer) + 1, "%i", m_state[i].get_value());
-							ret &= network.publish(build_topic(m_msg_buffer, UNIT_TO_PC), m_msg_buffer + strlen(m_msg_buffer) + 1);
+							ret &= network.publish(build_topic(MQTT_J_GPIO_INPUT_HOLD_TOPIC, 13, UNIT_TO_PC, true, i), (char *) "0");
 						}
 					} else { // publishes on hold topics
 						logger.pln((char) (m_state[i].get_value()));
