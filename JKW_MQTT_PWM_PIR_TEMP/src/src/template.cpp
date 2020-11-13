@@ -66,7 +66,7 @@ bool template::init(){
 //		dtostrf(template.getSomething(), 3, 2, m_msg_buffer);
 //		logger.p(F("Template "));
 //		logger.pln(m_msg_buffer);
-//		return network.publish(build_topic(MQTT_TEMPLATE_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
+//		return network.publish(build_topic(MQTT_TEMPLATE_TOPIC,UNIT_TO_PC), m_msg_buffer);
 //	}
 //	return false;
 //}
