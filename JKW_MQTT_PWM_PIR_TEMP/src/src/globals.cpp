@@ -31,6 +31,8 @@ capability *p_freq;
 capability *p_rec;
 capability *p_em;
 capability *p_SerSer;
+capability *p_hx711;
+capability *p_crash;
 
 connection_relay network;
 WiFiClient wifiClient;

@@ -1,3 +1,9 @@
+20201115
+	- added support for HX711
+	- added support for ESPsaveCrash
+	- fixed RAM leakage in build topic routine
+		RAM:   [======    ]  55.2% (used 45260 bytes from 81920 bytes)
+		Flash: [=====     ]  46.2% (used 442504 bytes from 958448 bytes)
 20200317
 	- added steptime to adjust dimm speed for gpio class
 		RAM:   [=====     ]  54.1% (used 44312 bytes from 81920 bytes)

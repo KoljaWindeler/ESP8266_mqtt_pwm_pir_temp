@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20201021_2" DEV
+	#define VERSION               "20201115" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -138,6 +138,8 @@
 	extern capability * p_ir;
 	extern capability * p_SerSer;
 	extern capability * p_ads1015;
+	extern capability * p_hx711;
+	extern capability * p_crash;
 
 	extern const uint8_t intens[100];
 
@@ -170,6 +172,8 @@
 #include "cap_SerialServer.h"
 #include "cap_shelly_dimmer.h"
 #include "cap_ads1015.h"
+#include "cap_hx711.h"
+#include "cap_crash.h"
 
 #endif // ifndef main_h
 
