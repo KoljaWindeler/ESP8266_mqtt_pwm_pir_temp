@@ -69,7 +69,6 @@ bool energy_meter::init(){
 	identifier[2] = (char *) ENERGY_METER_CUR_L1;
 	identifier[3] = (char *) ENERGY_METER_CUR_L2;
 	identifier[4] = (char *) ENERGY_METER_CUR_L3;
-	m_freq = 1;
 	return true;
 }
 
