@@ -611,6 +611,12 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_ADS1015
 	bake(new ads1015(), &p_ads1015, config);
 #endif
+#ifdef WITH_HX711
+	bake(new hx711(), &p_hx711, config);
+#endif
+#ifdef WITH_CRASH
+	bake(new crash(), &p_crash, config);
+#endif
 	bake(new light(), &p_light, config);
 
 
@@ -660,9 +666,11 @@ char * build_topic(const char * topic, uint8_t max_pre_topic_length, uint8_t pc_
 	
 	if (with_dev && strlen(mqtt.dev_short)+strlen(pre_topic)+4 < sizeof(m_topic_buffer)){
 		sprintf(m_topic_buffer, "%s/%c/%s", mqtt.dev_short, pc_shall_R_or_S, pre_topic);
+		delete pre_topic;
 		return m_topic_buffer;
 	} else if (!with_dev && strlen(mqtt.dev_short)+strlen(pre_topic)+1 < sizeof(m_topic_buffer)){
 		sprintf(m_topic_buffer, "%c/%s", pc_shall_R_or_S, pre_topic);
+		delete pre_topic;
 		return m_topic_buffer;
 	} else {
 		// topic too long.
@@ -670,13 +678,14 @@ char * build_topic(const char * topic, uint8_t max_pre_topic_length, uint8_t pc_
 		memcpy(m_msg_buffer+16,topic,min(strlen(pre_topic),(unsigned int)10));
 		memcpy(m_msg_buffer+16+min(strlen(pre_topic),(unsigned int)10),"...",3);
 		m_msg_buffer[16+min(strlen(pre_topic),(unsigned int)10)+4]=0x00;
-
+		delete pre_topic;
 		logger.print(TOPIC_MQTT_PUBLISH, build_topic("error", UNIT_TO_PC), COLOR_RED);
 		logger.p((char *) " -> ");
 		logger.pln(m_msg_buffer);
 		network.publish(build_topic("error", UNIT_TO_PC), m_msg_buffer);
 
 	}	
+	
 	return m_topic_buffer;
 }
 
