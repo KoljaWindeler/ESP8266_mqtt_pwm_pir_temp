@@ -53,6 +53,7 @@ public:
 
 		void send_current_light();
 		void setColor(uint8_t r, uint8_t g, uint8_t b);
+		void toggle(bool with_mqtt);
 		void toggle();
 		void setState(bool state);
 		bool reg_provider(capability * p, uint8_t *source);

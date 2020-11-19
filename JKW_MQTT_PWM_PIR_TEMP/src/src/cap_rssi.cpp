@@ -34,8 +34,8 @@ bool rssi::intervall_update(uint8_t slot){
 	logger.print(TOPIC_MQTT_PUBLISH, F("rssi "), COLOR_GREEN);
 	// this is needed to avoid reporting the same value over and over
 	// home assistant will show us as "not updated for xx Minutes" if the RSSSI stays the same
-	rssi += ((float) random(10)) / 100;
-	dtostrf(rssi, 3, 2, m_msg_buffer);
+	rssi -= ((float) random(10)) / 10; // 0.0 to 0.9 less 
+	dtostrf(rssi, 2, 1, m_msg_buffer);
 	logger.pln(m_msg_buffer);
 	return network.publish(build_topic(MQTT_RSSI_TOPIC,UNIT_TO_PC), m_msg_buffer);
 }

@@ -102,13 +102,15 @@ bool crash::publish(){
 		return false;
 	} else {
 		if(p_crash->count()>0){
-			logger.println(TOPIC_GENERIC_INFO, F("Crashes found, publishing"), COLOR_RED);
+			sprintf(m_msg_buffer,"%i crashes found, publishing", p_crash->count());
+			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_RED);
 
 			// Note that 'EEPROM.begin' method is reserving a RAM buffer
 			// The buffer size is SAVE_CRASH_EEPROM_OFFSET + SAVE_CRASH_SPACE_SIZE
 			EEPROM.begin(512 + 512);
 			byte crashCounter = EEPROM.read(512 + SAVE_CRASH_COUNTER);
-			if(crashCounter==255){ // ignore uninitialized EEPROM area (default to 0xFF)
+			
+			if(crashCounter>1){ // ignore uninitialized EEPROM area (default to 0xFF), there can be only 1 crash at most
 				crashCounter=0;
 			}
 			int16_t readFrom = 512 + SAVE_CRASH_DATA_SETS;

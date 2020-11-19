@@ -96,6 +96,10 @@ void light::setColor(uint8_t r, uint8_t g, uint8_t b){
 }
 
 void light::toggle(){
+	return toggle(false);
+}
+
+void light::toggle(bool with_mqtt){
 	if (!m_state.get_value()) {
 		m_light_current = m_light_backup;
 		m_light_target = m_light_backup; // not sure if this is needed
@@ -105,6 +109,17 @@ void light::toggle(){
 	}
 	send_current_light();
 	m_state.set(!m_state.get_value());
+
+	if(with_mqtt){
+		logger.print(TOPIC_MQTT_PUBLISH, F("send mqtt light store command "), COLOR_GREEN);
+		if (m_state.get_value()) {
+			logger.pln((char*)STATE_ON);
+			network.publish(build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT), (char*)STATE_ON);
+		} else {
+			logger.pln((char*)STATE_OFF);
+			network.publish(build_topic(MQTT_LIGHT_TOPIC,PC_TO_UNIT), (char*)STATE_OFF);
+		}
+	}
 }
 
 

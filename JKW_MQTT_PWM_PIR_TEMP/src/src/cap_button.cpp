@@ -296,7 +296,7 @@ bool button::consume_interrupt(){
 			// and the NO_Button_to_light_connection is false (so they are actually connected)
 			// or if we are offline (sort of an backup mechanism
 			if(p_light && (m_BL_conn || !network.connected())){
-				((light*)p_light)->toggle();
+				((light*)p_light)->toggle(true);
 			}
 			// keep counting if we're fast enough
 			if (millis() - m_timer_button_down < BUTTON_TIMEOUT) {
@@ -306,8 +306,12 @@ bool button::consume_interrupt(){
 			}
 			// check time fornext push
 			m_timer_button_down = millis();
-			// publish change
-			m_state.set(0);
+			// publish change, if this is a button always publish ON, as OFF will be handled in the loop,
+			if(m_mode_toggle_switch == BUTTON_MODE_PUSH_BUTTON){
+				m_state.set(0);
+			} else { // but if it is a switch, we have to take care of polarity (0=ON, 10=OFF)
+				m_state.set(m_polarity*BUTTON_RELEASE_OFFSET);
+			}
 			// make sure that the loop checks in 0.1s from now if the button is still down
 			m_timer_checked = millis() - BUTTON_CHECK_INTERVALL + BUTTON_FAST_CHECK_INTERVALL;
 
