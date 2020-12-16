@@ -1,4 +1,0 @@
-sensor:
-  - platform: mqtt
-    state_topic: "Kkoolljjaa/f/HA"
-    name: adafruit

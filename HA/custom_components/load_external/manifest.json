@@ -1,8 +1,0 @@
-{
-  "domain": "load_external",
-  "name": "load_external",
-  "documentation": "https://github.com/custom-components/load_external/blob/master/README.md",
-  "dependencies": [],
-  "codeowners": ["@jkw"],
-  "requirements": []
-}

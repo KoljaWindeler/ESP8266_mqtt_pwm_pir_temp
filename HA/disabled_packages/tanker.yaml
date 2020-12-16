@@ -1,4 +1,0 @@
-tankerkoenig:
-  api_key: !secret tk_key
-  stations:
-    - id: !secret tk_tankstelle
