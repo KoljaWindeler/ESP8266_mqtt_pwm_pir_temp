@@ -1,9 +1,0 @@
-.pioenvs
-.pio
-.piolibdeps
-.clang_complete
-.gcc-flags.json
-wifi.h
-NW_configs
-*.gch
-connection_relay_pw.h
