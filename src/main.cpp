@@ -605,6 +605,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_EM
 	bake(new energy_meter(), &p_em, config);
 #endif
+#ifdef WITH_EM_BIN
+	bake(new energy_meter_bin(), &p_em_bin, config);
+#endif
 #ifdef WITH_IR
 	bake(new ir(), &p_ir, config);
 #endif

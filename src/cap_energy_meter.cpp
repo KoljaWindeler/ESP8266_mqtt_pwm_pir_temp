@@ -1,5 +1,5 @@
 #include <cap_energy_meter.h>
-
+#ifdef WITH_EM
 // simply the constructor
 energy_meter::energy_meter(){
 	m_discovery_pub = false;
@@ -254,3 +254,4 @@ bool energy_meter::publish(){
 #endif
 	return false;
 }
+#endif

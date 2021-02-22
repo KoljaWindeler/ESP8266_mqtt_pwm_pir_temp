@@ -1,3 +1,5 @@
+20210222
+	- Energy Monitor Binary version added 
 20201119
 	- BLCONN will not toggle the light and store the state in the mqtt COMMAND topic
 	- Button SWITCH will send ON and OFF (bugfix)

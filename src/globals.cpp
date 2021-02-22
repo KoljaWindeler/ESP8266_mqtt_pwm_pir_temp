@@ -30,6 +30,7 @@ capability *p_play;
 capability *p_freq;
 capability *p_rec;
 capability *p_em;
+capability *p_em_bin;
 capability *p_SerSer;
 capability *p_hx711;
 capability *p_crash;
