@@ -130,10 +130,16 @@ bool energy_meter_bin::loop(){
 					}
 					v=v2*m_parser_scale;
 					v=v/1000; // wh -> kWh
-					if(dataset == 0){
-						dtostrf(v,0,4,m_total_grid_kwh);
-					} else if(dataset == 1){
-						dtostrf(v,0,4,m_total_solar_kwh);
+					if(dataset == 0){ // grid
+						// limit increase to 10% (like way less, but this will filter spikes)
+						if(v/atof(m_total_grid_kwh)<1.1 or strncmp(m_total_grid_kwh,"no data",7)==0){
+							dtostrf(v,0,4,m_total_grid_kwh);
+						}
+					} else if(dataset == 1){ // solar
+						// limit increase to 10% (like way less, but this will filter spikes)
+						if(v/atof(m_total_solar_kwh)<1.1 or strncmp(m_total_solar_kwh,"no data",7)==0){
+							dtostrf(v,0,4,m_total_solar_kwh);
+						}
 					}
 				} else if(dataset == 2){ // current value
 					int32_t watt = (int) ((temp[0]<<24)+(temp[1]<<16)+(temp[2]<<8)+temp[3]);
