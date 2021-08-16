@@ -101,7 +101,9 @@ bool crash::publish(){
 	if(m_published){
 		return false;
 	} else {
-		if(p_crash->count()>0){
+		if(p_crash->count() == 255){
+			p_crash->clear();
+		} else if(p_crash->count()>0){
 			sprintf(m_msg_buffer,"%i crashes found, publishing", p_crash->count());
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_RED);
 

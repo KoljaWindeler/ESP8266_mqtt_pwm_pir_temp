@@ -4,6 +4,9 @@
 #include "main.h"
 #include "../lib/softserial/SoftwareSerial.h"
 
+static constexpr char MQTT_SSERIALSERVER_RX_TOPIC[]   = "serser_rx";
+static constexpr char MQTT_SSERIALSERVER_TX_TOPIC[]   = "serser_tx";
+
 class SerialServer : public capability {
 	public:
 		SerialServer();
@@ -13,8 +16,8 @@ class SerialServer : public capability {
 		uint8_t* get_key();
 		bool loop();
 
-		//uint8_t count_intervall_update();
-		//bool intervall_update(uint8_t slot);
+		uint8_t count_intervall_update();
+		bool intervall_update(uint8_t slot);
 
 		//bool subscribe();
 		//bool receive(uint8_t* p_topic, uint8_t* p_payload);
@@ -30,6 +33,8 @@ class SerialServer : public capability {
 		uint8_t m_rxPin;
 		uint8_t m_txPin;
 		uint8_t m_bufferSize;
+		uint16_t m_rxCount;
+		uint16_t m_txCount;
 
 };
 

@@ -1,3 +1,7 @@
+20210816
+	- Added option to lock the config
+	- switch serser to hardware interface
+	- added tx/rx counter to serser
 20210222
 	- Energy Monitor Binary version added 
 20201119

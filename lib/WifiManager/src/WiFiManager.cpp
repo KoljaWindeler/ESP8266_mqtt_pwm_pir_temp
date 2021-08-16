@@ -91,6 +91,7 @@ const char * WiFiManagerParameter::getCustomHTML(){
 
 WiFiManager::WiFiManager(){
 	_customIdElement = "";
+	_config_locked = false;
 }
 
 void WiFiManager::resetParameter(){
@@ -257,6 +258,7 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 	f_p = 0;                  // pointer in dem struct
 	p   = (uint8_t *) m_mqtt; // copy location
 	uint8_t skip_last = 1; // skip capability
+	uint8_t ddf = 0; // we nned 3x '?' to enter setup
 
 	while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
 		// ////////////// kolja serial config code ////////////
@@ -269,16 +271,21 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 			_buttonCallback();
 		}
 
-		if (Serial.available()) {
+		if (Serial.available() && !_config_locked) {
 			char_buffer = Serial.read();
 			// Serial.print(char_buffer);
 			// start char for config
 			if (char_buffer == '?') {
 				// Serial.print("@");
-				p = (uint8_t *) m_mqtt;
-				f_p         = 0;
-				char_buffer = 255; // enter the "if" below
-				f_start     = 0;
+				ddf++;
+				if(ddf==3){
+					p = (uint8_t *) m_mqtt;
+					f_p         = 0;
+					char_buffer = 255; // enter the "if" below
+					f_start     = 0;
+				}
+			} else {
+				ddf = 0;
 			}
 
 			// jump to next field

@@ -29,6 +29,8 @@ uint8_t* SerialServer::get_key(){
 
 // will be callen if the key is part of the config
 bool SerialServer::init(){
+	m_rxCount = 0;
+	m_txCount = 0;
 	// wifi server
 	ser2netServer = new WiFiServer(m_port);
 	ser2netServer->begin();
@@ -61,9 +63,9 @@ bool SerialServer::init(){
 // override-methode, only implement when needed
 // return how many value you want to publish per minute
 // e.g. DHT22: Humidity + Temp = 2
-//uint8_t SerialServer::count_intervall_update(){
-//	return 0;
-//}
+uint8_t SerialServer::count_intervall_update(){
+	return 2;
+}
 
 // override-methode, only implement when needed
 // will be called in loop, if you return true here, every else will be skipped !!
@@ -88,6 +90,7 @@ bool SerialServer::loop(){
 			}
 			uint8_t net_buf[count];
 			uint8_t bytes_read = ser2netClient.read(net_buf, count);
+			m_txCount += bytes_read;
 			//Serial.write((const uint8_t*)net_buf, bytes_read);
 			for(uint8_t i=0; i<bytes_read; i++){
 				//swSer1->write(net_buf[i]);
@@ -104,6 +107,7 @@ bool SerialServer::loop(){
 				count = m_bufferSize;
 			}
 			uint8_t net_buf[count];
+			m_rxCount += count;
 			for(uint8_t i=0; i<count; i++){
 				//net_buf[i]=swSer1->read();
 				net_buf[i]=Serial.read();
@@ -121,16 +125,24 @@ bool SerialServer::loop(){
 // you to identify if its the first / call or whatever
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
-//bool SerialServer::intervall_update(uint8_t slot){
-//	if(slot%count_intervall_update()==0){
-//		logger.print(TOPIC_MQTT_PUBLISH, F(""));
-//		dtostrf(SerialServer.getSomething(), 3, 2, m_msg_buffer);
-//		logger.p(F("SerialServer "));
-//		logger.pln(m_msg_buffer);
-//		return network.publish(build_topic(MQTT_SerialServer_TOPIC,UNIT_TO_PC), m_msg_buffer, true);
-//	}
-//	return false;
-//}
+bool SerialServer::intervall_update(uint8_t slot){
+	if(slot%count_intervall_update()==0){
+		logger.print(TOPIC_MQTT_PUBLISH, F(""));
+		sprintf(m_msg_buffer,"%i",m_rxCount);
+		m_rxCount = 0;
+		logger.p(F("SerialServer Rx Count "));
+		logger.pln(m_msg_buffer);
+		return network.publish(build_topic(MQTT_SSERIALSERVER_RX_TOPIC,UNIT_TO_PC), m_msg_buffer);
+	} else {
+		logger.print(TOPIC_MQTT_PUBLISH, F(""));
+		sprintf(m_msg_buffer,"%i",m_txCount);
+		m_txCount = 0;
+		logger.p(F("SerialServer Tx Count "));
+		logger.pln(m_msg_buffer);
+		return network.publish(build_topic(MQTT_SSERIALSERVER_TX_TOPIC,UNIT_TO_PC), m_msg_buffer);	
+	}
+	return false;
+}
 
 // override-methode, only implement when needed
 // will be called everytime the controller reconnects to the MQTT broker,

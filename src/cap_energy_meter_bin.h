@@ -50,6 +50,7 @@ http://www.stefan-weigert.de/php_loader/sml.php
 	#define EM_STATE_SCALE 2
 	#define EM_STATE_IGNORE_2 3
 	#define EM_STATE_PAYLOAD 4
+	#define EM_STATE_CHECK 5
 
 
 	class energy_meter_bin : public capability {
@@ -72,6 +73,7 @@ private:
 		char temp[16];
 		SoftwareSerial * swSer1;
 		uint8_t dataset;
+		float storage[2];
 		uint8_t m_freq;
 		uint8_t m_slot;
 		char* identifier[3];

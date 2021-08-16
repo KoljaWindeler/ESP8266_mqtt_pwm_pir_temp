@@ -223,6 +223,17 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 		// now process
 		network.mqtt_ota(p_payload, p_length);
 	}
+	// //////////////////// LOCK CONFIG /////////////////////////////
+	else if (!strcmp(p_topic,
+	   build_topic(MQTT_CONFIG_LOCK_TOPIC, PC_TO_UNIT))) {                   // dev specific 
+		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
+			wifiManager._config_locked = true;
+			logger.println(TOPIC_MQTT, F("config locked"), COLOR_PURPLE);
+		} else if (!strcmp_P((const char *) p_payload, STATE_OFF)) { // switch off
+			logger.println(TOPIC_MQTT, F("config unlocked"), COLOR_PURPLE);
+			wifiManager._config_locked = false;
+		}
+	}
 	// //////////////////// mesh /////////////////////////////
 	else {
 		// message is not for me, send it downhill to all clientSM
@@ -331,6 +342,9 @@ void reconnect(){
 
 				network.subscribe(build_topic(MQTT_OTA_TOPIC, strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false)); // MQTT_OTA_TOPIC but global topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_OTA_TOPIC, strlen(MQTT_OTA_TOPIC), PC_TO_UNIT, false), COLOR_GREEN);
+
+				network.subscribe(build_topic(MQTT_CONFIG_LOCK_TOPIC, PC_TO_UNIT)); // lock config 
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CONFIG_LOCK_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
 
 				for (uint8_t i = 0; active_p[i] != 0x00 && i < MAX_CAPS - 1; i++) {
@@ -645,6 +659,51 @@ void loadPheripherals(uint8_t * config){
  		}
 	}
 
+	// try to sort entries in active_intervall_p more evenly
+	// so we know how many slots we have in total ... active_p_intervall_counter 
+	// and we have the list of components in active_p and the amount in active_p_pointer lets try to resort
+	for(uint8_t i=0; i<active_p_intervall_counter; i++){
+		active_intervall_p[i]=0x00;
+	}
+	
+	for(uint8_t i=0; i<active_p_pointer; i++){
+		if(((*active_p[i])->count_intervall_update())>0){
+			float interval = (float)active_p_intervall_counter / (float)((*active_p[i])->count_intervall_update());
+			uint8_t start;
+			for (start=0; start<active_p_intervall_counter; start++){
+				if(active_intervall_p[start]==0x00){
+					break;
+				}
+			}
+			for(uint8_t ii=0;ii<((*active_p[i])->count_intervall_update());ii++){
+				bool found = false;
+				for(uint8_t pos = start + round(ii*interval); pos<active_p_intervall_counter; pos++){
+					if(active_intervall_p[pos]==0x00){
+						active_intervall_p[pos] = active_p[i];
+						//sprintf(m_msg_buffer,"comp %i, inter %i, pos %i",i,ii,pos);
+						//logger.pln(m_msg_buffer);
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					for(uint8_t pos = 0; pos<active_p_intervall_counter; pos++){
+						if(active_intervall_p[pos]==0x00){
+							active_intervall_p[pos] = active_p[i];
+							found = true;
+							break;
+						}
+					}	
+				}
+				if(!found){
+					sprintf(m_msg_buffer,"issue with comp %i, inter %i, no pos found",i,ii);
+					logger.pln(m_msg_buffer);
+				}
+			}
+		}
+	}
+
+
 	logger.println(TOPIC_GENERIC_INFO, F("capabilities loaded"), COLOR_PURPLE);
 	sprintf(m_msg_buffer,"%i intervall updates",active_p_intervall_counter);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_PURPLE);
@@ -823,16 +882,9 @@ void loop(){
 				updateFastValuesTimer = millis();
 				// make sure that every entrie receives its own 0,1,2,3 slots
 				uint8_t user_slot = 0;
-				if (periodic_slot > 0) {
-					for (user_slot = periodic_slot - 1; user_slot >= 0; user_slot--) {
-						if (active_intervall_p[periodic_slot] != active_intervall_p[user_slot]) {
-							/* assuming	[0] = pir, [1] = adc, [2] = dht, [3] = dht
-							 * frist dht call: periodic_slot = 2, user slot = 1, adc != dht --> 2-1-1 = 0
-							 * second dht call: periodic_slot = 3, user slot = 2, dht == dht, user_slot = 1, adc != dht --> 3-1-1 = 1
-							 */
-							user_slot = periodic_slot - user_slot - 1;
-							break;
-						}
+				for(uint8_t i=0; i<periodic_slot; i++){
+					if(active_intervall_p[periodic_slot] == active_intervall_p[i]){
+						user_slot++;
 					}
 				}
 				(*active_intervall_p[periodic_slot])->intervall_update(user_slot);

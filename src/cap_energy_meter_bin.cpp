@@ -6,6 +6,8 @@ energy_meter_bin::energy_meter_bin(){
 	sprintf_P(m_total_grid_kwh,PSTR("no data"));
 	sprintf_P(m_total_solar_kwh,PSTR("no data"));
 	sprintf_P(m_current_w,PSTR("no data"));
+	storage[0]=0;
+	storage[1]=0;
 };
 
 // simply the destructor
@@ -55,9 +57,16 @@ uint8_t * energy_meter_bin::get_key(){
 
 // will be callen if the key is part of the config
 bool energy_meter_bin::init(){
+	logger.enable_serial_trace(false);
+	logger.enable_mqtt_trace(true);
+	Serial.flush();
+	Serial.end();
+	delay(50);
+	Serial.begin(9600);
 	logger.println(TOPIC_GENERIC_INFO, F("energy_meter_bin init"), COLOR_GREEN);
-	swSer1 = new SoftwareSerial(14, 4, false, 40); // 25 byte max buffer , 14 (D5) = rx,4 (D2) = tx
-	swSer1->begin(9600);
+	pinMode(15,INPUT);
+	//swSer1 = new SoftwareSerial(14, 4, false, 40); // 25 byte max buffer , 14 (D5) = rx,4 (D2) = tx
+	//swSer1->begin(9600);
 	dataset       = 0;
 	m_parser_state = EM_STATE_WAIT;
 	m_parser_i = 0;
@@ -86,8 +95,8 @@ uint8_t energy_meter_bin::count_intervall_update(){
 
 
 bool energy_meter_bin::loop(){
-	while (swSer1->available()) {
-		char char_in = swSer1->read();
+	while (Serial.available()) {
+		char char_in = Serial.read();
 		//char_in &= 0x7F; // 8N1 to 7E1
 		if(m_parser_state == EM_STATE_WAIT){
 			if(identifier[dataset][m_parser_i] == char_in){
@@ -122,6 +131,10 @@ bool energy_meter_bin::loop(){
 			temp[m_parser_i] = char_in;
 			m_parser_i++;
 			if(m_parser_i == identifier_magic[dataset][4]){
+				m_parser_state = EM_STATE_CHECK;
+			}
+		} else if (m_parser_state == EM_STATE_CHECK){
+			if(char_in == 0x01){
 				if(dataset == 0 || dataset == 1){ // GRID / solar TOTAL
 					float v=0;
 					uint32_t v2=0;
@@ -130,25 +143,31 @@ bool energy_meter_bin::loop(){
 					}
 					v=v2*m_parser_scale;
 					v=v/1000; // wh -> kWh
-					if(dataset == 0){ // grid
-						// limit increase to 10% (like way less, but this will filter spikes)
-						if(v/atof(m_total_grid_kwh)<1.1 or strncmp(m_total_grid_kwh,"no data",7)==0){
+					// limit increase to 10% (like way less, but this will filter spikes)
+					if(v/storage[dataset]<1.1 or storage[dataset]==0){
+						if(dataset == 0){ // grid
 							dtostrf(v,0,4,m_total_grid_kwh);
-						}
-					} else if(dataset == 1){ // solar
-						// limit increase to 10% (like way less, but this will filter spikes)
-						if(v/atof(m_total_solar_kwh)<1.1 or strncmp(m_total_solar_kwh,"no data",7)==0){
+						} else if(dataset == 1){ // solar
 							dtostrf(v,0,4,m_total_solar_kwh);
 						}
+						storage[dataset] = v;
+					} 
+					// debug
+					else {
+						sprintf(m_msg_buffer,"Filtered value [%i]",dataset);
+						logger.p(m_msg_buffer);
+						dtostrf(v,0,4,m_msg_buffer);
+						logger.pln(m_msg_buffer);
 					}
+					// debug
 				} else if(dataset == 2){ // current value
 					int32_t watt = (int) ((temp[0]<<24)+(temp[1]<<16)+(temp[2]<<8)+temp[3]);
 					sprintf(m_current_w,"%i",watt);
 				}
-				m_parser_state = EM_STATE_WAIT;
 				dataset = (dataset+1)%3;
-				m_parser_i = 0;
 			}		
+			m_parser_i = 0;
+			m_parser_state = EM_STATE_WAIT;
 		} else {
 			m_parser_state = EM_STATE_WAIT;
 		}

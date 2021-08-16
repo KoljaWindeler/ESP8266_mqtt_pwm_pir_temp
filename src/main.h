@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20210222" DEV
+	#define VERSION               "20210816" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -54,7 +54,7 @@
 	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
-	#define MAX_CAPS                 80
+	#define MAX_CAPS                 100
 
 	struct led {
 		uint8_t r;
@@ -91,6 +91,8 @@
 	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";       // subscribe
 	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";       // subscribe
 	static constexpr char MQTT_OTA_TOPIC[]         = "ota";         // subscribe
+	static constexpr char MQTT_CONFIG_LOCK_TOPIC[] = "config_lock"; // subscribe
+	
 
 	static constexpr char STATE_ON[]  = "ON";
 	static constexpr char STATE_OFF[] = "OFF";

@@ -178,6 +178,7 @@ class WiFiManager
 		int           getRSSIasQuality(int RSSI);
 		String        _ssid                   = "";
 		String        _pass                   = "";
+    bool          _config_locked          = false;
 
   private:
     std::unique_ptr<DNSServer>        dnsServer;
