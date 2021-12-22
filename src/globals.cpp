@@ -34,6 +34,7 @@ capability *p_em_bin;
 capability *p_SerSer;
 capability *p_hx711;
 capability *p_crash;
+capability *p_count;
 
 connection_relay network;
 WiFiClient wifiClient;

@@ -634,6 +634,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_CRASH
 	bake(new crash(), &p_crash, config);
 #endif
+#ifdef WITH_COUNTER
+	bake(new counter(), &p_count, config);
+#endif
 	bake(new light(), &p_light, config);
 
 

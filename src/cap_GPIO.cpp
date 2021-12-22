@@ -221,18 +221,41 @@ bool J_GPIO::loop(){
 			// if parameter is high: set state to 1 and increase once per second
 			// publish will send this to the server
 			// we reset this as soon as the pin goes low
+			Serial.print(digitalRead(i));
+			Serial.print(digitalRead(i));
+			Serial.print(digitalRead(i));
+			Serial.println(digitalRead(i));
 			if (digitalRead(i) != m_invert[i]) { // in hold mode, or pin is active
 				if (m_timing_parameter[i] == 0) {
 					m_state[i].set(1); // for input: 1 == on
+					Serial.print("new status ");
+					Serial.println(1);
 					m_timing_parameter[i] = millis(); // timestamp of first push
 				} else {
+					uint8_t old = m_state[i].get_value();
 					m_state[i].check_set(min((uint32_t)10, (uint32_t) ((millis() - m_timing_parameter[i]) / 1000) + 1)); // will count the hold seconds up to 10
+					uint8_t nu = m_state[i].get_value();
+					if(old!=nu){
+						Serial.print("new status");
+						Serial.println(nu);
+					}
+
 				}
 			}
 			// reset timing paramter once the pin was released again
 			else if (m_timing_parameter[i]) {
 				m_timing_parameter[i] = 0;
+
+				uint8_t old = m_state[i].get_value();
 				m_state[i].check_set(0);
+				uint8_t nu = m_state[i].get_value();
+
+				if(old!=nu){
+						Serial.print("UNTEN new status");
+						Serial.print(nu);
+						Serial.print(" was ");
+						Serial.println(old);
+					}
 			}
 		}
 	}
@@ -493,7 +516,9 @@ bool J_GPIO::publish(){
 					}
 				}
 
+				Serial.println("ran update");
 				if (ret) {
+					Serial.println("unset outdated");
 					m_state[i].outdated(false);
 				}
 				return ret; // one at the time
