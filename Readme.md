@@ -203,6 +203,13 @@ All sub topic will concatenated with the dev_short and the direction: e.g. "dev9
 		    
 	This peripheral has basic discovery support, Outputs will show up as e.g. switch.dev34_gpio_4 and inputs as binary_sensor.dev34_gpio_3
 
+### Counter
+	Configuration string: "COUNTER14" for counting on pin 14
+	Purpose: will provide a count of negative going edges on e.g. pin 14 .. will be checked without interrupts, so might not be super fast
+	Sub-Topic(s): Sub-Topic(s): none
+	This peripheral has discovery support.
+
+
 ### Audio
 	Configuration string: "AUD"
 	Purpose: will provide a server (port 5522) that consumes special audio streams (send by a Raspberry). Output is the RX pin.
