@@ -33,6 +33,8 @@ class counter : public capability {
 	private:
         bool m_discovery_pub;
         bool m_pin_was;
+		uint32_t m_last_edge;
+		uint16_t m_ghost;
         uint8_t m_pin;
         mqtt_parameter_32 m_state;
 };

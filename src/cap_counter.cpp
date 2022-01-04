@@ -26,7 +26,13 @@ counter::~counter(){
 // capability parse response. but you can override it, e.g. to return "true" everytime and your component
 // will be loaded under all circumstances
 bool counter::parse(uint8_t* config){
-    return cap.parse_wide(config,get_key(),&m_pin);
+	if(cap.parse_wide(config,get_key(),&m_pin)){
+		uint8_t ghost_sec = 0;
+		cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &ghost_sec, (uint8_t*)""); // GHOST1 = 1000ms GHOST time here .. 
+		m_ghost = ghost_sec * 1000; // convert to ms
+		return true;
+	}
+    return false;
 }
 
 // the will be requested to check if the key is in the config strim
@@ -40,6 +46,7 @@ bool counter::init(){
     m_state.set(0);
     m_state.outdated(false);
     m_pin_was = false;
+	m_last_edge = 0;
     sprintf(m_msg_buffer,"Counter init on gpio %i",m_pin);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 	return true;
@@ -74,7 +81,12 @@ bool counter::loop(){
         if(digitalRead(m_pin) == LOW){
             // pin just transitioned from high to low, e.g. switched closed 
             m_pin_was = LOW;
-            m_state.set(m_state.get_value()+1);
+			if(millis()-m_last_edge>m_ghost){
+            	m_state.set(m_state.get_value()+1);
+			} else {
+				logger.println(TOPIC_MQTT, F("Double Pulse avoided"),COLOR_RED);
+			}
+			m_last_edge = millis();
         }
     } else {
         // pin was low last time, wait for a transition to go high
@@ -121,6 +133,7 @@ bool counter::receive(uint8_t* p_topic, uint8_t* p_payload){
         if(m_state.get_outdated()){
             logger.println(TOPIC_MQTT, F("Received updated counter value"),COLOR_GREEN);
         }
+		network.unsubscribe(build_topic(MQTT_COUNTER_TOPIC,UNIT_TO_PC)); // Attention, UNIT TO PC! so we describe to dev4/r/counter ... /r/ ... RRR 
 		return true;
 	}
 	return false; // not for me
