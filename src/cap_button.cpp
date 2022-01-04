@@ -42,49 +42,40 @@ button::~button(){
 
 
 bool button::parse(uint8_t* config){
-	// ghost avoidance first, as it won't return //
-	if(cap.parse(config,(uint8_t*)"GHOST")){
-		m_ghost_avoidance = 50;
-	};
-	cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &m_ghost_avoidance, (uint8_t*)"");
-	if(m_ghost_avoidance){
-		logger.print(TOPIC_GENERIC_INFO, F("Enable anti-ghosting "), COLOR_PURPLE);
-		logger.pln(m_ghost_avoidance);
-	}
-
 	// keyword "BLCONN" says that we  want to connect the button to the light
 	// so triggering the button shall toggle the light
 	if(cap.parse(config,(uint8_t*)"BLCONN")){
 		m_BL_conn = true;
 	}
 
+	bool ret=false;
 	// taster //
 	if(cap.parse(config,get_key())){
 		m_pin = BUTTON_INPUT_PIN;
 		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 		m_polarity = LOW; // active low
 		m_pullup = true;
-		return true;
+		ret = true;
 	} else if(cap.parse_wide(config,get_key(),&m_pin)){
 		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 		m_polarity = LOW; // active low
 		m_pullup = true;
-		return true;
+		ret = true;
 	} else if(cap.parse_wide(config,(uint8_t*)"BN",&m_pin)){
 		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 		m_polarity = LOW; // active low
 		m_pullup = true;
-		return true;
+		ret = true;
 	} else if(cap.parse_wide(config,(uint8_t*)"BNN",&m_pin)){ // very special for shelly, it switches to LOW but can't drive against the pullup
 		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 		m_polarity = LOW; // active low
 		m_pullup = false;
-		return true;
+		ret = true;
 	} else if(cap.parse_wide(config,(uint8_t*)"BP",&m_pin)){
 		m_mode_toggle_switch = BUTTON_MODE_PUSH_BUTTON; // taster
 		m_polarity = HIGH; // active high !!
 		m_pullup = false;
-		return true;
+		ret = true;
 	}
 	// taster //
 
@@ -93,11 +84,23 @@ bool button::parse(uint8_t* config){
 		m_mode_toggle_switch = BUTTON_MODE_SWITCH; // switch/umschalter
 		m_polarity = LOW; // active low .. doesn't matter
 		m_pullup = false;
-		return true;
+		ret = true;
 	}
 	// switch/umschalter //
 
-	return false;
+	if(ret){
+		// ghost avoidance first, as it won't return //
+		if(cap.parse(config,(uint8_t*)"GHOST")){
+			m_ghost_avoidance = 50;
+		};
+		cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &m_ghost_avoidance, (uint8_t*)"");
+		if(m_ghost_avoidance){
+			logger.print(TOPIC_GENERIC_INFO, F("Enable anti-ghosting "), COLOR_PURPLE);
+			logger.pln(m_ghost_avoidance);
+		}
+	}
+
+	return ret;
 }
 
 uint8_t* button::get_key(){
