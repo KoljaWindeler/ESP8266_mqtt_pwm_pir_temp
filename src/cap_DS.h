@@ -5,10 +5,13 @@
 #include <OneWire.h>
 #include <Wire.h>
 #define DS_PIN           13 // D7
+#define MQTT_TEMPARATURE_TOPIC_N "temperature_%i"
 
 #ifdef WITH_DISCOVERY
 static constexpr char MQTT_DISCOVERY_DS_TOPIC[]      = "homeassistant/sensor/%s_temperature_DS/config";
 static constexpr char MQTT_DISCOVERY_DS_MSG[]      = "{\"name\":\"%s_temperature\", \"stat_t\": \"%s/r/temperature\"}";
+static constexpr char MQTT_DISCOVERY_DS_N_TOPIC[]      = "homeassistant/sensor/%s_temperature_DS_%i/config";
+static constexpr char MQTT_DISCOVERY_DS_N_MSG[]      = "{\"name\":\"%s_temperature_%i\", \"stat_t\": \"%s/r/temperature_%i\"}";
 #endif
 
 class J_DS : public capability {
@@ -26,10 +29,12 @@ class J_DS : public capability {
 		bool publish();
 	private:
 		mqtt_parameter_8 m_state;
+		uint8_t m_sensor_count;
+		uint8_t m_sensor_addr[5][8];
 		OneWire* p_ds;
 		uint8_t m_pin;
 		bool m_discovery_pub;
-		float getDsTemp();
+		float getDsTemp(uint8_t sensor);
 };
 
 
