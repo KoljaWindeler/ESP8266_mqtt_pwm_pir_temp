@@ -28,8 +28,8 @@ counter::~counter(){
 bool counter::parse(uint8_t* config){
 	if(cap.parse_wide(config,get_key(),&m_pin)){
 		uint8_t ghost_sec = 0;
-		cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &ghost_sec, (uint8_t*)""); // GHOST1 = 1000ms GHOST time here .. 
-		m_ghost = ghost_sec * 1000; // convert to ms
+		cap.parse_wide(config,"%s%i", (uint8_t*)"GHOST", 0, 255, &ghost_sec, (uint8_t*)""); // GHOST1 = 10ms GHOST time here .. 
+		m_ghost = ghost_sec * 10; // convert to ms
 		return true;
 	}
     return false;
@@ -45,8 +45,8 @@ bool counter::init(){
     pinMode(m_pin,INPUT_PULLUP);
     m_state.set(0);
     m_state.outdated(false);
-    m_pin_was = false;
-	m_last_edge = 0;
+	m_lastButtonState = HIGH;
+	m_lastDebounceTime = 0;
     sprintf(m_msg_buffer,"Counter init on gpio %i",m_pin);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
 	return true;
@@ -76,25 +76,27 @@ bool counter::init(){
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
 bool counter::loop(){
-    if(m_pin_was == HIGH){ 
-        // pin was high last time .. 
-        if(digitalRead(m_pin) == LOW){
-            // pin just transitioned from high to low, e.g. switched closed 
-            m_pin_was = LOW;
-			if(millis()-m_last_edge>m_ghost){
-            	m_state.set(m_state.get_value()+1);
-			} else {
-				logger.println(TOPIC_MQTT, F("Double Pulse avoided"),COLOR_RED);
+	uint8_t reading = digitalRead(m_pin);
+	if (reading != m_lastButtonState) {
+		// reset timer if input changed
+    	m_lastDebounceTime = millis();
+		// store new state to detect next edge
+		m_lastButtonState = reading;
+	}
+
+	// whatever the reading is at, it's been there for longer than the debounce
+	// delay, so take it as the actual current state:
+	if ((millis() - m_lastDebounceTime) > m_ghost) {
+		// if the button state has changed:
+		if (reading != m_buttonState) {
+			//  store it 
+			m_buttonState = reading;
+			// only count up if the new state is LOW, as we're counting low edges
+			if (m_buttonState == LOW) {
+				m_state.set(m_state.get_value()+1);
 			}
-			m_last_edge = millis();
-        }
-    } else {
-        // pin was low last time, wait for a transition to go high
-        if(digitalRead(m_pin) == HIGH){
-            // pin transitioned to high, toggle again
-            m_pin_was = HIGH;
-        }
-    }
+		}
+  	}
 	return false; // i did nothing
 }
 

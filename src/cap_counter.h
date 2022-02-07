@@ -32,11 +32,17 @@ class counter : public capability {
 		//bool reg_provider(peripheral * p, uint8_t *source);
 	private:
         bool m_discovery_pub;
-        bool m_pin_was;
-		uint32_t m_last_edge;
+
 		uint16_t m_ghost;
         uint8_t m_pin;
         mqtt_parameter_32 m_state;
+
+		uint8_t m_buttonState;             // the current reading from the input pin
+		uint8_t m_lastButtonState = LOW;   // the previous reading from the input pin
+
+		// the following variables are unsigned longs because the time, measured in
+		// milliseconds, will quickly become a bigger number than can be stored in an int.
+		uint32_t m_lastDebounceTime = 0;  // the last time the output pin was toggled
 };
 
 
