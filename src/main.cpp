@@ -637,6 +637,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_COUNTER
 	bake(new counter(), &p_count, config);
 #endif
+#ifdef WITH_EBUS
+	bake(new ebus(), &p_ebus, config);
+#endif
 	bake(new light(), &p_light, config);
 
 

@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20220104" DEV
+	#define VERSION               "20220206" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -144,6 +144,7 @@
 	extern capability * p_hx711;
 	extern capability * p_crash;
 	extern capability * p_count;
+	extern capability * p_ebus;
 
 	extern const uint8_t intens[100];
 
@@ -180,6 +181,7 @@
 #include "cap_hx711.h"
 #include "cap_crash.h"
 #include "cap_counter.h"
+#include "cap_ebus.h"
 
 #endif // ifndef main_h
 
