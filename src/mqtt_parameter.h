@@ -63,4 +63,20 @@ class mqtt_parameter_64 {
 		boolean _update_required;
 };
 
+class mqtt_parameter_float {
+	public:
+		mqtt_parameter_float();
+		void check_set(float input);
+		void set(float input);
+		void set(float input, bool update);
+		float get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		float _value;
+		boolean _update_required;
+};
+
+
 #endif
