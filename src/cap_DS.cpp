@@ -26,7 +26,7 @@ uint8_t* J_DS::get_key(){
 bool J_DS::init(){
 	p_ds = new OneWire(m_pin);
 	m_sensor_count = 0;
-	for(uint8_t i=0; i<5; i++){
+	for(uint8_t i=0; i<DS_MAX_SENSORS; i++){
 		if(p_ds->search(m_sensor_addr[i])) {
 			// no more sensors on chain, reset search
 			if (OneWire::crc8(m_sensor_addr[i], 7) != m_sensor_addr[i][7]) {
@@ -100,15 +100,13 @@ bool J_DS::parse(uint8_t* config){
 	return cap.parse_wide(config,get_key(),&m_pin);
 }
 
-bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
-	return false; // not for me
-}
 
 bool J_DS::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub && m_sensor_count>0){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			for(uint8_t i=0; i<m_sensor_count; i++){
+				wdt_reset();
 				char* t;
 				char* m;
 				if(i==0){
@@ -124,9 +122,23 @@ bool J_DS::publish(){
 				//logger.p(" -> ");
 				//logger.pln(m);
 				m_discovery_pub = network.publish(t,m);
+				delay(100);
 				delete[] m;
 				delete[] t;
 			}
+			// sensor count 
+			char* t;
+			char* m;
+			t = discovery_topic_bake(MQTT_DISCOVERY_DS_COUNT_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_DS_COUNT_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DS_COUNT_MSG, mqtt.dev_short, mqtt.dev_short);
+			m_discovery_pub = network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			// 
+			sprintf(m_msg_buffer, "%i", m_sensor_count);
+			network.publish(build_topic(MQTT_TEMPARATURE_COUNT_TOPIC,UNIT_TO_PC), m_msg_buffer);
+
 			logger.println(TOPIC_MQTT_PUBLISH, F("DS discovery"), COLOR_GREEN);
 			return true;
 		}
@@ -138,6 +150,10 @@ bool J_DS::publish(){
 
 float J_DS::getDsTemp(uint8_t sensor){ // https://blog.silvertech.at/arduino-temperatur-messen-mit-1wire-sensor-ds18s20ds18b20ds1820/
 	// returns the temperature from one DS18S20 in DEG Celsius
+
+	if(sensor >= m_sensor_count){
+		return -1;
+	}
 
 	byte data[12];
 	p_ds->reset();
@@ -163,4 +179,71 @@ float J_DS::getDsTemp(uint8_t sensor){ // https://blog.silvertech.at/arduino-tem
 
 	return TemperatureSum;
 } // getDsTemp
+
+uint8_t J_DS::getSensorCount(){
+	return m_sensor_count;
+}
+
+
+// will be called everytime the controller reconnects to the MQTT broker,
+// this is the chance to fire some subsctions
+// return is ignored
+bool J_DS::subscribe(){
+	for(uint8_t i=1; i<=m_sensor_count; i++){
+		wdt_reset();
+		// set J_GPIO state
+		if(i>1){
+			sprintf(m_msg_buffer, MQTT_TEMPARATURE_TOPIC_N, i);
+		} else {
+			sprintf(m_msg_buffer, MQTT_TEMPARATURE_TOPIC);
+		}
+		network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
+		logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+		delay(100);
+	}
+
+	// ID subscribe
+	sprintf(m_msg_buffer, "%s_%s", MQTT_TEMPARATURE_TOPIC,"id");
+	network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
+	logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+
+	return true;
+}
+
+// will be called everytime a MQTT message is received, if it is for you, return true. else other will be asked.
+bool J_DS::receive(uint8_t* p_topic, uint8_t* p_payload){
+	// //////////////// MASS DIMMING //////////////////
+	// MASS dimm pins .. e.g.  "gpio_255_dimm" >> "ON,13,15"
+	for(uint8_t i=1; i<=m_sensor_count; i++){
+		wdt_reset();
+		// set J_GPIO state
+		if(i>1){
+			sprintf(m_msg_buffer, MQTT_TEMPARATURE_TOPIC_N, i);
+		} else {
+			sprintf(m_msg_buffer, MQTT_TEMPARATURE_TOPIC);
+		}
+		if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
+			intervall_update(i-1);
+			return true;
+		}
+	}
+
+	// post IDs
+	sprintf(m_msg_buffer, "%s_%s", MQTT_TEMPARATURE_TOPIC,"id");
+	if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // on / off with dimming
+		for(uint8_t i=0; i<m_sensor_count; i++){
+			for(uint8_t ii=0; ii<8; ii++){
+				sprintf(m_msg_buffer+2*ii,"%02x", m_sensor_addr[i][ii]); // 8 byte
+			}
+			m_msg_buffer[16]=0x00;
+			sprintf((char*)p_topic, "%s_%s_%i", MQTT_TEMPARATURE_TOPIC,"id",i);
+			network.publish(build_topic((const char*)p_topic,UNIT_TO_PC), m_msg_buffer);
+		}
+		return true;
+	}
+
+	return false;
+}
+
+
 #endif
