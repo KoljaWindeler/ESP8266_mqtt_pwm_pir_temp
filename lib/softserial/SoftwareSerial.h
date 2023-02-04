@@ -34,8 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 class SoftwareSerial : public Stream {
 public:
-  SoftwareSerial(int receivePin, int transmitPin, bool inverse_logic = false, unsigned int buffSize = 64);
-  ~SoftwareSerial();
+  SoftwareSerial(int receivePin, int transmitPin, bool inverse_logic = false, unsigned int buffSize = 64, bool edge_triggered = false);
+  virtual ~SoftwareSerial();
 
   void begin(long speed);
   long baudRate();
@@ -60,6 +60,8 @@ public:
 
   void rxRead();
 
+  volatile boolean SerialBusy = false;
+
   // AVR compatibility methods
   bool listen() { enableRx(true); return true; }
   void end() { stopListening(); }
@@ -68,10 +70,15 @@ public:
 
   using Print::write;
 
+  void setWaitingForStart();
+  void setStartBit(unsigned long start);
+  bool propgateBits(bool level, int pulseBitLength);
+
 private:
   bool isValidGPIOpin(int pin);
 
   // Member variables
+  bool m_edge;
   bool m_oneWire;
   int m_rxPin, m_txPin, m_txEnablePin;
   bool m_rxValid, m_rxEnabled;
@@ -83,6 +90,17 @@ private:
   unsigned int m_inPos, m_outPos;
   int m_buffSize;
   uint8_t *m_buffer;
+
+  // Edge detection management
+  enum GetByteState { awaitingStart, gotStart, readingBits };
+
+  volatile GetByteState m_getByteState = awaitingStart;
+
+  volatile unsigned long m_byteStart;
+  volatile unsigned long m_pulseStart;
+
+  volatile uint8_t m_rec = 0;
+  volatile uint8_t m_bitNo = 0;
 
 };
 
