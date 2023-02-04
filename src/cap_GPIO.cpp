@@ -180,6 +180,7 @@ bool J_GPIO::init(){
 				sprintf_P(m_msg_buffer, PSTR("J_GPIO active high output on pin %i"), i);
 			}
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
+			delay(500);
 		}
 		if (m_pin_in[i]) {
 			if(m_invert[i]){ // inverted input gets pull-up
@@ -190,7 +191,10 @@ bool J_GPIO::init(){
 				sprintf_P(m_msg_buffer, PSTR("J_GPIO active high input on pin %i"), i);
 			}
 			logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
+			delay(500);
 		}
+		yield();
+		wdt_reset();
 	}
 	return true;
 }
@@ -203,6 +207,7 @@ bool J_GPIO::loop(){
 	bool ret = false;
 
 	for (uint8_t i = 0; i <= 16; i++) {
+		wdt_reset();
 		// output
 		if (m_pin_out[i]) {
 			// output mode: m_timing_parameter is set to a non-zero value e.g. to pulse the output
@@ -253,35 +258,42 @@ bool J_GPIO::loop(){
 bool J_GPIO::subscribe(){
 	for (uint8_t i = 0; i <= 16; i++) {
 		if (m_pin_out[i]) {
+			wdt_reset();
 			// set J_GPIO state
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STATE_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 
 			// change J_GPIO state
 			sprintf(m_msg_buffer, MQTT_J_GPIO_TOGGLE_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 
 			// pulse the output
 			sprintf(m_msg_buffer, MQTT_J_GPIO_PULSE_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 
 			// brightness
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 
 			// dimming
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_DIMM_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 
 			// dimm speed
 			sprintf(m_msg_buffer, MQTT_J_GPIO_OUTPUT_STEPTIME_TOPIC, i);
 			network.subscribe(build_topic(m_msg_buffer, PC_TO_UNIT));
 			logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(m_msg_buffer, PC_TO_UNIT), COLOR_GREEN);
+			delay(100);
 		}
 	}
 
@@ -433,7 +445,7 @@ bool J_GPIO::receive(uint8_t * p_topic, uint8_t * p_payload){
 			if (!strcmp((const char *) p_topic, build_topic(m_msg_buffer, PC_TO_UNIT))) { // no dimming
 				set_output(i,m_brightness[i].get_value()); // direct set brightness value, no dimming
 				// set_output will also set state which will trigger the publishing
-				uint16_t pulse_length = atoi((char *) p_payload);
+				uint32_t pulse_length = atol((char *) p_payload);
 				m_timing_parameter[i] = millis() + pulse_length;
 				// do something
 				return true;
