@@ -12,6 +12,7 @@ public:
 	virtual bool intervall_update(uint8_t slot){ return false; }; // no updates
 	virtual bool publish(){ return false; }; // nothing send
 	virtual bool loop(){ return false; }; // nothing done
+	virtual bool emergency_loop(){ return false; }; // nothing done
 	virtual bool subscribe() { return true; }; // subscription send (ignored)
 	virtual bool receive(uint8_t * p_topic, uint8_t * p_payload){ return false; }; // not for me
 
