@@ -1,7 +1,7 @@
 #include "mqtt_parameter.h"
 
 mqtt_parameter_8::mqtt_parameter_8(){
-	_value = false;
+	_value = 0;
 	_update_required = false;
 };
 void mqtt_parameter_8::check_set(uint8_t input){
@@ -31,7 +31,7 @@ bool mqtt_parameter_8::get_outdated(){
 
 
 mqtt_parameter_16::mqtt_parameter_16(){
-	_value = false;
+	_value = 0;
 	_update_required = false;
 };
 void mqtt_parameter_16::check_set(uint16_t input){
@@ -61,7 +61,7 @@ bool mqtt_parameter_16::get_outdated(){
 
 
 mqtt_parameter_32::mqtt_parameter_32(){
-	_value = false;
+	_value = 0;
 	_update_required = false;
 };
 void mqtt_parameter_32::check_set(uint32_t input){
@@ -92,7 +92,7 @@ bool mqtt_parameter_32::get_outdated(){
 /////////////// 64 ///////////
 
 mqtt_parameter_64::mqtt_parameter_64(){
-	_value = false;
+	_value = 0;
 	_update_required = false;
 };
 void mqtt_parameter_64::check_set(uint64_t input){
