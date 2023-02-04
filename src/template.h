@@ -16,6 +16,7 @@ class template : public capability {
 		uint8_t* get_key();
 
 		//bool loop();
+		//bool emergency_loop();
 
 		//uint8_t count_intervall_update();
 		//bool intervall_update(uint8_t slot);

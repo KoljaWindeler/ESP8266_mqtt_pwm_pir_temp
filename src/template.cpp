@@ -36,7 +36,7 @@ bool template::init(){
 
 // override-methode, only implement when needed
 // return the key of any component that you depend on, e.g. "PWM" depends on "LIG"
-//uint8_t* play::get_dep(){
+//uint8_t* template::get_dep(){
 //	return (uint8_t*)"";
 //}
 
@@ -53,6 +53,13 @@ bool template::init(){
 // a long time, otherwise nothing else will be executed
 //bool template::loop(){
 //	return false; // i did nothing
+//}
+
+// override-methode, only implement when needed
+// will be called in loop if we're running in the wifimanager loop
+// like close a valve in a emergency situation
+//bool template::emergency_loop(){
+//	return false; // i did nothing or the methode isn't even implemented
 //}
 
 // override-methode, only implement when needed
