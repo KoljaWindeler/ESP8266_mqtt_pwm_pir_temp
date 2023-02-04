@@ -1,9 +1,10 @@
+#ifdef WITH_EM
 #ifndef energy_meter_h
 	#define energy_meter_h
 
 
 #include "main.h"
-#include "../lib/softserial/SoftwareSerial.h"
+	#include "../lib/softserial/SoftwareSerial.h"
 
 	static constexpr char MQTT_ENERGY_METER_TOTAL_TOPIC[]    = "em_tot"; // publish
 	static constexpr char MQTT_ENERGY_METER_CUR_TOPIC[] = "em_cur"; // publish
@@ -64,3 +65,5 @@ private:
 
 
 #endif // ifndef energy_meter_h
+
+#endif

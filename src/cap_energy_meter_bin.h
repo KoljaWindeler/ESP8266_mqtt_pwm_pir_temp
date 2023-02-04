@@ -3,8 +3,6 @@
 
 
 #include "main.h"
-#include "../lib/softserial/SoftwareSerial.h"
-
 /*
 [77] [07 01 00 01 08 00 FF] [65 00 1C 5D 04 01] [62 1E] [52 FF] [69] 00 00 00 00 00 00 32 12 [01] 
 												FF = -1
@@ -71,7 +69,6 @@ private:
 		char m_total_grid_kwh[16]; // 6 vor, 8 nachkomma
 		char m_total_solar_kwh[16]; // 6 vor, 8 nachkomma
 		char temp[16];
-		SoftwareSerial * swSer1;
 		uint8_t dataset;
 		float storage[2];
 		uint8_t m_freq;
