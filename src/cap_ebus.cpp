@@ -3,8 +3,8 @@
 
 // simply the constructor
 ebus::ebus(){
-	m_txPin = 4; // D2
-	m_rxPin = 5; // D1
+	m_txPin = -1; // tx
+	m_rxPin = 14; // D?
 	m_discovery_pub=false;
 };
 
@@ -17,24 +17,35 @@ ebus::~ebus(){
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
+		yield();
 		//
 		t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_WW_SET_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing ebus ww set config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
+		yield();
 		//
 		t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_HEATER_REQ_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing ebus heater req config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
+		yield();
 		//
 		t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_ROOM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing ebus room config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
+		yield();
+		//
+		t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_HEATING_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing ebus heating config "), COLOR_YELLOW);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
+		yield();
 
 		m_discovery_pub = false;
 	}
@@ -60,23 +71,24 @@ bool ebus::init(){
 	// datasets
 	identifier[0] = (char *) EBUS_HEATER_SET;
 	identifier[1] = (char *) EBUS_WW_SET;
-	identifier[2] = (char *) EBUS_HEATER_REQ_SET;
-	identifier[3] = (char *) EBUS_ROOM;
+	identifier[2] = (char *) EBUS_ROOM;
+	identifier[3] = (char *) EBUS_HEATING;
+	//identifier[4] = (char *) EBUS_HEATER_REQ_SET;
 	identifier_magic[0] = (uint16_t *) EBUS_HEATER_SET_MAGIC;
 	identifier_magic[1] = (uint16_t *) EBUS_WW_SET_MAGIC;
-	identifier_magic[2] = (uint16_t *) EBUS_HEATER_REQ_SET_MAGIC;
-	identifier_magic[3] = (uint16_t *) EBUS_ROOM_MAGIC;
+	identifier_magic[2] = (uint16_t *) EBUS_ROOM_MAGIC;
+	identifier_magic[3] = (uint16_t *) EBUS_HEATING_MAGIC;
+	//identifier_magic[4] = (uint16_t *) EBUS_HEATER_REQ_SET_MAGIC;
 	
 	// state variables
 	m_dataset = 0;
 	m_parser_state = EBUS_STATE_HEADER;
 	m_parser_data = 0;
 	m_parser_ignore = 0;
+	m_running = false;
 	
 	// serial interface
-	swSer1 = new SoftwareSerial(m_rxPin, m_txPin, true);
-	swSer1->begin(2400);
-	swSer1->enableIntTx(true);
+	swSer1 = new SoftwareSerial(m_rxPin, m_txPin, true, 128, true);
 	logger.println(TOPIC_GENERIC_INFO, F("ebus init"), COLOR_GREEN);
 	return true;
 }
@@ -97,7 +109,7 @@ bool ebus::init(){
 // return how many value you want to publish per minute
 // e.g. DHT22: Humidity + Temp = 2
 uint8_t ebus::count_intervall_update(){
-	return 0;
+	return 4;
 }
 
 // override-methode, only implement when needed
@@ -105,14 +117,24 @@ uint8_t ebus::count_intervall_update(){
 // so you CAN run uninterrupted by returning true, but you shouldn't do that for
 // a long time, otherwise nothing else will be executed
 bool ebus::loop(){
+	if(!m_running && millis()-timer_connected_start>10000){
+		logger.println(TOPIC_GENERIC_INFO, F("ebus start"), COLOR_GREEN);
+		m_running = true;
+		swSer1->begin(2400);
+		swSer1->enableIntTx(true);
+		
+	}
 	uint8_t buf;
 	while(swSer1->available()){
 		buf=swSer1->read();
 
 		if(m_parser_state == EBUS_STATE_HEADER){
+			//logger.pln("H");
 			if(buf == identifier[m_dataset][m_parser_data]){
+				//logger.pln("I");
 				m_parser_data++;
 				if(m_parser_data == identifier_magic[m_dataset][0]){
+					//logger.pln("M");
 					m_parser_state = EBUS_STATE_IGNORE;
 					m_parser_ignore = 0;
 				}
@@ -120,14 +142,16 @@ bool ebus::loop(){
 				m_parser_data = 0;
 			}
 		} else if(m_parser_state == EBUS_STATE_IGNORE){
+			//logger.pln("G");
 			m_parser_ignore++;
 			if(m_parser_ignore == identifier_magic[m_dataset][1]){
 				m_parser_state = EBUS_STATE_PAYLOAD;
+				//logger.pln("P");
 				m_parser_data = 0;
 			}
 		} else if(m_parser_state == EBUS_STATE_PAYLOAD){
 			m_parser_data++;
-			uint16_t v;
+			uint16_t v = 0;
 			if(identifier_magic[m_dataset][2]==2){ // 16 bit value, LSB first
 				if(m_parser_data==1){
 					m_temp_buffer = buf;
@@ -144,15 +168,20 @@ bool ebus::loop(){
 					m_state_heater_set.set((float)v/(float)identifier_magic[m_dataset][3]);
 				} else if(m_dataset==1){ // WW set 				
 					m_state_ww_set.set((float)v/(float)identifier_magic[m_dataset][3]);
-				} else if(m_dataset==2){ // Heater request 
-					m_state_heater_req_set.set((float)v/(float)identifier_magic[m_dataset][3]);
-				} else if(m_dataset==3){ // Room Temp
+				} else if(m_dataset==2){ // Room Temp
 					m_state_room.set((float)v/(float)identifier_magic[m_dataset][3]);
+				} else if(m_dataset==3){ // Heating
+					m_heating.set(v&0x00ff);
+				//} else if(m_dataset==4){ // Heater request 
+				//	m_state_heater_req_set.set((float)v/(float)identifier_magic[m_dataset][3]);
 				}
 				// reset parser
 				m_dataset = (m_dataset + 1)%4; // 0,1,2,3,0,1,2,3 ..
 				m_parser_data = 0;
 				m_parser_state = EBUS_STATE_HEADER;
+				//logger.pln("D");
+				// Stop after one message was received, intervall update will re-enable us every 15 sec
+				swSer1->enableRx(false);
 			}
 		} else {
 			m_parser_state = EBUS_STATE_HEADER;
@@ -168,6 +197,60 @@ bool ebus::loop(){
 // slots are per unit, so you will receive 0,1,2,3 ...
 // return is ignored
 bool ebus::intervall_update(uint8_t slot){
+	boolean ret = false;
+	// re-enable RX so we can fetch the next date 
+	swSer1->enableRx(true);
+	
+	if (m_dataset == 1 && m_state_heater_set.get_outdated()) {
+		dtostrf(m_state_heater_set.get_value(), 3, 2, m_msg_buffer);
+		logger.print(TOPIC_MQTT_PUBLISH, F("FBH set temp state "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		ret = network.publish(build_topic(MQTT_HEATER_SET_TOPIC,UNIT_TO_PC), m_msg_buffer);
+		if (ret) {
+			m_state_heater_set.outdated(false);
+		}
+		return ret;
+	} else if (m_dataset == 2 && m_state_ww_set.get_outdated()) {
+		dtostrf(m_state_ww_set.get_value(), 3, 2, m_msg_buffer);
+		logger.print(TOPIC_MQTT_PUBLISH, F("WW set temp state "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		ret = network.publish(build_topic(MQTT_WW_SET_TOPIC,UNIT_TO_PC), m_msg_buffer);
+		if (ret) {
+			m_state_ww_set.outdated(false);
+		}
+		return ret;
+	} else if (m_dataset == 3 && m_state_room.get_outdated()) {
+		dtostrf(m_state_room.get_value(), 3, 2, m_msg_buffer);
+		logger.print(TOPIC_MQTT_PUBLISH, F("room temp state "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		ret = network.publish(build_topic(MQTT_ROOM_TOPIC,UNIT_TO_PC), m_msg_buffer);
+		if (ret) {
+			m_state_room.outdated(false);
+		}
+		return ret;
+	} else if (m_dataset == 0 && m_heating.get_outdated()) {
+		if(m_heating.get_value()==0x63){
+			sprintf(m_msg_buffer,"ON");
+		} else {
+			sprintf(m_msg_buffer,"OFF");
+		}
+		logger.print(TOPIC_MQTT_PUBLISH, F("heating state "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		ret = network.publish(build_topic(MQTT_HEATING_TOPIC,UNIT_TO_PC), m_msg_buffer);
+		if (ret) {
+			m_heating.outdated(false);
+		}
+		return ret;
+	//} else if (slot == 4 && m_state_heater_req_set.get_outdated()) {
+	//	dtostrf(m_state_heater_req_set.get_value(), 3, 2, m_msg_buffer);
+	//	logger.print(TOPIC_MQTT_PUBLISH, F("Heater requested state "), COLOR_GREEN);
+	//	logger.pln(m_msg_buffer);
+	//	ret = network.publish(build_topic(MQTT_HEATER_REQ_TOPIC,UNIT_TO_PC), m_msg_buffer);
+	//	if (ret) {
+	//		m_state_heater_req_set.outdated(false);
+	//	}
+	//	return ret;
+	}
 	return false;
 }
 
@@ -223,16 +306,6 @@ bool ebus::publish(){
 			logger.println(TOPIC_MQTT_PUBLISH, F("ebus ww set discovery"), COLOR_GREEN);
 			//
 			delay(200);
-			t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_HEATER_REQ_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			m = new char[strlen(MQTT_DISCOVERY_EBUS_HEATER_REQ_MSG)+2*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_EBUS_HEATER_REQ_MSG, mqtt.dev_short, mqtt.dev_short);
-			m_discovery_pub &= network.publish(t,m);
-			delete[] m;
-			delete[] t;
-			yield();
-			logger.println(TOPIC_MQTT_PUBLISH, F("ebus heater req discovery"), COLOR_GREEN);
-			//
-			delay(200);
 			t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_ROOM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 			m = new char[strlen(MQTT_DISCOVERY_EBUS_ROOM_MSG)+2*strlen(mqtt.dev_short)];
 			sprintf(m, MQTT_DISCOVERY_EBUS_ROOM_MSG, mqtt.dev_short, mqtt.dev_short);
@@ -241,49 +314,31 @@ bool ebus::publish(){
 			delete[] t;
 			yield();
 			logger.println(TOPIC_MQTT_PUBLISH, F("ebus room discovery"), COLOR_GREEN);
+			//
+			delay(200);
+			t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_HEATING_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			m = new char[strlen(MQTT_DISCOVERY_EBUS_HEATING_MSG)+2*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_EBUS_HEATING_MSG, mqtt.dev_short, mqtt.dev_short);
+			m_discovery_pub &= network.publish(t,m);
+			delete[] m;
+			delete[] t;
+			yield();
+			logger.println(TOPIC_MQTT_PUBLISH, F("ebus heating discovery"), COLOR_GREEN);
+			delay(200);
+			//
+			//t = discovery_topic_bake(MQTT_DISCOVERY_EBUS_HEATER_REQ_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			//m = new char[strlen(MQTT_DISCOVERY_EBUS_HEATER_REQ_MSG)+2*strlen(mqtt.dev_short)];
+			//sprintf(m, MQTT_DISCOVERY_EBUS_HEATER_REQ_MSG, mqtt.dev_short, mqtt.dev_short);
+			//m_discovery_pub &= network.publish(t,m);
+			//delete[] m;
+			//delete[] t;
+			//yield();
+			//logger.println(TOPIC_MQTT_PUBLISH, F("ebus heater req discovery"), COLOR_GREEN);
+			//
 			return true;
 		}
 	}
 #endif
-
-	boolean ret = false;
-	if (m_state_heater_set.get_outdated()) {
-		dtostrf(m_state_heater_set.get_value(), 3, 2, m_msg_buffer);
-		logger.print(TOPIC_MQTT_PUBLISH, F("FBH set temp state "), COLOR_GREEN);
-		logger.pln(m_msg_buffer);
-		ret = network.publish(build_topic(MQTT_HEATER_SET_TOPIC,UNIT_TO_PC), m_msg_buffer);
-		if (ret) {
-			m_state_heater_set.outdated(false);
-		}
-		return ret;
-	} else if (m_state_ww_set.get_outdated()) {
-		dtostrf(m_state_ww_set.get_value(), 3, 2, m_msg_buffer);
-		logger.print(TOPIC_MQTT_PUBLISH, F("WW set temp state "), COLOR_GREEN);
-		logger.pln(m_msg_buffer);
-		ret = network.publish(build_topic(MQTT_WW_SET_TOPIC,UNIT_TO_PC), m_msg_buffer);
-		if (ret) {
-			m_state_ww_set.outdated(false);
-		}
-		return ret;
-	} else if (m_state_heater_req_set.get_outdated()) {
-		dtostrf(m_state_heater_req_set.get_value(), 3, 2, m_msg_buffer);
-		logger.print(TOPIC_MQTT_PUBLISH, F("Heater requested state "), COLOR_GREEN);
-		logger.pln(m_msg_buffer);
-		ret = network.publish(build_topic(MQTT_HEATER_REQ_TOPIC,UNIT_TO_PC), m_msg_buffer);
-		if (ret) {
-			m_state_heater_req_set.outdated(false);
-		}
-		return ret;
-	} else if (m_state_room.get_outdated()) {
-		dtostrf(m_state_room.get_value(), 3, 2, m_msg_buffer);
-		logger.print(TOPIC_MQTT_PUBLISH, F("room temp state "), COLOR_GREEN);
-		logger.pln(m_msg_buffer);
-		ret = network.publish(build_topic(MQTT_ROOM_TOPIC,UNIT_TO_PC), m_msg_buffer);
-		if (ret) {
-			m_state_room.outdated(false);
-		}
-		return ret;
-	}
 	return false;
 }
 #endif

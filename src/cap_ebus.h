@@ -8,6 +8,7 @@ static constexpr char MQTT_HEATER_SET_TOPIC[] = "ebus_heater_set";
 static constexpr char MQTT_WW_SET_TOPIC[]     = "ebus_ww_set";
 static constexpr char MQTT_HEATER_REQ_TOPIC[] = "ebus_heater_req";
 static constexpr char MQTT_ROOM_TOPIC[]       = "ebus_room";
+static constexpr char MQTT_HEATING_TOPIC[]    = "ebus_heating";
 
 #ifdef WITH_DISCOVERY
 static constexpr char MQTT_DISCOVERY_EBUS_HEATER_SET_TOPIC[] = "homeassistant/sensor/%s_ebus_heater_set/config";
@@ -21,6 +22,9 @@ static constexpr char MQTT_DISCOVERY_EBUS_WW_SET_MSG[]       = "{\"name\":\"%s_e
 
 static constexpr char MQTT_DISCOVERY_EBUS_ROOM_TOPIC[]       = "homeassistant/sensor/%s_ebus_room/config";
 static constexpr char MQTT_DISCOVERY_EBUS_ROOM_MSG[]         = "{\"name\":\"%s_ebus_room\", \"stat_t\": \"%s/r/ebus_room\"}";
+
+static constexpr char MQTT_DISCOVERY_EBUS_HEATING_TOPIC[]       = "homeassistant/binary_sensor/%s_ebus_heating/config";
+static constexpr char MQTT_DISCOVERY_EBUS_HEATING_MSG[]         = "{\"name\":\"%s_ebus_heating\", \"stat_t\": \"%s/r/ebus_heating\"}";
 #endif
 
 
@@ -40,6 +44,9 @@ static constexpr uint16_t EBUS_HEATER_REQ_SET_MAGIC[] = {5,1,2,256}; // 5 identi
 // 30 50 [50 14] [08] [61] [E6 20] ->[00 17]<- 08  --> 0x00,0x17 -> 0x1700 / 256 = 23.0
 static constexpr char EBUS_ROOM[] = {0x30, 0x50, 0x50, 0x14, 0x08}; 
 static constexpr uint16_t EBUS_ROOM_MAGIC[] = {5,3,2,256}; // 5 identifier, 1 ignore, 2x payload LSBF, divider 256
+// 30 50 [50 14] [08] ->[61]<- [E6 20] [00 17] 08  --> 0x61 61 == ON , vs 63 == OFF
+static constexpr char EBUS_HEATING[] = {0x30, 0x50, 0x50, 0x14, 0x08}; 
+static constexpr uint16_t EBUS_HEATING_MAGIC[] = {4,1,1,1}; // 4 identifier, 1 ignore, 1x payload LSBF, divider 1
 
 class ebus : public capability {
 	public:
@@ -54,9 +61,11 @@ class ebus : public capability {
 		bool intervall_update(uint8_t slot);
 		//bool subscribe();
 		//bool receive(uint8_t* p_topic, uint8_t* p_payload);
+		//bool emergency_loop();
 		bool publish();
 		//uint8_t* get_dep();
 		//bool reg_provider(peripheral * p, uint8_t *source);
+		mqtt_parameter_float m_state_heater_req_set;
 	private:
 		SoftwareSerial * swSer1;
 		uint8_t m_rxPin;
@@ -64,12 +73,13 @@ class ebus : public capability {
 		uint8_t m_parse_state;
 		mqtt_parameter_float m_state_heater_set;
 		mqtt_parameter_float m_state_ww_set;
-		mqtt_parameter_float m_state_heater_req_set;
 		mqtt_parameter_float m_state_room;
+		mqtt_parameter_8     m_heating;
 
 		bool m_discovery_pub;
-		char* identifier[4];
-		uint16_t* identifier_magic[4];
+		bool m_running;
+		char* identifier[5];
+		uint16_t* identifier_magic[5];
 		uint8_t m_dataset;
 		uint8_t m_parser_state;
 		uint8_t m_parser_data;
