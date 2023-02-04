@@ -253,6 +253,7 @@ void reconnect(){
 	// first check wifi
 	WiFi.mode(WIFI_STA);                // avoid station and ap at the same time
 	while (!network.connected(false)) { // this is wifi + mqtt/mesh connect
+		wdt_reset();
 		logger.println(TOPIC_MQTT, F("Currently not connected, checking wifi ..."), COLOR_RED);
 		// check if we have valid credentials for a WiFi at all
 		// the ssid and pw will be set to "" if the EEPROM was empty / invalid
@@ -640,6 +641,12 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_EBUS
 	bake(new ebus(), &p_ebus, config);
 #endif
+#ifdef WITH_FIREPLACE
+	bake(new fireplace(), &p_fireplace, config);
+#endif
+#ifdef WITH_AUTARCO
+	bake(new autarco(), &p_autarco, config);
+#endif
 	bake(new light(), &p_light, config);
 
 
@@ -776,6 +783,7 @@ void setup(){
 		logger.p(F(".. "));
 	//	delay(500);
 	}
+	wdt_enable(WDTO_8S); // start watchdog
 
 	logger.pln(F(""));
 	logger.pln(F(""));
@@ -814,6 +822,7 @@ void setup(){
 	wifiManager.setConfigPortalTimeout(MAX_AP_TIME);
 	wifiManager.setConnectTimeout(MAX_CON_TIME);
 	wifiManager.setMqtt(&mqtt); // save to reuse structure (only to save memory)
+	wifiManager.setCapability(active_p); // save to have a link to all capabilities
 
 	// init the MQTT connection
 	randomSeed(millis());
@@ -850,6 +859,7 @@ void setup(){
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 bool uninterrupted;
 void loop(){
+	wdt_reset();
 	// handle network .. like parse and react on incoming data
 	network.receive_loop();
 
@@ -864,6 +874,7 @@ void loop(){
 	for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
 		if ((*active_p[i])->loop()) { // uninterrupted loop request ... don't execute others
 			uninterrupted = true;
+			wdt_reset();
 			break;
 		}
 	}
@@ -873,6 +884,7 @@ void loop(){
 	if (!uninterrupted) {
 		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
 			for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
+				wdt_reset();
 				if ((*active_p[i])->publish()) { // some one published something urgend, stop others
 					timer_republish_avoid = millis();
 					timer_last_publish    = millis();
@@ -893,6 +905,7 @@ void loop(){
 						user_slot++;
 					}
 				}
+				wdt_reset();
 				(*active_intervall_p[periodic_slot])->intervall_update(user_slot);
 				periodic_slot = (periodic_slot + 1) % active_p_intervall_counter;
 			}
@@ -906,12 +919,13 @@ void loop(){
 				// if(t[strlen(t)-2]==13 && t[strlen(t)-1]==10){
 				//	t[strlen(t)-2]=0x00;
 				// }
+				wdt_reset();
 				network.publish(build_topic(MQTT_TRACE_TOPIC, UNIT_TO_PC), p_trace);
 				timer_last_publish = millis();
 			}
 		}
 	}
-} // loop
+} // loop5
 
 // //////////////////////////////////////////// LOOP ///////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////
@@ -973,4 +987,41 @@ char* discovery_topic_bake(const char* topic,...){
 
 	return t; // don't forget to free this as well
 }
+// /////////////////////////////////////////////////////////////////////////////////////
+char* discovery_topic_bake_2(const char* domain, const char* topic){
+	//static constexpr char MQTT_DISCOVERY_AUTARCO_TOTAL_KWH_TOPIC[] = "homeassistant/sensor/%s_autarco_kwh/config";
+
+	char* t = new char[14+strlen(domain)+1+strlen(mqtt.dev_short)+1+strlen(topic)+8];
+	sprintf(t,"homeassistant/%s/%s_%s/config",domain,mqtt.dev_short,topic);
+	//Serial.print("Topic input ");
+	//Serial.println(t);
+
+	char* pos = strstr(t,mqtt.dev_short);
+	if(pos!=NULL){
+		str_rpl(pos, '/', '_',strlen(mqtt.dev_short));  // remove all '/' and replace them with '_'
+	}
+
+	//Serial.print("Topic output ");
+	//Serial.println(t);
+
+	return t; // don't forget to free this as well
+}
+// /////////////////////////////////////////////////////////////////////////////////////
+char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit){
+	char* t = new char[65+3*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit)];
+	sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic);
+	return t;
+}
+
+// /////////////////////////////////////////////////////////////////////////////////////
+
+bool discovery(const char* domain, const char* topic, const char* unit){
+	char* t = discovery_topic_bake_2(domain,topic);
+	char* m = discovery_message_bake_2(domain,topic,unit);
+	bool ret = network.publish(t,m);
+	delete[] m;
+	delete[] t;
+	return ret;
+}
+
 // /////////////////////////////////////////////////////////////////////////////////////
