@@ -40,9 +40,9 @@
 	#define DIMM_DIMMING          1 // state defs
 	#define DHT_def               1
 	#define DS_def                2
-	#define TEMP_MAX              70 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
+	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20220206" DEV
+	#define VERSION               "20230130" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -76,6 +76,9 @@
 	char* str_rpl(char* in, char old, char replacement);
 	char* str_rpl(char* in, char old, char replacement, uint8_t len);
 	char* discovery_topic_bake(const char* topic,...);
+	char* discovery_topic_bake_2(const char* domain, const char* topic);
+	char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit);
+	bool discovery(const char* domain, const char* topic, const char* unit);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
@@ -92,6 +95,18 @@
 	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";       // subscribe
 	static constexpr char MQTT_OTA_TOPIC[]         = "ota";         // subscribe
 	static constexpr char MQTT_CONFIG_LOCK_TOPIC[] = "config_lock"; // subscribe
+
+	// units
+	static constexpr char UNIT_V[] = "V"; // Volt
+	static constexpr char UNIT_A[] = "A"; // Ampere
+	static constexpr char UNIT_W[] = "W"; // Watt
+	static constexpr char UNIT_DEG_C[] = "°C"; // deg C
+	static constexpr char UNIT_KWH[] = "kWh"; // kilo watt hour
+
+	// domains
+	static constexpr char DOMAIN_SENSOR[] = "sensor";
+	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor";
+
 	
 
 	static constexpr char STATE_ON[]  = "ON";
@@ -145,6 +160,8 @@
 	extern capability * p_crash;
 	extern capability * p_count;
 	extern capability * p_ebus;
+	extern capability * p_fireplace;
+	extern capability * p_autarco;
 
 	extern const uint8_t intens[100];
 
@@ -182,6 +199,8 @@
 #include "cap_crash.h"
 #include "cap_counter.h"
 #include "cap_ebus.h"
+#include "cap_fireplace.h"
+#include "cap_autarco.h"
 
 #endif // ifndef main_h
 
