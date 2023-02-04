@@ -64,7 +64,7 @@ bool J_DS::intervall_update(uint8_t slot){
 	// function called to publish the brightness of the led
 	uint8_t sensor = slot % m_sensor_count;
 	float temp = getDsTemp(sensor);
-	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp)) {
+	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp) || temp==85.0 ) {
 		logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);
 		if (isnan(temp)) {
 			logger.pln(F("nan"));
@@ -103,28 +103,30 @@ bool J_DS::parse(uint8_t* config){
 
 bool J_DS::publish(){
 #ifdef WITH_DISCOVERY
-	if(!m_discovery_pub && m_sensor_count>0){
+	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			for(uint8_t i=0; i<m_sensor_count; i++){
-				wdt_reset();
-				char* t;
-				char* m;
-				if(i==0){
-					t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-					m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
-					sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
-				} else {
-					t = discovery_topic_bake(MQTT_DISCOVERY_DS_N_TOPIC,mqtt.dev_short,i+1); // don't forget to "delete[] t;" at the end of usage;
-					m = new char[strlen(MQTT_DISCOVERY_DS_N_MSG)+2*strlen(mqtt.dev_short)+2];
-					sprintf(m, MQTT_DISCOVERY_DS_N_MSG, mqtt.dev_short, i+1, mqtt.dev_short, i+1); // the +1 will make it sensor.dev99_temperature_2 for the second sensor instead of _1
+			if(m_sensor_count>0){
+				for(uint8_t i=0; i<m_sensor_count; i++){
+					wdt_reset();
+					char* t;
+					char* m;
+					if(i==0){
+						t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+						m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
+						sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
+					} else {
+						t = discovery_topic_bake(MQTT_DISCOVERY_DS_N_TOPIC,mqtt.dev_short,i+1); // don't forget to "delete[] t;" at the end of usage;
+						m = new char[strlen(MQTT_DISCOVERY_DS_N_MSG)+2*strlen(mqtt.dev_short)+2];
+						sprintf(m, MQTT_DISCOVERY_DS_N_MSG, mqtt.dev_short, i+1, mqtt.dev_short, i+1); // the +1 will make it sensor.dev99_temperature_2 for the second sensor instead of _1
+					}
+					//logger.p(t);
+					//logger.p(" -> ");
+					//logger.pln(m);
+					m_discovery_pub = network.publish(t,m);
+					delay(100);
+					delete[] m;
+					delete[] t;
 				}
-				//logger.p(t);
-				//logger.p(" -> ");
-				//logger.pln(m);
-				m_discovery_pub = network.publish(t,m);
-				delay(100);
-				delete[] m;
-				delete[] t;
 			}
 			// sensor count 
 			char* t;
@@ -155,29 +157,50 @@ float J_DS::getDsTemp(uint8_t sensor){ // https://blog.silvertech.at/arduino-tem
 		return -1;
 	}
 
+	float TemperatureSum[5];
 	byte data[12];
-	p_ds->reset();
-	p_ds->select(m_sensor_addr[sensor]);
-	p_ds->write(0x44, 1); // start conversion, with parasite power on at the end
 
-	p_ds->reset();
-	p_ds->select(m_sensor_addr[sensor]);
-	p_ds->write(0xBE); // Read Scratchpad
+	for(uint8_t i=0; i<5; i++){	
+		p_ds->reset();
+		p_ds->select(m_sensor_addr[sensor]);
+		p_ds->write(0x44, 1); // start conversion, with parasite power on at the end
+
+		p_ds->reset();
+		p_ds->select(m_sensor_addr[sensor]);
+		p_ds->write(0xBE); // Read Scratchpad
 
 
-	for (int i = 0; i < 9; i++) { // we need 9 bytes
-		data[i] = p_ds->read();
+		for (int i = 0; i < 9; i++) { // we need 9 bytes
+			data[i] = p_ds->read();
+		}
+
+		p_ds->reset_search();
+
+		byte MSB = data[1];
+		byte LSB = data[0];
+
+		float tempRead       = (int16_t) ((MSB << 8) | LSB); // using two's compliment
+		TemperatureSum[i] = tempRead / 16.0;
 	}
 
-	p_ds->reset_search();
-
-	byte MSB = data[1];
-	byte LSB = data[0];
-
-	float tempRead       = (int16_t) ((MSB << 8) | LSB); // using two's compliment
-	float TemperatureSum = tempRead / 16.0;
-
-	return TemperatureSum;
+	// bubble sort 
+	bool swap = true;
+	float t;
+	while(swap){
+		swap = false;
+		yield();
+		for(uint8_t i=0; i<5-1; i++){
+			if(TemperatureSum[i]>TemperatureSum[i+1]){
+				t=TemperatureSum[i];
+				TemperatureSum[i]=TemperatureSum[i+1];
+				TemperatureSum[i]=t;
+				swap=true;
+				break;
+			}
+		}
+	}
+	
+	return TemperatureSum[2]; // center of the sorted array
 } // getDsTemp
 
 uint8_t J_DS::getSensorCount(){
