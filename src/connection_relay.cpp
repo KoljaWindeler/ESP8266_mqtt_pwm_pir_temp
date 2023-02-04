@@ -59,8 +59,14 @@ bool connection_relay::DirectConnect(){
 	WiFi.disconnect();
 	logger.print(TOPIC_WIFI, F("Connecting to: "), COLOR_YELLOW);
 	logger.pln(mqtt.nw_ssid);
+	sprintf(m_msg_buffer,"length: %i",strlen(mqtt.nw_pw));
+	
+	logger.pln(m_msg_buffer);
+	uint8_t pw_safe[17];
+	memset(pw_safe,0x00,17);
+	memcpy(pw_safe,mqtt.nw_pw,16);
 
-	if (wifiManager.connectWifi(mqtt.nw_ssid, mqtt.nw_pw) == WL_CONNECTED) {
+	if (wifiManager.connectWifi(mqtt.nw_ssid, (char*)pw_safe) == WL_CONNECTED) {
 		sprintf_P(m_msg_buffer,PSTR("Direct connection with %s estabilshed, IP: %i.%i.%i.%i"),
 			(char*)WiFi.SSID().c_str(),WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
 		logger.println(TOPIC_WIFI, m_msg_buffer, COLOR_GREEN);
