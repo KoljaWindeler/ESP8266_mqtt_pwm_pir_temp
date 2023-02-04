@@ -19,6 +19,7 @@
 #include <memory>
 #include <WiFiUdp.h>
 #include <EEPROM.h>
+#include "../../../src/cap.h"
 
 //#include "ArduinoOTA.h" // local modified version
 
@@ -174,6 +175,8 @@ class WiFiManager
     void          setRemoveDuplicateAPs(boolean removeDuplicates);
     // set mqtt storage
     void          setMqtt(mqtt_data *mqtt);
+    // set capability 
+    void          setCapability(capability *** caps);
 		int           connectWifi(String ssid, String pass);
 		int           getRSSIasQuality(int RSSI);
 		String        _ssid                   = "";
@@ -245,6 +248,7 @@ class WiFiManager
     // kolja helper
     mqtt_data     *m_mqtt;
     uint8_t       m_mqtt_sizes[8];
+    capability    ***m_caps;
 
 
     boolean       connect;

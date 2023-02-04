@@ -92,6 +92,7 @@ const char * WiFiManagerParameter::getCustomHTML(){
 WiFiManager::WiFiManager(){
 	_customIdElement = "";
 	_config_locked = false;
+	m_caps = 0x00;
 }
 
 void WiFiManager::resetParameter(){
@@ -261,11 +262,20 @@ boolean WiFiManager::startConfigPortal(char const * apName, char const * apPassw
 	uint8_t ddf = 0; // we nned 3x '?' to enter setup
 
 	while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
+		wdt_reset();
 		// ////////////// kolja serial config code ////////////
 		// if(millis()-t>1000){
 		//  t=millis();
 		//  Serial.print("+");
 		// }
+
+		// run any emergency_loop
+		for (uint8_t i = 0; m_caps!=0x00 && m_caps[i] != 0x00; i++) {
+			//Serial.println((char*)(*m_caps[i])->get_key());
+			(*m_caps[i])->emergency_loop();
+		}
+		
+
 		// check button press
 		if(_buttonCallback != NULL){
 			_buttonCallback();
@@ -635,6 +645,7 @@ uint8_t WiFiManager::waitForConnectResult(){
 		boolean keepConnecting = true;
 		uint8_t status;
 		while (keepConnecting) {
+			wdt_reset();
 			status = WiFi.status();
 			if (millis() > start + _connectTimeout) {
 				keepConnecting = false;
@@ -647,6 +658,10 @@ uint8_t WiFiManager::waitForConnectResult(){
 		}
 		return status;
 	}
+}
+
+void WiFiManager::setCapability(capability *** caps){
+	m_caps = caps;
 }
 
 void WiFiManager::setMqtt(mqtt_data * mqtt){
