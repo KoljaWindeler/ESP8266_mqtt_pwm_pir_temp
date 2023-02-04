@@ -28,7 +28,7 @@ bool ADC::parse(uint8_t* config){
 
 bool ADC::init(){
 	// output for the analogmeasurement
-	pinMode(GPIO_D8, OUTPUT);
+	//pinMode(GPIO_D8, OUTPUT);
 	logger.println(TOPIC_GENERIC_INFO, F("ADC init"), COLOR_GREEN);
 	return true;
 }
@@ -39,16 +39,16 @@ uint8_t ADC::count_intervall_update(){
 }
 
 bool ADC::intervall_update(uint8_t slot){
-	if(slot==0){
-			digitalWrite(GPIO_D8, HIGH);
-	} else {
+	//if(slot==0){
+	//		digitalWrite(GPIO_D8, HIGH);
+	//} else {
 		uint16_t adc = analogRead(A0);
 		logger.print(TOPIC_MQTT_PUBLISH, F("adc "), COLOR_GREEN);
 		snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%d", adc);
 		logger.pln(m_msg_buffer);
-		digitalWrite(GPIO_D8, LOW);
+	//	digitalWrite(GPIO_D8, LOW);
 		return network.publish(build_topic(MQTT_ADC_TOPIC,UNIT_TO_PC), m_msg_buffer);
-	}
+	//}
 	return false;
 }
 
