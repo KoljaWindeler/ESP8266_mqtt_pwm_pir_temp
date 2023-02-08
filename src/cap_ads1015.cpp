@@ -164,9 +164,9 @@ bool ads1015::intervall_update(uint8_t slot){
 	logger.print(TOPIC_MQTT_PUBLISH, F("Ads1115 Dev "), COLOR_GREEN);
 	logger.addColor(COLOR_GREEN);
 	logger.p((m_intervall_call/4));
-	logger.p(", Channel ");
+	logger.p(F(", Channel "));
 	logger.p(m_intervall_call%4);
-	logger.p(": ");
+	logger.p(F(": "));
 	logger.remColor(COLOR_GREEN);
 	dtostrf(amp_volt, 3, 2, m_msg_buffer);
 	logger.p(m_msg_buffer);
