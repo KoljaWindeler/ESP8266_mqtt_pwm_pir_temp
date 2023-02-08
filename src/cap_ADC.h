@@ -5,10 +5,6 @@
 #define GPIO_D8          15 // D8
 static constexpr char MQTT_ADC_TOPIC[]           = "adc";         // publish
 
-#ifdef WITH_DISCOVERY
-static constexpr char MQTT_DISCOVERY_ADC_TOPIC[]      = "homeassistant/sensor/%s_adc/config";
-static constexpr char MQTT_DISCOVERY_ADC_MSG[]      = "{\"name\":\"%s_adc\", \"stat_t\": \"%s/r/adc\"}";
-#endif
 
 class ADC : public capability
 {
