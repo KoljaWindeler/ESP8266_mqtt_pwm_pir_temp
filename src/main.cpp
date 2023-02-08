@@ -421,22 +421,26 @@ void reconnect(){
 				// time to start the AP
 				logger.pln(F("Can't connect, starting AP"));
 				// restart Serial if neopixel/audio are connected (they've reconfigured the RX pin/interrupt)
-				if (p_neo || p_play) {
+				/*if (p_neo || p_play) {
 					Serial.end();
 					delay(500);
 					Serial.begin(115200);
-				}
+				}*/
 				// reload mqtt data
 				wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because we've altered the info and we need the original content
 				// run wifi manager
 				wifiManager.startConfigPortal(CONFIG_SSID);
 				// reinit capability if needed
+#ifdef WITH_NEO
 				if(p_neo){
 					p_neo->init();
 				}
+#endif
+#ifdef WITH_PLAY				
 				if(p_play){
 					p_play->init();
 				}
+#endif				
 				// resets timer
 				timer_connected_stop  = millis();
 				timer_connected_start = millis();
@@ -1008,8 +1012,13 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 }
 // /////////////////////////////////////////////////////////////////////////////////////
 char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit){
-	char* t = new char[65+3*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit)];
-	sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic);
+	if(unit!=UNIT_NONE){
+		char* t = new char[65+3*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit)];
+		sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic);
+		return t;
+	}
+	char* t = new char[45+3*strlen(mqtt.dev_short)+3*strlen(topic)];
+	sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,topic);
 	return t;
 }
 

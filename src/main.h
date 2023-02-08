@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20230130" DEV
+	#define VERSION               "20230207" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -97,6 +97,7 @@
 	static constexpr char MQTT_CONFIG_LOCK_TOPIC[] = "config_lock"; // subscribe
 
 	// units
+	static constexpr char UNIT_NONE[] = "N"; // None
 	static constexpr char UNIT_V[] = "V"; // Volt
 	static constexpr char UNIT_A[] = "A"; // Ampere
 	static constexpr char UNIT_W[] = "W"; // Watt
@@ -139,7 +140,7 @@
 	extern capability * p_ds;
 	extern capability * p_ai;
 	extern capability * p_bOne;
-	extern capability * p_neo;
+	//extern capability * p_neo;
 	extern capability * p_light;
 	extern capability * p_hlw;
 	extern capability * p_nl;
@@ -148,19 +149,19 @@
 	//extern capability * p_husqvarna;
 	extern capability * p_no_mesh;
 	extern capability * p_uptime;
-	extern capability * p_play;
+	//extern capability * p_play;
 	extern capability * p_freq;
-	extern capability * p_rec;
-	extern capability * p_em;
+	//extern capability * p_rec;
+	//extern capability * p_em;
 	extern capability * p_em_bin;
-	extern capability * p_ir;
+	//extern capability * p_ir;
 	extern capability * p_SerSer;
 	extern capability * p_ads1015;
 	extern capability * p_hx711;
 	extern capability * p_crash;
 	extern capability * p_count;
 	extern capability * p_ebus;
-	extern capability * p_fireplace;
+	//extern capability * p_fireplace;
 	extern capability * p_autarco;
 
 	extern const uint8_t intens[100];
@@ -178,19 +179,19 @@
 #include "cap_hlw8012.h"
 #include "cap_AI.h"
 #include "cap_BOne.h"
-#include "cap_NeoStrip.h"
+//#include "cap_NeoStrip.h"
 #include "cap_light.h"
 #include "cap_night_light.h"
 #include "cap_tuya_bridge.h"
 #include "cap_GPIO.h"
 //#include "cap_husqvarna.h"
 #include "cap_mesh.h"
-#include "cap_ir.h"
+//#include "cap_ir.h"
 #include "cap_uptime.h"
-#include "cap_play.h"
+//#include "cap_play.h"
 #include "cap_freq.h"
-#include "cap_record.h"
-#include "cap_energy_meter.h"
+//#include "cap_record.h"
+//#include "cap_energy_meter.h"
 #include "cap_energy_meter_bin.h"
 #include "cap_SerialServer.h"
 #include "cap_shelly_dimmer.h"
@@ -199,7 +200,7 @@
 #include "cap_crash.h"
 #include "cap_counter.h"
 #include "cap_ebus.h"
-#include "cap_fireplace.h"
+//#include "cap_fireplace.h"
 #include "cap_autarco.h"
 
 #endif // ifndef main_h
