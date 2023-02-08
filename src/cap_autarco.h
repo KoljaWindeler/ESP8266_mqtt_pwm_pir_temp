@@ -67,6 +67,7 @@ private:
 		uint16_t m_req_start_addr;
 		uint32_t m_last_char_in;
 		SoftwareSerial * swSer1;
+		uint8_t m_timeout;
 	};
 
 

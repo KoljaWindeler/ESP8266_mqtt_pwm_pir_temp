@@ -100,6 +100,7 @@ bool autarco::init(){
 	m_parser_state = AUTARCO_STATE_IDLE;
 	m_req_start_addr = 0x00;
 	m_kwh_sync = 0;
+	m_timeout = 0;
 	return true;
 }
 
@@ -128,6 +129,7 @@ void autarco::build_crc(uint8_t in){
 // a long time, otherwise nothing else will be executed
 bool autarco::loop(){
 	while (swSer1->available()) {
+		m_timeout = 0;
 		char char_in = swSer1->read();
 		//logger.pln(char_in);
 
@@ -213,7 +215,18 @@ bool autarco::loop(){
 
 					// kwh today
 					m_today_kwh.check_set(((float)((uint16_t)((m_buffer[15*2]<<8)+m_buffer[15*2+1])))/10); // float
-					if(m_today_kwh.get_outdated() && m_kwh_sync!=0){ // if today kWh (0.1 accuracy) updated, calc also total_kwh
+					if(m_today_kwh.get_outdated() && m_kwh_sync != 0.0){ // if today kWh (0.1 accuracy) updated, calc also total_kwh
+						// so kwh today just jumped from e.g. 10.4 to 0.0
+						// m_total_kwh was at 1234.5
+						// m_last_total_kwh at 1234
+						// so m_last_total+today_kwh-m_kwh_sync = 1234.5
+						// 1234+0.0 - 0.0 - kwh_sync = 1234.5
+						// - m_total_kwh + m_last_total_kwh = sync
+						if(m_today_kwh.get_value() == 0.0){
+							// -0.5 = 1234 - 1234.5
+							m_kwh_sync = m_last_total_kwh.get_value() - m_total_kwh.get_value();
+						}
+						// 1234 + 0.0 - (-0.5) = 1234.5
   						m_total_kwh.set(m_last_total_kwh.get_value()+m_today_kwh.get_value()-m_kwh_sync);
   					};
 
@@ -233,6 +246,13 @@ bool autarco::loop(){
 
 	// retrigger
 	if(millis()-m_last_char_in>7500){
+		// after 10x 7.5 sec no response -> set current power to 0
+		if(m_timeout<10){
+			m_timeout++;
+			if(m_timeout>=10){
+				m_power.check_set(0);
+			}
+		}
 		logger.println(TOPIC_MQTT_PUBLISH, F("Requesting new data from inverter"), COLOR_GREEN);
 		m_last_char_in = millis();
 		uint16_t len = 26;
@@ -298,48 +318,72 @@ bool autarco::publish(){
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_POWER_TOPIC,UNIT_W)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery power"), COLOR_GREEN);
 				m_discovery_pub = true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 
 			// kwh total
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_TOTAL_KWH_TOPIC,UNIT_KWH)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery total kwh"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}		
 
 			// kwh daily
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DAY_KWH_TOPIC,UNIT_KWH)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery daily kwh"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 
 			// temperature
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_TEMP_TOPIC,UNIT_DEG_C)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery temp"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 			
 			// string 1 dc V
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC1_VOLT_TOPIC,UNIT_V)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC1V"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 
 			// string 1 dc A
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC1_CURR_TOPIC,UNIT_A)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC1A"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 
 			// string 2 dc V
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC2_VOLT_TOPIC,UNIT_V)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC2V"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 
 			// string 2 dc A
 			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC2_CURR_TOPIC,UNIT_A)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC2A"), COLOR_GREEN);
 				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
 			}
 		}
 	}
