@@ -1012,7 +1012,7 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 }
 // /////////////////////////////////////////////////////////////////////////////////////
 char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit){
-	if(unit!=UNIT_NONE){
+	if(strcmp(unit,UNIT_NONE)!=0){
 		char* t = new char[65+3*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit)];
 		sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic);
 		return t;
