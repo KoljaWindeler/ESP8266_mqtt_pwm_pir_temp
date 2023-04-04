@@ -14,8 +14,8 @@ static constexpr char MQTT_DISCOVERY_DS_TOPIC[]      = "homeassistant/sensor/%s_
 static constexpr char MQTT_DISCOVERY_DS_MSG[]      = "{\"name\":\"%s_temperature\", \"stat_t\": \"%s/r/temperature\"}";
 static constexpr char MQTT_DISCOVERY_DS_N_TOPIC[]      = "homeassistant/sensor/%s_temperature_DS_%i/config";
 static constexpr char MQTT_DISCOVERY_DS_N_MSG[]      = "{\"name\":\"%s_temperature_%i\", \"stat_t\": \"%s/r/temperature_%i\"}";
-static constexpr char MQTT_DISCOVERY_DS_COUNT_TOPIC[]      = "homeassistant/sensor/%s_temperature_count/config";
-static constexpr char MQTT_DISCOVERY_DS_COUNT_MSG[]      = "{\"name\":\"%s_temperature_count\", \"stat_t\": \"%s/r/temperature_count\"}";
+//static constexpr char MQTT_DISCOVERY_DS_COUNT_TOPIC[]      = "homeassistant/sensor/%s_temperature_count/config";
+//static constexpr char MQTT_DISCOVERY_DS_COUNT_MSG[]      = "{\"name\":\"%s_temperature_count\", \"stat_t\": \"%s/r/temperature_count\"}";
 #endif
 
 class J_DS : public capability {

@@ -8,7 +8,8 @@ J_DS::J_DS(){
 J_DS::~J_DS(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		char* t = discovery_topic_bake_2(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC); // don't forget to "delete[] t;" at the end of usage;
+		//char* t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DS config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
@@ -105,38 +106,50 @@ bool J_DS::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			m_discovery_pub = true;
 			if(m_sensor_count>0){
 				for(uint8_t i=0; i<m_sensor_count; i++){
 					wdt_reset();
-					char* t;
-					char* m;
+					//char* t;
+					//char* m;
 					if(i==0){
-						t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-						m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
-						sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
+						if(!discovery(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC,UNIT_DEG_C)){
+							m_discovery_pub = false;
+						}
+						//t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+						//m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
+						//sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
 					} else {
-						t = discovery_topic_bake(MQTT_DISCOVERY_DS_N_TOPIC,mqtt.dev_short,i+1); // don't forget to "delete[] t;" at the end of usage;
-						m = new char[strlen(MQTT_DISCOVERY_DS_N_MSG)+2*strlen(mqtt.dev_short)+2];
-						sprintf(m, MQTT_DISCOVERY_DS_N_MSG, mqtt.dev_short, i+1, mqtt.dev_short, i+1); // the +1 will make it sensor.dev99_temperature_2 for the second sensor instead of _1
+						sprintf(m_msg_buffer,MQTT_TEMPARATURE_TOPIC_N,i);
+						if(!discovery(DOMAIN_SENSOR,m_msg_buffer,UNIT_DEG_C)){
+							m_discovery_pub = false;
+						}
+						//t = discovery_topic_bake(MQTT_DISCOVERY_DS_N_TOPIC,mqtt.dev_short,i+1); // don't forget to "delete[] t;" at the end of usage;
+						//m = new char[strlen(MQTT_DISCOVERY_DS_N_MSG)+2*strlen(mqtt.dev_short)+2];
+						//sprintf(m, MQTT_DISCOVERY_DS_N_MSG, mqtt.dev_short, i+1, mqtt.dev_short, i+1); // the +1 will make it sensor.dev99_temperature_2 for the second sensor instead of _1
 					}
 					//logger.p(t);
 					//logger.p(" -> ");
 					//logger.pln(m);
-					m_discovery_pub = network.publish(t,m);
+					//m_discovery_pub = network.publish(t,m);
 					delay(100);
-					delete[] m;
-					delete[] t;
+					//delete[] m;
+					//delete[] t;
 				}
 			}
 			// sensor count 
-			char* t;
-			char* m;
-			t = discovery_topic_bake(MQTT_DISCOVERY_DS_COUNT_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			m = new char[strlen(MQTT_DISCOVERY_DS_COUNT_MSG)+2*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_DS_COUNT_MSG, mqtt.dev_short, mqtt.dev_short);
-			m_discovery_pub = network.publish(t,m);
-			delete[] m;
-			delete[] t;
+			//char* t;
+			//char* m;
+			if(!discovery(DOMAIN_SENSOR,MQTT_TEMPARATURE_COUNT_TOPIC,UNIT_NONE)){
+				m_discovery_pub = false;
+			}
+
+			//t = discovery_topic_bake(MQTT_DISCOVERY_DS_COUNT_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+			//m = new char[strlen(MQTT_DISCOVERY_DS_COUNT_MSG)+2*strlen(mqtt.dev_short)];
+			//sprintf(m, MQTT_DISCOVERY_DS_COUNT_MSG, mqtt.dev_short, mqtt.dev_short);
+			//m_discovery_pub = network.publish(t,m);
+			//delete[] m;
+			//delete[] t;
 			// 
 			sprintf(m_msg_buffer, "%i", m_sensor_count);
 			network.publish(build_topic(MQTT_TEMPARATURE_COUNT_TOPIC,UNIT_TO_PC), m_msg_buffer);
