@@ -214,6 +214,7 @@ bool autarco::loop(){
 					}
 
 					// kwh today
+					float last_today_kwh = m_today_kwh.get_value();
 					m_today_kwh.check_set(((float)((uint16_t)((m_buffer[15*2]<<8)+m_buffer[15*2+1])))/10); // float
 					if(m_today_kwh.get_outdated() && m_kwh_sync != 0.0){ // if today kWh (0.1 accuracy) updated, calc also total_kwh
 						// so kwh today just jumped from e.g. 10.4 to 0.0
@@ -225,10 +226,12 @@ bool autarco::loop(){
 						if(m_today_kwh.get_value() == 0.0){
 							// -0.5 = 1234 - 1234.5
 							m_kwh_sync = m_last_total_kwh.get_value() - m_total_kwh.get_value();
+						} else if(last_today_kwh > 0.0 && m_today_kwh.get_value() == 0.1){ // sometimes the inverter jumps from e.g. 12.4 to 0.1 instead to 0.0
+							m_kwh_sync = m_last_total_kwh.get_value() - m_total_kwh.get_value() - 0.1;
 						}
 						// 1234 + 0.0 - (-0.5) = 1234.5
-  						m_total_kwh.set(m_last_total_kwh.get_value()+m_today_kwh.get_value()-m_kwh_sync);
-  					};
+						m_total_kwh.set(m_last_total_kwh.get_value()+m_today_kwh.get_value()-m_kwh_sync);
+					};
 
 				} else if(m_req_start_addr == 3042){
 					// All register are 16 bit, some data cover more that one register
