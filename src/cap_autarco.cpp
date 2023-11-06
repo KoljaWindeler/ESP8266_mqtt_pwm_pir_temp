@@ -64,6 +64,20 @@ autarco::~autarco(){
 		network.publish(t,(char*)"");
 		delete[] t;
 
+		// string 3 dc V
+		t = discovery_topic_bake_2(DOMAIN_SENSOR,MQTT_AUTARCO_DC3_VOLT_TOPIC); // don't forget to "delete[] t;" at the end of usage;
+		logger.println(TOPIC_MQTT_PUBLISH, F("Erasing Autarco discovery DC3V"), COLOR_GREEN);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
+
+		// string 3 dc a
+		t = discovery_topic_bake_2(DOMAIN_SENSOR,MQTT_AUTARCO_DC3_CURR_TOPIC); // don't forget to "delete[] t;" at the end of usage;
+		logger.println(TOPIC_MQTT_PUBLISH, F("Erasing Autarco discovery DC3A"), COLOR_GREEN);
+		logger.pln(t);
+		network.publish(t,(char*)"");
+		delete[] t;
+
 
 		m_discovery_pub = false;
 	}
@@ -196,6 +210,8 @@ bool autarco::loop(){
 					// 3023 | U16 |  0.1A  | DC current 1, e.g. 05 0b
 					// 3024 | U16 |  0.1V  | DC voltage 2, e.g. 05 0b
 					// 3025 | U16 |  0.1A  | DC current 2, e.g. 05 0b
+					// 3026 | U16 |  0.1V  | DC voltage 3, e.g. 05 0b
+					// 3027 | U16 |  0.1A  | DC current 3, e.g. 05 0b
 
 					// active power
 					m_power.set((m_buffer[5*2+2]<<8)+m_buffer[5*2+3]);
@@ -203,6 +219,8 @@ bool autarco::loop(){
 					m_dc1_curr.set(((float)((uint16_t)((m_buffer[23*2]<<8)+m_buffer[23*2+1])))/10);
 					m_dc2_volt.set(((float)((uint16_t)((m_buffer[24*2]<<8)+m_buffer[24*2+1])))/10);
 					m_dc2_curr.set(((float)((uint16_t)((m_buffer[25*2]<<8)+m_buffer[25*2+1])))/10);
+					m_dc3_volt.set(((float)((uint16_t)((m_buffer[26*2]<<8)+m_buffer[26*2+1])))/10);
+					m_dc3_curr.set(((float)((uint16_t)((m_buffer[27*2]<<8)+m_buffer[27*2+1])))/10);
 
 					// total kwh
 					// if m_last_total_kwh.get_value() == 0 set it and set it to not outdated, this is first time init update anyway
@@ -261,7 +279,7 @@ bool autarco::loop(){
 		uint16_t len = 26;
 		if(m_req_start_addr!=3000){
 			m_req_start_addr = 3000;
-			len = 26;
+			len = 28;
 		} else {
 			m_req_start_addr = 3042;
 			len = 1;
@@ -388,6 +406,24 @@ bool autarco::publish(){
 				m_discovery_pub = false;
 				return m_discovery_pub;
 			}
+
+			// string 3 dc V
+			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC3_VOLT_TOPIC,UNIT_V)){
+				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC3V"), COLOR_GREEN);
+				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
+			}
+
+			// string 3 dc A
+			if(discovery(DOMAIN_SENSOR,MQTT_AUTARCO_DC3_CURR_TOPIC,UNIT_A)){
+				logger.println(TOPIC_MQTT_PUBLISH, F("Autarco discovery DC3A"), COLOR_GREEN);
+				m_discovery_pub &= true;
+			} else {
+				m_discovery_pub = false;
+				return m_discovery_pub;
+			}
 		}
 	}
 #endif
@@ -441,6 +477,26 @@ bool autarco::publish(){
 			return true;
 		}
 	}
+
+	if(m_dc3_volt.get_outdated()){
+		dtostrf(m_dc3_volt.get_value(),4,1,m_msg_buffer);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Autraco DC3 Voltage "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		if(network.publish(build_topic(MQTT_AUTARCO_DC3_VOLT_TOPIC,UNIT_TO_PC), m_msg_buffer)){
+			m_dc3_volt.outdated(false);
+			return true;
+		}
+	}
+
+	if(m_dc3_curr.get_outdated()){
+		dtostrf(m_dc3_curr.get_value(),4,1,m_msg_buffer);
+		logger.print(TOPIC_MQTT_PUBLISH, F("Autraco DC3 Curr "), COLOR_GREEN);
+		logger.pln(m_msg_buffer);
+		if(network.publish(build_topic(MQTT_AUTARCO_DC3_CURR_TOPIC,UNIT_TO_PC), m_msg_buffer)){
+			m_dc3_curr.outdated(false);
+			return true;
+		}
+	}	
 
 	// today kwh
 	if(m_today_kwh.get_outdated()){

@@ -12,6 +12,8 @@
 	static constexpr char MQTT_AUTARCO_DC1_CURR_TOPIC[]    = "autarco_dc1_a"; // publish	
 	static constexpr char MQTT_AUTARCO_DC2_VOLT_TOPIC[]    = "autarco_dc2_v"; // publish	
 	static constexpr char MQTT_AUTARCO_DC2_CURR_TOPIC[]    = "autarco_dc2_a"; // publish	
+	static constexpr char MQTT_AUTARCO_DC3_VOLT_TOPIC[]    = "autarco_dc3_v"; // publish	
+	static constexpr char MQTT_AUTARCO_DC3_CURR_TOPIC[]    = "autarco_dc3_a"; // publish	
 
 
 	#define RS485_DIR_PIN 5    // D1
@@ -50,6 +52,8 @@ private:
 		mqtt_parameter_float m_dc1_curr;
 		mqtt_parameter_float m_dc2_volt;
 		mqtt_parameter_float m_dc2_curr;
+		mqtt_parameter_float m_dc3_volt;
+		mqtt_parameter_float m_dc3_curr;
 		mqtt_parameter_32 m_last_total_kwh;
 		mqtt_parameter_float m_today_kwh;
 		mqtt_parameter_float m_total_kwh;
