@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20230213" DEV
+	#define VERSION               "20231105" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -107,6 +107,7 @@
 	// domains
 	static constexpr char DOMAIN_SENSOR[] = "sensor";
 	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor";
+	static constexpr char DOMAIN_LIGHT[] = "light";
 
 	
 
