@@ -6,7 +6,7 @@
 
 #ifdef WITH_DISCOVERY
 static constexpr char MQTT_DISCOVERY_SL_TOPIC[]      = "homeassistant/light/%s/config";
-static constexpr char MQTT_DISCOVERY_SL_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light\",\"ret\":\"true\"}";
+static constexpr char MQTT_DISCOVERY_SL_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light\",\"ret\":\"true\", \"uniq_id\":\"%s_light\"}";
 #endif
 
 class simple_light : public light_providing_capability {
