@@ -90,8 +90,8 @@ bool PWM::publish(){
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			char* t = discovery_topic_bake(MQTT_DISCOVERY_DIMM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			char* m = new char[strlen(MQTT_DISCOVERY_DIMM_MSG)+5*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_DIMM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+			char* m = new char[strlen(MQTT_DISCOVERY_DIMM_MSG)+6*strlen(mqtt.dev_short)];
+			sprintf(m, MQTT_DISCOVERY_DIMM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
 			logger.println(TOPIC_MQTT_PUBLISH, F("PWM discovery"), COLOR_GREEN);
 			//logger.p(t);
 			//logger.p(" -> ");
