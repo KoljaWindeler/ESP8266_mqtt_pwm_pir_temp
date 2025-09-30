@@ -256,6 +256,7 @@ bool button::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			m_discovery_pub = true;
 			// button direct
 			if(discovery(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_0S,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("B discovery"), COLOR_GREEN);
@@ -292,6 +293,7 @@ bool button::publish(){
 				return m_discovery_pub;
 			}
 
+			logger.println(TOPIC_MQTT_PUBLISH, F("discovery done"), COLOR_GREEN);
 			return true;
 		}
 	}
