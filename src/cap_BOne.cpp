@@ -90,16 +90,10 @@ bool BOne::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			char* t = discovery_topic_bake(MQTT_DISCOVERY_DIMM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			char* m = new char[strlen(MQTT_DISCOVERY_DIMM_MSG)+5*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_DIMM_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_PUBLISH, F("Bone discovery"), COLOR_GREEN);
-			//logger.p(t);
-			//logger.p(" -> ");
-			//logger.pln(m);
-			m_discovery_pub = network.publish(t,m);
-			delete[] m;
-			delete[] t;
+			if(discovery(DOMAIN_DIMM_LIGHT,DOMAIN_LIGHT,UNIT_NONE)){
+				logger.println(TOPIC_MQTT_PUBLISH, F("Bone discovery"), COLOR_GREEN);
+				m_discovery_pub = true;
+			}
 			return true;
 		}
 	}
