@@ -204,6 +204,14 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 			network.disconnectServer();
 		}
 	}
+	// //////////////////// reload capability only /////////////////////////////
+	else if (!strcmp(p_topic, build_topic(MQTT_RELOAD_CAPABILITY_TOPIC, PC_TO_UNIT))) {
+		wifiManager.loadMqttStruct((char *) &mqtt, sizeof(mqtt)); // reload because the loadPheripherals procedure might have altered the info
+		// reload
+		loadPheripherals((uint8_t *) mqtt.cap);
+		logger.println(TOPIC_GENERIC_INFO, F("Disconnect MQTT to resubscribe"), COLOR_PURPLE);
+		network.disconnectServer();
+	}
 	// //////////////////// trace /////////////////////////////
 	else if (!strcmp(p_topic, build_topic(MQTT_TRACE_TOPIC, PC_TO_UNIT))) {
 		if (!strcmp_P((const char *) p_payload, STATE_ON)) { // switch on
@@ -334,6 +342,9 @@ void reconnect(){
 
 				network.subscribe(build_topic(MQTT_SETUP_TOPIC, PC_TO_UNIT)); // setup topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_SETUP_TOPIC, PC_TO_UNIT), COLOR_GREEN);
+
+				network.subscribe(build_topic(MQTT_RELOAD_CAPABILITY_TOPIC, PC_TO_UNIT)); // capability topic
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_RELOAD_CAPABILITY_TOPIC, PC_TO_UNIT), COLOR_GREEN);
 
 				network.subscribe(build_topic(MQTT_CAPABILITY_TOPIC, PC_TO_UNIT)); // capability topic
 				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(MQTT_CAPABILITY_TOPIC, PC_TO_UNIT), COLOR_GREEN);
@@ -994,9 +1005,17 @@ char* discovery_topic_bake(const char* topic,...){
 // /////////////////////////////////////////////////////////////////////////////////////
 char* discovery_topic_bake_2(const char* domain, const char* topic){
 	//static constexpr char MQTT_DISCOVERY_AUTARCO_TOTAL_KWH_TOPIC[] = "homeassistant/sensor/%s_autarco_kwh/config";
+	if(strcmp(domain,DOMAIN_DIMM_LIGHT)==0){
+		domain = DOMAIN_LIGHT;
+	}
 
 	char* t = new char[14+strlen(domain)+1+strlen(mqtt.dev_short)+1+strlen(topic)+8];
-	sprintf(t,"homeassistant/%s/%s_%s/config",domain,mqtt.dev_short,topic);
+	//if(strlen(topic)==0){
+	if(strcmp(domain, topic) == 0){ // avoid to create a topic with the same name as the domain
+		sprintf(t,"homeassistant/%s/%s/config",domain,mqtt.dev_short);
+	} else {
+		sprintf(t,"homeassistant/%s/%s_%s/config",domain,mqtt.dev_short,topic);
+	}
 	//Serial.print("Topic input ");
 	//Serial.println(t);
 
@@ -1011,17 +1030,86 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 	return t; // don't forget to free this as well
 }
 // /////////////////////////////////////////////////////////////////////////////////////
-char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit){
-	if(strcmp(unit,UNIT_NONE)!=0){
-		char* t = new char[65+3*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit)];
-		sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic);
-		return t;
+
+const char PROGMEM base_fmt[] = "{\"name\":\"%s\",\"uniq_id\":\"%s_%s\"";  // starts JSON
+const char PROGMEM stat_fmt[] = ",\"stat_t\":\"%s/r/%s\"";
+const char PROGMEM stat2_fmt[] = ",\"stat_t\":\"%s/r/%s_state\"";
+const char PROGMEM unit_fmt[] = ",\"unit_of_meas\":\"%s\"";
+const char PROGMEM cmd_fmt[] = ",\"cmd_t\":\"%s/s/%s_state\",\"ret\":\"true\"";
+const char PROGMEM dimm_fmt[] =  ",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\",\"bri_scl\":\"99\",\"bri_stat_t\":\"%s/r/light/brightness\",\"bri_cmd_t\":\"%s/s/light/brightness\"";
+const char PROGMEM device_fmt[] = ",\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}";  // closes JSON
+
+
+char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit) {
+    char buf[512]; // temporary Stack-Buffer, to calc minimum length
+    size_t len = 0;
+
+    // Header
+    len += snprintf_P(buf+len, sizeof(buf)-len, base_fmt, topic, mqtt.dev_short, topic);
+
+	// Status topic
+	if (strcmp(domain, DOMAIN_BINARY_SENSOR) == 0 || strcmp(domain, DOMAIN_SWITCH) == 0) {
+	    len += snprintf_P(buf+len, sizeof(buf)-len, stat2_fmt, mqtt.dev_short, topic);
+	} else {
+		len += snprintf_P(buf+len, sizeof(buf)-len, stat_fmt, mqtt.dev_short, topic);
 	}
-	char* t = new char[45+3*strlen(mqtt.dev_short)+3*strlen(topic)];
-	sprintf(t,"{\"name\":\"%s_%s\", \"stat_t\": \"%s/r/%s\", \"uniq_id\":\"%s_%s\"}",mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,topic);
-	return t;
+    
+
+    // Unit if given
+    if (strcmp(unit, UNIT_NONE) != 0) {
+        len += snprintf_P(buf+len, sizeof(buf)-len, unit_fmt, unit);
+    }
+
+    // Domain-specific extras
+    if (strcmp(domain, DOMAIN_SWITCH) == 0) {
+        len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+    } else if (strcmp(domain, DOMAIN_DIMM_LIGHT) == 0) {
+        len += snprintf_P(buf+len, sizeof(buf)-len, dimm_fmt, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+    }
+
+    // Device-Block
+    len += snprintf_P(buf+len, sizeof(buf)-len, device_fmt, mqtt.dev_short, mqtt.dev_short);
+    
+
+    // Copy result to heap
+    char* out = new char[len+1];
+    memcpy(out, buf, len+1);
+    return out;
 }
 
+
+/*
+char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit){
+	if(strcmp(unit,UNIT_NONE)!=0){
+		uint16_t len = 30+98+9+4*strlen(mqtt.dev_short)+3*strlen(topic)+strlen(unit);
+		char* t = new char[len];
+		snprintf(t,len,"{\"name\":\"%s\", \"stat_t\": \"%s/r/%s\", \"unit_of_meas\": \"%s\", \"uniq_id\":\"%s_%s\", \"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}",topic,mqtt.dev_short,topic,unit,mqtt.dev_short,topic,mqtt.dev_short,mqtt.dev_short);
+		return t;
+	}
+	else if(strcmp(domain,DOMAIN_SWITCH)==0){
+		uint16_t len = 149-30+5*strlen(mqtt.dev_short)+4*strlen(topic)+30+2*6;
+		char* t = new char[len];
+		snprintf(t, len, "{\"name\":\"%s\",\"cmd_t\":\"%s/s/%s_state\",\"stat_t\":\"%s/r/%s_state\",\"ret\":\"true\",\"uniq_id\":\"%s_%s\",\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}",topic,mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,mqtt.dev_short);
+		return t;
+	}
+	else if(strcmp(domain,DOMAIN_BINARY_SENSOR)==0){
+		uint16_t len = 149-30+5*strlen(mqtt.dev_short)+4*strlen(topic)+3+2*6;
+		char* t = new char[len];
+		snprintf(t, len, "{\"name\":\"%s\",\"stat_t\":\"%s/r/%s_state\",\"ret\":\"true\",\"uniq_id\":\"%s_%s\",\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}",topic,mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,mqtt.dev_short);
+		return t;
+	}
+	else if(strcmp(domain,DOMAIN_DIMM_LIGHT)==0){
+		uint16_t len = 184+6*strlen(mqtt.dev_short); // 184+6*5 = 214 (actually 208)
+		char* t = new char[len];
+		snprintf(t, len, "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\", \"uniq_id\":\"%s_light_br\"}",mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+		return t;
+	}
+	uint16_t len = 30+78+9+3*strlen(mqtt.dev_short)+3*strlen(topic);
+	char* t = new char[len];
+	snprintf(t,len,"{\"name\":\"%s\", \"stat_t\": \"%s/r/%s\", \"uniq_id\":\"%s_%s\", \"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}",topic,mqtt.dev_short,topic,mqtt.dev_short,topic,mqtt.dev_short,mqtt.dev_short);
+	return t;
+}
+*/
 // /////////////////////////////////////////////////////////////////////////////////////
 
 bool discovery(const char* domain, const char* topic, const char* unit){

@@ -42,7 +42,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20231105" DEV
+	#define VERSION               "20250930_2" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -91,6 +91,7 @@
 	static constexpr char MQTT_HUMIDITY_TOPIC[]    = "humidity";    // publish
 	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";       // subscribe
 	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability";  // subscribe
+	static constexpr char MQTT_RELOAD_CAPABILITY_TOPIC[]  = "reload_capability";  // subscribe
 	static constexpr char MQTT_TRACE_TOPIC[]       = "trace";       // subscribe
 	static constexpr char MQTT_NIGHT_LIGHT_TOPIC[] = "night";       // subscribe
 	static constexpr char MQTT_OTA_TOPIC[]         = "ota";         // subscribe
@@ -103,11 +104,13 @@
 	static constexpr char UNIT_W[] = "W"; // Watt
 	static constexpr char UNIT_DEG_C[] = "°C"; // deg C
 	static constexpr char UNIT_KWH[] = "kWh"; // kilo watt hour
-
+	
 	// domains
 	static constexpr char DOMAIN_SENSOR[] = "sensor";
 	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor";
 	static constexpr char DOMAIN_LIGHT[] = "light";
+	static constexpr char DOMAIN_DIMM_LIGHT[] = "dimm_light";
+	static constexpr char DOMAIN_SWITCH[] = "switch";
 
 	
 
