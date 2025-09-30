@@ -14,10 +14,13 @@
 #include "main.h"
 
 #ifdef WITH_DISCOVERY
-	static constexpr char MQTT_DISCOVERY_GPI_TOPIC[]      = "homeassistant/binary_sensor/%s_gpio_%i/config";
-	static constexpr char MQTT_DISCOVERY_GPI_MSG[]      = "{\"name\":\"%s_gpio_%i\", \"stat_t\": \"%s/r/gpio_%i_state\"}";
-	static constexpr char MQTT_DISCOVERY_GPO_TOPIC[]      = "homeassistant/switch/%s_gpio_%i/config";
-	static constexpr char MQTT_DISCOVERY_GPO_MSG[]      = "{\"name\":\"%s_gpio_%i\", \"cmd_t\":\"%s/s/gpio_%i_state\", \"stat_t\": \"%s/r/gpio_%i_state\",\"ret\":\"true\"}";
+//	static constexpr char MQTT_DISCOVERY_GPI_TOPIC[]      = "homeassistant/binary_sensor/%s_gpio_%i/config";
+//	static constexpr char MQTT_DISCOVERY_GPI_MSG[]      = "{\"name\":\"%s_gpio_%i\", \"stat_t\": \"%s/r/gpio_%i_state\", \"uniq_id\":\"%s_gpi_%i\"}";
+//	static constexpr char MQTT_DISCOVERY_GPO_TOPIC[]      = "homeassistant/switch/%s_gpio_%i/config";
+//	static constexpr char MQTT_DISCOVERY_GPO_MSG[]      = "{\"name\":\"%s_gpio_%i\", \"cmd_t\":\"%s/s/gpio_%i_state\", \"stat_t\": \"%s/r/gpio_%i_state\",\"ret\":\"true\", \"uniq_id\":\"%s_gpo_%i\"}";
+
+	static constexpr char MQTT_DISCOVERY_GPIO_TOPIC[]      = "gpio_%i";
+	
 #endif
 
 	static constexpr char MQTT_J_GPIO_OUTPUT_STATE_TOPIC[]      = "gpio_%i_state";

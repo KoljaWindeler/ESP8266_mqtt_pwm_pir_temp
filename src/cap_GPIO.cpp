@@ -50,30 +50,34 @@ J_GPIO::~J_GPIO(){
 
 #ifdef WITH_DISCOVERY
 		if(m_discovery_pub[i] & (timer_connected_start>0)){
+			
+			char* topic = new char[strlen(MQTT_DISCOVERY_GPIO_TOPIC)+2];
+			sprintf(topic,MQTT_DISCOVERY_GPIO_TOPIC, i);
+
 			if (m_pin_out[i]) {
-				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPO_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
+				char* t = discovery_topic_bake_2(DOMAIN_SWITCH,topic); // don't forget to "delete[] t;" at the end of usage;
 				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
-				m_discovery_pub[i] = false;
 				delete[] t;
-
+				
 				// try to delete retained messages
 				network.publish(build_topic(MQTT_J_GPIO_OUTPUT_STATE_TOPIC, 14, UNIT_TO_PC, true, i), (char *) "");
 				network.publish(build_topic(MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, 19, UNIT_TO_PC, true, i), (char *) "");
 			}
 			if (m_pin_in[i]) {
-				char* t = discovery_topic_bake(MQTT_DISCOVERY_GPI_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
+				char* t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,topic); // don't forget to "delete[] t;" at the end of usage;
 				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
+				delete[] t;
 
 				// try to delete retained messages
 				network.publish(build_topic(MQTT_J_GPIO_INPUT_HOLD_TOPIC, 13, UNIT_TO_PC, true, i), (char *) "");
-
-				m_discovery_pub[i] = false;
-				delete[] t;
 			}
+			
+			m_discovery_pub[i] = false;
+			delete[] topic;
 		}
 #endif
 
@@ -531,30 +535,22 @@ bool J_GPIO::publish(){
 #ifdef WITH_DISCOVERY
 		if(!m_discovery_pub[i]){
 			if(millis()-timer_connected_start>(uint32_t)(NETWORK_SUBSCRIPTION_DELAY+300*i)){
+				char* topic = new char[strlen(MQTT_DISCOVERY_GPIO_TOPIC)+2];
+				sprintf(topic,MQTT_DISCOVERY_GPIO_TOPIC, i);
+
 				if (m_pin_out[i]) {
-					char* t = discovery_topic_bake(MQTT_DISCOVERY_GPO_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
-					char* m = new char[strlen(MQTT_DISCOVERY_GPO_MSG)+3*strlen(mqtt.dev_short)];
-					sprintf(m, MQTT_DISCOVERY_GPO_MSG, mqtt.dev_short, i, mqtt.dev_short, i, mqtt.dev_short, i);
-					logger.println(TOPIC_MQTT_PUBLISH, F("GPIO discovery"), COLOR_GREEN);
-					//logger.p(t);
-					//logger.p(" -> ");
-					//logger.pln(m);
-					m_discovery_pub[i] = network.publish(t,m);
-					delete[] m;
-					delete[] t;
+					if(discovery(DOMAIN_SWITCH,topic,UNIT_NONE)){
+						logger.println(TOPIC_MQTT_PUBLISH, F("GPO discovery"), COLOR_GREEN);
+						m_discovery_pub[i] = true;
+					}
 				}
 				if (m_pin_in[i]) {
-					char* t = discovery_topic_bake(MQTT_DISCOVERY_GPI_TOPIC,mqtt.dev_short,i); // don't forget to "delete[] t;" at the end of usage;
-					char* m = new char[strlen(MQTT_DISCOVERY_GPI_MSG)+2*strlen(mqtt.dev_short)];
-					sprintf(m, MQTT_DISCOVERY_GPI_MSG, mqtt.dev_short, i, mqtt.dev_short, i);
-					logger.println(TOPIC_MQTT_PUBLISH, F("GPIO discovery"), COLOR_GREEN);
-					//logger.p(t);
-					//logger.p(" -> ");
-					//logger.pln(m);
-					m_discovery_pub[i] = network.publish(t,m);
-					delete[] m;
-					delete[] t;
+					if(discovery(DOMAIN_BINARY_SENSOR,topic,UNIT_NONE)){
+						logger.println(TOPIC_MQTT_PUBLISH, F("GPI discovery"), COLOR_GREEN);
+						m_discovery_pub[i] = true;
+					}
 				}
+				delete[] topic;
 			}
 		}
 #endif
