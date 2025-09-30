@@ -80,16 +80,13 @@ bool simple_light::publish(){
 
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			char* t = discovery_topic_bake(MQTT_DISCOVERY_SL_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			char* m = new char[strlen(MQTT_DISCOVERY_SL_MSG)+5*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_SL_MSG, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_PUBLISH, F("SL discovery"), COLOR_GREEN);
-			//logger.p(t);
-			//logger.p(" -> ");
-			//logger.pln(m);
-			m_discovery_pub = network.publish(t,m);
-			delete[] m;
-			delete[] t;
+			// discovery v2
+			m_discovery_pub = false;
+			if(discovery(DOMAIN_LIGHT,DOMAIN_LIGHT,UNIT_NONE)){
+				logger.println(TOPIC_MQTT_PUBLISH, F("SL discovery"), COLOR_GREEN);
+				m_discovery_pub = true;
+			}
+			// discovery v2
 			return true;
 		}
 	}

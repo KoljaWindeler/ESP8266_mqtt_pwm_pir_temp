@@ -21,26 +21,26 @@ button::button(){
 button::~button(){
 	detachInterrupt(digitalPinToInterrupt(m_pin));
 #ifdef WITH_DISCOVERY
-	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_0S); // don't forget to "delete[] t;" at the end of usage;
+	if(m_discovery_pub & (timer_connected_start>0)){ 
+		char* t = discovery_topic_bake_2(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_0S); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
 
-		t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_1S); // don't forget to "delete[] t;" at the end of usage;
+		t = discovery_topic_bake_2(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_1S); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B1 config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
 
-		t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_2S); // don't forget to "delete[] t;" at the end of usage;
+		t = discovery_topic_bake_2(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_2S); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B2 config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
 		delete[] t;
 
-		t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_3S); // don't forget to "delete[] t;" at the end of usage;
+		t = discovery_topic_bake_2(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_3S); // don't forget to "delete[] t;" at the end of usage;
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing B3 config "), COLOR_YELLOW);
 		logger.pln(t);
 		network.publish(t,(char*)"");
@@ -258,7 +258,7 @@ bool button::publish(){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			m_discovery_pub = true;
 			// button direct
-			if(discovery(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_0S,UNIT_NONE)){
+			if(discovery(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_0S,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("B discovery"), COLOR_GREEN);
 				m_discovery_pub &= true;
 			} else {
@@ -267,7 +267,7 @@ bool button::publish(){
 			}
 
 			// button 1s
-			if(discovery(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_1S,UNIT_NONE)){
+			if(discovery(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_1S,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("B1s discovery"), COLOR_GREEN);
 				m_discovery_pub &= true;
 			} else {
@@ -276,7 +276,7 @@ bool button::publish(){
 			}
 
 			// button 2s
-			if(discovery(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_2S,UNIT_NONE)){
+			if(discovery(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_2S,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("B2s discovery"), COLOR_GREEN);
 				m_discovery_pub &= true;
 			} else {
@@ -285,7 +285,7 @@ bool button::publish(){
 			}
 
 			// button 3s
-			if(discovery(DOMAIN_BINARY_SENSOR,MQTT_BUTTON_TOPIC_3S,UNIT_NONE)){
+			if(discovery(DOMAIN_BUTTON,MQTT_BUTTON_TOPIC_3S,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("B3s discovery"), COLOR_GREEN);
 				m_discovery_pub &= true;
 			} else {
