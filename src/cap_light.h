@@ -19,7 +19,7 @@
 
 #ifdef WITH_DISCOVERY
 	static constexpr char MQTT_DISCOVERY_DIMM_TOPIC[]      = "homeassistant/light/%s/config";
-	static constexpr char MQTT_DISCOVERY_DIMM_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\"}";
+	static constexpr char MQTT_DISCOVERY_DIMM_MSG[]      = "{\"name\":\"%s\",\"stat_t\":\"%s/r/light\",\"cmd_t\":\"%s/s/light/dimm\",\"ret\":\"true\", \"bri_scl\":\"99\", \"bri_stat_t\":\"%s/r/light/brightness\", \"bri_cmd_t\":\"%s/s/light/brightness\", \"uniq_id\":\"%s_light_br\"}";
 #endif
 
 	#define MAX_LIGHT_PROVIDER		 3
