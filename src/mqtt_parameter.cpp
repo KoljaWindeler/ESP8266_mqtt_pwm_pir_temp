@@ -59,6 +59,34 @@ bool mqtt_parameter_16::get_outdated(){
 	return _update_required;
 }
 
+mqtt_parameter_s16::mqtt_parameter_s16(){
+	_value = 0;
+	_update_required = false;
+};
+void mqtt_parameter_s16::check_set(int16_t input){
+	if(input != _value){
+		set(input);
+	}
+}
+void mqtt_parameter_s16::set(int16_t input){
+	set(input,true);
+}
+void mqtt_parameter_s16::set(int16_t input, bool update){
+	_value = input;
+	_update_required = update;
+}
+int16_t mqtt_parameter_s16::get_value(){
+	return _value;
+}
+void mqtt_parameter_s16::outdated(){
+	outdated(true);
+}
+void mqtt_parameter_s16::outdated(bool update_required){
+	_update_required = update_required;
+}
+bool mqtt_parameter_s16::get_outdated(){
+	return _update_required;
+}
 
 mqtt_parameter_32::mqtt_parameter_32(){
 	_value = 0;
@@ -86,6 +114,35 @@ void mqtt_parameter_32::outdated(bool update_required){
 	_update_required = update_required;
 }
 bool mqtt_parameter_32::get_outdated(){
+	return _update_required;
+}
+
+mqtt_parameter_s32::mqtt_parameter_s32(){
+	_value = 0;
+	_update_required = false;
+};
+void mqtt_parameter_s32::check_set(int32_t input){
+	if(input != _value){
+		set(input);
+	}
+}
+void mqtt_parameter_s32::set(int32_t input){
+	set(input,true);
+}
+void mqtt_parameter_s32::set(int32_t input, bool update){
+	_value = input;
+	_update_required = update;
+}
+int32_t mqtt_parameter_s32::get_value(){
+	return _value;
+}
+void mqtt_parameter_s32::outdated(){
+	outdated(true);
+}
+void mqtt_parameter_s32::outdated(bool update_required){
+	_update_required = update_required;
+}
+bool mqtt_parameter_s32::get_outdated(){
 	return _update_required;
 }
 

@@ -662,6 +662,10 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_AUTARCO
 	bake(new autarco(), &p_autarco, config);
 #endif
+#ifdef WITH_AUTARCO_HYBRID
+	bake(new autarco_hybrid(), &p_autarco_hybrid, config);
+#endif
+
 	bake(new light(), &p_light, config);
 
 

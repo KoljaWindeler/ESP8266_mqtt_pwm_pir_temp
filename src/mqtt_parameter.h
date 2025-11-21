@@ -33,6 +33,21 @@ class mqtt_parameter_16 {
 		boolean _update_required;
 };
 
+class mqtt_parameter_s16 {
+	public:
+		mqtt_parameter_s16();
+		void check_set(int16_t input);
+		void set(int16_t input);
+		void set(int16_t input, bool update);
+		int16_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		int16_t _value;
+		boolean _update_required;
+};
+
 class mqtt_parameter_32 {
 	public:
 		mqtt_parameter_32();
@@ -45,6 +60,21 @@ class mqtt_parameter_32 {
 		bool get_outdated();
 	private:
 		uint32_t _value;
+		boolean _update_required;
+};
+
+class mqtt_parameter_s32 {
+	public:
+		mqtt_parameter_s32();
+		void check_set(int32_t input);
+		void set(int32_t input);
+		void set(int32_t input, bool update);
+		int32_t get_value();
+		void outdated();
+		void outdated(bool update_required);
+		bool get_outdated();
+	private:
+		int32_t _value;
 		boolean _update_required;
 };
 

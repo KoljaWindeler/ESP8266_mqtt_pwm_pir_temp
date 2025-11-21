@@ -168,6 +168,7 @@
 	extern capability * p_ebus;
 	//extern capability * p_fireplace;
 	extern capability * p_autarco;
+	extern capability * p_autarco_hybrid;
 
 	extern const uint8_t intens[100];
 
@@ -207,6 +208,7 @@
 #include "cap_ebus.h"
 //#include "cap_fireplace.h"
 #include "cap_autarco.h"
+#include "cap_autarco_hybrid.h"
 
 #endif // ifndef main_h
 
