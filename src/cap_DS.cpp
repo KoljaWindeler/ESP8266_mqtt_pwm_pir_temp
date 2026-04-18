@@ -8,13 +8,13 @@ J_DS::J_DS(){
 J_DS::~J_DS(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake_2(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC); // don't forget to "delete[] t;" at the end of usage;
-		//char* t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DS config "), COLOR_YELLOW);
-		logger.pln(t);
-		network.publish(t,(char*)"");
+		undiscover(DOMAIN_SENSOR,MQTT_TEMPARATURE_COUNT_TOPIC);
+		undiscover(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC);
+		for(uint8_t i=0; i<m_sensor_count; i++){
+			sprintf(m_msg_buffer,MQTT_TEMPARATURE_TOPIC_N,i+1);
+			undiscover(DOMAIN_SENSOR,m_msg_buffer);
+		};
 		m_discovery_pub = false;
-		delete[] t;
 	}
 #endif
 	logger.println(TOPIC_GENERIC_INFO, F("DS deleted"), COLOR_YELLOW);
@@ -120,7 +120,7 @@ bool J_DS::publish(){
 						//m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
 						//sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
 					} else {
-						sprintf(m_msg_buffer,MQTT_TEMPARATURE_TOPIC_N,i);
+						sprintf(m_msg_buffer,MQTT_TEMPARATURE_TOPIC_N,i+1);
 						if(!discovery(DOMAIN_SENSOR,m_msg_buffer,UNIT_DEG_C)){
 							m_discovery_pub = false;
 						}
