@@ -372,6 +372,48 @@ bool light::receive(uint8_t * p_topic, uint8_t * p_payload){
 				// was already off .. and the received didn't know it .. so we have to re-publish
 				m_state.outdated();
 			}
+		} else { 
+			// 
+			cJSON *root = cJSON_Parse((const char *)p_payload);
+			if (root) {
+				const cJSON *state = cJSON_GetObjectItemCaseSensitive(root, "state");
+				//const cJSON *brightness = cJSON_GetObjectItemCaseSensitive(root, "brightness");
+				if(cJSON_HasObjectItem(root, "color")){
+					const cJSON *color = cJSON_GetObjectItemCaseSensitive(root, "color");
+					
+					uint8_t r = (uint8_t)(cJSON_GetObjectItem(color, "r")->valueint);
+					uint8_t g = (uint8_t)(cJSON_GetObjectItem(color, "g")->valueint);
+					uint8_t b = (uint8_t)(cJSON_GetObjectItem(color, "b")->valueint);
+					m_light_backup = (led){r,g,b};
+				}
+
+				if (!strcmp_P((const char *) state->valuestring, STATE_ON)) {
+					// we don't want to keep running the animation if brightness was submitted
+					if (m_animation_type.get_value()) { // if there is an animation, switch it off
+						setAnimationType(ANIMATION_OFF);
+					}
+					m_light_color.outdated(); // color will be used directly
+					m_light_brightness.outdated();
+					m_state.set(true);
+					// input color values are 888rgb .. DimmTo needs precentage which it will convert it into half log brighness
+					DimmTo(m_light_backup);
+				} else if (!strcmp_P((const char *) state->valuestring, STATE_OFF)) {
+					// we don't want to keep running the animation if brightness was submitted
+					if (m_animation_type.get_value()) {
+						setAnimationType(ANIMATION_OFF);
+					}
+					// logger.pln("light was on");
+					m_state.set(false);
+					//m_light_color.set(m_light_target.r + m_light_target.g + m_light_target.b); // set this to publish that we've left the color
+					// remember the current target value to resume to this value once we receive a 'dimm on 'command
+					m_light_backup = m_light_target; // target instead off current (just in case we are currently dimming)
+					DimmTo((led){ 0, 0, 0 });        // dimm off
+				} else {
+					// was already off .. and the received didn't know it .. so we have to re-publish
+					m_state.outdated();
+				}
+				
+			}
 		}
 		return true; // command consumed
 	}
@@ -584,10 +626,18 @@ bool light::publishLightState(){
 		logger.print(TOPIC_MQTT_PUBLISH, F("light state "), COLOR_GREEN);
 		if (m_state.get_value()) {
 			logger.pln((char*)STATE_ON);
-			ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_ON);
+			if(p_bOne!=NULL){
+				ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_ON_JSON);
+			} else {
+				ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_ON);
+			}
 		} else {
 			logger.pln((char*)STATE_OFF);
-			ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_OFF);
+			if(p_bOne!=NULL){
+				ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_OFF_JSON);
+			} else {
+				ret = network.publish(build_topic(MQTT_LIGHT_TOPIC,UNIT_TO_PC), (char*)STATE_OFF);
+			}
 		}
 		if (ret) {
 			m_state.outdated(false);
