@@ -2,7 +2,6 @@
 #define rssi_h
 
 #include "main.h"
-static constexpr char MQTT_RSSI_TOPIC[]          = "rssi";        // publish
 
 class rssi : public capability {
 	public:
@@ -16,9 +15,10 @@ class rssi : public capability {
 		bool parse(uint8_t* config);
 		// bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		uint8_t* get_key();
-		// bool publish();
+		bool publish();
 	private:
 		mqtt_parameter_8 m_state;
+		bool m_discovery_pub;
 };
 
 

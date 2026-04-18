@@ -1,9 +1,17 @@
 #include <cap_rssi.h>
 #ifdef WITH_RSSI
 
-rssi::rssi(){};
+rssi::rssi(){
+	m_discovery_pub = false;
+};
 rssi::~rssi(){
-	logger.println(TOPIC_GENERIC_INFO, F("RSSI deleted"), COLOR_YELLOW);
+#ifdef WITH_DISCOVERY
+	if(m_discovery_pub & (timer_connected_start>0)){
+		undiscover(DOMAIN_SENSOR,MQTT_RSSI_TOPIC);
+		logger.println(TOPIC_GENERIC_INFO, F("RSSI deleted"), COLOR_YELLOW);
+		m_discovery_pub = false;
+	}
+#endif
 };
 
 uint8_t* rssi::get_key(){
@@ -49,8 +57,19 @@ bool rssi::intervall_update(uint8_t slot){
 // }
 //
 //
-// bool rssi::publish(){
-// 	return false;
-// }
+bool rssi::publish(){
+#ifdef WITH_DISCOVERY
+	if(!m_discovery_pub){
+		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+			if(discovery(DOMAIN_SENSOR,MQTT_RSSI_TOPIC,UNIT_PERC)){
+					m_discovery_pub = true;
+					logger.println(TOPIC_MQTT_PUBLISH, F("RSSI discovery"), COLOR_GREEN);
+			}
+			return true;
+		}
+	}
+#endif
+	return false; // did nothing
+}
 
 #endif
