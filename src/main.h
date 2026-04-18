@@ -20,6 +20,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h> // local modified version          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include <PubSubClient.h>
+#include <cJSON.h>
 #include "../lib/ESP8266httpUpdate/src/ESP8266httpUpdate.h"
 
 
@@ -42,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20250930_3" DEV
+	#define VERSION               "20251011" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -79,6 +80,7 @@
 	char* discovery_topic_bake_2(const char* domain, const char* topic);
 	char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit);
 	bool discovery(const char* domain, const char* topic, const char* unit);
+	bool undiscover(const char* domain, const char* topic);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
@@ -88,6 +90,7 @@
 
 	// misc
 	static constexpr char MQTT_TEMPARATURE_TOPIC[] = "temperature"; // publish
+	static constexpr char MQTT_RSSI_TOPIC[]        = "rssi"; // publish
 	static constexpr char MQTT_HUMIDITY_TOPIC[]    = "humidity";    // publish
 	static constexpr char MQTT_SETUP_TOPIC[]       = "setup";       // subscribe
 	static constexpr char MQTT_CAPABILITY_TOPIC[]  = "capability";  // subscribe
@@ -104,19 +107,25 @@
 	static constexpr char UNIT_W[] = "W"; // Watt
 	static constexpr char UNIT_DEG_C[] = "°C"; // deg C
 	static constexpr char UNIT_KWH[] = "kWh"; // kilo watt hour
+	static constexpr char UNIT_PERC[] = "%"; // %
 	
 	// domains
 	static constexpr char DOMAIN_SENSOR[] = "sensor";
-	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor";
+	static constexpr char DOMAIN_BINARY_SENSOR_WITH_APPENDIX[] = "binary_sensor";  // todo: change this to "BINARY_SENSOR_WITH_APPENDIX"
+	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor_wo_state"; // todo: change this to default
 	static constexpr char DOMAIN_BUTTON[] = "button";
 	static constexpr char DOMAIN_LIGHT[] = "light";
 	static constexpr char DOMAIN_DIMM_LIGHT[] = "dimm_light";
+	static constexpr char DOMAIN_RGB_DIMM_LIGHT[] = "rgb_dimm_light";
+	static constexpr char DOMAIN_SWITCH_WITH_APPENDIX[] = "switch_w_state";
 	static constexpr char DOMAIN_SWITCH[] = "switch";
 
 	
 
 	static constexpr char STATE_ON[]  = "ON";
+	static constexpr char STATE_ON_JSON[]  = "{\"state\": \"ON\"}";
 	static constexpr char STATE_OFF[] = "OFF";
+	static constexpr char STATE_OFF_JSON[]  = "{\"state\": \"OFF\"}";
 
 	#define UNIT_TO_PC 'r'
 	#define PC_TO_UNIT 's'
@@ -168,6 +177,7 @@
 	extern capability * p_ebus;
 	//extern capability * p_fireplace;
 	extern capability * p_autarco;
+	extern capability * p_r503;
 
 	extern const uint8_t intens[100];
 
@@ -207,6 +217,7 @@
 #include "cap_ebus.h"
 //#include "cap_fireplace.h"
 #include "cap_autarco.h"
+#include "cap_r503.h"
 
 #endif // ifndef main_h
 

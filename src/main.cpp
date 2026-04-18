@@ -104,7 +104,7 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 				strcpy(copy_buffer, (const char *) p_payload);
 				network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "ok");
 				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "updating...");
-
+				delay(5);
 				ESPhttpUpdate.rebootOnUpdate(false);
 				HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
 				if (res == HTTP_UPDATE_OK) {
@@ -662,6 +662,9 @@ void loadPheripherals(uint8_t * config){
 #ifdef WITH_AUTARCO
 	bake(new autarco(), &p_autarco, config);
 #endif
+#ifdef WITH_R503
+	bake(new r503(), &p_r503, config);
+#endif
 	bake(new light(), &p_light, config);
 
 
@@ -1007,7 +1010,13 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 	//static constexpr char MQTT_DISCOVERY_AUTARCO_TOTAL_KWH_TOPIC[] = "homeassistant/sensor/%s_autarco_kwh/config";
 	if(strcmp(domain,DOMAIN_DIMM_LIGHT)==0){ // dimm need to be a "light" but we still need to know is it a dimm for the message
 		domain = DOMAIN_LIGHT;
+	} else if(strcmp(domain,DOMAIN_RGB_DIMM_LIGHT)==0){ // dimm need to be a "light" but we still need to know is it a dimm for the message
+		domain = DOMAIN_LIGHT;
 	} else if(strcmp(domain,DOMAIN_BUTTON)==0){ // button need to be a "binary_sensor" but we still need to know it for the state in the message
+		domain = DOMAIN_BINARY_SENSOR_WITH_APPENDIX;
+	} else if(strcmp(domain,DOMAIN_SWITCH_WITH_APPENDIX)==0){ // switch that publishes on a topic without the end "_state"
+		domain = DOMAIN_SWITCH;
+	} else if(strcmp(domain,DOMAIN_BINARY_SENSOR_WITH_APPENDIX)==0){ // switch that publishes on a topic without the end "_state"
 		domain = DOMAIN_BINARY_SENSOR;
 	}
 
@@ -1038,7 +1047,9 @@ const char PROGMEM stat_fmt[] = ",\"stat_t\":\"%s/r/%s\"";
 const char PROGMEM stat2_fmt[] = ",\"stat_t\":\"%s/r/%s_state\"";
 const char PROGMEM unit_fmt[] = ",\"unit_of_meas\":\"%s\"";
 const char PROGMEM retain_fmt[] = ",\"ret\":\"true\"";
+const char PROGMEM color_fmt[] = ",\"schema\":\"json\",\"supported_color_modes\":[\"rgb\"]";
 const char PROGMEM cmd_fmt[] = ",\"cmd_t\":\"%s/s/%s_state\"";
+const char PROGMEM cmd_fmt_wo_state[] = ",\"cmd_t\":\"%s/s/%s\"";
 const char PROGMEM light_cmd_fmt[] = ",\"cmd_t\":\"%s/s/light\"";
 const char PROGMEM dimm_fmt[] =  ",\"cmd_t\":\"%s/s/light/dimm\",\"bri_scl\":\"99\",\"bri_stat_t\":\"%s/r/light/brightness\",\"bri_cmd_t\":\"%s/s/light/brightness\"";
 const char PROGMEM device_fmt[] = ",\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}";  // closes JSON
@@ -1052,7 +1063,7 @@ char* discovery_message_bake_2(const char* domain, const char* topic, const char
     len += snprintf_P(buf+len, sizeof(buf)-len, base_fmt, topic, mqtt.dev_short, topic);
 
 	// Status topic
-	if (strcmp(domain, DOMAIN_BINARY_SENSOR) == 0 || strcmp(domain, DOMAIN_SWITCH) == 0) { // DOMAIN_BINARY_SENSOR and DOMAIN_SWITCH don't look for the state at "_state"
+	if (strcmp(domain, DOMAIN_BINARY_SENSOR_WITH_APPENDIX) == 0 || strcmp(domain, DOMAIN_SWITCH_WITH_APPENDIX) == 0) { // DOMAIN_BINARY_SENSOR and DOMAIN_SWITCH don't look for the state at "_state"
 	    len += snprintf_P(buf+len, sizeof(buf)-len, stat2_fmt, mqtt.dev_short, topic);
 	} else {
 		len += snprintf_P(buf+len, sizeof(buf)-len, stat_fmt, mqtt.dev_short, topic);
@@ -1065,12 +1076,19 @@ char* discovery_message_bake_2(const char* domain, const char* topic, const char
     }
 
     // Domain-specific extras
-    if (strcmp(domain, DOMAIN_SWITCH) == 0) {
-        len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+	if (strcmp(domain, DOMAIN_SWITCH_WITH_APPENDIX) == 0) {
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+	} else if (strcmp(domain, DOMAIN_SWITCH) == 0) {
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt_wo_state, mqtt.dev_short, topic);
 		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
     } else if (strcmp(domain, DOMAIN_DIMM_LIGHT) == 0) {
         len += snprintf_P(buf+len, sizeof(buf)-len, dimm_fmt, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
 		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+	} else if (strcmp(domain, DOMAIN_RGB_DIMM_LIGHT) == 0) {
+        len += snprintf_P(buf+len, sizeof(buf)-len, dimm_fmt, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
+		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+		len += snprintf_P(buf+len, sizeof(buf)-len, color_fmt);
     } else if (strcmp(domain, DOMAIN_LIGHT) == 0) {
         len += snprintf_P(buf+len, sizeof(buf)-len, light_cmd_fmt, mqtt.dev_short);
 		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
@@ -1099,3 +1117,12 @@ bool discovery(const char* domain, const char* topic, const char* unit){
 }
 
 // /////////////////////////////////////////////////////////////////////////////////////
+
+bool undiscover(const char* domain, const char* topic){
+	char* t = discovery_topic_bake_2(domain,topic);
+	network.unsubscribe(t);
+	bool ret = network.publish(t,"");
+	delete[] t;
+	return ret;
+
+}
