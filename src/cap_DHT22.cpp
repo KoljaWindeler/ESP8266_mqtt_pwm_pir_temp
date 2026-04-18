@@ -8,18 +8,11 @@ J_DHT22::J_DHT22(){
 J_DHT22::~J_DHT22(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake(MQTT_DISCOVERY_DHT_TEMP_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT temp config "), COLOR_YELLOW);
-		logger.pln(t);
-		network.publish(t,(char*)"");
-		m_discovery_pub = false;
-		delete[] t;
-		char* tt = discovery_topic_bake(MQTT_DISCOVERY_DHT_HUM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
+		undiscover(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC);
+		logger.println(TOPIC_MQTT_PUBLISH, F("Erasing DHT temp config "), COLOR_YELLOW);
+		undiscover(DOMAIN_SENSOR,MQTT_HUMIDITY_TOPIC);
 		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing DHT humidity config "), COLOR_YELLOW);
-		logger.pln(tt);
-		network.publish(t,(char*)"");
 		m_discovery_pub = false;
-		delete[] tt;
 	}
 #endif
 
@@ -100,20 +93,16 @@ bool J_DHT22::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			char* t = discovery_topic_bake(MQTT_DISCOVERY_DHT_TEMP_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			char* m = new char[strlen(MQTT_DISCOVERY_DHT_TEMP_MSG)+2*strlen(mqtt.dev_short)];
-			sprintf(m, MQTT_DISCOVERY_DHT_TEMP_MSG, mqtt.dev_short, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_PUBLISH, F("DHT temp discovery"), COLOR_GREEN);
-			m_discovery_pub = network.publish(t,m);
-			delete[] m;
-			delete[] t;
-			char* t2 = discovery_topic_bake(MQTT_DISCOVERY_DHT_HUM_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			char* m2 = new char[strlen(MQTT_DISCOVERY_DHT_HUM_MSG)+2*strlen(mqtt.dev_short)];
-			sprintf(m2, MQTT_DISCOVERY_DHT_HUM_MSG, mqtt.dev_short, mqtt.dev_short);
-			logger.println(TOPIC_MQTT_PUBLISH, F("DHT humidity discovery"), COLOR_GREEN);
-			m_discovery_pub &= network.publish(t2,m2);
-			delete[] m2;
-			delete[] t2;
+			if(discovery(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC,UNIT_DEG_C)){
+					m_discovery_pub = true;
+					logger.println(TOPIC_MQTT_PUBLISH, F("DHT temp discovery"), COLOR_GREEN);
+			}
+			if(discovery(DOMAIN_SENSOR,MQTT_HUMIDITY_TOPIC,UNIT_PERC)){
+				m_discovery_pub &= true;
+				logger.println(TOPIC_MQTT_PUBLISH, F("DHT humidity discovery"), COLOR_GREEN);
+			} else {
+				m_discovery_pub &= false;
+			}
 			return true;
 		}
 	}
