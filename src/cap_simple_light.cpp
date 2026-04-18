@@ -9,13 +9,9 @@ simple_light::simple_light(){
 simple_light::~simple_light(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		char* t = discovery_topic_bake(MQTT_DISCOVERY_SL_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-		logger.print(TOPIC_MQTT_PUBLISH, F("Erasing SL config "), COLOR_YELLOW);
-		logger.pln(t);
-		network.unsubscribe(t);
-		network.publish(t,(char*)"");
+		undiscover(DOMAIN_LIGHT,DOMAIN_LIGHT);
+		logger.println(TOPIC_MQTT_PUBLISH, F("Erasing SL config"), COLOR_YELLOW);
 		m_discovery_pub = false;
-		delete[] t;
 	}
 #endif
 	logger.println(TOPIC_GENERIC_INFO, F("Simple light deleted"), COLOR_YELLOW);
