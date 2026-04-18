@@ -55,7 +55,7 @@ J_GPIO::~J_GPIO(){
 			sprintf(topic,MQTT_DISCOVERY_GPIO_TOPIC, i);
 
 			if (m_pin_out[i]) {
-				char* t = discovery_topic_bake_2(DOMAIN_SWITCH,topic); // don't forget to "delete[] t;" at the end of usage;
+				char* t = discovery_topic_bake_2(DOMAIN_SWITCH_WITH_APPENDIX,topic); // don't forget to "delete[] t;" at the end of usage;
 				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
@@ -66,7 +66,7 @@ J_GPIO::~J_GPIO(){
 				network.publish(build_topic(MQTT_J_GPIO_OUTPUT_BRIGHTNESS_TOPIC, 19, UNIT_TO_PC, true, i), (char *) "");
 			}
 			if (m_pin_in[i]) {
-				char* t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR,topic); // don't forget to "delete[] t;" at the end of usage;
+				char* t = discovery_topic_bake_2(DOMAIN_BINARY_SENSOR_WITH_APPENDIX,topic); // don't forget to "delete[] t;" at the end of usage;
 				logger.print(TOPIC_MQTT_PUBLISH, F("Erasing GPIO config "), COLOR_YELLOW);
 				logger.pln(t);
 				network.publish(t,(char*)"");
@@ -539,13 +539,13 @@ bool J_GPIO::publish(){
 				sprintf(topic,MQTT_DISCOVERY_GPIO_TOPIC, i);
 
 				if (m_pin_out[i]) {
-					if(discovery(DOMAIN_SWITCH,topic,UNIT_NONE)){
+					if(discovery(DOMAIN_SWITCH_WITH_APPENDIX,topic,UNIT_NONE)){
 						logger.println(TOPIC_MQTT_PUBLISH, F("GPO discovery"), COLOR_GREEN);
 						m_discovery_pub[i] = true;
 					}
 				}
 				if (m_pin_in[i]) {
-					if(discovery(DOMAIN_BINARY_SENSOR,topic,UNIT_NONE)){
+					if(discovery(DOMAIN_BINARY_SENSOR_WITH_APPENDIX,topic,UNIT_NONE)){
 						logger.println(TOPIC_MQTT_PUBLISH, F("GPI discovery"), COLOR_GREEN);
 						m_discovery_pub[i] = true;
 					}
