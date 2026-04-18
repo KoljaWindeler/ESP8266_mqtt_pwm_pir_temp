@@ -38,6 +38,7 @@ capability *p_count;
 capability *p_ebus;
 //capability *p_fireplace;
 capability *p_autarco;
+capability *p_r503;
 
 connection_relay network;
 WiFiClient wifiClient;
