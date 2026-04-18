@@ -90,7 +90,7 @@ bool BOne::publish(){
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
-			if(discovery(DOMAIN_DIMM_LIGHT,DOMAIN_LIGHT,UNIT_NONE)){
+			if(discovery(DOMAIN_RGB_DIMM_LIGHT,DOMAIN_LIGHT,UNIT_NONE)){
 				logger.println(TOPIC_MQTT_PUBLISH, F("Bone discovery"), COLOR_GREEN);
 				m_discovery_pub = true;
 			}
