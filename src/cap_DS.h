@@ -6,6 +6,7 @@
 #include <Wire.h>
 #define DS_PIN           13 // D7
 #define DS_MAX_SENSORS   10 // D7
+#define DS_ERROR_TEMP    85.0
 #define MQTT_TEMPARATURE_TOPIC_N "temperature_%i"
 static constexpr char MQTT_TEMPARATURE_COUNT_TOPIC[] = "temperature_count"; // publish
 
@@ -20,7 +21,7 @@ class J_DS : public capability {
 		uint8_t count_intervall_update();
 		bool intervall_update(uint8_t slot);
 		bool subscribe();
-		// bool loop();
+		bool loop();
 		bool receive(uint8_t* p_topic, uint8_t* p_payload);
 		bool publish();
 		float getDsTemp(uint8_t sensor);
@@ -32,6 +33,9 @@ class J_DS : public capability {
 		OneWire* p_ds;
 		uint8_t m_pin;
 		bool m_discovery_pub;
+		uint32_t m_last_time_read;
+		uint8_t m_last_sensor_checked;
+		mqtt_parameter_float m_last_temp_published[DS_MAX_SENSORS];
 };
 
 

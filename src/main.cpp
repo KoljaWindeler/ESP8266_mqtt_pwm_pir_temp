@@ -21,7 +21,7 @@ uint8_t active_p_intervall_counter = 0;
 capability ** active_p[MAX_CAPS];
 capability ** active_intervall_p[MAX_CAPS];
 char * p_trace;
-
+bool m_discovery_pub;
 // bool (*intervall_p[MAX_CAPS]);
 
 // //////////////////////////////////////////////////////////////////////////////////////
@@ -103,20 +103,20 @@ void callback(char * p_topic, byte * p_payload, uint16_t p_length){
 				char copy_buffer[sizeof(p_payload) / sizeof(p_payload[0])];
 				strcpy(copy_buffer, (const char *) p_payload);
 				network.publish(build_topic(MQTT_SETUP_TOPIC, UNIT_TO_PC), (char *) "ok");
-				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "updating...");
+				network.publish(build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), (char *) "updating...");
 				delay(5);
 				ESPhttpUpdate.rebootOnUpdate(false);
 				HTTPUpdateResult res = ESPhttpUpdate.update(copy_buffer);
 				if (res == HTTP_UPDATE_OK) {
-					network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "rebooting...");
+					network.publish(build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), (char *) "rebooting...");
 					logger.pln(F("Update OK, rebooting"));
 					ESP.restart();
 				} else {
-					network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "update failed");
+					network.publish(build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), (char *) "update failed");
 					logger.pln(F("Update failed"));
 				}
 			} else {
-				network.publish(build_topic("INFO", UNIT_TO_PC), (char *) "Can't update. Mesh connection.");
+				network.publish(build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), (char *) "Can't update. Mesh connection.");
 				logger.p(F("Can't update. Mesh connection."));
 			}
 		} else if (!strcmp_P((const char *) p_payload, "reset")) { // reboot
@@ -364,19 +364,19 @@ void reconnect(){
 					// delay(500);
 					(*active_p[i])->subscribe();
 				}
-				logger.println(TOPIC_MQTT, F("subscribing finished"));
+				logger.println(TOPIC_MQTT, F("non discovery subscriptions finished"));
 
 				// INFO publishing
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%s", VERSION);
-				network.publish(build_topic("INFO", UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("INFO", UNIT_TO_PC), COLOR_GREEN);
+				network.publish(build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_INFO_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
 
 				// WIFI publishing
-				network.publish(build_topic("SSID", UNIT_TO_PC), (char *) WiFi.SSID().c_str());
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("SSID", UNIT_TO_PC), COLOR_GREEN);
+				network.publish(build_topic(MQTT_SSID_TOPIC, UNIT_TO_PC), (char *) WiFi.SSID().c_str());
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_SSID_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
 				logger.pln((char *) (WiFi.SSID().c_str()));
 
@@ -385,8 +385,8 @@ void reconnect(){
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", bssid[5], bssid[4], bssid[3], bssid[2],
 				  bssid[1],
 				  bssid[0]);
-				network.publish(build_topic("BSSID", UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("BSSID", UNIT_TO_PC), COLOR_GREEN);
+				network.publish(build_topic(MQTT_BSSID_TOPIC, UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_BSSID_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
@@ -396,16 +396,16 @@ void reconnect(){
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3],
 				  mac[4],
 				  mac[5]);
-				network.publish(build_topic("MAC", UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("MAC", UNIT_TO_PC), COLOR_GREEN);
+				network.publish(build_topic(MQTT_MAC_TOPIC, UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_MAC_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
 				// IP publishing
 				IPAddress ip = WiFi.localIP();
 				snprintf(m_msg_buffer, MSG_BUFFER_SIZE, "%i.%i.%i.%i", ip[0], ip[1], ip[2], ip[3]);
-				network.publish(build_topic("IP", UNIT_TO_PC), m_msg_buffer);
-				logger.print(TOPIC_MQTT_PUBLISH, build_topic("IP", UNIT_TO_PC), COLOR_GREEN);
+				network.publish(build_topic(MQTT_IP_TOPIC, UNIT_TO_PC), m_msg_buffer);
+				logger.print(TOPIC_MQTT_PUBLISH, build_topic(MQTT_IP_TOPIC, UNIT_TO_PC), COLOR_GREEN);
 				logger.p((char *) " -> ");
 				logger.pln(m_msg_buffer);
 
@@ -543,6 +543,24 @@ void loadPheripherals(uint8_t * config){
 			active_p[i] = 0x00;
 		}
 	}
+	// undiscover all if we have been online before (and therefor likely sent our those disoveries)
+	if(timer_connected_start>0){
+		for(uint8_t buffer_counter=0; buffer_counter<DISCOVERY_BUFFER_SIZE; buffer_counter++){
+			if(m_discovery_buffer[buffer_counter] == nullptr){
+				char** temp = (char**)realloc(m_discovery_buffer, sizeof(char*)); // +1 for new entry, +1 for nullptr
+				char** domain_temp = (char**)realloc(m_discovery_domain_buffer, sizeof(char*)); // +1 for new entry
+				if (temp != nullptr && domain_temp != nullptr) {
+					m_discovery_buffer = temp;
+					m_discovery_buffer[0]=nullptr;
+					m_discovery_domain_buffer = domain_temp;
+				}
+				break;
+			} else {
+				undiscover(m_discovery_domain_buffer[buffer_counter],m_discovery_buffer[buffer_counter]);
+			};
+		}
+	}
+
 	// hanky: activate button just to see if we should go to setup
 #ifdef WITH_BUTTON
 	logger.println(TOPIC_GENERIC_INFO, F("checking direct setup"), COLOR_PURPLE);
@@ -664,6 +682,9 @@ void loadPheripherals(uint8_t * config){
 #endif
 #ifdef WITH_R503
 	bake(new r503(), &p_r503, config);
+#endif
+#ifdef WITH_RAM
+	bake(new ram(), &p_ram, config);
 #endif
 	bake(new light(), &p_light, config);
 
@@ -796,6 +817,14 @@ char * build_topic(const char * topic, uint8_t pc_shall_R_or_S){
 void setup(){
 	Serial.begin(115200);
 	logger.init();
+
+	// reseve first discovery buffer
+	m_discovery_buffer = (char**)malloc(1 * sizeof(char*));
+	m_discovery_domain_buffer = (char**)malloc(1 * sizeof(char*));
+	if (m_discovery_buffer != nullptr) {
+		m_discovery_buffer[0] = nullptr; 
+	}
+
 	for (uint8_t i = 0; i < 10; i++) {
 		logger.p(i);
 		logger.p(F(".. "));
@@ -846,6 +875,7 @@ void setup(){
 	randomSeed(millis());
 
 	// load all paramters!
+	timer_connected_start = 0; // important, needs to be set before loadConfig()
 	loadConfig();
 	// get reset reason
 	if (p_light) {
@@ -867,7 +897,7 @@ void setup(){
 	logger.pln(F("=== End of Setup ==="));
 	logger.pln(F(" "));
 
-	timer_connected_start = 0;
+	m_discovery_pub = false;
 } // setup
 
 // /////////////////////////////////////////// SETUP ///////////////////////////////////
@@ -901,12 +931,57 @@ void loop(){
 	// // send periodic updates ////
 	if (!uninterrupted) {
 		if (millis() - timer_last_publish > PUBLISH_TIME_OFFSET) {
-			for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
-				wdt_reset();
-				if ((*active_p[i])->publish()) { // some one published something urgend, stop others
+			// discovery topics for generic sensors
+			if(!m_discovery_pub){
+				if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
+					// INFO
+					if(discovery(DOMAIN_SENSOR,MQTT_INFO_TOPIC,UNIT_NONE)){
+						m_discovery_pub = true;
+					}
+					// SSID
+					if(discovery(DOMAIN_SENSOR,MQTT_SSID_TOPIC,UNIT_NONE)){
+						m_discovery_pub &= true;
+					} else {
+						m_discovery_pub &= false;
+					}
+					// BSSID
+					if(discovery(DOMAIN_SENSOR,MQTT_BSSID_TOPIC,UNIT_NONE)){
+						m_discovery_pub &= true;
+					} else {
+						m_discovery_pub &= false;
+					}
+					// IP
+					if(discovery(DOMAIN_SENSOR,MQTT_IP_TOPIC,UNIT_NONE)){
+						m_discovery_pub &= true;
+					} else {
+						m_discovery_pub &= false;
+					}
+					// MAC
+					if(discovery(DOMAIN_SENSOR,MQTT_MAC_TOPIC,UNIT_NONE)){
+						m_discovery_pub &= true;
+					} else {
+						m_discovery_pub &= false;
+					}
+					// capability
+					if(discovery(DOMAIN_SENSOR,MQTT_CAPABILITY_TOPIC,UNIT_NONE)){
+						m_discovery_pub &= true;
+					} else {
+						m_discovery_pub &= false;
+					}
+					
 					timer_republish_avoid = millis();
 					timer_last_publish    = millis();
-					break;
+				}
+			} else {
+				// publish routines 
+				for (uint8_t i = 0; i < active_p_pointer && active_p[i] != 0x00; i++) {
+					///
+					wdt_reset();
+					if ((*active_p[i])->publish()) { // some one published something urgend, stop others
+						timer_republish_avoid = millis();
+						timer_last_publish    = millis();
+						break;
+					}
 				}
 			}
 		}
@@ -1013,7 +1088,7 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 	} else if(strcmp(domain,DOMAIN_RGB_DIMM_LIGHT)==0){ // dimm need to be a "light" but we still need to know is it a dimm for the message
 		domain = DOMAIN_LIGHT;
 	} else if(strcmp(domain,DOMAIN_BUTTON)==0){ // button need to be a "binary_sensor" but we still need to know it for the state in the message
-		domain = DOMAIN_BINARY_SENSOR_WITH_APPENDIX;
+		domain = DOMAIN_BINARY_SENSOR;
 	} else if(strcmp(domain,DOMAIN_SWITCH_WITH_APPENDIX)==0){ // switch that publishes on a topic without the end "_state"
 		domain = DOMAIN_SWITCH;
 	} else if(strcmp(domain,DOMAIN_BINARY_SENSOR_WITH_APPENDIX)==0){ // switch that publishes on a topic without the end "_state"
@@ -1044,27 +1119,29 @@ char* discovery_topic_bake_2(const char* domain, const char* topic){
 
 const char PROGMEM base_fmt[] = "{\"name\":\"%s\",\"uniq_id\":\"%s_%s\"";  // starts JSON
 const char PROGMEM stat_fmt[] = ",\"stat_t\":\"%s/r/%s\"";
-const char PROGMEM stat2_fmt[] = ",\"stat_t\":\"%s/r/%s_state\"";
+const char PROGMEM stat_fmt_with_appendix[] = ",\"stat_t\":\"%s/r/%s_state\"";
 const char PROGMEM unit_fmt[] = ",\"unit_of_meas\":\"%s\"";
 const char PROGMEM retain_fmt[] = ",\"ret\":\"true\"";
 const char PROGMEM color_fmt[] = ",\"schema\":\"json\",\"supported_color_modes\":[\"rgb\"]";
-const char PROGMEM cmd_fmt[] = ",\"cmd_t\":\"%s/s/%s_state\"";
-const char PROGMEM cmd_fmt_wo_state[] = ",\"cmd_t\":\"%s/s/%s\"";
+const char PROGMEM cmd_fmt[] = ",\"cmd_t\":\"%s/s/%s\"";
+const char PROGMEM cmd_fmt_with_appendix[] = ",\"cmd_t\":\"%s/s/%s_state\"";
 const char PROGMEM light_cmd_fmt[] = ",\"cmd_t\":\"%s/s/light\"";
 const char PROGMEM dimm_fmt[] =  ",\"cmd_t\":\"%s/s/light/dimm\",\"bri_scl\":\"99\",\"bri_stat_t\":\"%s/r/light/brightness\",\"bri_cmd_t\":\"%s/s/light/brightness\"";
+const char PROGMEM num_fmt[] =  ",\"mode\":\"box\"";
 const char PROGMEM device_fmt[] = ",\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\"}}";  // closes JSON
 
 
 char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit) {
     char buf[512]; // temporary Stack-Buffer, to calc minimum length
     size_t len = 0;
+	bool retain = true;
 
     // Header
     len += snprintf_P(buf+len, sizeof(buf)-len, base_fmt, topic, mqtt.dev_short, topic);
 
 	// Status topic
 	if (strcmp(domain, DOMAIN_BINARY_SENSOR_WITH_APPENDIX) == 0 || strcmp(domain, DOMAIN_SWITCH_WITH_APPENDIX) == 0) { // DOMAIN_BINARY_SENSOR and DOMAIN_SWITCH don't look for the state at "_state"
-	    len += snprintf_P(buf+len, sizeof(buf)-len, stat2_fmt, mqtt.dev_short, topic);
+	    len += snprintf_P(buf+len, sizeof(buf)-len, stat_fmt_with_appendix, mqtt.dev_short, topic);
 	} else {
 		len += snprintf_P(buf+len, sizeof(buf)-len, stat_fmt, mqtt.dev_short, topic);
 	}
@@ -1077,23 +1154,28 @@ char* discovery_message_bake_2(const char* domain, const char* topic, const char
 
     // Domain-specific extras
 	if (strcmp(domain, DOMAIN_SWITCH_WITH_APPENDIX) == 0) {
-		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
-		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt_with_appendix, mqtt.dev_short, topic);
 	} else if (strcmp(domain, DOMAIN_SWITCH) == 0) {
-		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt_wo_state, mqtt.dev_short, topic);
-		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+	} else if (strcmp(domain, DOMAIN_INPUT_BUTTON) == 0) {
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+		retain = false;
+	} else if (strcmp(domain, DOMAIN_INPUT_NUMBER) == 0) {
+		len += snprintf_P(buf+len, sizeof(buf)-len, cmd_fmt, mqtt.dev_short, topic);
+		len += snprintf_P(buf+len, sizeof(buf)-len, num_fmt);
     } else if (strcmp(domain, DOMAIN_DIMM_LIGHT) == 0) {
         len += snprintf_P(buf+len, sizeof(buf)-len, dimm_fmt, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
-		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
 	} else if (strcmp(domain, DOMAIN_RGB_DIMM_LIGHT) == 0) {
         len += snprintf_P(buf+len, sizeof(buf)-len, dimm_fmt, mqtt.dev_short, mqtt.dev_short, mqtt.dev_short);
-		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
 		len += snprintf_P(buf+len, sizeof(buf)-len, color_fmt);
     } else if (strcmp(domain, DOMAIN_LIGHT) == 0) {
         len += snprintf_P(buf+len, sizeof(buf)-len, light_cmd_fmt, mqtt.dev_short);
-		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
     }
 	
+	// make it retain = true
+	if(retain){
+		len += snprintf_P(buf+len, sizeof(buf)-len, retain_fmt);
+	}
 
     // Device-Block
     len += snprintf_P(buf+len, sizeof(buf)-len, device_fmt, mqtt.dev_short, mqtt.dev_short);
@@ -1108,12 +1190,42 @@ char* discovery_message_bake_2(const char* domain, const char* topic, const char
 // /////////////////////////////////////////////////////////////////////////////////////
 
 bool discovery(const char* domain, const char* topic, const char* unit){
+	// store pointer to discovered topics in our buffer to be able to undiscover them easily
+	for(uint8_t buffer_counter=0; buffer_counter<DISCOVERY_BUFFER_SIZE; buffer_counter++){
+		if(m_discovery_buffer[buffer_counter] == nullptr){
+			char** temp = (char**)realloc(m_discovery_buffer, (buffer_counter+1+1) * sizeof(char*)); // +1 for new entry, +1 for nullptr
+			char** domain_temp = (char**)realloc(m_discovery_domain_buffer, (buffer_counter+1) * sizeof(char*)); // +1 for new entry
+			if (temp != nullptr && domain_temp != nullptr) {
+				m_discovery_buffer = temp; // hand over to member var
+				m_discovery_buffer[buffer_counter] = (char*)topic; // add new topic
+				m_discovery_buffer[buffer_counter+1]=nullptr; // add 'end of array marker'
+				m_discovery_domain_buffer = domain_temp;
+				m_discovery_domain_buffer[buffer_counter] = (char*)domain;
+			};
+			break;
+		}
+	}
 	char* t = discovery_topic_bake_2(domain,topic);
 	char* m = discovery_message_bake_2(domain,topic,unit);
 	bool ret = network.publish(t,m);
 	delete[] m;
 	delete[] t;
+	if(ret){
+		discovery_log(topic);
+		// add a subscription the the topic, if needed
+		// technically we will subscribe to too many topics this way, but there is basically no harm to it
+		if(strcmp(domain, DOMAIN_BINARY_SENSOR_WITH_APPENDIX) != 0 && strcmp(domain, DOMAIN_BINARY_SENSOR) != 0 && strcmp(domain, DOMAIN_SENSOR) != 0){
+			if(network.subscribe(build_topic(topic,PC_TO_UNIT))){
+				logger.println(TOPIC_MQTT_SUBSCIBED, build_topic(topic,PC_TO_UNIT), COLOR_GREEN);
+			}
+		}
+	}
 	return ret;
+}
+
+void discovery_log(const char* name){
+	snprintf_P((char*)m_msg_buffer, MSG_BUFFER_SIZE, PSTR("%s discovery"), name);
+	logger.println(TOPIC_MQTT_PUBLISH, m_msg_buffer, COLOR_GREEN);
 }
 
 // /////////////////////////////////////////////////////////////////////////////////////

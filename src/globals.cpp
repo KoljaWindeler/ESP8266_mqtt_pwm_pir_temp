@@ -12,6 +12,7 @@ capability *p_pwm3;
 capability *p_shellyDimmer;
 capability *p_ads1015;
 capability *p_rssi;
+capability *p_ram;
 capability *p_simple_light;
 capability *p_remote_simple_light;
 capability *p_dht;
@@ -51,6 +52,8 @@ uint32_t timer_connected_start;
 
 char m_topic_buffer[TOPIC_BUFFER_SIZE];
 char m_msg_buffer[MSG_BUFFER_SIZE];
+char** m_discovery_buffer;
+char** m_discovery_domain_buffer;
 
 // converts from half log to linear .. the human eye is a smartass
 const uint8_t intens[100] =

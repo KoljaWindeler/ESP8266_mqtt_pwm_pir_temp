@@ -24,7 +24,9 @@ uint8_t* J_DS::get_key(){
 	return (uint8_t*)"DS";
 }
 
+
 bool J_DS::init(){
+	m_last_time_read = millis();
 	p_ds = new OneWire(m_pin);
 	m_sensor_count = 0;
 	for(uint8_t i=0; i<DS_MAX_SENSORS; i++){
@@ -42,6 +44,7 @@ bool J_DS::init(){
 				//	Serial.print(m_sensor_addr[i][ii],HEX);
 				//}
 				//Serial.println(" ");
+				m_last_temp_published[i].set(DS_ERROR_TEMP);
 				m_sensor_count++;
 			}
 			delay(1);
@@ -50,6 +53,7 @@ bool J_DS::init(){
 		}
 	}
 	p_ds->reset_search();
+
 
 	sprintf_P(m_msg_buffer, PSTR("DS init done, %i sensors found"), m_sensor_count);
 	logger.println(TOPIC_GENERIC_INFO, m_msg_buffer, COLOR_GREEN);
@@ -64,19 +68,14 @@ uint8_t J_DS::count_intervall_update(){
 bool J_DS::intervall_update(uint8_t slot){
 	// function called to publish the brightness of the led
 	uint8_t sensor = slot % m_sensor_count;
-	float temp = getDsTemp(sensor);
-	if (temp > TEMP_MAX || temp < (-1 * TEMP_MAX) || isnan(temp) || temp==85.0 ) {
-		logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);
-		if (isnan(temp)) {
-			logger.pln(F("nan"));
-		} else {
-			dtostrf(temp, 3, 2, m_msg_buffer);
-			logger.p(m_msg_buffer);
-			logger.pln(F(" >TEMP_MAX"));
-		}
+	float temp = m_last_temp_published[sensor].get_value();
+	if (temp==DS_ERROR_TEMP) {
+		logger.print(TOPIC_GENERIC_INFO, F("no publish temp, "), COLOR_YELLOW);	
+		dtostrf(temp, 3, 2, m_msg_buffer);
+		logger.p(m_msg_buffer);
+		logger.pln(F(" >TEMP_MAX"));
 		return false;
 	}
-
 	logger.print(TOPIC_MQTT_PUBLISH, F(""));
 	dtostrf(temp, 3, 2, m_msg_buffer);
 	logger.p(F("DS temp "));
@@ -102,7 +101,38 @@ bool J_DS::parse(uint8_t* config){
 }
 
 
+bool J_DS::loop(){
+	if(m_sensor_count > 0){
+		if(millis()-m_last_time_read>(10000/m_sensor_count)){
+			uint8_t this_sensor = (m_last_sensor_checked + 1) % m_sensor_count;
+			float current_temp = getDsTemp(this_sensor);
+			if (current_temp > TEMP_MAX || current_temp < (-1 * TEMP_MAX) || isnan(current_temp) || current_temp==DS_ERROR_TEMP ) {
+				m_last_temp_published[this_sensor].set(DS_ERROR_TEMP);
+			} else {
+				float last_temp = m_last_temp_published[this_sensor].get_value();
+				m_last_temp_published[this_sensor].set(current_temp);
+				m_last_sensor_checked = this_sensor;
+				if(fabs(last_temp-current_temp)<=0.5){ // abs works with int, so we scale everything by 10 to find 0.5 diff
+					m_last_temp_published[this_sensor].outdated(false);
+				}
+			}
+			m_last_time_read = millis();
+			return true;
+		}
+	}
+	return false;
+}
+
 bool J_DS::publish(){
+	for(uint8_t i = 0; i < m_sensor_count; i++){
+		if(m_last_temp_published[i].get_outdated()){
+			if(intervall_update(i)){
+				m_last_temp_published[i].outdated(false);
+			}
+			return true; // we've done network stuff, so we need to return true
+		}
+	}
+
 #ifdef WITH_DISCOVERY
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
@@ -110,47 +140,24 @@ bool J_DS::publish(){
 			if(m_sensor_count>0){
 				for(uint8_t i=0; i<m_sensor_count; i++){
 					wdt_reset();
-					//char* t;
-					//char* m;
 					if(i==0){
 						if(!discovery(DOMAIN_SENSOR,MQTT_TEMPARATURE_TOPIC,UNIT_DEG_C)){
 							m_discovery_pub = false;
 						}
-						//t = discovery_topic_bake(MQTT_DISCOVERY_DS_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-						//m = new char[strlen(MQTT_DISCOVERY_DS_MSG)+2*strlen(mqtt.dev_short)];
-						//sprintf(m, MQTT_DISCOVERY_DS_MSG, mqtt.dev_short, mqtt.dev_short);
 					} else {
 						sprintf(m_msg_buffer,MQTT_TEMPARATURE_TOPIC_N,i+1);
 						if(!discovery(DOMAIN_SENSOR,m_msg_buffer,UNIT_DEG_C)){
 							m_discovery_pub = false;
 						}
-						//t = discovery_topic_bake(MQTT_DISCOVERY_DS_N_TOPIC,mqtt.dev_short,i+1); // don't forget to "delete[] t;" at the end of usage;
-						//m = new char[strlen(MQTT_DISCOVERY_DS_N_MSG)+2*strlen(mqtt.dev_short)+2];
-						//sprintf(m, MQTT_DISCOVERY_DS_N_MSG, mqtt.dev_short, i+1, mqtt.dev_short, i+1); // the +1 will make it sensor.dev99_temperature_2 for the second sensor instead of _1
 					}
-					//logger.p(t);
-					//logger.p(" -> ");
-					//logger.pln(m);
-					//m_discovery_pub = network.publish(t,m);
 					delay(100);
-					//delete[] m;
-					//delete[] t;
 				}
 			}
-			// sensor count 
-			//char* t;
-			//char* m;
+
 			if(!discovery(DOMAIN_SENSOR,MQTT_TEMPARATURE_COUNT_TOPIC,UNIT_NONE)){
 				m_discovery_pub = false;
 			}
 
-			//t = discovery_topic_bake(MQTT_DISCOVERY_DS_COUNT_TOPIC,mqtt.dev_short); // don't forget to "delete[] t;" at the end of usage;
-			//m = new char[strlen(MQTT_DISCOVERY_DS_COUNT_MSG)+2*strlen(mqtt.dev_short)];
-			//sprintf(m, MQTT_DISCOVERY_DS_COUNT_MSG, mqtt.dev_short, mqtt.dev_short);
-			//m_discovery_pub = network.publish(t,m);
-			//delete[] m;
-			//delete[] t;
-			// 
 			sprintf(m_msg_buffer, "%i", m_sensor_count);
 			network.publish(build_topic(MQTT_TEMPARATURE_COUNT_TOPIC,UNIT_TO_PC), m_msg_buffer);
 

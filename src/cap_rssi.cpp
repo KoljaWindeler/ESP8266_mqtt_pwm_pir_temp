@@ -7,8 +7,7 @@ rssi::rssi(){
 rssi::~rssi(){
 #ifdef WITH_DISCOVERY
 	if(m_discovery_pub & (timer_connected_start>0)){
-		undiscover(DOMAIN_SENSOR,MQTT_RSSI_TOPIC);
-		logger.println(TOPIC_GENERIC_INFO, F("RSSI deleted"), COLOR_YELLOW);
+		// auto undiscover
 		m_discovery_pub = false;
 	}
 #endif
@@ -62,8 +61,7 @@ bool rssi::publish(){
 	if(!m_discovery_pub){
 		if(millis()-timer_connected_start>NETWORK_SUBSCRIPTION_DELAY){
 			if(discovery(DOMAIN_SENSOR,MQTT_RSSI_TOPIC,UNIT_PERC)){
-					m_discovery_pub = true;
-					logger.println(TOPIC_MQTT_PUBLISH, F("RSSI discovery"), COLOR_GREEN);
+				m_discovery_pub = true;
 			}
 			return true;
 		}

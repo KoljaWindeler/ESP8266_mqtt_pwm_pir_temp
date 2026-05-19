@@ -43,7 +43,7 @@
 	#define DS_def                2
 	#define TEMP_MAX              120 // DS18B20 repoorts 85.0 on first reading ... for whatever reason
 	#define DEV                   "" // set this to "_dev" during development to avoid Mesh confilicts
-	#define VERSION               "20251011" DEV
+	#define VERSION               "20260426" DEV
 
 	#define CONFIG_SSID           "ESP_CONFIG" // SSID of the configuration mode
 	#define MAX_CON_TIME          25           // give up connecting after 25 sec per try
@@ -53,6 +53,7 @@
 	#define MAX_AP_TIME           300          // close AP after 300 sec in config mode and try reconnect
 
 	#define MSG_BUFFER_SIZE          60   // mqtt messages max char size
+	#define DISCOVERY_BUFFER_SIZE    100  // max 100 discover sensors
 	#define TOPIC_BUFFER_SIZE        64   // mqtt topic buffer
 	#define PUBLISH_TIME_OFFSET      200  // ms timeout between two publishes
 	#define MAX_CAPS                 100
@@ -81,6 +82,7 @@
 	char* discovery_message_bake_2(const char* domain, const char* topic, const char* unit);
 	bool discovery(const char* domain, const char* topic, const char* unit);
 	bool undiscover(const char* domain, const char* topic);
+	void discovery_log(const char* name);
 
 	// MQTT: topics, constants, etc, send and receive are written from the PC perspective
 	//  setter aka the topics we'll subscribe to
@@ -111,14 +113,16 @@
 	
 	// domains
 	static constexpr char DOMAIN_SENSOR[] = "sensor";
-	static constexpr char DOMAIN_BINARY_SENSOR_WITH_APPENDIX[] = "binary_sensor";  // todo: change this to "BINARY_SENSOR_WITH_APPENDIX"
-	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor_wo_state"; // todo: change this to default
-	static constexpr char DOMAIN_BUTTON[] = "button";
+	static constexpr char DOMAIN_BINARY_SENSOR_WITH_APPENDIX[] = "binary_sensor_w_state";
+	static constexpr char DOMAIN_BINARY_SENSOR[] = "binary_sensor";
 	static constexpr char DOMAIN_LIGHT[] = "light";
 	static constexpr char DOMAIN_DIMM_LIGHT[] = "dimm_light";
 	static constexpr char DOMAIN_RGB_DIMM_LIGHT[] = "rgb_dimm_light";
 	static constexpr char DOMAIN_SWITCH_WITH_APPENDIX[] = "switch_w_state";
 	static constexpr char DOMAIN_SWITCH[] = "switch";
+	static constexpr char DOMAIN_INPUT_NUMBER[] = "number";
+	static constexpr char DOMAIN_BUTTON[] = "button_switch";
+	static constexpr char DOMAIN_INPUT_BUTTON[] = "button"; // this is not a physical button, this is a button in HA
 
 	
 
@@ -126,6 +130,14 @@
 	static constexpr char STATE_ON_JSON[]  = "{\"state\": \"ON\"}";
 	static constexpr char STATE_OFF[] = "OFF";
 	static constexpr char STATE_OFF_JSON[]  = "{\"state\": \"OFF\"}";
+
+	static constexpr char MQTT_INFO_TOPIC[]        = "INFO"; // publish
+	static constexpr char MQTT_SSID_TOPIC[]        = "SSID"; // publish
+	static constexpr char MQTT_BSSID_TOPIC[]       = "BSSID"; // publish
+	static constexpr char MQTT_MAC_TOPIC[]         = "MAC"; // publish
+	static constexpr char MQTT_IP_TOPIC[]          = "IP"; // publish
+
+
 
 	#define UNIT_TO_PC 'r'
 	#define PC_TO_UNIT 's'
@@ -138,6 +150,8 @@
 	extern connection_relay network;
 	extern char m_topic_buffer[TOPIC_BUFFER_SIZE];
 	extern char m_msg_buffer[MSG_BUFFER_SIZE];
+	extern char** m_discovery_buffer;
+	extern char** m_discovery_domain_buffer;
 	extern capability * p_adc;
 	extern capability * p_bOne;
 	extern capability * p_button;
@@ -178,6 +192,7 @@
 	//extern capability * p_fireplace;
 	extern capability * p_autarco;
 	extern capability * p_r503;
+	extern capability * p_ram;
 
 	extern const uint8_t intens[100];
 
@@ -188,6 +203,7 @@
 #include "cap_simple_light.h"
 #include "cap_remote_simple_light.h"
 #include "cap_rssi.h"
+#include "cap_ram.h"
 #include "cap_PWM.h"
 #include "cap_DHT22.h"
 #include "cap_DS.h"
